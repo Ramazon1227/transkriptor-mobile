@@ -1,0 +1,23 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+    - "lib/core/l10n/gen/**"
+    - build/**
+    - android/**
+    - ios/**
+  errors:
+    # Freezed puts @JsonKey on factory constructor parameters.
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    # Public API docs are not required in an application, only in packages.
+    public_member_api_docs: false
+    # Dart 3.13 lint asking for the new `new(...)` constructor form. Freezed
+    # requires the class-name form (`const factory Post(...)`), and so do the
+    # generated files and the rest of the ecosystem, so one style it is.
+    unnecessary_type_name_in_constructor: false
