@@ -1,0 +1,110 @@
+import 'package:go_router/go_router.dart';
+import 'package:injectable/injectable.dart';
+import 'package:transkriptor_uz/core/network/session_manager.dart';
+import 'package:transkriptor_uz/core/router/routes.dart';
+import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
+import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
+import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
+import 'package:transkriptor_uz/features/example/presentation/pages/example_page.dart';
+import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
+import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
+import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
+import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
+import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
+
+/// Owns the [GoRouter]. Session expiry reaches it through [SessionManager]
+/// as a listenable, so the network layer never needs a navigation context.
+@lazySingleton
+class AppRouter {
+  AppRouter(this._session);
+
+  final SessionManager _session;
+
+  late final GoRouter config = GoRouter(
+    initialLocation: Routes.home,
+    refreshListenable: _session,
+    redirect: (context, state) {
+      // Login and register are open without a session.
+      final atAuth =
+          state.matchedLocation == Routes.login ||
+          state.matchedLocation == Routes.register;
+      // Leaving them is the page's own job: it navigates once the account
+      // is stored, never before.
+      if (_session.isExpired && !atAuth) return Routes.login;
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: Routes.login,
+        builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+            path: 'register',
+            builder: (context, state) => const RegisterPage(),
+          ),
+        ],
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) => AppShell(shell: shell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.home,
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.files,
+                builder: (context, state) => const FilesPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.profile,
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.record,
+        builder: (context, state) => const RecorderPage(),
+      ),
+      GoRoute(
+        path: Routes.send,
+        // Without a file there is nothing to send (e.g. a restored route).
+        redirect: (context, state) =>
+            state.extra is PendingFile ? null : Routes.home,
+        builder: (context, state) =>
+            SendPage(file: state.extra! as PendingFile),
+      ),
+      GoRoute(path: Routes.link, builder: (context, state) => const LinkPage()),
+      GoRoute(
+        path: Routes.job,
+        builder: (context, state) =>
+            JobPage(jobId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: Routes.transcript,
+        builder: (context, state) =>
+            TranscriptPage(transcriptId: state.pathParameters['id']!),
+      ),
+      // The feature template; kept reachable for reference.
+      GoRoute(
+        path: Routes.example,
+        builder: (context, state) => const ExamplePage(),
+      ),
+    ],
+  );
+}
