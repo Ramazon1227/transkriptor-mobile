@@ -40,7 +40,7 @@ class ExportCubit extends Cubit<ExportState> {
     final result = await _facade.shareFile(
       fileName: TranscriptExport.fileName(transcript.title, state.format),
       mimeType: state.format.mimeType,
-      body: TranscriptExport.render(state.format, transcript, state.options),
+      body: TranscriptExport.fileBody(state.format, transcript, state.options),
     );
     if (isClosed) return;
     result.fold(

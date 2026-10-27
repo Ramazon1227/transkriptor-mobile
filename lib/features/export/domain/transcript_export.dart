@@ -23,8 +23,19 @@ abstract final class TranscriptExport {
       ExportFormat.txt => _txt(rows, options),
       ExportFormat.srt => _srt(rows, options),
       ExportFormat.vtt => _vtt(rows, options),
+      ExportFormat.csv => _csv(rows),
     };
   }
+
+  /// The bytes the web's `download` saves: [render], plus the BOM for
+  /// CSV.
+  static String fileBody(
+    ExportFormat format,
+    Transcript transcript,
+    ExportOptions options,
+  ) =>
+      '${format.hasBom ? '\uFEFF' : ''}'
+      '${render(format, transcript, options)}';
 
   /// The web's `saveFile` name: characters no file system takes become `_`.
   static String fileName(String title, ExportFormat format) {
@@ -92,6 +103,26 @@ abstract final class TranscriptExport {
     }
     return 'WEBVTT\n\n${out.join('\n')}';
   }
+
+  /// One row per segment: times as `HH:MM:SS`, the speaker's name (empty
+  /// without one) and the text. Neither switch applies, as on the web.
+  static String _csv(List<_Row> rows) {
+    final lines = [
+      'start,end,speaker,text',
+      for (final r in rows)
+        [
+          _short(r.start),
+          _short(r.end),
+          r.speaker,
+          r.text,
+        ].map(_csvCell).join(','),
+    ];
+    return '${lines.join('\n')}\n';
+  }
+
+  static String _csvCell(String value) => RegExp('[",\n]').hasMatch(value)
+      ? '"${value.replaceAll('"', '""')}"'
+      : value;
 
   /// One segment as subtitle cues: line length × lines and a longest
   /// duration. Time is split in proportion to characters — there is no

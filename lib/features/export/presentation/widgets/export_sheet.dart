@@ -68,7 +68,7 @@ class _ExportView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              if (!state.format.isSubtitle)
+              if (state.format.usesTimecodeSwitch)
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: options.timecodes,
@@ -77,7 +77,8 @@ class _ExportView extends StatelessWidget {
                       : (v) => cubit.setOptions(options.copyWith(timecodes: v)),
                   title: Text(l10n.exportTimecodes),
                 ),
-              if (transcript.speakers.isNotEmpty)
+              if (transcript.speakers.isNotEmpty &&
+                  state.format.usesSpeakerSwitch)
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: options.speakers,

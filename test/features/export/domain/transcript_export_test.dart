@@ -7,7 +7,8 @@ import 'package:transkriptor_uz/features/export/domain/transcript_export.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
 // Expected outputs were produced by running tr-frontend/src/lib/export.ts
-// (render, default options) on the same four segments in Node, 2026-10-27.
+// (render, default options) on the same four segments in Node, 2026-10-27
+// (`node:22-alpine`, `--experimental-strip-types`).
 // A mismatch means the phone and the web would export different files.
 const _txt =
     '[00:00:00] Ali: Salom. Bugun reja bor.\n\n[00:00:04] Ali: Birinchi masala byudjet, ikkinchisi\n\n[00:00:09] muddat. Uchinchisi jamoa.\n\n[00:01:05] Vali: Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n';
@@ -19,6 +20,16 @@ const _vtt =
     'WEBVTT\n\n00:00:00.000 --> 00:00:04.000\n<v Ali>Salom. Bugun reja bor.\n\n00:00:04.000 --> 00:00:09.000\n<v Ali>Birinchi masala byudjet, ikkinchisi\n\n00:00:09.000 --> 00:00:12.000\nmuddat. Uchinchisi jamoa.\n\n00:01:05.000 --> 00:01:09.872\n<v Vali>Roziman! Davom etamiz? Keyingi yigʻilishda\n\n00:01:09.872 --> 00:01:14.280\n<v Vali>moliyaviy hisobotni koʻrib chiqamiz va\n\n00:01:14.280 --> 00:01:19.500\n<v Vali>qarorni ovozga qoʻyamiz, chunki muddat\nyaqin.\n';
 const _vttBare =
     'WEBVTT\n\n00:00:00.000 --> 00:00:04.000\nSalom. Bugun reja bor.\n\n00:00:04.000 --> 00:00:09.000\nBirinchi masala byudjet, ikkinchisi\n\n00:00:09.000 --> 00:00:12.000\nmuddat. Uchinchisi jamoa.\n\n00:01:05.000 --> 00:01:09.872\nRoziman! Davom etamiz? Keyingi yigʻilishda\n\n00:01:09.872 --> 00:01:14.280\nmoliyaviy hisobotni koʻrib chiqamiz va\n\n00:01:14.280 --> 00:01:19.500\nqarorni ovozga qoʻyamiz, chunki muddat\nyaqin.\n';
+
+// CSV: same run, plus `quoted` below; the web's `render("csv")` reads
+// neither the timecode nor the speaker switch (checked: identical output
+// with both off), and `plainSegments` applies before it.
+const _csv =
+    'start,end,speaker,text\n00:00:00,00:00:04,Ali,Salom. Bugun reja bor.\n00:00:04,00:00:09,Ali,"Birinchi masala byudjet, ikkinchisi"\n00:00:09,00:00:12,,muddat. Uchinchisi jamoa.\n00:01:05,00:01:19,Vali,"Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin."\n';
+const _csvQuoted =
+    'start,end,speaker,text\n01:02:03,01:02:05,"Ali, Vali","U ""ha"" dedi"\n00:00:00,00:00:01,Gʻani,taʼlim oʻzbek\n';
+const _csvPlain =
+    'start,end,speaker,text\n01:02:03,01:02:05,"Ali, Vali","U ""ha"" dedi"\n00:00:00,00:00:01,G\'ani,ta\'lim o\'zbek\n';
 
 Segment _seg(String id, String? speaker, int start, int end, String text) =>
     Segment(
@@ -106,6 +117,53 @@ void main() {
         const ExportOptions(plainApostrophe: true),
       ),
       "[00:00:00] G'ani: ta'lim o'zbek\n",
+    );
+  });
+
+  test('CSV matches the web and ignores both switches', () {
+    expect(TranscriptExport.render(ExportFormat.csv, _transcript, base), _csv);
+    expect(
+      TranscriptExport.render(
+        ExportFormat.csv,
+        _transcript,
+        const ExportOptions(timecodes: false, speakers: false),
+      ),
+      _csv,
+    );
+  });
+
+  test('CSV quotes commas and quotes; plain apostrophe applies', () {
+    final quoted = _transcript.copyWith(
+      speakers: const [
+        Speaker(id: 'av', label: 'Ali, Vali', ordinal: 1),
+        Speaker(id: 'g', label: 'Gʻani', ordinal: 2),
+      ],
+      segments: [
+        _seg('1', 'av', 3723456, 3725000, 'U "ha" dedi'),
+        _seg('2', 'g', 0, 1000, 'taʼlim oʻzbek'),
+      ],
+    );
+    expect(TranscriptExport.render(ExportFormat.csv, quoted, base), _csvQuoted);
+    expect(
+      TranscriptExport.render(
+        ExportFormat.csv,
+        quoted,
+        const ExportOptions(plainApostrophe: true),
+      ),
+      _csvPlain,
+    );
+  });
+
+  test('the CSV file starts with a BOM, as the web download does', () {
+    final body = TranscriptExport.fileBody(ExportFormat.csv, _transcript, base);
+    expect(body, '\uFEFF$_csv');
+    expect(
+      TranscriptExport.fileBody(ExportFormat.txt, _transcript, base),
+      _txt,
+    );
+    expect(
+      TranscriptExport.fileName('Kengash', ExportFormat.csv),
+      'Kengash.csv',
     );
   });
 

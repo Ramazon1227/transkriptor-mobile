@@ -91,6 +91,27 @@ void main() {
   );
 
   blocTest<ExportCubit, ExportState>(
+    'CSV goes out as text/csv with the BOM',
+    setUp: () => when(
+      () => facade.shareFile(
+        fileName: any(named: 'fileName'),
+        mimeType: any(named: 'mimeType'),
+        body: any(named: 'body'),
+      ),
+    ).thenAnswer((_) async => const Right(unit)),
+    build: () => ExportCubit(facade),
+    seed: () => const ExportState(format: ExportFormat.csv),
+    act: (cubit) => cubit.share(_transcript),
+    verify: (_) => verify(
+      () => facade.shareFile(
+        fileName: 'Kengash.csv',
+        mimeType: 'text/csv',
+        body: '\uFEFFstart,end,speaker,text\n00:00:00,00:00:02,Ali,Salom.\n',
+      ),
+    ).called(1),
+  );
+
+  blocTest<ExportCubit, ExportState>(
     'a failure is shown and the options stay',
     setUp: () => when(
       () => facade.shareFile(

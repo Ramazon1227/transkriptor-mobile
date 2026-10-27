@@ -2,19 +2,30 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'export_options.freezed.dart';
 
-/// TXT, SRT and VTT — the web export's text and subtitle formats.
+/// TXT, SRT, VTT and CSV — the web export's text, subtitle and table
+/// formats.
 enum ExportFormat {
   txt('txt', 'text/plain'),
   srt('srt', 'application/x-subrip'),
-  vtt('vtt', 'text/vtt');
+  vtt('vtt', 'text/vtt'),
+  csv('csv', 'text/csv');
 
   ExportFormat(this.extension, this.mimeType);
 
   final String extension;
   final String mimeType;
 
-  /// Subtitles always carry times; the timecode switch is TXT's only.
-  bool get isSubtitle => this != txt;
+  /// Subtitles and CSV always carry times; the timecode switch is TXT's
+  /// only.
+  bool get usesTimecodeSwitch => this == txt;
+
+  /// CSV always has its speaker column: the web's `render("csv")` reads
+  /// neither switch.
+  bool get usesSpeakerSwitch => this != csv;
+
+  /// The web prepends U+FEFF to a CSV download so Excel reads Uzbek and
+  /// Cyrillic letters as UTF-8; the phone's file carries it too.
+  bool get hasBom => this == csv;
 }
 
 /// The web export dialog's defaults, minus the layouts the phone does not
