@@ -868,6 +868,60 @@ abstract class AppLocalizations {
   /// **'tahrirlangan'**
   String get transcriptEdited;
 
+  /// No description provided for @transcriptEditSegment.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matnni tahrirlash'**
+  String get transcriptEditSegment;
+
+  /// No description provided for @transcriptRenameSpeaker.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi nomi'**
+  String get transcriptRenameSpeaker;
+
+  /// No description provided for @transcriptSave.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlash'**
+  String get transcriptSave;
+
+  /// No description provided for @transcriptTextTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn juda uzun.'**
+  String get transcriptTextTooLong;
+
+  /// No description provided for @transcriptLabelTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nom juda uzun.'**
+  String get transcriptLabelTooLong;
+
+  /// No description provided for @transcriptEditForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ish maydonida faqat oʻqish huquqingiz bor.'**
+  String get transcriptEditForbidden;
+
+  /// No description provided for @transcriptEditStale.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript boshqa joyda oʻzgartirildi, yangi nusxasi yuklandi. Matningizni tekshirib, yana saqlang.'**
+  String get transcriptEditStale;
+
+  /// No description provided for @transcriptEditInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlab boʻlmadi: matn qabul qilinmadi.'**
+  String get transcriptEditInvalid;
+
+  /// No description provided for @transcriptEditGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qism transkriptdan oʻchirilgan.'**
+  String get transcriptEditGone;
+
   /// No description provided for @profileTitle.
   ///
   /// In uz, this message translates to:

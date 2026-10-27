@@ -19,4 +19,8 @@ abstract final class Endpoints {
   static String jobById(String id) => '/api/v1/job/$id';
   static String jobCancel(String id) => '/api/v1/job/$id/cancel';
   static String transcript(String id) => '/api/v1/transcript/$id';
+  static String transcriptSegment(String id, String segmentId) =>
+      '/api/v1/transcript/$id/segments/$segmentId';
+  static String transcriptSpeaker(String id, String speakerId) =>
+      '/api/v1/transcript/$id/speakers/$speakerId';
 }

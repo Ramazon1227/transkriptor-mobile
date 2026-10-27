@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$TranscriptState {
 
  TranscriptStatus get status; Transcript? get transcript;/// Null shows every speaker.
- String? get speakerFilter; Failure? get failure;
+ String? get speakerFilter; Failure? get failure; EditStatus get editStatus; Failure? get editFailure;
 /// Create a copy of TranscriptState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +28,20 @@ $TranscriptStateCopyWith<TranscriptState> get copyWith => _$TranscriptStateCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as TranscriptState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.transcript, _this.transcript) || other.transcript == _this.transcript)&&(identical(other.speakerFilter, _this.speakerFilter) || other.speakerFilter == _this.speakerFilter)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.transcript, _this.transcript) || other.transcript == _this.transcript)&&(identical(other.speakerFilter, _this.speakerFilter) || other.speakerFilter == _this.speakerFilter)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.editStatus, _this.editStatus) || other.editStatus == _this.editStatus)&&(identical(other.editFailure, _this.editFailure) || other.editFailure == _this.editFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TranscriptState;
-  return Object.hash(runtimeType,_this.status,_this.transcript,_this.speakerFilter,_this.failure);
+  return Object.hash(runtimeType,_this.status,_this.transcript,_this.speakerFilter,_this.failure,_this.editStatus,_this.editFailure);
 }
 
 @override
 String toString() {
   final _this = this as TranscriptState;
-  return 'TranscriptState(status: ${_this.status}, transcript: ${_this.transcript}, speakerFilter: ${_this.speakerFilter}, failure: ${_this.failure})';
+  return 'TranscriptState(status: ${_this.status}, transcript: ${_this.transcript}, speakerFilter: ${_this.speakerFilter}, failure: ${_this.failure}, editStatus: ${_this.editStatus}, editFailure: ${_this.editFailure})';
 }
 
 
@@ -52,11 +52,11 @@ abstract mixin class $TranscriptStateCopyWith<$Res>  {
   factory $TranscriptStateCopyWith(TranscriptState value, $Res Function(TranscriptState) _then) = _$TranscriptStateCopyWithImpl;
 @useResult
 $Res call({
- TranscriptStatus status, Transcript? transcript, String? speakerFilter, Failure? failure
+ TranscriptStatus status, Transcript? transcript, String? speakerFilter, Failure? failure, EditStatus editStatus, Failure? editFailure
 });
 
 
-$TranscriptCopyWith<$Res>? get transcript;$FailureCopyWith<$Res>? get failure;
+$TranscriptCopyWith<$Res>? get transcript;$FailureCopyWith<$Res>? get failure;$FailureCopyWith<$Res>? get editFailure;
 
 }
 /// @nodoc
@@ -69,12 +69,14 @@ class _$TranscriptStateCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? transcript = freezed,Object? speakerFilter = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? transcript = freezed,Object? speakerFilter = freezed,Object? failure = freezed,Object? editStatus = null,Object? editFailure = freezed,}) {
   return _then(TranscriptState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as TranscriptStatus,transcript: freezed == transcript ? _self.transcript : transcript // ignore: cast_nullable_to_non_nullable
 as Transcript?,speakerFilter: freezed == speakerFilter ? _self.speakerFilter : speakerFilter // ignore: cast_nullable_to_non_nullable
 as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,editStatus: null == editStatus ? _self.editStatus : editStatus // ignore: cast_nullable_to_non_nullable
+as EditStatus,editFailure: freezed == editFailure ? _self.editFailure : editFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -101,6 +103,18 @@ $FailureCopyWith<$Res>? get failure {
 
   return $FailureCopyWith<$Res>(_self.failure!, (value) {
     return _then(_self.copyWith(failure: value));
+  });
+}/// Create a copy of TranscriptState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get editFailure {
+    if (_self.editFailure == null) {
+    return null;
+  }
+
+  return $FailureCopyWith<$Res>(_self.editFailure!, (value) {
+    return _then(_self.copyWith(editFailure: value));
   });
 }
 }
@@ -184,10 +198,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure,  EditStatus editStatus,  Failure? editFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TranscriptState() when $default != null:
-return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure);case _:
+return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure,_that.editStatus,_that.editFailure);case _:
   return orElse();
 
 }
@@ -205,10 +219,10 @@ return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure,  EditStatus editStatus,  Failure? editFailure)  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptState():
-return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure);case _:
+return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure,_that.editStatus,_that.editFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -225,10 +239,10 @@ return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TranscriptStatus status,  Transcript? transcript,  String? speakerFilter,  Failure? failure,  EditStatus editStatus,  Failure? editFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptState() when $default != null:
-return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure);case _:
+return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure,_that.editStatus,_that.editFailure);case _:
   return null;
 
 }
@@ -240,7 +254,7 @@ return $default(_that.status,_that.transcript,_that.speakerFilter,_that.failure)
 
 
 class _TranscriptState extends TranscriptState {
-  const _TranscriptState({this.status = TranscriptStatus.initial, this.transcript, this.speakerFilter, this.failure}): super._();
+  const _TranscriptState({this.status = TranscriptStatus.initial, this.transcript, this.speakerFilter, this.failure, this.editStatus = EditStatus.idle, this.editFailure}): super._();
   
 
 @override@JsonKey() final  TranscriptStatus status;
@@ -248,6 +262,8 @@ class _TranscriptState extends TranscriptState {
 /// Null shows every speaker.
 @override final  String? speakerFilter;
 @override final  Failure? failure;
+@override@JsonKey() final  EditStatus editStatus;
+@override final  Failure? editFailure;
 
 /// Create a copy of TranscriptState
 /// with the given fields replaced by the non-null parameter values.
@@ -259,18 +275,18 @@ _$TranscriptStateCopyWith<_TranscriptState> get copyWith => __$TranscriptStateCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptState&&(identical(other.status, status) || other.status == status)&&(identical(other.transcript, transcript) || other.transcript == transcript)&&(identical(other.speakerFilter, speakerFilter) || other.speakerFilter == speakerFilter)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptState&&(identical(other.status, status) || other.status == status)&&(identical(other.transcript, transcript) || other.transcript == transcript)&&(identical(other.speakerFilter, speakerFilter) || other.speakerFilter == speakerFilter)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.editStatus, editStatus) || other.editStatus == editStatus)&&(identical(other.editFailure, editFailure) || other.editFailure == editFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,transcript,speakerFilter,failure);
+    return Object.hash(runtimeType,status,transcript,speakerFilter,failure,editStatus,editFailure);
 }
 
 @override
 String toString() {
-    return 'TranscriptState(status: $status, transcript: $transcript, speakerFilter: $speakerFilter, failure: $failure)';
+    return 'TranscriptState(status: $status, transcript: $transcript, speakerFilter: $speakerFilter, failure: $failure, editStatus: $editStatus, editFailure: $editFailure)';
 }
 
 
@@ -281,11 +297,11 @@ abstract mixin class _$TranscriptStateCopyWith<$Res> implements $TranscriptState
   factory _$TranscriptStateCopyWith(_TranscriptState value, $Res Function(_TranscriptState) _then) = __$TranscriptStateCopyWithImpl;
 @override @useResult
 $Res call({
- TranscriptStatus status, Transcript? transcript, String? speakerFilter, Failure? failure
+ TranscriptStatus status, Transcript? transcript, String? speakerFilter, Failure? failure, EditStatus editStatus, Failure? editFailure
 });
 
 
-@override $TranscriptCopyWith<$Res>? get transcript;@override $FailureCopyWith<$Res>? get failure;
+@override $TranscriptCopyWith<$Res>? get transcript;@override $FailureCopyWith<$Res>? get failure;@override $FailureCopyWith<$Res>? get editFailure;
 
 }
 /// @nodoc
@@ -298,12 +314,14 @@ class __$TranscriptStateCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? transcript = freezed,Object? speakerFilter = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? transcript = freezed,Object? speakerFilter = freezed,Object? failure = freezed,Object? editStatus = null,Object? editFailure = freezed,}) {
   return _then(_TranscriptState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as TranscriptStatus,transcript: freezed == transcript ? _self.transcript : transcript // ignore: cast_nullable_to_non_nullable
 as Transcript?,speakerFilter: freezed == speakerFilter ? _self.speakerFilter : speakerFilter // ignore: cast_nullable_to_non_nullable
 as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,editStatus: null == editStatus ? _self.editStatus : editStatus // ignore: cast_nullable_to_non_nullable
+as EditStatus,editFailure: freezed == editFailure ? _self.editFailure : editFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -331,6 +349,18 @@ $FailureCopyWith<$Res>? get failure {
 
   return $FailureCopyWith<$Res>(_self.failure!, (value) {
     return _then(_self.copyWith(failure: value));
+  });
+}/// Create a copy of TranscriptState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get editFailure {
+    if (_self.editFailure == null) {
+    return null;
+  }
+
+  return $FailureCopyWith<$Res>(_self.editFailure!, (value) {
+    return _then(_self.copyWith(editFailure: value));
   });
 }
 }

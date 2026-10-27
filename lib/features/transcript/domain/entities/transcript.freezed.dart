@@ -571,7 +571,9 @@ as bool,
 mixin _$Transcript {
 
  String get id; String get title; Duration? get duration; List<Speaker> get speakers;/// In position order, as the API returns them.
- List<Segment> get segments;
+ List<Segment> get segments;/// Optimistic lock for segment text. Sent with every text edit; the
+/// server answers 409 when someone saved in between.
+ int get revision;
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -583,20 +585,20 @@ $TranscriptCopyWith<Transcript> get copyWith => _$TranscriptCopyWithImpl<Transcr
 @override
 bool operator ==(Object other) {
   final _this = this as Transcript;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Transcript;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments));
+  return Object.hash(runtimeType,_this.id,_this.title,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
 }
 
 @override
 String toString() {
   final _this = this as Transcript;
-  return 'Transcript(id: ${_this.id}, title: ${_this.title}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments})';
+  return 'Transcript(id: ${_this.id}, title: ${_this.title}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
 }
 
 
@@ -607,7 +609,7 @@ abstract mixin class $TranscriptCopyWith<$Res>  {
   factory $TranscriptCopyWith(Transcript value, $Res Function(Transcript) _then) = _$TranscriptCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments
+ String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
 });
 
 
@@ -624,14 +626,15 @@ class _$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
-as List<Segment>,
+as List<Segment>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -716,10 +719,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments);case _:
+return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   return orElse();
 
 }
@@ -737,10 +740,10 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)  $default,) {final _that = this;
 switch (_that) {
 case _Transcript():
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments);case _:
+return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -757,10 +760,10 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments);case _:
+return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   return null;
 
 }
@@ -772,7 +775,7 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 
 
 class _Transcript implements Transcript {
-  const _Transcript({required this.id, required this.title, this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[]}): _speakers = speakers,_segments = segments;
+  const _Transcript({required this.id, required this.title, this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[], this.revision = 0}): _speakers = speakers,_segments = segments;
   
 
 @override final  String id;
@@ -794,6 +797,9 @@ class _Transcript implements Transcript {
   return EqualUnmodifiableListView(_segments);
 }
 
+/// Optimistic lock for segment text. Sent with every text edit; the
+/// server answers 409 when someone saved in between.
+@override@JsonKey() final  int revision;
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
@@ -805,18 +811,18 @@ _$TranscriptCopyWith<_Transcript> get copyWith => __$TranscriptCopyWithImpl<_Tra
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments));
+    return Object.hash(runtimeType,id,title,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
 }
 
 @override
 String toString() {
-    return 'Transcript(id: $id, title: $title, duration: $duration, speakers: $speakers, segments: $segments)';
+    return 'Transcript(id: $id, title: $title, duration: $duration, speakers: $speakers, segments: $segments, revision: $revision)';
 }
 
 
@@ -827,7 +833,7 @@ abstract mixin class _$TranscriptCopyWith<$Res> implements $TranscriptCopyWith<$
   factory _$TranscriptCopyWith(_Transcript value, $Res Function(_Transcript) _then) = __$TranscriptCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments
+ String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
 });
 
 
@@ -844,18 +850,304 @@ class __$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(_Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
-as List<Segment>,
+as List<Segment>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
 
+}
+
+/// @nodoc
+mixin _$SegmentEdit {
+
+ Segment get segment; int get revision;
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentEditCopyWith<SegmentEdit> get copyWith => _$SegmentEditCopyWithImpl<SegmentEdit>(this as SegmentEdit, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentEdit;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentEdit&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as SegmentEdit;
+  return Object.hash(runtimeType,_this.segment,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentEdit;
+  return 'SegmentEdit(segment: ${_this.segment}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentEditCopyWith<$Res>  {
+  factory $SegmentEditCopyWith(SegmentEdit value, $Res Function(SegmentEdit) _then) = _$SegmentEditCopyWithImpl;
+@useResult
+$Res call({
+ Segment segment, int revision
+});
+
+
+$SegmentCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class _$SegmentEditCopyWithImpl<$Res>
+    implements $SegmentEditCopyWith<$Res> {
+  _$SegmentEditCopyWithImpl(this._self, this._then);
+
+  final SegmentEdit _self;
+  final $Res Function(SegmentEdit) _then;
+
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? revision = null,}) {
+  return _then(SegmentEdit(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get segment {
+  
+  return $SegmentCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentEdit].
+extension SegmentEditPatterns on SegmentEdit {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentEdit value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentEdit() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentEdit value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentEdit():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentEdit value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentEdit() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Segment segment,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentEdit() when $default != null:
+return $default(_that.segment,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Segment segment,  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentEdit():
+return $default(_that.segment,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Segment segment,  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentEdit() when $default != null:
+return $default(_that.segment,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _SegmentEdit implements SegmentEdit {
+  const _SegmentEdit({required this.segment, required this.revision});
+  
+
+@override final  Segment segment;
+@override final  int revision;
+
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentEditCopyWith<_SegmentEdit> get copyWith => __$SegmentEditCopyWithImpl<_SegmentEdit>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentEdit&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,segment,revision);
+}
+
+@override
+String toString() {
+    return 'SegmentEdit(segment: $segment, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentEditCopyWith<$Res> implements $SegmentEditCopyWith<$Res> {
+  factory _$SegmentEditCopyWith(_SegmentEdit value, $Res Function(_SegmentEdit) _then) = __$SegmentEditCopyWithImpl;
+@override @useResult
+$Res call({
+ Segment segment, int revision
+});
+
+
+@override $SegmentCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class __$SegmentEditCopyWithImpl<$Res>
+    implements _$SegmentEditCopyWith<$Res> {
+  __$SegmentEditCopyWithImpl(this._self, this._then);
+
+  final _SegmentEdit _self;
+  final $Res Function(_SegmentEdit) _then;
+
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? revision = null,}) {
+  return _then(_SegmentEdit(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get segment {
+  
+  return $SegmentCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
 }
 
 // dart format on

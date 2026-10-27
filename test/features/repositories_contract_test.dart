@@ -209,6 +209,86 @@ void main() {
     expect(t.toEntity().segments.single.speakerId, 's1');
   });
 
+  group('TranscriptRepository edits', () {
+    test(
+      'segment text sends text and revision, reads SegmentResponse',
+      () async {
+        final http = FakeHttpAdapter({
+          'PATCH /api/v1/transcript/t1/segments/g': (
+            200,
+            ok({
+              'segment': {
+                'id': 'g',
+                'start_ms': 7000,
+                'end_ms': 12000,
+                'text': 'Salom!',
+                'speaker_id': 's1',
+                'edited': true,
+                'words': <Object>[],
+              },
+              'revision': 4,
+            }),
+          ),
+        });
+        final edit =
+            (await TranscriptRepository(fakeDio(http)).updateSegmentText(
+              transcriptId: 't1',
+              segmentId: 'g',
+              text: 'Salom!',
+              revision: 3,
+            )).getOrElse(() => throw StateError('left')).toEntity();
+
+        expect(http.sent.single.body, {'text': 'Salom!', 'revision': 3});
+        expect(edit.revision, 4);
+        expect(edit.segment.text, 'Salom!');
+        expect(edit.segment.edited, isTrue);
+      },
+    );
+
+    test('a stale revision keeps its 409', () async {
+      final http = FakeHttpAdapter({
+        'PATCH /api/v1/transcript/t1/segments/g': (
+          409,
+          {'status': 'CONFLICT', 'description': 'ziddiyat'},
+        ),
+      });
+      final result = await TranscriptRepository(fakeDio(http))
+          .updateSegmentText(
+            transcriptId: 't1',
+            segmentId: 'g',
+            text: 'x',
+            revision: 1,
+          );
+      expect(
+        result.fold((f) => f, (_) => null),
+        isA<ServerFailure>().having((f) => f.statusCode, 'statusCode', 409),
+      );
+    });
+
+    test(
+      'speaker rename sends only the label, reads SpeakerResponse',
+      () async {
+        final http = FakeHttpAdapter({
+          'PATCH /api/v1/transcript/t1/speakers/s1': (
+            200,
+            ok({
+              'speaker': {'id': 's1', 'ordinal': 1, 'label': 'Dilnoza R.'},
+            }),
+          ),
+        });
+        final speaker =
+            (await TranscriptRepository(fakeDio(http)).renameSpeaker(
+              transcriptId: 't1',
+              speakerId: 's1',
+              label: 'Dilnoza R.',
+            )).getOrElse(() => throw StateError('left'));
+
+        expect(http.sent.single.body, {'label': 'Dilnoza R.'});
+        expect(speaker.label, 'Dilnoza R.');
+      },
+    );
+  });
+
   group('UploadRepository', () {
     test('createMedia sends the CreateMediaRequest keys', () async {
       final http = FakeHttpAdapter({

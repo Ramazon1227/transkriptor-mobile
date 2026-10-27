@@ -10,7 +10,9 @@ import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
+import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_text_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker_filter_bar.dart';
 
@@ -102,6 +104,36 @@ class _Body extends StatelessWidget {
 
   final TranscriptState state;
 
+  Future<void> _editText(BuildContext context, Segment segment) {
+    final l10n = context.l10n;
+    return EditTextSheet.show(
+      context,
+      EditTextSheet(
+        title: l10n.transcriptEditSegment,
+        initial: segment.text,
+        multiline: true,
+        tooLong: EditRules.segmentTextTooLong,
+        tooLongMessage: l10n.transcriptTextTooLong,
+        onSave: (cubit, text) => cubit.saveSegmentText(segment.id, text),
+      ),
+    );
+  }
+
+  Future<void> _rename(BuildContext context, Speaker speaker) {
+    final l10n = context.l10n;
+    return EditTextSheet.show(
+      context,
+      EditTextSheet(
+        title: l10n.transcriptRenameSpeaker,
+        initial: speaker.label,
+        multiline: false,
+        tooLong: EditRules.speakerLabelTooLong,
+        tooLongMessage: l10n.transcriptLabelTooLong,
+        onSave: (cubit, label) => cubit.renameSpeaker(speaker.id, label),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final transcript = state.transcript!;
@@ -126,6 +158,8 @@ class _Body extends StatelessWidget {
               return SegmentTile(
                 segment: segment,
                 speaker: speakers[segment.speakerId],
+                onTap: () => _editText(context, segment),
+                onSpeakerTap: (speaker) => _rename(context, speaker),
               );
             },
           ),

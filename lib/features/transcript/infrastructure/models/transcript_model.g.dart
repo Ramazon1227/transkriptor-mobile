@@ -55,6 +55,7 @@ _TranscriptModel _$TranscriptModelFromJson(Map<String, dynamic> json) =>
               ?.map((e) => SegmentModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <SegmentModel>[],
+      revision: (json['revision'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
@@ -64,4 +65,25 @@ Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
       'duration_ms': instance.durationMs,
       'speakers': instance.speakers,
       'segments': instance.segments,
+      'revision': instance.revision,
     };
+
+_SegmentEditModel _$SegmentEditModelFromJson(Map<String, dynamic> json) =>
+    _SegmentEditModel(
+      segment: SegmentModel.fromJson(json['segment'] as Map<String, dynamic>),
+      revision: (json['revision'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$SegmentEditModelToJson(_SegmentEditModel instance) =>
+    <String, dynamic>{
+      'segment': instance.segment,
+      'revision': instance.revision,
+    };
+
+_SpeakerEditModel _$SpeakerEditModelFromJson(Map<String, dynamic> json) =>
+    _SpeakerEditModel(
+      speaker: SpeakerModel.fromJson(json['speaker'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$SpeakerEditModelToJson(_SpeakerEditModel instance) =>
+    <String, dynamic>{'speaker': instance.speaker};

@@ -428,6 +428,35 @@ class AppLocalizationsUz extends AppLocalizations {
   String get transcriptEdited => 'tahrirlangan';
 
   @override
+  String get transcriptEditSegment => 'Matnni tahrirlash';
+
+  @override
+  String get transcriptRenameSpeaker => 'Maʼruzachi nomi';
+
+  @override
+  String get transcriptSave => 'Saqlash';
+
+  @override
+  String get transcriptTextTooLong => 'Matn juda uzun.';
+
+  @override
+  String get transcriptLabelTooLong => 'Nom juda uzun.';
+
+  @override
+  String get transcriptEditForbidden =>
+      'Bu ish maydonida faqat oʻqish huquqingiz bor.';
+
+  @override
+  String get transcriptEditStale =>
+      'Transkript boshqa joyda oʻzgartirildi, yangi nusxasi yuklandi. Matningizni tekshirib, yana saqlang.';
+
+  @override
+  String get transcriptEditInvalid => 'Saqlab boʻlmadi: matn qabul qilinmadi.';
+
+  @override
+  String get transcriptEditGone => 'Bu qism transkriptdan oʻchirilgan.';
+
+  @override
   String get profileTitle => 'Profil';
 
   @override

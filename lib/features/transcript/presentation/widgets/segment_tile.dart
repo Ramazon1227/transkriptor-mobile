@@ -7,63 +7,87 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 
 /// One segment: speaker, timecode, text. The speaker dot is the machine's
 /// marker; the text is shown in the reading colour, never mint.
+///
+/// Tapping the segment edits its text, tapping the speaker's name renames
+/// the speaker. The text is not selectable for that reason; the editor
+/// field is where it can be copied.
 class SegmentTile extends StatelessWidget {
-  const SegmentTile({required this.segment, this.speaker, super.key});
+  const SegmentTile({
+    required this.segment,
+    required this.onTap,
+    required this.onSpeakerTap,
+    this.speaker,
+    super.key,
+  });
 
   final Segment segment;
 
   /// Null without diarization.
   final Speaker? speaker;
+  final VoidCallback onTap;
+  final ValueChanged<Speaker> onSpeakerTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final who = speaker;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (who != null) ...[
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: BoxDecoration(
-                    color: AppColors.speaker(who.ordinal),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    who.label.isEmpty ? l10n.transcriptNoSpeaker : who.label,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (who != null) ...[
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: AppColors.speaker(who.ordinal),
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: InkWell(
+                      onTap: () => onSpeakerTap(who),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          who.label.isEmpty
+                              ? l10n.transcriptNoSpeaker
+                              : who.label,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Text(Formatters.timecode(segment.start), style: AppText.mono),
+                if (segment.edited) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.transcriptEdited,
+                    style: AppText.muted.copyWith(fontSize: 11),
+                  ),
+                ],
               ],
-              Text(Formatters.timecode(segment.start), style: AppText.mono),
-              if (segment.edited) ...[
-                const SizedBox(width: 8),
-                Text(
-                  l10n.transcriptEdited,
-                  style: AppText.muted.copyWith(fontSize: 11),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            segment.text,
-            style: const TextStyle(fontSize: 15, height: 1.55),
-          ),
-        ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              segment.text,
+              style: const TextStyle(fontSize: 15, height: 1.55),
+            ),
+          ],
+        ),
       ),
     );
   }

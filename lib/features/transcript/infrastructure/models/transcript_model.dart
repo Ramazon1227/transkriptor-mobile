@@ -62,6 +62,7 @@ abstract class TranscriptModel with _$TranscriptModel {
     @JsonKey(name: 'segments')
     @Default(<SegmentModel>[])
     List<SegmentModel> segments,
+    @JsonKey(name: 'revision') @Default(0) int revision,
   }) = _TranscriptModel;
 
   const TranscriptModel._();
@@ -77,5 +78,35 @@ abstract class TranscriptModel with _$TranscriptModel {
         : Duration(milliseconds: durationMs!),
     speakers: speakers.map((s) => s.toEntity()).toList(),
     segments: segments.map((s) => s.toEntity()).toList(),
+    revision: revision,
   );
+}
+
+/// `handler.SegmentResponse` in the backend. `new_speaker` is not read:
+/// this app only edits text.
+@freezed
+abstract class SegmentEditModel with _$SegmentEditModel {
+  const factory SegmentEditModel({
+    @JsonKey(name: 'segment') required SegmentModel segment,
+    @JsonKey(name: 'revision') @Default(0) int revision,
+  }) = _SegmentEditModel;
+
+  const SegmentEditModel._();
+
+  factory SegmentEditModel.fromJson(Map<String, dynamic> json) =>
+      _$SegmentEditModelFromJson(json);
+
+  SegmentEdit toEntity() =>
+      SegmentEdit(segment: segment.toEntity(), revision: revision);
+}
+
+/// `handler.SpeakerResponse` in the backend.
+@freezed
+abstract class SpeakerEditModel with _$SpeakerEditModel {
+  const factory SpeakerEditModel({
+    @JsonKey(name: 'speaker') required SpeakerModel speaker,
+  }) = _SpeakerEditModel;
+
+  factory SpeakerEditModel.fromJson(Map<String, dynamic> json) =>
+      _$SpeakerEditModelFromJson(json);
 }

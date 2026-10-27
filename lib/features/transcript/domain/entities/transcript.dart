@@ -39,5 +39,17 @@ abstract class Transcript with _$Transcript {
 
     /// In position order, as the API returns them.
     @Default(<Segment>[]) List<Segment> segments,
+
+    /// Optimistic lock for segment text. Sent with every text edit; the
+    /// server answers 409 when someone saved in between.
+    @Default(0) int revision,
   }) = _Transcript;
+}
+
+/// The answer to a segment text edit: the stored segment and the
+/// transcript's new revision.
+@freezed
+abstract class SegmentEdit with _$SegmentEdit {
+  const factory SegmentEdit({required Segment segment, required int revision}) =
+      _SegmentEdit;
 }

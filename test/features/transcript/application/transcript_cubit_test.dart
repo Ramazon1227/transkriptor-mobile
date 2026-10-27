@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
+import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 import 'package:transkriptor_uz/features/transcript/infrastructure/models/transcript_model.dart';
@@ -88,6 +91,249 @@ void main() {
         ),
       ],
     );
+  });
+
+  group('editing', () {
+    const loaded = TranscriptState(
+      status: TranscriptStatus.success,
+      transcript: Transcript(
+        id: 't1',
+        title: 'Kengash yigʻilishi',
+        speakers: [Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1)],
+        segments: [
+          Segment(
+            id: 'g1',
+            start: Duration(seconds: 7),
+            end: Duration(seconds: 12),
+            text: 'eski matn',
+            speakerId: 's1',
+          ),
+        ],
+        revision: 3,
+      ),
+    );
+    const stored = Segment(
+      id: 'g1',
+      start: Duration(seconds: 7),
+      end: Duration(seconds: 12),
+      text: 'Yangi matn.',
+      speakerId: 's1',
+      edited: true,
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a text save replaces the row with the stored one and the revision',
+      setUp: () =>
+          when(
+            () => facade.updateSegmentText(
+              transcriptId: 't1',
+              segmentId: 'g1',
+              text: 'Yangi matn.',
+              revision: 3,
+            ),
+          ).thenAnswer(
+            (_) async => const Right(SegmentEdit(segment: stored, revision: 4)),
+          ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      // Whitespace is collapsed before sending, as the server does.
+      act: (cubit) => cubit.saveSegmentText('g1', '  Yangi \n matn. '),
+      expect: () => [
+        loaded.copyWith(editStatus: EditStatus.saving),
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            segments: const [stored],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'an unchanged text sends nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.saveSegmentText('g1', 'eski  matn'),
+      expect: () => [loaded.copyWith(editStatus: EditStatus.saved)],
+      verify: (_) => verifyNever(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ),
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a 409 fetches the fresh copy and shows the failure',
+      setUp: () {
+        when(
+          () => facade.updateSegmentText(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            text: 'mening matnim',
+            revision: 3,
+          ),
+        ).thenAnswer((_) async => const Left(Failure.server(statusCode: 409)));
+        when(() => facade.getTranscript('t1')).thenAnswer(
+          (_) async => Right(
+            loaded.transcript!.copyWith(revision: 5, segments: const [stored]),
+          ),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.saveSegmentText('g1', 'mening matnim'),
+      skip: 1,
+      expect: () {
+        final fresh = loaded.transcript!.copyWith(
+          revision: 5,
+          segments: const [stored],
+        );
+        return [
+          loaded.copyWith(editStatus: EditStatus.saving, transcript: fresh),
+          loaded.copyWith(
+            editStatus: EditStatus.failure,
+            editFailure: const Failure.server(statusCode: 409),
+            transcript: fresh,
+          ),
+        ];
+      },
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'any other failure keeps the transcript and does not refetch',
+      setUp: () => when(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ).thenAnswer((_) async => const Left(Failure.network())),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.saveSegmentText('g1', 'boshqa'),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.network(),
+        ),
+      ],
+      verify: (_) => verifyNever(() => facade.getTranscript(any())),
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a rename replaces the speaker and leaves the revision alone',
+      setUp: () =>
+          when(
+            () => facade.renameSpeaker(
+              transcriptId: 't1',
+              speakerId: 's1',
+              label: 'Dilnoza R.',
+            ),
+          ).thenAnswer(
+            (_) async =>
+                const Right(Speaker(id: 's1', label: 'Dilnoza R.', ordinal: 1)),
+          ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.renameSpeaker('s1', ' Dilnoza  R. '),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            speakers: const [
+              Speaker(id: 's1', label: 'Dilnoza R.', ordinal: 1),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'an empty name sends nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.renameSpeaker('s1', '   '),
+      expect: () => const <TranscriptState>[],
+    );
+
+    test('closing the editor mid-save keeps saving, so no second save '
+        'goes out against the same revision', () async {
+      final answer = Completer<Either<Failure, SegmentEdit>>();
+      when(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ).thenAnswer((_) => answer.future);
+      final cubit = TranscriptCubit(facade)..emit(loaded);
+      addTearDown(cubit.close);
+
+      final first = cubit.saveSegmentText('g1', 'birinchi');
+      cubit
+        ..editClosed()
+        ..editOpened();
+      expect(cubit.state.editStatus, EditStatus.saving);
+      await cubit.saveSegmentText('g1', 'ikkinchi');
+
+      answer.complete(const Right(SegmentEdit(segment: stored, revision: 4)));
+      await first;
+      verify(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ).called(1);
+    });
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a segment that is gone answers 404 instead of doing nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.saveSegmentText('yoq', 'matn'),
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.server(statusCode: 404),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'opening an editor clears what the last one left',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded.copyWith(editStatus: EditStatus.saved),
+      act: (cubit) => cubit.editOpened(),
+      expect: () => [loaded],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'closing the editor resets the save state',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded.copyWith(
+        editStatus: EditStatus.failure,
+        editFailure: const Failure.network(),
+      ),
+      act: (cubit) => cubit.editClosed(),
+      expect: () => [loaded],
+    );
+  });
+
+  test('EditRules count bytes, as the server does', () {
+    // ʻ is two bytes in UTF-8: 40 of them are 80 bytes, 41 are too many.
+    expect(EditRules.speakerLabelTooLong('ʻ' * 40), isFalse);
+    expect(EditRules.speakerLabelTooLong('ʻ' * 41), isTrue);
+    expect(EditRules.clean(' a \n\t b '), 'a b');
   });
 
   test('the speaker filter narrows the visible segments', () {
