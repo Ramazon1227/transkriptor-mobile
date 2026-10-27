@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
+import 'package:transkriptor_uz/features/share/presentation/widgets/share_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
@@ -43,7 +44,23 @@ class _TranscriptView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          // Only once the transcript is there: a link to a missing one
+          // would be a 404 anyway.
+          BlocSelector<TranscriptCubit, TranscriptState, bool>(
+            selector: (state) => state.transcript != null,
+            builder: (context, loaded) => loaded
+                ? IconButton(
+                    key: const Key('transcript_share'),
+                    tooltip: l10n.shareTitle,
+                    icon: const Icon(Icons.ios_share),
+                    onPressed: () => ShareSheet.show(context, transcriptId),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
       body: BlocBuilder<TranscriptCubit, TranscriptState>(
         builder: (context, state) {
           final transcript = state.transcript;

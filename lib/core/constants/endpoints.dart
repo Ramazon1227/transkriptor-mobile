@@ -24,4 +24,8 @@ abstract final class Endpoints {
       '/api/v1/transcript/$id/segments/$segmentId';
   static String transcriptSpeaker(String id, String speakerId) =>
       '/api/v1/transcript/$id/speakers/$speakerId';
+
+  // Share links.
+  static String transcriptShares(String id) => '/api/v1/transcript/$id/share';
+  static String share(String id) => '/api/v1/share/$id';
 }

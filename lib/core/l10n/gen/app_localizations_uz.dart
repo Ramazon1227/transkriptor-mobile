@@ -492,6 +492,72 @@ class AppLocalizationsUz extends AppLocalizations {
   String get transcriptEditGone => 'Bu qism transkriptdan oʻchirilgan.';
 
   @override
+  String get shareTitle => 'Ulashish';
+
+  @override
+  String get shareOpen => 'Havola ochish';
+
+  @override
+  String get shareIncludeMedia => 'Audio ham koʻrinsin';
+
+  @override
+  String get shareIncludeMediaHint =>
+      'Oʻchirilsa, faqat matn oʻqiladi — ovoz yuklanmaydi.';
+
+  @override
+  String get shareExpiry => 'Muddati';
+
+  @override
+  String shareDays(int count) {
+    return '$count kun';
+  }
+
+  @override
+  String get shareOneYear => '1 yil';
+
+  @override
+  String get shareNoExpiry => 'Muddatsiz';
+
+  @override
+  String get shareLinkLabel => 'Havola';
+
+  @override
+  String get shareCopy => 'Nusxa olish';
+
+  @override
+  String get shareCopied => 'Nusxalandi';
+
+  @override
+  String get shareShownOnce =>
+      'Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.';
+
+  @override
+  String get shareActive => 'Amaldagi havolalar';
+
+  @override
+  String shareUntil(String date) {
+    return '$date gacha';
+  }
+
+  @override
+  String get shareNoExpiryShort => 'muddatsiz';
+
+  @override
+  String shareViews(int count) {
+    return '$count marta ochilgan';
+  }
+
+  @override
+  String get shareWithAudio => 'audio bilan';
+
+  @override
+  String get shareRevoke => 'Bekor qilish';
+
+  @override
+  String get shareForbidden =>
+      'Bu ish maydonida havola ochish huquqingiz yoʻq.';
+
+  @override
   String get profileTitle => 'Profil';
 
   @override

@@ -60,6 +60,14 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/facades/recorde
     as _i293;
 import 'package:transkriptor_uz/features/recorder/infrastructure/recorder_module.dart'
     as _i540;
+import 'package:transkriptor_uz/features/share/application/share_cubit.dart'
+    as _i966;
+import 'package:transkriptor_uz/features/share/domain/i_share_facade.dart'
+    as _i1064;
+import 'package:transkriptor_uz/features/share/infrastructure/facades/share_facade.dart'
+    as _i68;
+import 'package:transkriptor_uz/features/share/infrastructure/repositories/share_repository.dart'
+    as _i438;
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart'
     as _i86;
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart'
@@ -137,6 +145,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i203.LibraryRepository>(
       () => _i203.LibraryRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i438.ShareRepository>(
+      () => _i438.ShareRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i77.TranscriptRepository>(
       () => _i77.TranscriptRepository(gh<_i361.Dio>()),
     );
@@ -179,8 +190,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i7.RegisterBloc>(
       () => _i7.RegisterBloc(gh<_i865.IAuthFacade>()),
     );
+    gh.lazySingleton<_i1064.IShareFacade>(
+      () => _i68.ShareFacade(gh<_i438.ShareRepository>()),
+    );
     gh.lazySingleton<_i899.ITranscriptFacade>(
       () => _i39.TranscriptFacade(gh<_i77.TranscriptRepository>()),
+    );
+    gh.factory<_i966.ShareCubit>(
+      () => _i966.ShareCubit(gh<_i1064.IShareFacade>()),
     );
     gh.lazySingleton<_i727.IJobFacade>(
       () => _i367.JobFacade(

@@ -6,6 +6,7 @@ import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_r
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart';
+import 'package:transkriptor_uz/features/share/infrastructure/repositories/share_repository.dart';
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/repositories/upload_repository.dart';
 
@@ -383,6 +384,73 @@ void main() {
         '/api/v1/media/cloud',
       ]);
       expect((http.sent.last.body! as Map)['num_speakers'], 3);
+    });
+  });
+
+  group('ShareRepository', () {
+    test('create sends CreateShareRequest keys and reads link.url', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/transcript/t1/share': (
+          201,
+          ok({
+            'link': {
+              'id': 'l1',
+              'transcript_id': 't1',
+              'token': 'tok',
+              'url': 'https://app.test/s/tok',
+              'can_comment': false,
+              'include_media': true,
+              'view_count': 0,
+              'expires_at': '2026-11-26T10:00:00Z',
+              'created_at': '2026-10-27T10:00:00Z',
+            },
+          }),
+        ),
+      });
+      final link = (await ShareRepository(fakeDio(http)).createLink(
+        transcriptId: 't1',
+        includeMedia: true,
+        expiresDays: 30,
+      )).getOrElse(() => throw StateError('left')).toEntity();
+
+      expect(http.sent.single.body, {
+        'include_media': true,
+        'expires_days': 30,
+      });
+      expect(link.url, 'https://app.test/s/tok');
+      expect(link.expiresAt, DateTime.utc(2026, 11, 26, 10));
+    });
+
+    test('list reads items; a missing expiry is null', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/transcript/t1/share': (
+          200,
+          ok({
+            'items': [
+              {
+                'id': 'l1',
+                'view_count': 7,
+                'expires_at': null,
+                'created_at': '2026-10-27T10:00:00Z',
+              },
+            ],
+          }),
+        ),
+      });
+      final items = (await ShareRepository(fakeDio(http)).listLinks('t1'))
+          .getOrElse(() => throw StateError('left'));
+      expect(items.single.toEntity().viewCount, 7);
+      expect(items.single.toEntity().expiresAt, isNull);
+      expect(items.single.toEntity().url, isNull);
+    });
+
+    test('revoke deletes /share/:id', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/share/l1': (200, ok({'deleted': true})),
+      });
+      final result = await ShareRepository(fakeDio(http)).revokeLink('l1');
+      expect(result.isRight(), isTrue);
+      expect(http.sent.single.options.method, 'DELETE');
     });
   });
 }

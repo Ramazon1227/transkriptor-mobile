@@ -982,6 +982,120 @@ abstract class AppLocalizations {
   /// **'Bu qism transkriptdan oʻchirilgan.'**
   String get transcriptEditGone;
 
+  /// No description provided for @shareTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ulashish'**
+  String get shareTitle;
+
+  /// No description provided for @shareOpen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola ochish'**
+  String get shareOpen;
+
+  /// No description provided for @shareIncludeMedia.
+  ///
+  /// In uz, this message translates to:
+  /// **'Audio ham koʻrinsin'**
+  String get shareIncludeMedia;
+
+  /// No description provided for @shareIncludeMediaHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirilsa, faqat matn oʻqiladi — ovoz yuklanmaydi.'**
+  String get shareIncludeMediaHint;
+
+  /// No description provided for @shareExpiry.
+  ///
+  /// In uz, this message translates to:
+  /// **'Muddati'**
+  String get shareExpiry;
+
+  /// No description provided for @shareDays.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} kun'**
+  String shareDays(int count);
+
+  /// No description provided for @shareOneYear.
+  ///
+  /// In uz, this message translates to:
+  /// **'1 yil'**
+  String get shareOneYear;
+
+  /// No description provided for @shareNoExpiry.
+  ///
+  /// In uz, this message translates to:
+  /// **'Muddatsiz'**
+  String get shareNoExpiry;
+
+  /// No description provided for @shareLinkLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola'**
+  String get shareLinkLabel;
+
+  /// No description provided for @shareCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxa olish'**
+  String get shareCopy;
+
+  /// No description provided for @shareCopied.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxalandi'**
+  String get shareCopied;
+
+  /// No description provided for @shareShownOnce.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.'**
+  String get shareShownOnce;
+
+  /// No description provided for @shareActive.
+  ///
+  /// In uz, this message translates to:
+  /// **'Amaldagi havolalar'**
+  String get shareActive;
+
+  /// No description provided for @shareUntil.
+  ///
+  /// In uz, this message translates to:
+  /// **'{date} gacha'**
+  String shareUntil(String date);
+
+  /// No description provided for @shareNoExpiryShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'muddatsiz'**
+  String get shareNoExpiryShort;
+
+  /// No description provided for @shareViews.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} marta ochilgan'**
+  String shareViews(int count);
+
+  /// No description provided for @shareWithAudio.
+  ///
+  /// In uz, this message translates to:
+  /// **'audio bilan'**
+  String get shareWithAudio;
+
+  /// No description provided for @shareRevoke.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bekor qilish'**
+  String get shareRevoke;
+
+  /// No description provided for @shareForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ish maydonida havola ochish huquqingiz yoʻq.'**
+  String get shareForbidden;
+
   /// No description provided for @profileTitle.
   ///
   /// In uz, this message translates to:

@@ -182,6 +182,35 @@
   "transcriptEditInvalid": "Saqlab boʻlmadi: matn qabul qilinmadi.",
   "transcriptEditGone": "Bu qism transkriptdan oʻchirilgan.",
 
+  "shareTitle": "Ulashish",
+  "shareOpen": "Havola ochish",
+  "shareIncludeMedia": "Audio ham koʻrinsin",
+  "shareIncludeMediaHint": "Oʻchirilsa, faqat matn oʻqiladi — ovoz yuklanmaydi.",
+  "shareExpiry": "Muddati",
+  "shareDays": "{count} kun",
+  "@shareDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "shareOneYear": "1 yil",
+  "shareNoExpiry": "Muddatsiz",
+  "shareLinkLabel": "Havola",
+  "shareCopy": "Nusxa olish",
+  "shareCopied": "Nusxalandi",
+  "shareShownOnce": "Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.",
+  "shareActive": "Amaldagi havolalar",
+  "shareUntil": "{date} gacha",
+  "@shareUntil": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shareNoExpiryShort": "muddatsiz",
+  "shareViews": "{count} marta ochilgan",
+  "@shareViews": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "shareWithAudio": "audio bilan",
+  "shareRevoke": "Bekor qilish",
+  "shareForbidden": "Bu ish maydonida havola ochish huquqingiz yoʻq.",
+
   "profileTitle": "Profil",
   "profileMinutesLeft": "daqiqa qoldi",
   "profileWorkspace": "Ish maydoni",
