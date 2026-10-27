@@ -12,6 +12,15 @@ abstract interface class ITranscriptFacade {
     required int revision,
   });
 
+  /// Moves one segment to [speakerId], or to a speaker the server opens
+  /// when [speakerId] is null. Takes part in the revision like a text edit.
+  Future<Either<Failure, SegmentEdit>> assignSpeaker({
+    required String transcriptId,
+    required String segmentId,
+    required String? speakerId,
+    required int revision,
+  });
+
   Future<Either<Failure, Speaker>> renameSpeaker({
     required String transcriptId,
     required String speakerId,

@@ -181,6 +181,9 @@
   "transcriptEditStale": "Transkript boshqa joyda oʻzgartirildi, yangi nusxasi yuklandi. Matningizni tekshirib, yana saqlang.",
   "transcriptEditInvalid": "Saqlab boʻlmadi: matn qabul qilinmadi.",
   "transcriptEditGone": "Bu qism transkriptdan oʻchirilgan.",
+  "transcriptEditUnprocessable": "Bu amalni bajarib boʻlmadi. Transkriptni yangilab, qayta urinib koʻring.",
+  "transcriptAssignSpeaker": "Maʼruzachi",
+  "transcriptNewSpeaker": "Yangi maʼruzachi",
 
   "shareTitle": "Ulashish",
   "shareOpen": "Havola ochish",

@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart' show Either;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -7,6 +8,10 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 
 part 'transcript_cubit.freezed.dart';
+
+/// One request of an edit: takes the transcript as it stands and gives
+/// back the one with the server's answer applied.
+typedef _Step = Future<Either<Failure, Transcript>> Function(Transcript);
 
 enum TranscriptStatus { initial, loading, success, empty, failure }
 
@@ -74,49 +79,31 @@ class TranscriptCubit extends Cubit<TranscriptState> {
     final transcript = state.transcript;
     if (transcript == null || state.editStatus == EditStatus.saving) return;
     final clean = EditRules.clean(text);
-    final current = transcript.segments.where((s) => s.id == segmentId);
-    if (current.isEmpty) return _gone();
-    if (current.first.text == clean) {
-      emit(state.copyWith(editStatus: EditStatus.saved, editFailure: null));
-      return;
-    }
+    final current = _segment(transcript, segmentId);
+    if (current == null) return _gone();
+    if (current.text == clean) return _unchanged();
+    await _edit([_textStep(segmentId, clean)]);
+  }
 
-    emit(state.copyWith(editStatus: EditStatus.saving, editFailure: null));
-    final result = await _facade.updateSegmentText(
-      transcriptId: transcript.id,
-      segmentId: segmentId,
-      text: clean,
-      revision: transcript.revision,
-    );
-    if (isClosed) return;
-    await result.fold(
-      (failure) async {
-        // 409: someone saved in between. The fresh copy is fetched so the
-        // next save goes against the current revision; the person's draft
-        // stays in the open editor.
-        if (failure case ServerFailure(statusCode: 409)) {
-          await _refetch(transcript.id);
-          if (isClosed) return;
-        }
-        emit(
-          state.copyWith(editStatus: EditStatus.failure, editFailure: failure),
-        );
-      },
-      (edit) async {
-        final latest = state.transcript ?? transcript;
-        emit(
-          state.copyWith(
-            editStatus: EditStatus.saved,
-            transcript: latest.copyWith(
-              revision: edit.revision,
-              segments: latest.segments
-                  .map((s) => s.id == edit.segment.id ? edit.segment : s)
-                  .toList(),
-            ),
-          ),
-        );
-      },
-    );
+  /// Moves a segment to another speaker of this transcript. The current
+  /// one sends nothing.
+  Future<void> assignSpeaker(String segmentId, String speakerId) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    final current = _segment(transcript, segmentId);
+    if (current == null) return _gone();
+    if (current.speakerId == speakerId) return _unchanged();
+    await _edit([_speakerStep(segmentId, speakerId)]);
+  }
+
+  /// Moves a segment to a speaker the server opens with its default name
+  /// ("Maʼruzachi N"), as the web's «Yangi maʼruzachi» does; the name is
+  /// changed afterwards like any other speaker's.
+  Future<void> assignNewSpeaker(String segmentId) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    if (_segment(transcript, segmentId) == null) return _gone();
+    await _edit([_speakerStep(segmentId, null)]);
   }
 
   /// "Maʼruzachi 1" → a real name. An empty or unchanged name sends
@@ -128,10 +115,7 @@ class TranscriptCubit extends Cubit<TranscriptState> {
     if (clean.isEmpty) return;
     final current = transcript.speakers.where((s) => s.id == speakerId);
     if (current.isEmpty) return _gone();
-    if (current.first.label == clean) {
-      emit(state.copyWith(editStatus: EditStatus.saved, editFailure: null));
-      return;
-    }
+    if (current.first.label == clean) return _unchanged();
 
     emit(state.copyWith(editStatus: EditStatus.saving, editFailure: null));
     final result = await _facade.renameSpeaker(
@@ -173,6 +157,82 @@ class TranscriptCubit extends Cubit<TranscriptState> {
     if (state.editStatus == EditStatus.saving) return;
     emit(state.copyWith(editStatus: EditStatus.idle, editFailure: null));
   }
+
+  /// Runs [steps] one after another under one `saving`, each against the
+  /// revision the previous one returned. Not optimistic: every step
+  /// replaces rows with what the server stored. On a failure the steps
+  /// that went through stay applied; a 409 fetches the fresh copy so the
+  /// next try goes against the current revision, and the person's draft
+  /// stays in the open editor.
+  Future<void> _edit(List<_Step> steps) async {
+    var current = state.transcript!;
+    emit(state.copyWith(editStatus: EditStatus.saving, editFailure: null));
+    for (final step in steps) {
+      final result = await step(current);
+      if (isClosed) return;
+      final failure = result.fold<Failure?>((f) => f, (next) {
+        current = next;
+        return null;
+      });
+      if (failure == null) continue;
+      var shown = current;
+      if (failure case ServerFailure(statusCode: 409)) {
+        await _refetch(current.id);
+        if (isClosed) return;
+        shown = state.transcript ?? current;
+      }
+      emit(
+        state.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: failure,
+          transcript: shown,
+        ),
+      );
+      return;
+    }
+    emit(state.copyWith(editStatus: EditStatus.saved, transcript: current));
+  }
+
+  _Step _textStep(String segmentId, String clean) =>
+      (t) async => (await _facade.updateSegmentText(
+        transcriptId: t.id,
+        segmentId: segmentId,
+        text: clean,
+        revision: t.revision,
+      )).map((edit) => _applyEdit(t, edit));
+
+  /// [speakerId] null opens a new speaker.
+  _Step _speakerStep(String segmentId, String? speakerId) =>
+      (t) async => (await _facade.assignSpeaker(
+        transcriptId: t.id,
+        segmentId: segmentId,
+        speakerId: speakerId,
+        revision: t.revision,
+      )).map((edit) => _applyEdit(t, edit));
+
+  static Transcript _applyEdit(Transcript t, SegmentEdit edit) {
+    final opened = edit.newSpeaker;
+    return t.copyWith(
+      revision: edit.revision,
+      speakers: opened == null || t.speakers.any((s) => s.id == opened.id)
+          ? t.speakers
+          : [...t.speakers, opened],
+      segments: t.segments
+          .map((s) => s.id == edit.segment.id ? edit.segment : s)
+          .toList(),
+    );
+  }
+
+  static Segment? _segment(Transcript t, String id) {
+    for (final s in t.segments) {
+      if (s.id == id) return s;
+    }
+    return null;
+  }
+
+  /// Nothing to send: the editor closes as if it saved.
+  void _unchanged() =>
+      emit(state.copyWith(editStatus: EditStatus.saved, editFailure: null));
 
   /// The row is no longer there (a 409 refetch removed it): the same
   /// answer the server gives, so the editor says so instead of waiting.

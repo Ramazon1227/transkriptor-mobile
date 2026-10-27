@@ -46,10 +46,16 @@ abstract class Transcript with _$Transcript {
   }) = _Transcript;
 }
 
-/// The answer to a segment text edit: the stored segment and the
-/// transcript's new revision.
+/// The answer to a segment text or speaker edit: the stored segment and
+/// the transcript's new revision.
 @freezed
 abstract class SegmentEdit with _$SegmentEdit {
-  const factory SegmentEdit({required Segment segment, required int revision}) =
-      _SegmentEdit;
+  const factory SegmentEdit({
+    required Segment segment,
+    required int revision,
+
+    /// The speaker a "new speaker" assignment opened, with the server's
+    /// default name. Null for every other edit.
+    Speaker? newSpeaker,
+  }) = _SegmentEdit;
 }

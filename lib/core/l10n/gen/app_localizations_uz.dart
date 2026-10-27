@@ -492,6 +492,16 @@ class AppLocalizationsUz extends AppLocalizations {
   String get transcriptEditGone => 'Bu qism transkriptdan oʻchirilgan.';
 
   @override
+  String get transcriptEditUnprocessable =>
+      'Bu amalni bajarib boʻlmadi. Transkriptni yangilab, qayta urinib koʻring.';
+
+  @override
+  String get transcriptAssignSpeaker => 'Maʼruzachi';
+
+  @override
+  String get transcriptNewSpeaker => 'Yangi maʼruzachi';
+
+  @override
   String get shareTitle => 'Ulashish';
 
   @override

@@ -15,6 +15,7 @@ import 'package:transkriptor_uz/features/transcript/application/transcript_cubit
 import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_text_sheet.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_actions_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker_filter_bar.dart';
 
@@ -192,6 +193,8 @@ class _Body extends StatelessWidget {
                 speaker: speakers[segment.speakerId],
                 onTap: () => _editText(context, segment),
                 onSpeakerTap: (speaker) => _rename(context, speaker),
+                onLongPress: () =>
+                    SegmentActionsSheet.show(context, segment.id),
               );
             },
           ),

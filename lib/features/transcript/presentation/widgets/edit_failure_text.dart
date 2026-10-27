@@ -3,7 +3,7 @@ import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 
 /// Why a save did not go through, under the field it belongs to. The
-/// edit routes have three answers of their own; everything else is the
+/// edit routes have four answers of their own; everything else is the
 /// app-wide sentence.
 class EditFailureText extends StatelessWidget {
   const EditFailureText({required this.failure, super.key});
@@ -19,6 +19,9 @@ class EditFailureText extends StatelessWidget {
       ServerFailure(statusCode: 404) => l10n.transcriptEditGone,
       ServerFailure(statusCode: 409) => l10n.transcriptEditStale,
       ServerFailure(statusCode: 400) => l10n.transcriptEditInvalid,
+      // A speaker of another transcript, a split at the edge, no next
+      // segment: what was on screen no longer matches the server.
+      ServerFailure(statusCode: 422) => l10n.transcriptEditUnprocessable,
       _ => failure.message(l10n),
     };
     return Text(

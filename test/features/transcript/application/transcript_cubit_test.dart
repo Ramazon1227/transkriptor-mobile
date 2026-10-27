@@ -329,6 +329,147 @@ void main() {
     );
   });
 
+  group('speaker assignment', () {
+    const seg = Segment(
+      id: 'g1',
+      start: Duration(seconds: 7),
+      end: Duration(seconds: 12),
+      text: 'matn',
+      speakerId: 's1',
+    );
+    const loaded = TranscriptState(
+      status: TranscriptStatus.success,
+      transcript: Transcript(
+        id: 't1',
+        title: 'Kengash',
+        speakers: [
+          Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1),
+          Speaker(id: 's2', label: 'Maʼruzachi 2', ordinal: 2),
+        ],
+        segments: [seg],
+        revision: 3,
+      ),
+    );
+
+    void answer(String? speakerId, Either<Failure, SegmentEdit> result) => when(
+      () => facade.assignSpeaker(
+        transcriptId: 't1',
+        segmentId: 'g1',
+        speakerId: speakerId,
+        revision: 3,
+      ),
+    ).thenAnswer((_) async => result);
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'moves the segment to an existing speaker with the new revision',
+      setUp: () => answer(
+        's2',
+        Right(SegmentEdit(segment: seg.copyWith(speakerId: 's2'), revision: 4)),
+      ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.assignSpeaker('g1', 's2'),
+      expect: () => [
+        loaded.copyWith(editStatus: EditStatus.saving),
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            segments: [seg.copyWith(speakerId: 's2')],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a new speaker comes back from the server and joins the list',
+      setUp: () => answer(
+        null,
+        Right(
+          SegmentEdit(
+            segment: seg.copyWith(speakerId: 's3'),
+            revision: 4,
+            newSpeaker: const Speaker(
+              id: 's3',
+              label: 'Maʼruzachi 3',
+              ordinal: 3,
+            ),
+          ),
+        ),
+      ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.assignNewSpeaker('g1'),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            speakers: [
+              ...loaded.transcript!.speakers,
+              const Speaker(id: 's3', label: 'Maʼruzachi 3', ordinal: 3),
+            ],
+            segments: [seg.copyWith(speakerId: 's3')],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'the current speaker sends nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.assignSpeaker('g1', 's1'),
+      expect: () => [loaded.copyWith(editStatus: EditStatus.saved)],
+      verify: (_) => verifyNever(
+        () => facade.assignSpeaker(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          speakerId: any(named: 'speakerId'),
+          revision: any(named: 'revision'),
+        ),
+      ),
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a 409 fetches the fresh copy and shows the failure',
+      setUp: () {
+        answer('s2', const Left(Failure.server(statusCode: 409)));
+        when(() => facade.getTranscript('t1')).thenAnswer(
+          (_) async => Right(loaded.transcript!.copyWith(revision: 6)),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.assignSpeaker('g1', 's2'),
+      skip: 2,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.server(statusCode: 409),
+          transcript: loaded.transcript!.copyWith(revision: 6),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'any other failure keeps the transcript and does not refetch',
+      setUp: () => answer('s2', const Left(Failure.network())),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.assignSpeaker('g1', 's2'),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.network(),
+        ),
+      ],
+      verify: (_) => verifyNever(() => facade.getTranscript(any())),
+    );
+  });
+
   test('EditRules count bytes, as the server does', () {
     // ʻ is two bytes in UTF-8: 40 of them are 80 bytes, 41 are too many.
     expect(EditRules.speakerLabelTooLong('ʻ' * 40), isFalse);

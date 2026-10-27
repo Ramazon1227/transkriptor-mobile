@@ -72,12 +72,16 @@ _SegmentEditModel _$SegmentEditModelFromJson(Map<String, dynamic> json) =>
     _SegmentEditModel(
       segment: SegmentModel.fromJson(json['segment'] as Map<String, dynamic>),
       revision: (json['revision'] as num?)?.toInt() ?? 0,
+      newSpeaker: json['new_speaker'] == null
+          ? null
+          : SpeakerModel.fromJson(json['new_speaker'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$SegmentEditModelToJson(_SegmentEditModel instance) =>
     <String, dynamic>{
       'segment': instance.segment,
       'revision': instance.revision,
+      'new_speaker': instance.newSpeaker,
     };
 
 _SpeakerEditModel _$SpeakerEditModelFromJson(Map<String, dynamic> json) =>

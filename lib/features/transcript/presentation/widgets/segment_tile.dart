@@ -9,13 +9,14 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 /// marker; the text is shown in the reading colour, never mint.
 ///
 /// Tapping the segment edits its text, tapping the speaker's name renames
-/// the speaker. The text is not selectable for that reason; the editor
-/// field is where it can be copied.
+/// the speaker, a long press opens the segment's menu. The text is not
+/// selectable for that reason; the editor field is where it can be copied.
 class SegmentTile extends StatelessWidget {
   const SegmentTile({
     required this.segment,
     required this.onTap,
     required this.onSpeakerTap,
+    required this.onLongPress,
     this.speaker,
     super.key,
   });
@@ -26,6 +27,7 @@ class SegmentTile extends StatelessWidget {
   final Speaker? speaker;
   final VoidCallback onTap;
   final ValueChanged<Speaker> onSpeakerTap;
+  final VoidCallback onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class SegmentTile extends StatelessWidget {
     final who = speaker;
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

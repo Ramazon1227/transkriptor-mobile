@@ -82,13 +82,14 @@ abstract class TranscriptModel with _$TranscriptModel {
   );
 }
 
-/// `handler.SegmentResponse` in the backend. `new_speaker` is not read:
-/// this app only edits text.
+/// `handler.SegmentResponse` in the backend. `new_speaker` is there only
+/// when the edit was `new_speaker: true`.
 @freezed
 abstract class SegmentEditModel with _$SegmentEditModel {
   const factory SegmentEditModel({
     @JsonKey(name: 'segment') required SegmentModel segment,
     @JsonKey(name: 'revision') @Default(0) int revision,
+    @JsonKey(name: 'new_speaker') SpeakerModel? newSpeaker,
   }) = _SegmentEditModel;
 
   const SegmentEditModel._();
@@ -96,8 +97,11 @@ abstract class SegmentEditModel with _$SegmentEditModel {
   factory SegmentEditModel.fromJson(Map<String, dynamic> json) =>
       _$SegmentEditModelFromJson(json);
 
-  SegmentEdit toEntity() =>
-      SegmentEdit(segment: segment.toEntity(), revision: revision);
+  SegmentEdit toEntity() => SegmentEdit(
+    segment: segment.toEntity(),
+    revision: revision,
+    newSpeaker: newSpeaker?.toEntity(),
+  );
 }
 
 /// `handler.SpeakerResponse` in the backend.

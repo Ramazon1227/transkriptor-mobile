@@ -39,6 +39,30 @@ class TranscriptRepository {
     });
   }
 
+  /// The same route as a text edit, with `speaker_id` or
+  /// `new_speaker: true` instead of `text` — the server takes one of them
+  /// per request. A null [speakerId] opens a new speaker.
+  Future<Either<Failure, SegmentEditModel>> assignSpeaker({
+    required String transcriptId,
+    required String segmentId,
+    required String? speakerId,
+    required int revision,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        Endpoints.transcriptSegment(transcriptId, segmentId),
+        data: {
+          if (speakerId == null)
+            'new_speaker': true
+          else
+            'speaker_id': speakerId,
+          'revision': revision,
+        },
+      );
+      return SegmentEditModel.fromJson(envelopeData(response.data));
+    });
+  }
+
   /// A rename does not take part in the revision: segments only point at
   /// the speaker id.
   Future<Either<Failure, SpeakerModel>> renameSpeaker({

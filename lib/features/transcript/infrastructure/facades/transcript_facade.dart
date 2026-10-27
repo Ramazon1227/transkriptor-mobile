@@ -34,6 +34,22 @@ class TranscriptFacade implements ITranscriptFacade {
   }
 
   @override
+  Future<Either<Failure, SegmentEdit>> assignSpeaker({
+    required String transcriptId,
+    required String segmentId,
+    required String? speakerId,
+    required int revision,
+  }) async {
+    final result = await _repository.assignSpeaker(
+      transcriptId: transcriptId,
+      segmentId: segmentId,
+      speakerId: speakerId,
+      revision: revision,
+    );
+    return result.map((m) => m.toEntity());
+  }
+
+  @override
   Future<Either<Failure, Speaker>> renameSpeaker({
     required String transcriptId,
     required String speakerId,

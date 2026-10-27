@@ -312,6 +312,53 @@ void main() {
     );
   });
 
+  group('TranscriptRepository speaker assignment', () {
+    Map<String, (int, Object?)> route() => {
+      'PATCH /api/v1/transcript/t1/segments/g': (
+        200,
+        ok({
+          'segment': {
+            'id': 'g',
+            'start_ms': 7000,
+            'end_ms': 12000,
+            'text': 'Salom',
+            'speaker_id': 's3',
+            'edited': false,
+            'words': <Object>[],
+          },
+          'revision': 4,
+          'new_speaker': {'id': 's3', 'ordinal': 3, 'label': 'Maʼruzachi 3'},
+        }),
+      ),
+    };
+
+    test('an existing speaker sends speaker_id and revision', () async {
+      final http = FakeHttpAdapter(route());
+      await TranscriptRepository(fakeDio(http)).assignSpeaker(
+        transcriptId: 't1',
+        segmentId: 'g',
+        speakerId: 's2',
+        revision: 3,
+      );
+      expect(http.sent.single.body, {'speaker_id': 's2', 'revision': 3});
+    });
+
+    test('a new speaker sends new_speaker and reads it back', () async {
+      final http = FakeHttpAdapter(route());
+      final edit = (await TranscriptRepository(fakeDio(http)).assignSpeaker(
+        transcriptId: 't1',
+        segmentId: 'g',
+        speakerId: null,
+        revision: 3,
+      )).getOrElse(() => throw StateError('left')).toEntity();
+
+      expect(http.sent.single.body, {'new_speaker': true, 'revision': 3});
+      expect(edit.revision, 4);
+      expect(edit.segment.speakerId, 's3');
+      expect(edit.newSpeaker?.label, 'Maʼruzachi 3');
+    });
+  });
+
   group('UploadRepository', () {
     test('createMedia sends the CreateMediaRequest keys', () async {
       final http = FakeHttpAdapter({

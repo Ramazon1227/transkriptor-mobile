@@ -868,7 +868,9 @@ as int,
 /// @nodoc
 mixin _$SegmentEdit {
 
- Segment get segment; int get revision;
+ Segment get segment; int get revision;/// The speaker a "new speaker" assignment opened, with the server's
+/// default name. Null for every other edit.
+ Speaker? get newSpeaker;
 /// Create a copy of SegmentEdit
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -880,20 +882,20 @@ $SegmentEditCopyWith<SegmentEdit> get copyWith => _$SegmentEditCopyWithImpl<Segm
 @override
 bool operator ==(Object other) {
   final _this = this as SegmentEdit;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentEdit&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentEdit&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.newSpeaker, _this.newSpeaker) || other.newSpeaker == _this.newSpeaker));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SegmentEdit;
-  return Object.hash(runtimeType,_this.segment,_this.revision);
+  return Object.hash(runtimeType,_this.segment,_this.revision,_this.newSpeaker);
 }
 
 @override
 String toString() {
   final _this = this as SegmentEdit;
-  return 'SegmentEdit(segment: ${_this.segment}, revision: ${_this.revision})';
+  return 'SegmentEdit(segment: ${_this.segment}, revision: ${_this.revision}, newSpeaker: ${_this.newSpeaker})';
 }
 
 
@@ -904,11 +906,11 @@ abstract mixin class $SegmentEditCopyWith<$Res>  {
   factory $SegmentEditCopyWith(SegmentEdit value, $Res Function(SegmentEdit) _then) = _$SegmentEditCopyWithImpl;
 @useResult
 $Res call({
- Segment segment, int revision
+ Segment segment, int revision, Speaker? newSpeaker
 });
 
 
-$SegmentCopyWith<$Res> get segment;
+$SegmentCopyWith<$Res> get segment;$SpeakerCopyWith<$Res>? get newSpeaker;
 
 }
 /// @nodoc
@@ -921,11 +923,12 @@ class _$SegmentEditCopyWithImpl<$Res>
 
 /// Create a copy of SegmentEdit
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? revision = null,Object? newSpeaker = freezed,}) {
   return _then(SegmentEdit(
 segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
 as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,newSpeaker: freezed == newSpeaker ? _self.newSpeaker : newSpeaker // ignore: cast_nullable_to_non_nullable
+as Speaker?,
   ));
 }
 /// Create a copy of SegmentEdit
@@ -936,6 +939,18 @@ $SegmentCopyWith<$Res> get segment {
   
   return $SegmentCopyWith<$Res>(_self.segment, (value) {
     return _then(_self.copyWith(segment: value));
+  });
+}/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SpeakerCopyWith<$Res>? get newSpeaker {
+    if (_self.newSpeaker == null) {
+    return null;
+  }
+
+  return $SpeakerCopyWith<$Res>(_self.newSpeaker!, (value) {
+    return _then(_self.copyWith(newSpeaker: value));
   });
 }
 }
@@ -1019,10 +1034,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Segment segment,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Segment segment,  int revision,  Speaker? newSpeaker)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SegmentEdit() when $default != null:
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   return orElse();
 
 }
@@ -1040,10 +1055,10 @@ return $default(_that.segment,_that.revision);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Segment segment,  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Segment segment,  int revision,  Speaker? newSpeaker)  $default,) {final _that = this;
 switch (_that) {
 case _SegmentEdit():
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1060,10 +1075,10 @@ return $default(_that.segment,_that.revision);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Segment segment,  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Segment segment,  int revision,  Speaker? newSpeaker)?  $default,) {final _that = this;
 switch (_that) {
 case _SegmentEdit() when $default != null:
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   return null;
 
 }
@@ -1075,11 +1090,14 @@ return $default(_that.segment,_that.revision);case _:
 
 
 class _SegmentEdit implements SegmentEdit {
-  const _SegmentEdit({required this.segment, required this.revision});
+  const _SegmentEdit({required this.segment, required this.revision, this.newSpeaker});
   
 
 @override final  Segment segment;
 @override final  int revision;
+/// The speaker a "new speaker" assignment opened, with the server's
+/// default name. Null for every other edit.
+@override final  Speaker? newSpeaker;
 
 /// Create a copy of SegmentEdit
 /// with the given fields replaced by the non-null parameter values.
@@ -1091,18 +1109,18 @@ _$SegmentEditCopyWith<_SegmentEdit> get copyWith => __$SegmentEditCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentEdit&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentEdit&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.newSpeaker, newSpeaker) || other.newSpeaker == newSpeaker));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,segment,revision);
+    return Object.hash(runtimeType,segment,revision,newSpeaker);
 }
 
 @override
 String toString() {
-    return 'SegmentEdit(segment: $segment, revision: $revision)';
+    return 'SegmentEdit(segment: $segment, revision: $revision, newSpeaker: $newSpeaker)';
 }
 
 
@@ -1113,11 +1131,11 @@ abstract mixin class _$SegmentEditCopyWith<$Res> implements $SegmentEditCopyWith
   factory _$SegmentEditCopyWith(_SegmentEdit value, $Res Function(_SegmentEdit) _then) = __$SegmentEditCopyWithImpl;
 @override @useResult
 $Res call({
- Segment segment, int revision
+ Segment segment, int revision, Speaker? newSpeaker
 });
 
 
-@override $SegmentCopyWith<$Res> get segment;
+@override $SegmentCopyWith<$Res> get segment;@override $SpeakerCopyWith<$Res>? get newSpeaker;
 
 }
 /// @nodoc
@@ -1130,11 +1148,12 @@ class __$SegmentEditCopyWithImpl<$Res>
 
 /// Create a copy of SegmentEdit
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? revision = null,Object? newSpeaker = freezed,}) {
   return _then(_SegmentEdit(
 segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
 as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,newSpeaker: freezed == newSpeaker ? _self.newSpeaker : newSpeaker // ignore: cast_nullable_to_non_nullable
+as Speaker?,
   ));
 }
 
@@ -1146,6 +1165,18 @@ $SegmentCopyWith<$Res> get segment {
   
   return $SegmentCopyWith<$Res>(_self.segment, (value) {
     return _then(_self.copyWith(segment: value));
+  });
+}/// Create a copy of SegmentEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SpeakerCopyWith<$Res>? get newSpeaker {
+    if (_self.newSpeaker == null) {
+    return null;
+  }
+
+  return $SpeakerCopyWith<$Res>(_self.newSpeaker!, (value) {
+    return _then(_self.copyWith(newSpeaker: value));
   });
 }
 }

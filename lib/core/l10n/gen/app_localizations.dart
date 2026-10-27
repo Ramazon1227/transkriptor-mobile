@@ -982,6 +982,24 @@ abstract class AppLocalizations {
   /// **'Bu qism transkriptdan oʻchirilgan.'**
   String get transcriptEditGone;
 
+  /// No description provided for @transcriptEditUnprocessable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu amalni bajarib boʻlmadi. Transkriptni yangilab, qayta urinib koʻring.'**
+  String get transcriptEditUnprocessable;
+
+  /// No description provided for @transcriptAssignSpeaker.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi'**
+  String get transcriptAssignSpeaker;
+
+  /// No description provided for @transcriptNewSpeaker.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi maʼruzachi'**
+  String get transcriptNewSpeaker;
+
   /// No description provided for @shareTitle.
   ///
   /// In uz, this message translates to:

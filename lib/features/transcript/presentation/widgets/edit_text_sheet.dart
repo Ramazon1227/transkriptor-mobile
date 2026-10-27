@@ -4,6 +4,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_failure_text.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_sheet_route.dart';
 
 /// Bottom sheet that edits one string through [TranscriptCubit]: a
 /// segment's text or a speaker's name. It closes only when the cubit says
@@ -31,21 +32,8 @@ class EditTextSheet extends StatefulWidget {
 
   /// Opens the sheet over [context], which must see the page's
   /// [TranscriptCubit]. The save state is reset on open and on close.
-  static Future<void> show(BuildContext context, EditTextSheet sheet) async {
-    final cubit = context.read<TranscriptCubit>();
-    if (cubit.state.editStatus == EditStatus.saving) return;
-    cubit.editOpened();
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      // Drag-to-dismiss pops past PopScope; the barrier, back and Cancel
-      // still close the sheet, and all three respect a running save.
-      enableDrag: false,
-      builder: (_) => BlocProvider.value(value: cubit, child: sheet),
-    );
-    if (!cubit.isClosed) cubit.editClosed();
-  }
+  static Future<void> show(BuildContext context, EditTextSheet sheet) =>
+      showEditSheet(context, sheet);
 
   @override
   State<EditTextSheet> createState() => _EditTextSheetState();

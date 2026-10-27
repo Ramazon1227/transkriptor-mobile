@@ -874,7 +874,7 @@ as int,
 /// @nodoc
 mixin _$SegmentEditModel {
 
-@JsonKey(name: 'segment') SegmentModel get segment;@JsonKey(name: 'revision') int get revision;
+@JsonKey(name: 'segment') SegmentModel get segment;@JsonKey(name: 'revision') int get revision;@JsonKey(name: 'new_speaker') SpeakerModel? get newSpeaker;
 /// Create a copy of SegmentEditModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -888,20 +888,20 @@ $SegmentEditModelCopyWith<SegmentEditModel> get copyWith => _$SegmentEditModelCo
 @override
 bool operator ==(Object other) {
   final _this = this as SegmentEditModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentEditModel&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentEditModel&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.newSpeaker, _this.newSpeaker) || other.newSpeaker == _this.newSpeaker));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SegmentEditModel;
-  return Object.hash(runtimeType,_this.segment,_this.revision);
+  return Object.hash(runtimeType,_this.segment,_this.revision,_this.newSpeaker);
 }
 
 @override
 String toString() {
   final _this = this as SegmentEditModel;
-  return 'SegmentEditModel(segment: ${_this.segment}, revision: ${_this.revision})';
+  return 'SegmentEditModel(segment: ${_this.segment}, revision: ${_this.revision}, newSpeaker: ${_this.newSpeaker})';
 }
 
 
@@ -912,11 +912,11 @@ abstract mixin class $SegmentEditModelCopyWith<$Res>  {
   factory $SegmentEditModelCopyWith(SegmentEditModel value, $Res Function(SegmentEditModel) _then) = _$SegmentEditModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'new_speaker') SpeakerModel? newSpeaker
 });
 
 
-$SegmentModelCopyWith<$Res> get segment;
+$SegmentModelCopyWith<$Res> get segment;$SpeakerModelCopyWith<$Res>? get newSpeaker;
 
 }
 /// @nodoc
@@ -929,11 +929,12 @@ class _$SegmentEditModelCopyWithImpl<$Res>
 
 /// Create a copy of SegmentEditModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? revision = null,Object? newSpeaker = freezed,}) {
   return _then(SegmentEditModel(
 segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
 as SegmentModel,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,newSpeaker: freezed == newSpeaker ? _self.newSpeaker : newSpeaker // ignore: cast_nullable_to_non_nullable
+as SpeakerModel?,
   ));
 }
 /// Create a copy of SegmentEditModel
@@ -944,6 +945,18 @@ $SegmentModelCopyWith<$Res> get segment {
   
   return $SegmentModelCopyWith<$Res>(_self.segment, (value) {
     return _then(_self.copyWith(segment: value));
+  });
+}/// Create a copy of SegmentEditModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SpeakerModelCopyWith<$Res>? get newSpeaker {
+    if (_self.newSpeaker == null) {
+    return null;
+  }
+
+  return $SpeakerModelCopyWith<$Res>(_self.newSpeaker!, (value) {
+    return _then(_self.copyWith(newSpeaker: value));
   });
 }
 }
@@ -1027,10 +1040,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'new_speaker')  SpeakerModel? newSpeaker)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SegmentEditModel() when $default != null:
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   return orElse();
 
 }
@@ -1048,10 +1061,10 @@ return $default(_that.segment,_that.revision);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'new_speaker')  SpeakerModel? newSpeaker)  $default,) {final _that = this;
 switch (_that) {
 case _SegmentEditModel():
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1068,10 +1081,10 @@ return $default(_that.segment,_that.revision);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'new_speaker')  SpeakerModel? newSpeaker)?  $default,) {final _that = this;
 switch (_that) {
 case _SegmentEditModel() when $default != null:
-return $default(_that.segment,_that.revision);case _:
+return $default(_that.segment,_that.revision,_that.newSpeaker);case _:
   return null;
 
 }
@@ -1083,11 +1096,12 @@ return $default(_that.segment,_that.revision);case _:
 @JsonSerializable()
 
 class _SegmentEditModel extends SegmentEditModel {
-  const _SegmentEditModel({@JsonKey(name: 'segment') required this.segment, @JsonKey(name: 'revision') this.revision = 0}): super._();
+  const _SegmentEditModel({@JsonKey(name: 'segment') required this.segment, @JsonKey(name: 'revision') this.revision = 0, @JsonKey(name: 'new_speaker') this.newSpeaker}): super._();
   factory _SegmentEditModel.fromJson(Map<String, dynamic> json) => _$SegmentEditModelFromJson(json);
 
 @override@JsonKey(name: 'segment') final  SegmentModel segment;
 @override@JsonKey(name: 'revision') final  int revision;
+@override@JsonKey(name: 'new_speaker') final  SpeakerModel? newSpeaker;
 
 /// Create a copy of SegmentEditModel
 /// with the given fields replaced by the non-null parameter values.
@@ -1102,18 +1116,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentEditModel&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentEditModel&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.newSpeaker, newSpeaker) || other.newSpeaker == newSpeaker));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,segment,revision);
+    return Object.hash(runtimeType,segment,revision,newSpeaker);
 }
 
 @override
 String toString() {
-    return 'SegmentEditModel(segment: $segment, revision: $revision)';
+    return 'SegmentEditModel(segment: $segment, revision: $revision, newSpeaker: $newSpeaker)';
 }
 
 
@@ -1124,11 +1138,11 @@ abstract mixin class _$SegmentEditModelCopyWith<$Res> implements $SegmentEditMod
   factory _$SegmentEditModelCopyWith(_SegmentEditModel value, $Res Function(_SegmentEditModel) _then) = __$SegmentEditModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'new_speaker') SpeakerModel? newSpeaker
 });
 
 
-@override $SegmentModelCopyWith<$Res> get segment;
+@override $SegmentModelCopyWith<$Res> get segment;@override $SpeakerModelCopyWith<$Res>? get newSpeaker;
 
 }
 /// @nodoc
@@ -1141,11 +1155,12 @@ class __$SegmentEditModelCopyWithImpl<$Res>
 
 /// Create a copy of SegmentEditModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? revision = null,Object? newSpeaker = freezed,}) {
   return _then(_SegmentEditModel(
 segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
 as SegmentModel,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,newSpeaker: freezed == newSpeaker ? _self.newSpeaker : newSpeaker // ignore: cast_nullable_to_non_nullable
+as SpeakerModel?,
   ));
 }
 
@@ -1157,6 +1172,18 @@ $SegmentModelCopyWith<$Res> get segment {
   
   return $SegmentModelCopyWith<$Res>(_self.segment, (value) {
     return _then(_self.copyWith(segment: value));
+  });
+}/// Create a copy of SegmentEditModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SpeakerModelCopyWith<$Res>? get newSpeaker {
+    if (_self.newSpeaker == null) {
+    return null;
+  }
+
+  return $SpeakerModelCopyWith<$Res>(_self.newSpeaker!, (value) {
+    return _then(_self.copyWith(newSpeaker: value));
   });
 }
 }
