@@ -34,6 +34,14 @@ abstract class TranscriptState with _$TranscriptState {
 
   const TranscriptState._();
 
+  /// Whether a segment comes after [segmentId] in the whole transcript —
+  /// the speaker filter does not change what "next" means to the server.
+  bool hasNext(String segmentId) {
+    final segments = transcript?.segments ?? const <Segment>[];
+    final i = segments.indexWhere((s) => s.id == segmentId);
+    return i >= 0 && i < segments.length - 1;
+  }
+
   List<Segment> get visibleSegments {
     final segments = transcript?.segments ?? const <Segment>[];
     final filter = speakerFilter;
@@ -104,6 +112,51 @@ class TranscriptCubit extends Cubit<TranscriptState> {
     if (transcript == null || state.editStatus == EditStatus.saving) return;
     if (_segment(transcript, segmentId) == null) return _gone();
     await _edit([_speakerStep(segmentId, null)]);
+  }
+
+  /// Splits a segment at the cursor in its editor. A changed [draft] is
+  /// saved first, as the web does, so the split goes against the text on
+  /// screen; if that save fails nothing is split. A point at either edge
+  /// sends nothing — the server would refuse it.
+  Future<void> splitSegment(
+    String segmentId, {
+    required String draft,
+    required int cursor,
+  }) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    final current = _segment(transcript, segmentId);
+    if (current == null) return _gone();
+    final at = EditRules.splitAt(draft, cursor);
+    if (at == null) return;
+    await _edit([
+      ..._flush(current, draft),
+      (t) async => (await _facade.splitSegment(
+        transcriptId: t.id,
+        segmentId: segmentId,
+        at: at,
+        revision: t.revision,
+      )).map((split) => _applySplit(t, segmentId, split)),
+    ]);
+  }
+
+  /// Folds the next segment into this one. From the editor, a changed
+  /// [draft] is saved first; from the menu there is no draft. The last
+  /// segment has nothing to take and sends nothing.
+  Future<void> mergeNext(String segmentId, {String? draft}) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    final current = _segment(transcript, segmentId);
+    if (current == null) return _gone();
+    if (!state.hasNext(segmentId)) return;
+    await _edit([
+      if (draft != null) ..._flush(current, draft),
+      (t) async => (await _facade.mergeNext(
+        transcriptId: t.id,
+        segmentId: segmentId,
+        revision: t.revision,
+      )).map((merge) => _applyMerge(t, merge)),
+    ]);
   }
 
   /// "Maʼruzachi 1" → a real name. An empty or unchanged name sends
@@ -209,6 +262,37 @@ class TranscriptCubit extends Cubit<TranscriptState> {
         speakerId: speakerId,
         revision: t.revision,
       )).map((edit) => _applyEdit(t, edit));
+
+  /// The web's `flush`: a draft that is blank or would store the same
+  /// text is not saved.
+  List<_Step> _flush(Segment current, String draft) {
+    final clean = EditRules.clean(draft);
+    if (clean.isEmpty || clean == current.text) return const [];
+    return [_textStep(current.id, clean)];
+  }
+
+  static Transcript _applySplit(
+    Transcript t,
+    String segmentId,
+    SegmentSplit split,
+  ) => t.copyWith(
+    revision: split.revision,
+    segments: [
+      for (final s in t.segments)
+        if (s.id == segmentId) ...[split.first, split.second] else s,
+    ],
+  );
+
+  static Transcript _applyMerge(Transcript t, SegmentMerge merge) => t.copyWith(
+    revision: merge.revision,
+    segments: [
+      for (final s in t.segments)
+        if (s.id == merge.segment.id)
+          merge.segment
+        else if (s.id != merge.removedId)
+          s,
+    ],
+  );
 
   static Transcript _applyEdit(Transcript t, SegmentEdit edit) {
     final opened = edit.newSpeaker;

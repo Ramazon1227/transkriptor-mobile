@@ -59,3 +59,25 @@ abstract class SegmentEdit with _$SegmentEdit {
     Speaker? newSpeaker,
   }) = _SegmentEdit;
 }
+
+/// The answer to a split: the first part keeps the segment's id, the
+/// second is new and sits right after it.
+@freezed
+abstract class SegmentSplit with _$SegmentSplit {
+  const factory SegmentSplit({
+    required Segment first,
+    required Segment second,
+    required int revision,
+  }) = _SegmentSplit;
+}
+
+/// The answer to "merge with the next": the joined segment keeps the
+/// first one's id and speaker; [removedId] is the one folded into it.
+@freezed
+abstract class SegmentMerge with _$SegmentMerge {
+  const factory SegmentMerge({
+    required Segment segment,
+    required String removedId,
+    required int revision,
+  }) = _SegmentMerge;
+}

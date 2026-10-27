@@ -63,6 +63,41 @@ class TranscriptRepository {
     });
   }
 
+  /// [at] counts characters (runes) of the stored text, as Go does. An
+  /// answer without exactly two parts is a parsing failure.
+  Future<Either<Failure, SegmentSplitModel>> splitSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int at,
+    required int revision,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        Endpoints.transcriptSegmentSplit(transcriptId, segmentId),
+        data: {'at': at, 'revision': revision},
+      );
+      final split = SegmentSplitModel.fromJson(envelopeData(response.data));
+      if (split.segments.length != 2) {
+        throw const FormatException('split: expected two segments');
+      }
+      return split;
+    });
+  }
+
+  Future<Either<Failure, SegmentMergeModel>> mergeNext({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        Endpoints.transcriptSegmentMergeNext(transcriptId, segmentId),
+        data: {'revision': revision},
+      );
+      return SegmentMergeModel.fromJson(envelopeData(response.data));
+    });
+  }
+
   /// A rename does not take part in the revision: segments only point at
   /// the speaker id.
   Future<Either<Failure, SpeakerModel>> renameSpeaker({

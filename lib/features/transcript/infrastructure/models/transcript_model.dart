@@ -114,3 +114,47 @@ abstract class SpeakerEditModel with _$SpeakerEditModel {
   factory SpeakerEditModel.fromJson(Map<String, dynamic> json) =>
       _$SpeakerEditModelFromJson(json);
 }
+
+/// `handler.SplitSegmentResponse` in the backend: always two segments.
+@freezed
+abstract class SegmentSplitModel with _$SegmentSplitModel {
+  const factory SegmentSplitModel({
+    @JsonKey(name: 'segments')
+    @Default(<SegmentModel>[])
+    List<SegmentModel> segments,
+    @JsonKey(name: 'revision') @Default(0) int revision,
+  }) = _SegmentSplitModel;
+
+  const SegmentSplitModel._();
+
+  factory SegmentSplitModel.fromJson(Map<String, dynamic> json) =>
+      _$SegmentSplitModelFromJson(json);
+
+  /// The repository has checked there are two.
+  SegmentSplit toEntity() => SegmentSplit(
+    first: segments[0].toEntity(),
+    second: segments[1].toEntity(),
+    revision: revision,
+  );
+}
+
+/// `handler.MergeSegmentResponse` in the backend.
+@freezed
+abstract class SegmentMergeModel with _$SegmentMergeModel {
+  const factory SegmentMergeModel({
+    @JsonKey(name: 'segment') required SegmentModel segment,
+    @JsonKey(name: 'removed_id') @Default('') String removedId,
+    @JsonKey(name: 'revision') @Default(0) int revision,
+  }) = _SegmentMergeModel;
+
+  const SegmentMergeModel._();
+
+  factory SegmentMergeModel.fromJson(Map<String, dynamic> json) =>
+      _$SegmentMergeModelFromJson(json);
+
+  SegmentMerge toEntity() => SegmentMerge(
+    segment: segment.toEntity(),
+    removedId: removedId,
+    revision: revision,
+  );
+}

@@ -359,6 +359,94 @@ void main() {
     });
   });
 
+  group('TranscriptRepository split and merge', () {
+    Map<String, Object> seg(String id, String text) => {
+      'id': id,
+      'start_ms': 0,
+      'end_ms': 1000,
+      'text': text,
+      'speaker_id': 's1',
+      'edited': true,
+      'words': <Object>[],
+    };
+
+    test('split posts at and revision, reads both parts', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/transcript/t1/segments/g/split': (
+          200,
+          ok({
+            'segments': [seg('g', 'Salom'), seg('h', 'dunyo')],
+            'revision': 4,
+          }),
+        ),
+      });
+      final split = (await TranscriptRepository(fakeDio(http)).splitSegment(
+        transcriptId: 't1',
+        segmentId: 'g',
+        at: 6,
+        revision: 3,
+      )).getOrElse(() => throw StateError('left')).toEntity();
+
+      expect(http.sent.single.body, {'at': 6, 'revision': 3});
+      expect(split.first.text, 'Salom');
+      expect(split.second.id, 'h');
+      expect(split.revision, 4);
+    });
+
+    test('a split answer without two parts is a parsing failure', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/transcript/t1/segments/g/split': (
+          200,
+          ok({
+            'segments': [seg('g', 'Salom')],
+            'revision': 4,
+          }),
+        ),
+      });
+      final result = await TranscriptRepository(fakeDio(http))
+          .splitSegment(transcriptId: 't1', segmentId: 'g', at: 6, revision: 3);
+      expect(result.fold((f) => f, (_) => null), const Failure.parsing());
+    });
+
+    test('a split at the edge keeps its 422', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/transcript/t1/segments/g/split': (
+          422,
+          {'status': 'UNPROCESSABLE_ENTITY', 'description': 'chetda'},
+        ),
+      });
+      final result = await TranscriptRepository(fakeDio(http))
+          .splitSegment(transcriptId: 't1', segmentId: 'g', at: 1, revision: 3);
+      expect(
+        result.fold((f) => f, (_) => null),
+        isA<ServerFailure>().having((f) => f.statusCode, 'statusCode', 422),
+      );
+    });
+
+    test('merge-next posts the revision, reads removed_id', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/transcript/t1/segments/g/merge-next': (
+          200,
+          ok({
+            'segment': seg('g', 'Salom dunyo'),
+            'removed_id': 'h',
+            'revision': 5,
+          }),
+        ),
+      });
+      final merge = (await TranscriptRepository(fakeDio(http)).mergeNext(
+        transcriptId: 't1',
+        segmentId: 'g',
+        revision: 4,
+      )).getOrElse(() => throw StateError('left')).toEntity();
+
+      expect(http.sent.single.body, {'revision': 4});
+      expect(merge.segment.text, 'Salom dunyo');
+      expect(merge.removedId, 'h');
+      expect(merge.revision, 5);
+    });
+  });
+
   group('UploadRepository', () {
     test('createMedia sends the CreateMediaRequest keys', () async {
       final http = FakeHttpAdapter({

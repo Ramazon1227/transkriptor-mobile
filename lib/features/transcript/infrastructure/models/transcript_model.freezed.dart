@@ -1476,4 +1476,577 @@ $SpeakerModelCopyWith<$Res> get speaker {
 }
 }
 
+
+/// @nodoc
+mixin _$SegmentSplitModel {
+
+@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;
+/// Create a copy of SegmentSplitModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentSplitModelCopyWith<SegmentSplitModel> get copyWith => _$SegmentSplitModelCopyWithImpl<SegmentSplitModel>(this as SegmentSplitModel, _$identity);
+
+  /// Serializes this SegmentSplitModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentSplitModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentSplitModel&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as SegmentSplitModel;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.segments),_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentSplitModel;
+  return 'SegmentSplitModel(segments: ${_this.segments}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentSplitModelCopyWith<$Res>  {
+  factory $SegmentSplitModelCopyWith(SegmentSplitModel value, $Res Function(SegmentSplitModel) _then) = _$SegmentSplitModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class _$SegmentSplitModelCopyWithImpl<$Res>
+    implements $SegmentSplitModelCopyWith<$Res> {
+  _$SegmentSplitModelCopyWithImpl(this._self, this._then);
+
+  final SegmentSplitModel _self;
+  final $Res Function(SegmentSplitModel) _then;
+
+/// Create a copy of SegmentSplitModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? segments = null,Object? revision = null,}) {
+  return _then(SegmentSplitModel(
+segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
+as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentSplitModel].
+extension SegmentSplitModelPatterns on SegmentSplitModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentSplitModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentSplitModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentSplitModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentSplitModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentSplitModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentSplitModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentSplitModel() when $default != null:
+return $default(_that.segments,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentSplitModel():
+return $default(_that.segments,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentSplitModel() when $default != null:
+return $default(_that.segments,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SegmentSplitModel extends SegmentSplitModel {
+  const _SegmentSplitModel({@JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0}): _segments = segments,super._();
+  factory _SegmentSplitModel.fromJson(Map<String, dynamic> json) => _$SegmentSplitModelFromJson(json);
+
+ final  List<SegmentModel> _segments;
+@override@JsonKey(name: 'segments') List<SegmentModel> get segments {
+  if (_segments is EqualUnmodifiableListView) return _segments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_segments);
+}
+
+@override@JsonKey(name: 'revision') final  int revision;
+
+/// Create a copy of SegmentSplitModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentSplitModelCopyWith<_SegmentSplitModel> get copyWith => __$SegmentSplitModelCopyWithImpl<_SegmentSplitModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SegmentSplitModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentSplitModel&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_segments),revision);
+}
+
+@override
+String toString() {
+    return 'SegmentSplitModel(segments: $segments, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentSplitModelCopyWith<$Res> implements $SegmentSplitModelCopyWith<$Res> {
+  factory _$SegmentSplitModelCopyWith(_SegmentSplitModel value, $Res Function(_SegmentSplitModel) _then) = __$SegmentSplitModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class __$SegmentSplitModelCopyWithImpl<$Res>
+    implements _$SegmentSplitModelCopyWith<$Res> {
+  __$SegmentSplitModelCopyWithImpl(this._self, this._then);
+
+  final _SegmentSplitModel _self;
+  final $Res Function(_SegmentSplitModel) _then;
+
+/// Create a copy of SegmentSplitModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? segments = null,Object? revision = null,}) {
+  return _then(_SegmentSplitModel(
+segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
+as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$SegmentMergeModel {
+
+@JsonKey(name: 'segment') SegmentModel get segment;@JsonKey(name: 'removed_id') String get removedId;@JsonKey(name: 'revision') int get revision;
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentMergeModelCopyWith<SegmentMergeModel> get copyWith => _$SegmentMergeModelCopyWithImpl<SegmentMergeModel>(this as SegmentMergeModel, _$identity);
+
+  /// Serializes this SegmentMergeModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentMergeModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentMergeModel&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.removedId, _this.removedId) || other.removedId == _this.removedId)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as SegmentMergeModel;
+  return Object.hash(runtimeType,_this.segment,_this.removedId,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentMergeModel;
+  return 'SegmentMergeModel(segment: ${_this.segment}, removedId: ${_this.removedId}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentMergeModelCopyWith<$Res>  {
+  factory $SegmentMergeModelCopyWith(SegmentMergeModel value, $Res Function(SegmentMergeModel) _then) = _$SegmentMergeModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'removed_id') String removedId,@JsonKey(name: 'revision') int revision
+});
+
+
+$SegmentModelCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class _$SegmentMergeModelCopyWithImpl<$Res>
+    implements $SegmentMergeModelCopyWith<$Res> {
+  _$SegmentMergeModelCopyWithImpl(this._self, this._then);
+
+  final SegmentMergeModel _self;
+  final $Res Function(SegmentMergeModel) _then;
+
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? removedId = null,Object? revision = null,}) {
+  return _then(SegmentMergeModel(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as SegmentModel,removedId: null == removedId ? _self.removedId : removedId // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentModelCopyWith<$Res> get segment {
+  
+  return $SegmentModelCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentMergeModel].
+extension SegmentMergeModelPatterns on SegmentMergeModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentMergeModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentMergeModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentMergeModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentMergeModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentMergeModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentMergeModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'removed_id')  String removedId, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentMergeModel() when $default != null:
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'removed_id')  String removedId, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentMergeModel():
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'segment')  SegmentModel segment, @JsonKey(name: 'removed_id')  String removedId, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentMergeModel() when $default != null:
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SegmentMergeModel extends SegmentMergeModel {
+  const _SegmentMergeModel({@JsonKey(name: 'segment') required this.segment, @JsonKey(name: 'removed_id') this.removedId = '', @JsonKey(name: 'revision') this.revision = 0}): super._();
+  factory _SegmentMergeModel.fromJson(Map<String, dynamic> json) => _$SegmentMergeModelFromJson(json);
+
+@override@JsonKey(name: 'segment') final  SegmentModel segment;
+@override@JsonKey(name: 'removed_id') final  String removedId;
+@override@JsonKey(name: 'revision') final  int revision;
+
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentMergeModelCopyWith<_SegmentMergeModel> get copyWith => __$SegmentMergeModelCopyWithImpl<_SegmentMergeModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SegmentMergeModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentMergeModel&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.removedId, removedId) || other.removedId == removedId)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,segment,removedId,revision);
+}
+
+@override
+String toString() {
+    return 'SegmentMergeModel(segment: $segment, removedId: $removedId, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentMergeModelCopyWith<$Res> implements $SegmentMergeModelCopyWith<$Res> {
+  factory _$SegmentMergeModelCopyWith(_SegmentMergeModel value, $Res Function(_SegmentMergeModel) _then) = __$SegmentMergeModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'segment') SegmentModel segment,@JsonKey(name: 'removed_id') String removedId,@JsonKey(name: 'revision') int revision
+});
+
+
+@override $SegmentModelCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class __$SegmentMergeModelCopyWithImpl<$Res>
+    implements _$SegmentMergeModelCopyWith<$Res> {
+  __$SegmentMergeModelCopyWithImpl(this._self, this._then);
+
+  final _SegmentMergeModel _self;
+  final $Res Function(_SegmentMergeModel) _then;
+
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? removedId = null,Object? revision = null,}) {
+  return _then(_SegmentMergeModel(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as SegmentModel,removedId: null == removedId ? _self.removedId : removedId // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of SegmentMergeModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentModelCopyWith<$Res> get segment {
+  
+  return $SegmentModelCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
+}
+
 // dart format on

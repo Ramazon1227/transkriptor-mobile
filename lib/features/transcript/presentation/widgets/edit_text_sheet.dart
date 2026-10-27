@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
+import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_failure_text.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_sheet_route.dart';
 
@@ -18,6 +19,8 @@ class EditTextSheet extends StatefulWidget {
     required this.tooLong,
     required this.tooLongMessage,
     required this.onSave,
+    this.onSplit,
+    this.onMergeNext,
     super.key,
   });
 
@@ -29,6 +32,12 @@ class EditTextSheet extends StatefulWidget {
   final bool Function(String) tooLong;
   final String tooLongMessage;
   final void Function(TranscriptCubit cubit, String text) onSave;
+
+  /// Segment structure, segment editor only: split at the cursor (a
+  /// UTF-16 index into the draft) and merge with the next segment. Both
+  /// save a changed draft first. Null hides the action.
+  final void Function(TranscriptCubit cubit, String text, int cursor)? onSplit;
+  final void Function(TranscriptCubit cubit, String text)? onMergeNext;
 
   /// Opens the sheet over [context], which must see the page's
   /// [TranscriptCubit]. The save state is reset on open and on close.
@@ -50,6 +59,17 @@ class _EditTextSheetState extends State<EditTextSheet> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Null — the button is off — unless the cursor stands inside the text
+  /// with something on both sides, the only place the server splits.
+  VoidCallback? _splitHere(BuildContext context) {
+    final selection = _controller.selection;
+    if (!selection.isValid || !selection.isCollapsed) return null;
+    final text = _controller.text;
+    final cursor = selection.baseOffset;
+    if (EditRules.splitAt(text, cursor) == null) return null;
+    return () => widget.onSplit!(context.read<TranscriptCubit>(), text, cursor);
   }
 
   @override
@@ -100,6 +120,20 @@ class _EditTextSheetState extends State<EditTextSheet> {
                     errorText: tooLong ? widget.tooLongMessage : null,
                   ),
                 ),
+                if (widget.onSplit != null || widget.onMergeNext != null)
+                  _StructureActions(
+                    onSplit: widget.onSplit == null || saving || tooLong
+                        ? null
+                        : _splitHere(context),
+                    onMergeNext: widget.onMergeNext == null || saving || tooLong
+                        ? null
+                        : () => widget.onMergeNext!(
+                            context.read<TranscriptCubit>(),
+                            _controller.text,
+                          ),
+                    showSplit: widget.onSplit != null,
+                    showMerge: widget.onMergeNext != null,
+                  ),
                 if (failure != null) ...[
                   const SizedBox(height: 10),
                   EditFailureText(failure: failure),
@@ -131,6 +165,47 @@ class _EditTextSheetState extends State<EditTextSheet> {
           ),
         );
       },
+    );
+  }
+}
+
+class _StructureActions extends StatelessWidget {
+  const _StructureActions({
+    required this.onSplit,
+    required this.onMergeNext,
+    required this.showSplit,
+    required this.showMerge,
+  });
+
+  final VoidCallback? onSplit;
+  final VoidCallback? onMergeNext;
+  final bool showSplit;
+  final bool showMerge;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(
+        spacing: 8,
+        children: [
+          if (showSplit)
+            TextButton.icon(
+              key: const Key('segment_split'),
+              onPressed: onSplit,
+              icon: const Icon(Icons.call_split, size: 18),
+              label: Text(l10n.transcriptSplit),
+            ),
+          if (showMerge)
+            TextButton.icon(
+              key: const Key('segment_merge_next'),
+              onPressed: onMergeNext,
+              icon: const Icon(Icons.call_merge, size: 18),
+              label: Text(l10n.transcriptMergeNext),
+            ),
+        ],
+      ),
     );
   }
 }

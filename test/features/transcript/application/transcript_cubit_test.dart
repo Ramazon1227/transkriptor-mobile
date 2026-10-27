@@ -470,6 +470,352 @@ void main() {
     );
   });
 
+  group('split and merge', () {
+    const a = Segment(
+      id: 'g1',
+      start: Duration.zero,
+      end: Duration(seconds: 4),
+      text: 'Salom dunyo',
+      speakerId: 's1',
+    );
+    const b = Segment(
+      id: 'g2',
+      start: Duration(seconds: 4),
+      end: Duration(seconds: 6),
+      text: 'Xayr',
+      speakerId: 's1',
+    );
+    const loaded = TranscriptState(
+      status: TranscriptStatus.success,
+      transcript: Transcript(
+        id: 't1',
+        title: 'Kengash',
+        speakers: [Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1)],
+        segments: [a, b],
+        revision: 3,
+      ),
+    );
+    final left = a.copyWith(
+      text: 'Salom',
+      end: const Duration(seconds: 2),
+      edited: true,
+    );
+    final right = a.copyWith(
+      id: 'g3',
+      text: 'dunyo',
+      start: const Duration(seconds: 2),
+      edited: true,
+    );
+    final merged = a.copyWith(
+      text: 'Salom dunyo Xayr',
+      end: const Duration(seconds: 6),
+      edited: true,
+    );
+
+    void splitAnswers(int revision, Either<Failure, SegmentSplit> result) =>
+        when(
+          () => facade.splitSegment(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            at: 6,
+            revision: revision,
+          ),
+        ).thenAnswer((_) async => result);
+
+    void mergeAnswers(int revision, Either<Failure, SegmentMerge> result) =>
+        when(
+          () => facade.mergeNext(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            revision: revision,
+          ),
+        ).thenAnswer((_) async => result);
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a split puts both parts in place of the segment',
+      setUp: () => splitAnswers(
+        3,
+        Right(SegmentSplit(first: left, second: right, revision: 4)),
+      ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      // Cursor after "Salom ": rune 6 on the server.
+      act: (cubit) => cubit.splitSegment('g1', draft: 'Salom dunyo', cursor: 6),
+      expect: () => [
+        loaded.copyWith(editStatus: EditStatus.saving),
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            segments: [left, right, b],
+          ),
+        ),
+      ],
+      verify: (_) => verifyNever(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ),
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a changed draft is saved first and the split uses its revision',
+      setUp: () {
+        when(
+          () => facade.updateSegmentText(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            text: 'Salom olam',
+            revision: 3,
+          ),
+        ).thenAnswer(
+          (_) async => Right(
+            SegmentEdit(segment: a.copyWith(text: 'Salom olam'), revision: 4),
+          ),
+        );
+        splitAnswers(
+          4,
+          Right(SegmentSplit(first: left, second: right, revision: 5)),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      // One saving, one saved: the draft save does not close the editor.
+      act: (cubit) => cubit.splitSegment('g1', draft: 'Salom olam', cursor: 6),
+      expect: () => [
+        loaded.copyWith(editStatus: EditStatus.saving),
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 5,
+            segments: [left, right, b],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a failed draft save splits nothing',
+      setUp: () => when(
+        () => facade.updateSegmentText(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          text: any(named: 'text'),
+          revision: any(named: 'revision'),
+        ),
+      ).thenAnswer((_) async => const Left(Failure.network())),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.splitSegment('g1', draft: 'Salom olam', cursor: 6),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.network(),
+        ),
+      ],
+      verify: (_) => verifyNever(
+        () => facade.splitSegment(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          at: any(named: 'at'),
+          revision: any(named: 'revision'),
+        ),
+      ),
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a split that fails after the draft saved keeps the saved text',
+      setUp: () {
+        when(
+          () => facade.updateSegmentText(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            text: 'Salom olam',
+            revision: 3,
+          ),
+        ).thenAnswer(
+          (_) async => Right(
+            SegmentEdit(segment: a.copyWith(text: 'Salom olam'), revision: 4),
+          ),
+        );
+        when(
+          () => facade.splitSegment(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            at: 6,
+            revision: 4,
+          ),
+        ).thenAnswer((_) async => const Left(Failure.network()));
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.splitSegment('g1', draft: 'Salom olam', cursor: 6),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.network(),
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            segments: [
+              a.copyWith(text: 'Salom olam'),
+              b,
+            ],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a split at either edge sends nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) async {
+        await cubit.splitSegment('g1', draft: 'Salom dunyo', cursor: 0);
+        await cubit.splitSegment('g1', draft: 'Salom dunyo ', cursor: 12);
+      },
+      expect: () => const <TranscriptState>[],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a split 409 fetches the fresh copy and shows the failure',
+      setUp: () {
+        splitAnswers(3, const Left(Failure.server(statusCode: 409)));
+        when(() => facade.getTranscript('t1')).thenAnswer(
+          (_) async => Right(loaded.transcript!.copyWith(revision: 7)),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.splitSegment('g1', draft: 'Salom dunyo', cursor: 6),
+      skip: 2,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.server(statusCode: 409),
+          transcript: loaded.transcript!.copyWith(revision: 7),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a merge drops the next segment and keeps the joined one',
+      setUp: () => mergeAnswers(
+        3,
+        Right(SegmentMerge(segment: merged, removedId: 'g2', revision: 4)),
+      ),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.mergeNext('g1'),
+      expect: () => [
+        loaded.copyWith(editStatus: EditStatus.saving),
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 4,
+            segments: [merged],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a merge from the editor saves a changed draft first',
+      setUp: () {
+        when(
+          () => facade.updateSegmentText(
+            transcriptId: 't1',
+            segmentId: 'g1',
+            text: 'Salom olam',
+            revision: 3,
+          ),
+        ).thenAnswer(
+          (_) async => Right(
+            SegmentEdit(segment: a.copyWith(text: 'Salom olam'), revision: 4),
+          ),
+        );
+        mergeAnswers(
+          4,
+          Right(SegmentMerge(segment: merged, removedId: 'g2', revision: 5)),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.mergeNext('g1', draft: ' Salom  olam '),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.saved,
+          transcript: loaded.transcript!.copyWith(
+            revision: 5,
+            segments: [merged],
+          ),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'the last segment has nothing to merge and sends nothing',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.mergeNext('g2'),
+      expect: () => const <TranscriptState>[],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a merge 409 fetches the fresh copy and shows the failure',
+      setUp: () {
+        mergeAnswers(3, const Left(Failure.server(statusCode: 409)));
+        when(() => facade.getTranscript('t1')).thenAnswer(
+          (_) async => Right(loaded.transcript!.copyWith(revision: 7)),
+        );
+      },
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.mergeNext('g1'),
+      skip: 2,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.server(statusCode: 409),
+          transcript: loaded.transcript!.copyWith(revision: 7),
+        ),
+      ],
+    );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'any other merge failure keeps the transcript',
+      setUp: () => mergeAnswers(3, const Left(Failure.network())),
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded,
+      act: (cubit) => cubit.mergeNext('g1'),
+      skip: 1,
+      expect: () => [
+        loaded.copyWith(
+          editStatus: EditStatus.failure,
+          editFailure: const Failure.network(),
+        ),
+      ],
+      verify: (_) => verifyNever(() => facade.getTranscript(any())),
+    );
+  });
+
+  test('split offsets follow the web: collapsed spaces, runes', () {
+    expect(EditRules.serverOffset('Salom dunyo', 6), 6);
+    expect(EditRules.serverOffset('Salom   dunyo', 8), 6);
+    expect(EditRules.serverOffset('  Salom dunyo', 7), 5);
+    expect(EditRules.serverOffset('Salom\n dunyo', 5), 5);
+    // An emoji is two UTF-16 units in the field and one rune in Go.
+    expect(EditRules.serverOffset('😀 salom', 3), 2);
+    expect(EditRules.splitAt('Salom dunyo', 6), 6);
+    expect(EditRules.splitAt('Salom dunyo', 0), isNull);
+    expect(EditRules.splitAt('Salom dunyo', 11), isNull);
+  });
+
   test('EditRules count bytes, as the server does', () {
     // ʻ is two bytes in UTF-8: 40 of them are 80 bytes, 41 are too many.
     expect(EditRules.speakerLabelTooLong('ʻ' * 40), isFalse);

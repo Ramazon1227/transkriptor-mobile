@@ -8,8 +8,9 @@ import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_fa
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_sheet_route.dart';
 
 /// A segment's long-press menu: move it to another speaker or to a new
-/// one, the web's speaker pick. Like the text editor it closes only once
-/// the cubit says the change went through; a failure stays on the sheet.
+/// one (the web's speaker pick), and merge it with the next segment. Like
+/// the text editor it closes only once the cubit says the change went
+/// through; a failure stays on the sheet.
 class SegmentActionsSheet extends StatelessWidget {
   const SegmentActionsSheet({required this.segmentId, super.key});
 
@@ -81,6 +82,16 @@ class SegmentActionsSheet extends StatelessWidget {
                   title: Text(l10n.transcriptNewSpeaker),
                   onTap: () => cubit.assignNewSpeaker(segmentId),
                 ),
+                if (state.hasNext(segmentId)) ...[
+                  const Divider(height: 8),
+                  ListTile(
+                    key: const Key('merge_next'),
+                    enabled: !saving,
+                    leading: const Icon(Icons.call_merge),
+                    title: Text(l10n.transcriptMergeNext),
+                    onTap: () => cubit.mergeNext(segmentId),
+                  ),
+                ],
                 if (saving)
                   const Padding(
                     padding: EdgeInsets.only(top: 8),

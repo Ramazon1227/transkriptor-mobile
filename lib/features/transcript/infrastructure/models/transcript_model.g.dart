@@ -91,3 +91,33 @@ _SpeakerEditModel _$SpeakerEditModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$SpeakerEditModelToJson(_SpeakerEditModel instance) =>
     <String, dynamic>{'speaker': instance.speaker};
+
+_SegmentSplitModel _$SegmentSplitModelFromJson(Map<String, dynamic> json) =>
+    _SegmentSplitModel(
+      segments:
+          (json['segments'] as List<dynamic>?)
+              ?.map((e) => SegmentModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <SegmentModel>[],
+      revision: (json['revision'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$SegmentSplitModelToJson(_SegmentSplitModel instance) =>
+    <String, dynamic>{
+      'segments': instance.segments,
+      'revision': instance.revision,
+    };
+
+_SegmentMergeModel _$SegmentMergeModelFromJson(Map<String, dynamic> json) =>
+    _SegmentMergeModel(
+      segment: SegmentModel.fromJson(json['segment'] as Map<String, dynamic>),
+      removedId: json['removed_id'] as String? ?? '',
+      revision: (json['revision'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$SegmentMergeModelToJson(_SegmentMergeModel instance) =>
+    <String, dynamic>{
+      'segment': instance.segment,
+      'removed_id': instance.removedId,
+      'revision': instance.revision,
+    };

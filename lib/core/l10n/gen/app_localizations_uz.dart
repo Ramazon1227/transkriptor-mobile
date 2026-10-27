@@ -502,6 +502,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get transcriptNewSpeaker => 'Yangi maʼruzachi';
 
   @override
+  String get transcriptSplit => 'Kursor joyida boʻlish';
+
+  @override
+  String get transcriptMergeNext => 'Keyingisi bilan qoʻshish';
+
+  @override
   String get shareTitle => 'Ulashish';
 
   @override

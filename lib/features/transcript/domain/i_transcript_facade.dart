@@ -21,6 +21,24 @@ abstract interface class ITranscriptFacade {
     required int revision,
   });
 
+  /// Splits a segment at [at], a character (rune) offset into its stored
+  /// text. The server splits the time in proportion and answers 422 for a
+  /// point at either edge.
+  Future<Either<Failure, SegmentSplit>> splitSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int at,
+    required int revision,
+  });
+
+  /// Folds the next segment (by position) into this one. 422 when there
+  /// is no next one.
+  Future<Either<Failure, SegmentMerge>> mergeNext({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  });
+
   Future<Either<Failure, Speaker>> renameSpeaker({
     required String transcriptId,
     required String speakerId,

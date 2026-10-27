@@ -184,6 +184,8 @@
   "transcriptEditUnprocessable": "Bu amalni bajarib boʻlmadi. Transkriptni yangilab, qayta urinib koʻring.",
   "transcriptAssignSpeaker": "Maʼruzachi",
   "transcriptNewSpeaker": "Yangi maʼruzachi",
+  "transcriptSplit": "Kursor joyida boʻlish",
+  "transcriptMergeNext": "Keyingisi bilan qoʻshish",
 
   "shareTitle": "Ulashish",
   "shareOpen": "Havola ochish",

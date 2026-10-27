@@ -22,6 +22,10 @@ abstract final class Endpoints {
   static String transcript(String id) => '/api/v1/transcript/$id';
   static String transcriptSegment(String id, String segmentId) =>
       '/api/v1/transcript/$id/segments/$segmentId';
+  static String transcriptSegmentSplit(String id, String segmentId) =>
+      '/api/v1/transcript/$id/segments/$segmentId/split';
+  static String transcriptSegmentMergeNext(String id, String segmentId) =>
+      '/api/v1/transcript/$id/segments/$segmentId/merge-next';
   static String transcriptSpeaker(String id, String speakerId) =>
       '/api/v1/transcript/$id/speakers/$speakerId';
 

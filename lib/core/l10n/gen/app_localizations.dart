@@ -1000,6 +1000,18 @@ abstract class AppLocalizations {
   /// **'Yangi maʼruzachi'**
   String get transcriptNewSpeaker;
 
+  /// No description provided for @transcriptSplit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kursor joyida boʻlish'**
+  String get transcriptSplit;
+
+  /// No description provided for @transcriptMergeNext.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingisi bilan qoʻshish'**
+  String get transcriptMergeNext;
+
   /// No description provided for @shareTitle.
   ///
   /// In uz, this message translates to:

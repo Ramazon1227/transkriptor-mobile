@@ -148,6 +148,11 @@ class _Body extends StatelessWidget {
         tooLong: EditRules.segmentTextTooLong,
         tooLongMessage: l10n.transcriptTextTooLong,
         onSave: (cubit, text) => cubit.saveSegmentText(segment.id, text),
+        onSplit: (cubit, text, cursor) =>
+            cubit.splitSegment(segment.id, draft: text, cursor: cursor),
+        onMergeNext: state.hasNext(segment.id)
+            ? (cubit, text) => cubit.mergeNext(segment.id, draft: text)
+            : null,
       ),
     );
   }

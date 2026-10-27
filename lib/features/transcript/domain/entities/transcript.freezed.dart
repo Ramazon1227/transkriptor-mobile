@@ -1181,4 +1181,598 @@ $SpeakerCopyWith<$Res>? get newSpeaker {
 }
 }
 
+/// @nodoc
+mixin _$SegmentSplit {
+
+ Segment get first; Segment get second; int get revision;
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentSplitCopyWith<SegmentSplit> get copyWith => _$SegmentSplitCopyWithImpl<SegmentSplit>(this as SegmentSplit, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentSplit;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentSplit&&(identical(other.first, _this.first) || other.first == _this.first)&&(identical(other.second, _this.second) || other.second == _this.second)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as SegmentSplit;
+  return Object.hash(runtimeType,_this.first,_this.second,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentSplit;
+  return 'SegmentSplit(first: ${_this.first}, second: ${_this.second}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentSplitCopyWith<$Res>  {
+  factory $SegmentSplitCopyWith(SegmentSplit value, $Res Function(SegmentSplit) _then) = _$SegmentSplitCopyWithImpl;
+@useResult
+$Res call({
+ Segment first, Segment second, int revision
+});
+
+
+$SegmentCopyWith<$Res> get first;$SegmentCopyWith<$Res> get second;
+
+}
+/// @nodoc
+class _$SegmentSplitCopyWithImpl<$Res>
+    implements $SegmentSplitCopyWith<$Res> {
+  _$SegmentSplitCopyWithImpl(this._self, this._then);
+
+  final SegmentSplit _self;
+  final $Res Function(SegmentSplit) _then;
+
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? first = null,Object? second = null,Object? revision = null,}) {
+  return _then(SegmentSplit(
+first: null == first ? _self.first : first // ignore: cast_nullable_to_non_nullable
+as Segment,second: null == second ? _self.second : second // ignore: cast_nullable_to_non_nullable
+as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get first {
+  
+  return $SegmentCopyWith<$Res>(_self.first, (value) {
+    return _then(_self.copyWith(first: value));
+  });
+}/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get second {
+  
+  return $SegmentCopyWith<$Res>(_self.second, (value) {
+    return _then(_self.copyWith(second: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentSplit].
+extension SegmentSplitPatterns on SegmentSplit {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentSplit value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentSplit() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentSplit value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentSplit():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentSplit value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentSplit() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Segment first,  Segment second,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentSplit() when $default != null:
+return $default(_that.first,_that.second,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Segment first,  Segment second,  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentSplit():
+return $default(_that.first,_that.second,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Segment first,  Segment second,  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentSplit() when $default != null:
+return $default(_that.first,_that.second,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _SegmentSplit implements SegmentSplit {
+  const _SegmentSplit({required this.first, required this.second, required this.revision});
+  
+
+@override final  Segment first;
+@override final  Segment second;
+@override final  int revision;
+
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentSplitCopyWith<_SegmentSplit> get copyWith => __$SegmentSplitCopyWithImpl<_SegmentSplit>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentSplit&&(identical(other.first, first) || other.first == first)&&(identical(other.second, second) || other.second == second)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,first,second,revision);
+}
+
+@override
+String toString() {
+    return 'SegmentSplit(first: $first, second: $second, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentSplitCopyWith<$Res> implements $SegmentSplitCopyWith<$Res> {
+  factory _$SegmentSplitCopyWith(_SegmentSplit value, $Res Function(_SegmentSplit) _then) = __$SegmentSplitCopyWithImpl;
+@override @useResult
+$Res call({
+ Segment first, Segment second, int revision
+});
+
+
+@override $SegmentCopyWith<$Res> get first;@override $SegmentCopyWith<$Res> get second;
+
+}
+/// @nodoc
+class __$SegmentSplitCopyWithImpl<$Res>
+    implements _$SegmentSplitCopyWith<$Res> {
+  __$SegmentSplitCopyWithImpl(this._self, this._then);
+
+  final _SegmentSplit _self;
+  final $Res Function(_SegmentSplit) _then;
+
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? first = null,Object? second = null,Object? revision = null,}) {
+  return _then(_SegmentSplit(
+first: null == first ? _self.first : first // ignore: cast_nullable_to_non_nullable
+as Segment,second: null == second ? _self.second : second // ignore: cast_nullable_to_non_nullable
+as Segment,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get first {
+  
+  return $SegmentCopyWith<$Res>(_self.first, (value) {
+    return _then(_self.copyWith(first: value));
+  });
+}/// Create a copy of SegmentSplit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get second {
+  
+  return $SegmentCopyWith<$Res>(_self.second, (value) {
+    return _then(_self.copyWith(second: value));
+  });
+}
+}
+
+/// @nodoc
+mixin _$SegmentMerge {
+
+ Segment get segment; String get removedId; int get revision;
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentMergeCopyWith<SegmentMerge> get copyWith => _$SegmentMergeCopyWithImpl<SegmentMerge>(this as SegmentMerge, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentMerge;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentMerge&&(identical(other.segment, _this.segment) || other.segment == _this.segment)&&(identical(other.removedId, _this.removedId) || other.removedId == _this.removedId)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as SegmentMerge;
+  return Object.hash(runtimeType,_this.segment,_this.removedId,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentMerge;
+  return 'SegmentMerge(segment: ${_this.segment}, removedId: ${_this.removedId}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentMergeCopyWith<$Res>  {
+  factory $SegmentMergeCopyWith(SegmentMerge value, $Res Function(SegmentMerge) _then) = _$SegmentMergeCopyWithImpl;
+@useResult
+$Res call({
+ Segment segment, String removedId, int revision
+});
+
+
+$SegmentCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class _$SegmentMergeCopyWithImpl<$Res>
+    implements $SegmentMergeCopyWith<$Res> {
+  _$SegmentMergeCopyWithImpl(this._self, this._then);
+
+  final SegmentMerge _self;
+  final $Res Function(SegmentMerge) _then;
+
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? segment = null,Object? removedId = null,Object? revision = null,}) {
+  return _then(SegmentMerge(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as Segment,removedId: null == removedId ? _self.removedId : removedId // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get segment {
+  
+  return $SegmentCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentMerge].
+extension SegmentMergePatterns on SegmentMerge {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentMerge value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentMerge() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentMerge value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentMerge():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentMerge value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentMerge() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Segment segment,  String removedId,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentMerge() when $default != null:
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Segment segment,  String removedId,  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentMerge():
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Segment segment,  String removedId,  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentMerge() when $default != null:
+return $default(_that.segment,_that.removedId,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _SegmentMerge implements SegmentMerge {
+  const _SegmentMerge({required this.segment, required this.removedId, required this.revision});
+  
+
+@override final  Segment segment;
+@override final  String removedId;
+@override final  int revision;
+
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentMergeCopyWith<_SegmentMerge> get copyWith => __$SegmentMergeCopyWithImpl<_SegmentMerge>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentMerge&&(identical(other.segment, segment) || other.segment == segment)&&(identical(other.removedId, removedId) || other.removedId == removedId)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,segment,removedId,revision);
+}
+
+@override
+String toString() {
+    return 'SegmentMerge(segment: $segment, removedId: $removedId, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentMergeCopyWith<$Res> implements $SegmentMergeCopyWith<$Res> {
+  factory _$SegmentMergeCopyWith(_SegmentMerge value, $Res Function(_SegmentMerge) _then) = __$SegmentMergeCopyWithImpl;
+@override @useResult
+$Res call({
+ Segment segment, String removedId, int revision
+});
+
+
+@override $SegmentCopyWith<$Res> get segment;
+
+}
+/// @nodoc
+class __$SegmentMergeCopyWithImpl<$Res>
+    implements _$SegmentMergeCopyWith<$Res> {
+  __$SegmentMergeCopyWithImpl(this._self, this._then);
+
+  final _SegmentMerge _self;
+  final $Res Function(_SegmentMerge) _then;
+
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? segment = null,Object? removedId = null,Object? revision = null,}) {
+  return _then(_SegmentMerge(
+segment: null == segment ? _self.segment : segment // ignore: cast_nullable_to_non_nullable
+as Segment,removedId: null == removedId ? _self.removedId : removedId // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of SegmentMerge
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SegmentCopyWith<$Res> get segment {
+  
+  return $SegmentCopyWith<$Res>(_self.segment, (value) {
+    return _then(_self.copyWith(segment: value));
+  });
+}
+}
+
 // dart format on

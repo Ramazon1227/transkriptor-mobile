@@ -50,6 +50,36 @@ class TranscriptFacade implements ITranscriptFacade {
   }
 
   @override
+  Future<Either<Failure, SegmentSplit>> splitSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int at,
+    required int revision,
+  }) async {
+    final result = await _repository.splitSegment(
+      transcriptId: transcriptId,
+      segmentId: segmentId,
+      at: at,
+      revision: revision,
+    );
+    return result.map((m) => m.toEntity());
+  }
+
+  @override
+  Future<Either<Failure, SegmentMerge>> mergeNext({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  }) async {
+    final result = await _repository.mergeNext(
+      transcriptId: transcriptId,
+      segmentId: segmentId,
+      revision: revision,
+    );
+    return result.map((m) => m.toEntity());
+  }
+
+  @override
   Future<Either<Failure, Speaker>> renameSpeaker({
     required String transcriptId,
     required String speakerId,
