@@ -558,6 +558,25 @@ class AppLocalizationsUz extends AppLocalizations {
       'Bu ish maydonida havola ochish huquqingiz yoʻq.';
 
   @override
+  String get exportTitle => 'Eksport';
+
+  @override
+  String get exportTimecodes => 'Vaqt belgilari';
+
+  @override
+  String get exportSpeakers => 'Maʼruzachi nomlari';
+
+  @override
+  String get exportPlainApostrophe => 'Oddiy apostrof (o\'zbek, ta\'lim)';
+
+  @override
+  String get exportPlainApostropheHint =>
+      'Koʻp odam shu belgi bilan qidiradi va yozadi. Saqlangan matn oʻzgarmaydi.';
+
+  @override
+  String get exportShare => 'Faylni saqlash yoki yuborish';
+
+  @override
   String get profileTitle => 'Profil';
 
   @override

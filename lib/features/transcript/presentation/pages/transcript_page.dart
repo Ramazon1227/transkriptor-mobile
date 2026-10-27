@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
+import 'package:transkriptor_uz/features/export/presentation/widgets/export_sheet.dart';
 import 'package:transkriptor_uz/features/share/presentation/widgets/share_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
@@ -46,6 +47,20 @@ class _TranscriptView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          // The copy on screen, so the file carries the edits just made.
+          BlocSelector<TranscriptCubit, TranscriptState, Transcript?>(
+            selector: (state) => (state.transcript?.segments.isEmpty ?? true)
+                ? null
+                : state.transcript,
+            builder: (context, transcript) => transcript == null
+                ? const SizedBox.shrink()
+                : IconButton(
+                    key: const Key('transcript_export'),
+                    tooltip: l10n.exportTitle,
+                    icon: const Icon(Icons.file_download_outlined),
+                    onPressed: () => ExportSheet.show(context, transcript),
+                  ),
+          ),
           // Only once the transcript is there: a link to a missing one
           // would be a 404 anyway.
           BlocSelector<TranscriptCubit, TranscriptState, bool>(

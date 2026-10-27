@@ -15,7 +15,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:record/record.dart' as _i1039;
-import 'package:transkriptor_uz/core/di/network_module.dart' as _i644;
+import 'package:share_plus/share_plus.dart' as _i998;
+import 'package:transkriptor_uz/core/di/network_module.dart' as _i645;
 import 'package:transkriptor_uz/core/events/library_changes.dart' as _i252;
 import 'package:transkriptor_uz/core/network/session_manager.dart' as _i754;
 import 'package:transkriptor_uz/core/network/token_interceptor.dart' as _i60;
@@ -35,6 +36,14 @@ import 'package:transkriptor_uz/features/auth/infrastructure/facades/auth_facade
     as _i1041;
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart'
     as _i838;
+import 'package:transkriptor_uz/features/export/application/export_cubit.dart'
+    as _i644;
+import 'package:transkriptor_uz/features/export/domain/i_export_facade.dart'
+    as _i938;
+import 'package:transkriptor_uz/features/export/infrastructure/facades/export_facade.dart'
+    as _i469;
+import 'package:transkriptor_uz/features/export/infrastructure/share_module.dart'
+    as _i41;
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart'
     as _i331;
 import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart'
@@ -97,6 +106,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
+    final shareModule = _$ShareModule();
     final recorderModule = _$RecorderModule();
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => networkModule.secureStorage,
@@ -106,6 +116,7 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
+    gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
     gh.lazySingleton<_i669.JobPollPolicy>(() => _i669.JobPollPolicy());
     gh.lazySingleton<_i1039.AudioRecorder>(() => recorderModule.audioRecorder);
     gh.lazySingleton<_i155.MediaPicker>(() => _i155.MediaPicker());
@@ -115,6 +126,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.retryDio(),
       instanceName: 'retryDio',
+    );
+    gh.lazySingleton<_i938.IExportFacade>(
+      () => _i469.ExportFacade(gh<_i998.SharePlus>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.uploadDio(),
@@ -129,6 +143,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i754.SessionManager>(),
         gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
+    );
+    gh.factory<_i644.ExportCubit>(
+      () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
     );
     gh.lazySingleton<_i239.IRecorderFacade>(
       () => _i293.RecorderFacade(gh<_i1039.AudioRecorder>()),
@@ -233,6 +250,8 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$NetworkModule extends _i644.NetworkModule {}
+class _$NetworkModule extends _i645.NetworkModule {}
+
+class _$ShareModule extends _i41.ShareModule {}
 
 class _$RecorderModule extends _i540.RecorderModule {}

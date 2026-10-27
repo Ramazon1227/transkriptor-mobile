@@ -1096,6 +1096,42 @@ abstract class AppLocalizations {
   /// **'Bu ish maydonida havola ochish huquqingiz yoʻq.'**
   String get shareForbidden;
 
+  /// No description provided for @exportTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eksport'**
+  String get exportTitle;
+
+  /// No description provided for @exportTimecodes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqt belgilari'**
+  String get exportTimecodes;
+
+  /// No description provided for @exportSpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi nomlari'**
+  String get exportSpeakers;
+
+  /// No description provided for @exportPlainApostrophe.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oddiy apostrof (o\'zbek, ta\'lim)'**
+  String get exportPlainApostrophe;
+
+  /// No description provided for @exportPlainApostropheHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Koʻp odam shu belgi bilan qidiradi va yozadi. Saqlangan matn oʻzgarmaydi.'**
+  String get exportPlainApostropheHint;
+
+  /// No description provided for @exportShare.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni saqlash yoki yuborish'**
+  String get exportShare;
+
   /// No description provided for @profileTitle.
   ///
   /// In uz, this message translates to:

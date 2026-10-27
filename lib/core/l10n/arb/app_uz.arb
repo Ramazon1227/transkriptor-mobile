@@ -211,6 +211,13 @@
   "shareRevoke": "Bekor qilish",
   "shareForbidden": "Bu ish maydonida havola ochish huquqingiz yoʻq.",
 
+  "exportTitle": "Eksport",
+  "exportTimecodes": "Vaqt belgilari",
+  "exportSpeakers": "Maʼruzachi nomlari",
+  "exportPlainApostrophe": "Oddiy apostrof (o'zbek, ta'lim)",
+  "exportPlainApostropheHint": "Koʻp odam shu belgi bilan qidiradi va yozadi. Saqlangan matn oʻzgarmaydi.",
+  "exportShare": "Faylni saqlash yoki yuborish",
+
   "profileTitle": "Profil",
   "profileMinutesLeft": "daqiqa qoldi",
   "profileWorkspace": "Ish maydoni",

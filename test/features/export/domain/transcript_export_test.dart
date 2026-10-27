@@ -1,0 +1,119 @@
+// The expected files are pasted verbatim from the web's output; wrapping
+// them would hide a byte difference.
+// ignore_for_file: lines_longer_than_80_chars
+import 'package:flutter_test/flutter_test.dart';
+import 'package:transkriptor_uz/features/export/domain/export_options.dart';
+import 'package:transkriptor_uz/features/export/domain/transcript_export.dart';
+import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
+
+// Expected outputs were produced by running tr-frontend/src/lib/export.ts
+// (render, default options) on the same four segments in Node, 2026-10-27.
+// A mismatch means the phone and the web would export different files.
+const _txt =
+    '[00:00:00] Ali: Salom. Bugun reja bor.\n\n[00:00:04] Ali: Birinchi masala byudjet, ikkinchisi\n\n[00:00:09] muddat. Uchinchisi jamoa.\n\n[00:01:05] Vali: Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n';
+const _txtBare =
+    'Salom. Bugun reja bor.\n\nBirinchi masala byudjet, ikkinchisi\n\nmuddat. Uchinchisi jamoa.\n\nRoziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n';
+const _srt =
+    '1\n00:00:00,000 --> 00:00:04,000\nAli: Salom. Bugun reja bor.\n\n2\n00:00:04,000 --> 00:00:09,000\nAli: Birinchi masala byudjet, ikkinchisi\n\n3\n00:00:09,000 --> 00:00:12,000\nmuddat. Uchinchisi jamoa.\n\n4\n00:01:05,000 --> 00:01:09,872\nVali: Roziman! Davom etamiz? Keyingi yigʻilishda\n\n5\n00:01:09,872 --> 00:01:14,280\nmoliyaviy hisobotni koʻrib chiqamiz va\n\n6\n00:01:14,280 --> 00:01:19,500\nqarorni ovozga qoʻyamiz, chunki muddat\nyaqin.\n';
+const _vtt =
+    'WEBVTT\n\n00:00:00.000 --> 00:00:04.000\n<v Ali>Salom. Bugun reja bor.\n\n00:00:04.000 --> 00:00:09.000\n<v Ali>Birinchi masala byudjet, ikkinchisi\n\n00:00:09.000 --> 00:00:12.000\nmuddat. Uchinchisi jamoa.\n\n00:01:05.000 --> 00:01:09.872\n<v Vali>Roziman! Davom etamiz? Keyingi yigʻilishda\n\n00:01:09.872 --> 00:01:14.280\n<v Vali>moliyaviy hisobotni koʻrib chiqamiz va\n\n00:01:14.280 --> 00:01:19.500\n<v Vali>qarorni ovozga qoʻyamiz, chunki muddat\nyaqin.\n';
+const _vttBare =
+    'WEBVTT\n\n00:00:00.000 --> 00:00:04.000\nSalom. Bugun reja bor.\n\n00:00:04.000 --> 00:00:09.000\nBirinchi masala byudjet, ikkinchisi\n\n00:00:09.000 --> 00:00:12.000\nmuddat. Uchinchisi jamoa.\n\n00:01:05.000 --> 00:01:09.872\nRoziman! Davom etamiz? Keyingi yigʻilishda\n\n00:01:09.872 --> 00:01:14.280\nmoliyaviy hisobotni koʻrib chiqamiz va\n\n00:01:14.280 --> 00:01:19.500\nqarorni ovozga qoʻyamiz, chunki muddat\nyaqin.\n';
+
+Segment _seg(String id, String? speaker, int start, int end, String text) =>
+    Segment(
+      id: id,
+      start: Duration(milliseconds: start),
+      end: Duration(milliseconds: end),
+      text: text,
+      speakerId: speaker,
+    );
+
+final _transcript = Transcript(
+  id: 't1',
+  title: 'Kengash: 27/10',
+  speakers: const [
+    Speaker(id: 'a', label: 'Ali', ordinal: 1),
+    Speaker(id: 'v', label: 'Vali', ordinal: 2),
+  ],
+  segments: [
+    _seg('1', 'a', 0, 4000, 'Salom. Bugun reja bor.'),
+    _seg('2', 'a', 4000, 9000, 'Birinchi masala byudjet, ikkinchisi'),
+    // No speaker: no prefix and no voice tag.
+    _seg('3', null, 9000, 12000, 'muddat. Uchinchisi jamoa.'),
+    _seg(
+      '4',
+      'v',
+      65000,
+      79500,
+      'Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni '
+          'koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.',
+    ),
+  ],
+);
+
+void main() {
+  const base = ExportOptions();
+
+  test('TXT matches the web', () {
+    expect(TranscriptExport.render(ExportFormat.txt, _transcript, base), _txt);
+    expect(
+      TranscriptExport.render(
+        ExportFormat.txt,
+        _transcript,
+        const ExportOptions(timecodes: false, speakers: false),
+      ),
+      _txtBare,
+    );
+  });
+
+  test('SRT matches the web, long segments split into cues', () {
+    expect(TranscriptExport.render(ExportFormat.srt, _transcript, base), _srt);
+  });
+
+  test('VTT matches the web, with and without voice tags', () {
+    expect(TranscriptExport.render(ExportFormat.vtt, _transcript, base), _vtt);
+    expect(
+      TranscriptExport.render(
+        ExportFormat.vtt,
+        _transcript,
+        const ExportOptions(speakers: false),
+      ),
+      _vttBare,
+    );
+  });
+
+  test('subtitles ignore the timecode switch', () {
+    expect(
+      TranscriptExport.render(
+        ExportFormat.srt,
+        _transcript,
+        const ExportOptions(timecodes: false),
+      ),
+      _srt,
+    );
+  });
+
+  test('plain apostrophe replaces U+02BB and U+02BC, text and names', () {
+    final t = _transcript.copyWith(
+      speakers: const [Speaker(id: 'a', label: 'Gʻani', ordinal: 1)],
+      segments: [_seg('1', 'a', 0, 1000, 'taʼlim oʻzbek')],
+    );
+    expect(
+      TranscriptExport.render(
+        ExportFormat.txt,
+        t,
+        const ExportOptions(plainApostrophe: true),
+      ),
+      "[00:00:00] G'ani: ta'lim o'zbek\n",
+    );
+  });
+
+  test('file names drop characters a file system refuses', () {
+    expect(
+      TranscriptExport.fileName('Kengash: 27/10', ExportFormat.srt),
+      'Kengash_ 27_10.srt',
+    );
+    expect(TranscriptExport.fileName('', ExportFormat.txt), 'transkript.txt');
+  });
+}
