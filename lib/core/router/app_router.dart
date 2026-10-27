@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/network/session_manager.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
+import 'package:transkriptor_uz/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
@@ -27,10 +28,11 @@ class AppRouter {
     initialLocation: Routes.home,
     refreshListenable: _session,
     redirect: (context, state) {
-      // Login and register are open without a session.
+      // Login, register and password reset are open without a session.
       final atAuth =
           state.matchedLocation == Routes.login ||
-          state.matchedLocation == Routes.register;
+          state.matchedLocation == Routes.register ||
+          state.matchedLocation == Routes.forgotPassword;
       // Leaving them is the page's own job: it navigates once the account
       // is stored, never before.
       if (_session.isExpired && !atAuth) return Routes.login;
@@ -44,6 +46,12 @@ class AppRouter {
           GoRoute(
             path: 'register',
             builder: (context, state) => const RegisterPage(),
+          ),
+          GoRoute(
+            path: 'forgot',
+            builder: (context, state) => ForgotPasswordPage(
+              initialEmail: state.extra is String ? state.extra! as String : '',
+            ),
           ),
         ],
       ),

@@ -116,6 +116,19 @@ class _LoginViewState extends State<_LoginView> {
                     ),
                   ),
                 ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    key: const Key('login_to_forgot'),
+                    onPressed: loading
+                        ? null
+                        : () => context.push(
+                            Routes.forgotPassword,
+                            extra: _email.text.trim(),
+                          ),
+                    child: Text(l10n.loginForgot),
+                  ),
+                ),
                 if (failure != null) ...[
                   const SizedBox(height: 14),
                   Text(

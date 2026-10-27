@@ -46,6 +46,19 @@
   "passwordTooShort": "Parol kamida 10 belgi boʻlishi kerak",
   "passwordTooLong": "Parol juda uzun (koʻpi bilan 72 bayt)",
   "passwordNeedsMix": "Parolda harf va kamida bitta raqam yoki belgi boʻlishi kerak",
+  "loginForgot": "Parolni unutdingizmi?",
+  "forgotTitle": "Parolni tiklash",
+  "forgotSubtitle": "Hisobingiz pochtasini kiriting — tiklash havolasini yuboramiz.",
+  "forgotSubmit": "Havola yuborish",
+  "forgotSentTitle": "Pochtangizni tekshiring",
+  "forgotSentBody": "Agar {email} bilan hisob boʻlsa, unga parolni tiklash havolasi yuborildi.",
+  "@forgotSentBody": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "forgotSentHint": "Havola brauzerda ochiladi: yangi parolni oʻsha yerda oʻrnatib, shu ilovaga qayta kiring. U faqat bir marta ishlaydi, muddati xatda yozilgan. Xat kelmasa, «Spam» papkasini koʻring yoki bir daqiqadan keyin qayta soʻrang.",
+  "forgotSendAgain": "Qayta yuborish",
+  "forgotRemembered": "Parol esingizga tushdimi?",
+  "forgotUnavailable": "Parolni tiklash hozircha ishlamaydi — pochta xizmati ulanmagan.",
 
   "homeGreeting": "Salom, {name}",
   "@homeGreeting": {

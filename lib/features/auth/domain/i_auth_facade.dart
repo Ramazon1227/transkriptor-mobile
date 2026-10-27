@@ -24,4 +24,9 @@ abstract interface class IAuthFacade {
   /// Revokes the refresh token on the server when it can, and always
   /// forgets the local tokens.
   Future<Either<Failure, Unit>> logout();
+
+  /// Asks for a reset link by mail. The answer is the same for an unknown
+  /// email, so success says nothing about whether the account exists. No
+  /// mail service on the server is `Failure.server(statusCode: 503)`.
+  Future<Either<Failure, Unit>> requestPasswordReset({required String email});
 }

@@ -103,4 +103,8 @@ class AuthFacade implements IAuthFacade {
     }
     return const Right(unit);
   }
+
+  @override
+  Future<Either<Failure, Unit>> requestPasswordReset({required String email}) =>
+      _repository.requestPasswordReset(email: email);
 }

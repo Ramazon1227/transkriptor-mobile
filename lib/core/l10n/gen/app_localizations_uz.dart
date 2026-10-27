@@ -151,6 +151,41 @@ class AppLocalizationsUz extends AppLocalizations {
       'Parolda harf va kamida bitta raqam yoki belgi boʻlishi kerak';
 
   @override
+  String get loginForgot => 'Parolni unutdingizmi?';
+
+  @override
+  String get forgotTitle => 'Parolni tiklash';
+
+  @override
+  String get forgotSubtitle =>
+      'Hisobingiz pochtasini kiriting — tiklash havolasini yuboramiz.';
+
+  @override
+  String get forgotSubmit => 'Havola yuborish';
+
+  @override
+  String get forgotSentTitle => 'Pochtangizni tekshiring';
+
+  @override
+  String forgotSentBody(String email) {
+    return 'Agar $email bilan hisob boʻlsa, unga parolni tiklash havolasi yuborildi.';
+  }
+
+  @override
+  String get forgotSentHint =>
+      'Havola brauzerda ochiladi: yangi parolni oʻsha yerda oʻrnatib, shu ilovaga qayta kiring. U faqat bir marta ishlaydi, muddati xatda yozilgan. Xat kelmasa, «Spam» papkasini koʻring yoki bir daqiqadan keyin qayta soʻrang.';
+
+  @override
+  String get forgotSendAgain => 'Qayta yuborish';
+
+  @override
+  String get forgotRemembered => 'Parol esingizga tushdimi?';
+
+  @override
+  String get forgotUnavailable =>
+      'Parolni tiklash hozircha ishlamaydi — pochta xizmati ulanmagan.';
+
+  @override
   String homeGreeting(String name) {
     return 'Salom, $name';
   }

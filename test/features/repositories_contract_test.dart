@@ -105,6 +105,28 @@ void main() {
       expect(http.sent.single.body, {'refresh_token': 'r'});
     });
 
+    test('forgot posts only the email and takes the 202', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/auth/password/forgot': (202, ok({'sent': true})),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .requestPasswordReset(email: 'e@misol.uz');
+      expect(result.isRight(), isTrue);
+      expect(http.sent.single.body, {'email': 'e@misol.uz'});
+    });
+
+    test('forgot without a mail service keeps its 503', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/auth/password/forgot': (503, {'status': 'UNAVAILABLE'}),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .requestPasswordReset(email: 'e@misol.uz');
+      expect(
+        result.fold((f) => f, (_) => null),
+        isA<ServerFailure>().having((f) => f.statusCode, 'statusCode', 503),
+      );
+    });
+
     test('a body without data is a parsing failure', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/me': (200, {'status': 'OK'}),

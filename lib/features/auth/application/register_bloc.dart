@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/features/auth/domain/email_rules.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
 import 'package:transkriptor_uz/features/auth/domain/password_rules.dart';
@@ -25,7 +26,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     Emitter<RegisterState> emit,
   ) async {
     final email = event.email.trim();
-    final emailInvalid = !_looksLikeEmail(email);
+    final emailInvalid = !EmailRules.looksLikeEmail(email);
     final passwordProblem = PasswordRules.check(event.password);
     if (emailInvalid || passwordProblem != null) {
       emit(
@@ -51,11 +52,5 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       (account) =>
           emit(RegisterState(status: RegisterStatus.success, account: account)),
     );
-  }
-
-  /// A shape check only; the server has the final word.
-  static bool _looksLikeEmail(String s) {
-    final at = s.indexOf('@');
-    return at > 0 && at == s.lastIndexOf('@') && s.indexOf('.', at) > at + 1;
   }
 }

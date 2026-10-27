@@ -5,6 +5,7 @@ abstract final class Endpoints {
   static const String authRegister = '/api/v1/auth/register';
   static const String authRefresh = '/api/v1/auth/refresh';
   static const String authLogout = '/api/v1/auth/logout';
+  static const String authPasswordForgot = '/api/v1/auth/password/forgot';
   static const String me = '/api/v1/me';
 
   // Files.

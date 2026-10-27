@@ -66,4 +66,15 @@ class AuthRepository {
       return unit;
     });
   }
+
+  /// 202 with the same body whether or not the email has an account.
+  Future<Either<Failure, Unit>> requestPasswordReset({required String email}) {
+    return runRequest(() async {
+      await _dio.post<Map<String, dynamic>>(
+        Endpoints.authPasswordForgot,
+        data: {'email': email},
+      );
+      return unit;
+    });
+  }
 }

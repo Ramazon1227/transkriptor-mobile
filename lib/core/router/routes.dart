@@ -4,6 +4,9 @@ abstract final class Routes {
   /// Pushed above login, so back returns there.
   static const String register = '/login/register';
 
+  /// Above login too; takes the email typed there as an optional `extra`.
+  static const String forgotPassword = '/login/forgot';
+
   // Tabs of the shell.
   static const String home = '/';
   static const String files = '/files';

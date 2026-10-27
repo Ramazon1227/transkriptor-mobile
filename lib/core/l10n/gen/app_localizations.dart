@@ -358,6 +358,66 @@ abstract class AppLocalizations {
   /// **'Parolda harf va kamida bitta raqam yoki belgi boʻlishi kerak'**
   String get passwordNeedsMix;
 
+  /// No description provided for @loginForgot.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parolni unutdingizmi?'**
+  String get loginForgot;
+
+  /// No description provided for @forgotTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parolni tiklash'**
+  String get forgotTitle;
+
+  /// No description provided for @forgotSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobingiz pochtasini kiriting — tiklash havolasini yuboramiz.'**
+  String get forgotSubtitle;
+
+  /// No description provided for @forgotSubmit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola yuborish'**
+  String get forgotSubmit;
+
+  /// No description provided for @forgotSentTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Pochtangizni tekshiring'**
+  String get forgotSentTitle;
+
+  /// No description provided for @forgotSentBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Agar {email} bilan hisob boʻlsa, unga parolni tiklash havolasi yuborildi.'**
+  String forgotSentBody(String email);
+
+  /// No description provided for @forgotSentHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola brauzerda ochiladi: yangi parolni oʻsha yerda oʻrnatib, shu ilovaga qayta kiring. U faqat bir marta ishlaydi, muddati xatda yozilgan. Xat kelmasa, «Spam» papkasini koʻring yoki bir daqiqadan keyin qayta soʻrang.'**
+  String get forgotSentHint;
+
+  /// No description provided for @forgotSendAgain.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yuborish'**
+  String get forgotSendAgain;
+
+  /// No description provided for @forgotRemembered.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parol esingizga tushdimi?'**
+  String get forgotRemembered;
+
+  /// No description provided for @forgotUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parolni tiklash hozircha ishlamaydi — pochta xizmati ulanmagan.'**
+  String get forgotUnavailable;
+
   /// No description provided for @homeGreeting.
   ///
   /// In uz, this message translates to:

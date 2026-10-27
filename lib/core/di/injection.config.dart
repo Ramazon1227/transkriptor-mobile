@@ -23,6 +23,8 @@ import 'package:transkriptor_uz/core/router/app_router.dart' as _i1008;
 import 'package:transkriptor_uz/core/storage/token_storage.dart' as _i933;
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart'
     as _i322;
+import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.dart'
+    as _i595;
 import 'package:transkriptor_uz/features/auth/application/login_bloc.dart'
     as _i441;
 import 'package:transkriptor_uz/features/auth/application/register_bloc.dart'
@@ -169,6 +171,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i118.ILibraryFacade>(),
         gh<_i252.LibraryChanges>(),
       ),
+    );
+    gh.factory<_i595.ForgotPasswordBloc>(
+      () => _i595.ForgotPasswordBloc(gh<_i865.IAuthFacade>()),
     );
     gh.factory<_i441.LoginBloc>(() => _i441.LoginBloc(gh<_i865.IAuthFacade>()));
     gh.factory<_i7.RegisterBloc>(
