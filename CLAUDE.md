@@ -16,7 +16,7 @@ Do not add packages outside this list without asking.
 
 ## 1. Workflow (every task)
 
-1. Before writing code, fully read the most similar existing feature (model → repository → facade → bloc → UI) and follow exactly that pattern. If no similar feature exists, use the `example` feature as the template.
+1. Before writing code, fully read the most similar existing feature (model → repository → facade → bloc → UI) and follow exactly that pattern. If no similar feature exists, use `library` (bloc with events) or `job` (cubit) as the template.
 2. Do not add new packages, patterns, or folder structures without asking.
 3. Do only what was asked. Do not refactor, reformat, or rename code unrelated to the task.
 4. If the task says "no UI", write only the data layer and the bloc.

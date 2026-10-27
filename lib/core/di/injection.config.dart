@@ -33,14 +33,6 @@ import 'package:transkriptor_uz/features/auth/infrastructure/facades/auth_facade
     as _i1041;
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart'
     as _i838;
-import 'package:transkriptor_uz/features/example/application/example_bloc.dart'
-    as _i215;
-import 'package:transkriptor_uz/features/example/domain/i_example_facade.dart'
-    as _i119;
-import 'package:transkriptor_uz/features/example/infrastructure/facades/example_facade.dart'
-    as _i152;
-import 'package:transkriptor_uz/features/example/infrastructure/repositories/example_repository.dart'
-    as _i570;
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart'
     as _i331;
 import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart'
@@ -137,9 +129,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i838.AuthRepository>(
       () => _i838.AuthRepository(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i570.ExampleRepository>(
-      () => _i570.ExampleRepository(gh<_i361.Dio>()),
-    );
     gh.lazySingleton<_i730.JobRepository>(
       () => _i730.JobRepository(gh<_i361.Dio>()),
     );
@@ -181,9 +170,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
-    gh.lazySingleton<_i119.IExampleFacade>(
-      () => _i152.ExampleFacade(gh<_i570.ExampleRepository>()),
-    );
     gh.factory<_i441.LoginBloc>(() => _i441.LoginBloc(gh<_i865.IAuthFacade>()));
     gh.factory<_i7.RegisterBloc>(
       () => _i7.RegisterBloc(gh<_i865.IAuthFacade>()),
@@ -196,9 +182,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i730.JobRepository>(),
         gh<_i252.LibraryChanges>(),
       ),
-    );
-    gh.factory<_i215.ExampleBloc>(
-      () => _i215.ExampleBloc(gh<_i119.IExampleFacade>()),
     );
     gh.lazySingleton<_i122.IUploadFacade>(
       () => _i612.UploadFacade(

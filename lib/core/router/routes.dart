@@ -20,6 +20,4 @@ abstract final class Routes {
 
   static String jobOf(String id) => '/job/$id';
   static String transcriptOf(String id) => '/transcript/$id';
-
-  static const String example = '/example';
 }

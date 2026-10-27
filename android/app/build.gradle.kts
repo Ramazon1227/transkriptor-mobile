@@ -1,8 +1,17 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing. android/key.properties and the keystore it names are
+// git-ignored and never leave the machine that builds releases.
+val keystoreProperties: Properties? =
+    rootProject.file("key.properties").takeIf { it.exists() }?.let { f ->
+        Properties().apply { f.inputStream().use { load(it) } }
+    }
 
 android {
     namespace = "uz.transkriptor.transkriptor_uz"
@@ -29,12 +38,38 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        keystoreProperties?.let { props ->
+            create("release") {
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+                storeFile = file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Never the debug key: an APK signed with it cannot be updated
+            // by one signed with the real key later, so every install would
+            // have to be removed first. Without key.properties the release
+            // build stops instead (see the taskGraph check below).
+            signingConfig = signingConfigs.findByName("release")
         }
+    }
+}
+
+// Fails only release builds; debug and profile need no keystore.
+gradle.taskGraph.whenReady {
+    val wantsRelease = allTasks.any { task ->
+        task.project == project && task.name.contains("Release")
+    }
+    if (wantsRelease && keystoreProperties == null) {
+        throw GradleException(
+            "android/key.properties is missing: a release build must be " +
+                "signed with the upload keystore (README §4.2).",
+        )
     }
 }
 

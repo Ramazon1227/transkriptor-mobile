@@ -441,18 +441,4 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileLogoutTitle => 'Hisobdan chiqasizmi?';
-
-  @override
-  String get examplePostsTitle => 'Namuna: postlar';
-
-  @override
-  String get examplePostsEmpty => 'Postlar yoʻq.';
-
-  @override
-  String get exampleFilterAll => 'Hammasi';
-
-  @override
-  String exampleFilterUser(int id) {
-    return 'Foydalanuvchi $id';
-  }
 }

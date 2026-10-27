@@ -897,30 +897,6 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Hisobdan chiqasizmi?'**
   String get profileLogoutTitle;
-
-  /// No description provided for @examplePostsTitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Namuna: postlar'**
-  String get examplePostsTitle;
-
-  /// No description provided for @examplePostsEmpty.
-  ///
-  /// In uz, this message translates to:
-  /// **'Postlar yoʻq.'**
-  String get examplePostsEmpty;
-
-  /// No description provided for @exampleFilterAll.
-  ///
-  /// In uz, this message translates to:
-  /// **'Hammasi'**
-  String get exampleFilterAll;
-
-  /// No description provided for @exampleFilterUser.
-  ///
-  /// In uz, this message translates to:
-  /// **'Foydalanuvchi {id}'**
-  String exampleFilterUser(int id);
 }
 
 class _AppLocalizationsDelegate

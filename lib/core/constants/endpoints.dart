@@ -19,7 +19,4 @@ abstract final class Endpoints {
   static String jobById(String id) => '/api/v1/job/$id';
   static String jobCancel(String id) => '/api/v1/job/$id/cancel';
   static String transcript(String id) => '/api/v1/transcript/$id';
-
-  // Example feature — jsonplaceholder.
-  static const String posts = '/posts';
 }

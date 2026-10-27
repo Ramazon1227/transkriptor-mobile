@@ -152,10 +152,38 @@ Ikki narsaga eʼtibor bering:
 
 - **Faqat `https://`.** Release build `http://` manzilga ulanmaydi —
   Android uni bloklaydi. Ochiq HTTP faqat debug build'da yoqilgan.
-- **Imzo.** Hozir release ham debug kaliti bilan imzolanadi
-  (`android/app/build.gradle.kts`). Google Play'ga chiqarishdan oldin
-  oʻzingizning keystore'ingizni yaratib ulash kerak. `key.properties` va
-  `*.jks` `.gitignore`da — ularni hech qachon commit qilmang.
+- **Imzo.** Release faqat oʻz kalitingiz bilan imzolanadi. `android/key.properties`
+  boʻlmasa, release build xato bilan toʻxtaydi (debug va profile kalitsiz
+  yigʻilaveradi). Debug kaliti bilan imzolangan APK keyin haqiqiy kalitli
+  versiya bilan yangilanmaydi — har kim ilovani oʻchirib qayta oʻrnatishi
+  kerak boʻlardi, shuning uchun bunday yoʻl yopilgan.
+
+#### Kalitni bir marta yaratish
+
+```bash
+keytool -genkeypair -v -keystore ~/keys/transkriptor-upload.jks \
+  -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+`keytool` parol va ism soʻraydi. Keyin `android/key.properties`:
+
+```properties
+storePassword=<parol>
+keyPassword=<parol>
+keyAlias=upload
+storeFile=/Users/<siz>/keys/transkriptor-upload.jks
+```
+
+`storeFile` — toʻliq yoʻl (yoki `android/app/` ga nisbatan yoʻl).
+
+- `key.properties` va `*.jks` `.gitignore`da — **hech qachon commit
+  qilmang** va repo ichida saqlamang.
+- `.jks` fayl va parolning **zaxira nusxasi** boʻlsin (parol menejeri +
+  boshqa disk). Yoʻqolsa, Play'dagi ilovani shu kalit bilan yangilab
+  boʻlmaydi; Play App Signing yoqilgan boʻlsa, Google orqali kalitni
+  almashtirish mumkin, lekin bu bir necha kunlik jarayon.
+- Imzoni tekshirish:
+  `apksigner verify --print-certs build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`
 
 ---
 

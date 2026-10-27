@@ -5,7 +5,6 @@ import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
-import 'package:transkriptor_uz/features/example/presentation/pages/example_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
@@ -99,11 +98,6 @@ class AppRouter {
         path: Routes.transcript,
         builder: (context, state) =>
             TranscriptPage(transcriptId: state.pathParameters['id']!),
-      ),
-      // The feature template; kept reachable for reference.
-      GoRoute(
-        path: Routes.example,
-        builder: (context, state) => const ExamplePage(),
       ),
     ],
   );

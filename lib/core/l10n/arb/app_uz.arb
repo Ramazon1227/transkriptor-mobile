@@ -164,17 +164,5 @@
   "profileMinutesLeft": "daqiqa qoldi",
   "profileWorkspace": "Ish maydoni",
   "profileLogout": "Chiqish",
-  "profileLogoutTitle": "Hisobdan chiqasizmi?",
-
-  "examplePostsTitle": "Namuna: postlar",
-  "examplePostsEmpty": "Postlar yoʻq.",
-  "exampleFilterAll": "Hammasi",
-  "exampleFilterUser": "Foydalanuvchi {id}",
-  "@exampleFilterUser": {
-    "placeholders": {
-      "id": {
-        "type": "int"
-      }
-    }
-  }
+  "profileLogoutTitle": "Hisobdan chiqasizmi?"
 }
