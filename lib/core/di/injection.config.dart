@@ -14,6 +14,7 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:flutter/services.dart' as _i281;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
+import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:record/record.dart' as _i1039;
 import 'package:share_plus/share_plus.dart' as _i998;
@@ -35,8 +36,12 @@ import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart'
     as _i865;
 import 'package:transkriptor_uz/features/auth/infrastructure/facades/auth_facade.dart'
     as _i1041;
+import 'package:transkriptor_uz/features/auth/infrastructure/google_module.dart'
+    as _i64;
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart'
     as _i838;
+import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart'
+    as _i605;
 import 'package:transkriptor_uz/features/export/application/export_cubit.dart'
     as _i644;
 import 'package:transkriptor_uz/features/export/domain/i_export_facade.dart'
@@ -111,6 +116,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
+    final googleModule = _$GoogleModule();
     final shareModule = _$ShareModule();
     final recorderModule = _$RecorderModule();
     gh.lazySingleton<_i558.FlutterSecureStorage>(
@@ -121,6 +127,7 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
+    gh.lazySingleton<_i116.GoogleSignIn>(() => googleModule.googleSignIn);
     gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
     gh.lazySingleton<_i281.AssetBundle>(() => shareModule.assetBundle);
     gh.lazySingleton<_i669.JobPollPolicy>(() => _i669.JobPollPolicy());
@@ -153,6 +160,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i239.IRecorderFacade>(
       () => _i293.RecorderFacade(gh<_i1039.AudioRecorder>()),
     );
+    gh.lazySingleton<_i605.GoogleIdTokenSource>(
+      () => _i605.GoogleIdTokenSource(gh<_i116.GoogleSignIn>()),
+    );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.dio(gh<_i60.TokenInterceptor>()),
     );
@@ -173,6 +183,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i118.ILibraryFacade>(
       () => _i985.LibraryFacade(gh<_i203.LibraryRepository>()),
+    );
+    gh.lazySingleton<_i865.IAuthFacade>(
+      () => _i1041.AuthFacade(
+        gh<_i838.AuthRepository>(),
+        gh<_i933.TokenStorage>(),
+        gh<_i754.SessionManager>(),
+        gh<_i605.GoogleIdTokenSource>(),
+      ),
     );
     gh.factory<_i899.FileActionsCubit>(
       () => _i899.FileActionsCubit(
@@ -197,13 +215,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i644.ExportCubit>(
       () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
-    );
-    gh.lazySingleton<_i865.IAuthFacade>(
-      () => _i1041.AuthFacade(
-        gh<_i838.AuthRepository>(),
-        gh<_i933.TokenStorage>(),
-        gh<_i754.SessionManager>(),
-      ),
     );
     gh.factory<_i322.AccountCubit>(
       () => _i322.AccountCubit(
@@ -269,6 +280,8 @@ extension GetItInjectableX on _i174.GetIt {
 }
 
 class _$NetworkModule extends _i645.NetworkModule {}
+
+class _$GoogleModule extends _i64.GoogleModule {}
 
 class _$ShareModule extends _i41.ShareModule {}
 

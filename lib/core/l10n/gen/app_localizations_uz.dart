@@ -230,6 +230,31 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get loginOr => 'yoki';
+
+  @override
+  String get loginGoogle => 'Google bilan kirish';
+
+  @override
+  String get loginGoogleUnverified =>
+      'Google bu pochtani tasdiqlamagan — email va parol bilan kiring.';
+
+  @override
+  String get loginGoogleRejected =>
+      'Google kirishi tasdiqlanmadi. Qaytadan urinib koʻring.';
+
+  @override
+  String get loginGoogleDisabled => 'Google bilan kirish serverda yoqilmagan.';
+
+  @override
+  String get loginGoogleUnavailable =>
+      'Google hozir javob bermayapti. Birozdan keyin urinib koʻring.';
+
+  @override
+  String get loginGoogleFailed =>
+      'Google bilan kirib boʻlmadi. Telefonda Google Play xizmatlari borligini tekshiring.';
+
+  @override
   String get filesTitle => 'Fayllar';
 
   @override

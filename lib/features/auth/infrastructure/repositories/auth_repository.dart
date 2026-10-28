@@ -50,6 +50,31 @@ class AuthRepository {
     });
   }
 
+  /// The web client id when Google sign-in is on, null when it is off.
+  Future<Either<Failure, String?>> googleClientId() {
+    return runRequest(() async {
+      final response = await _dio.get<Map<String, dynamic>>(
+        Endpoints.authOAuthProviders,
+      );
+      final google = envelopeData(response.data)['google'];
+      if (google is! Map<String, dynamic>) return null;
+      final id = google['client_id'];
+      return id is String && id.isNotEmpty ? id : null;
+    });
+  }
+
+  /// `data` carries the token pair at the top level, plus `user` and
+  /// `created`, which the app reads from `GET /me` instead.
+  Future<Either<Failure, TokenPair>> googleSignIn({required String idToken}) {
+    return runRequest(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        Endpoints.authOAuthGoogle,
+        data: {'id_token': idToken},
+      );
+      return TokenPair.fromJson(envelopeData(response.data));
+    });
+  }
+
   Future<Either<Failure, MeModel>> me() {
     return runRequest(() async {
       final response = await _dio.get<Map<String, dynamic>>(Endpoints.me);

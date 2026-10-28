@@ -496,6 +496,48 @@ abstract class AppLocalizations {
   /// **'{minutes} daq'**
   String minutesShort(int minutes);
 
+  /// No description provided for @loginOr.
+  ///
+  /// In uz, this message translates to:
+  /// **'yoki'**
+  String get loginOr;
+
+  /// No description provided for @loginGoogle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google bilan kirish'**
+  String get loginGoogle;
+
+  /// No description provided for @loginGoogleUnverified.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google bu pochtani tasdiqlamagan — email va parol bilan kiring.'**
+  String get loginGoogleUnverified;
+
+  /// No description provided for @loginGoogleRejected.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google kirishi tasdiqlanmadi. Qaytadan urinib koʻring.'**
+  String get loginGoogleRejected;
+
+  /// No description provided for @loginGoogleDisabled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google bilan kirish serverda yoqilmagan.'**
+  String get loginGoogleDisabled;
+
+  /// No description provided for @loginGoogleUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google hozir javob bermayapti. Birozdan keyin urinib koʻring.'**
+  String get loginGoogleUnavailable;
+
+  /// No description provided for @loginGoogleFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google bilan kirib boʻlmadi. Telefonda Google Play xizmatlari borligini tekshiring.'**
+  String get loginGoogleFailed;
+
   /// No description provided for @filesTitle.
   ///
   /// In uz, this message translates to:

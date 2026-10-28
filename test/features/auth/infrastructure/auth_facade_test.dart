@@ -8,15 +8,19 @@ import 'package:transkriptor_uz/core/storage/token_storage.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/facades/auth_facade.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/models/me_model.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
+import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart';
 
 class _MockRepository extends Mock implements AuthRepository;
 
 class _MockStorage extends Mock implements TokenStorage;
 
+class _MockGoogle extends Mock implements GoogleIdTokenSource;
+
 void main() {
   late _MockRepository repository;
   late _MockStorage storage;
   late SessionManager session;
+  late _MockGoogle google;
   late AuthFacade facade;
 
   const me = MeModel(
@@ -30,7 +34,9 @@ void main() {
     repository = _MockRepository();
     storage = _MockStorage();
     session = SessionManager()..expire();
-    facade = AuthFacade(repository, storage, session);
+    google = _MockGoogle();
+    when(() => google.signOut()).thenAnswer((_) async {});
+    facade = AuthFacade(repository, storage, session, google);
     when(
       () => storage.save(
         accessToken: any(named: 'accessToken'),
@@ -38,6 +44,62 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(() => storage.clear()).thenAnswer((_) async {});
+  });
+
+  group('signInWithGoogle', () {
+    test('sends the SDK token and signs in like login', () async {
+      when(() => google.idToken('web-id')).thenAnswer((_) async => 'g-token');
+      when(() => repository.googleSignIn(idToken: 'g-token')).thenAnswer(
+        (_) async =>
+            const Right(TokenPair(accessToken: 'a', refreshToken: 'r')),
+      );
+      when(() => repository.me()).thenAnswer((_) async => const Right(me));
+
+      final result = await facade.signInWithGoogle(clientId: 'web-id');
+
+      expect(result.isRight(), isTrue);
+      expect(session.isExpired, isFalse);
+      verify(() => storage.save(accessToken: 'a', refreshToken: 'r')).called(1);
+    });
+
+    test('a closed picker is cancelled and sends nothing', () async {
+      when(() => google.idToken(any())).thenAnswer((_) async => null);
+
+      final result = await facade.signInWithGoogle(clientId: 'web-id');
+
+      expect(result, const Left<Failure, Object>(Failure.cancelled()));
+      verifyNever(
+        () => repository.googleSignIn(idToken: any(named: 'idToken')),
+      );
+    });
+
+    test('an SDK error is unknown, not a crash', () async {
+      when(() => google.idToken(any()))
+          .thenThrow(Exception('no play services'));
+
+      final result = await facade.signInWithGoogle(clientId: 'web-id');
+
+      expect(result, const Left<Failure, Object>(Failure.unknown()));
+    });
+
+    test('an unverified Google email stores nothing', () async {
+      when(() => google.idToken(any())).thenAnswer((_) async => 'g-token');
+      when(() => repository.googleSignIn(idToken: any(named: 'idToken')))
+          .thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
+
+      final result = await facade.signInWithGoogle(clientId: 'web-id');
+
+      expect(
+        result,
+        const Left<Failure, Object>(Failure.server(statusCode: 403)),
+      );
+      verifyNever(
+        () => storage.save(
+          accessToken: any(named: 'accessToken'),
+          refreshToken: any(named: 'refreshToken'),
+        ),
+      );
+    });
   });
 
   group('login', () {

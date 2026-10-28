@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<LoginBloc>(),
+      create: (_) => getIt<LoginBloc>()..add(const LoginStarted()),
       child: const _LoginView(),
     );
   }
@@ -132,10 +132,7 @@ class _LoginViewState extends State<_LoginView> {
                 if (failure != null) ...[
                   const SizedBox(height: 14),
                   Text(
-                    // On this screen a 401 means the password is wrong.
-                    failure is UnauthorizedFailure
-                        ? l10n.loginWrongCredentials
-                        : failure.message(l10n),
+                    _failureText(l10n, failure, viaGoogle: state.viaGoogle),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -152,6 +149,30 @@ class _LoginViewState extends State<_LoginView> {
                         )
                       : Text(l10n.loginButton),
                 ),
+                if (state.googleClientId != null) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(l10n.loginOr, style: AppText.muted),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    key: const Key('login_google'),
+                    onPressed: loading
+                        ? null
+                        : () => context.read<LoginBloc>().add(
+                            const LoginGoogleRequested(),
+                          ),
+                    icon: const Icon(Icons.account_circle_outlined, size: 18),
+                    label: Text(l10n.loginGoogle),
+                  ),
+                ],
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -173,4 +194,28 @@ class _LoginViewState extends State<_LoginView> {
       },
     );
   }
+}
+
+String _failureText(
+  AppLocalizations l10n,
+  Failure failure, {
+  required bool viaGoogle,
+}) {
+  if (!viaGoogle) {
+    // On this screen a 401 means the password is wrong.
+    return failure is UnauthorizedFailure
+        ? l10n.loginWrongCredentials
+        : failure.message(l10n);
+  }
+  return switch (failure) {
+    // Google has not verified that email; the server will not link it.
+    ServerFailure(statusCode: 403) => l10n.loginGoogleUnverified,
+    UnauthorizedFailure() => l10n.loginGoogleRejected,
+    ServerFailure(statusCode: 404) => l10n.loginGoogleDisabled,
+    ServerFailure(statusCode: 503) => l10n.loginGoogleUnavailable,
+    // The SDK failed on the phone: no Play services, or the app's
+    // Android client is not registered in Google Cloud.
+    UnknownFailure() => l10n.loginGoogleFailed,
+    _ => failure.message(l10n),
+  };
 }

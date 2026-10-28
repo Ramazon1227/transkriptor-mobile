@@ -7,12 +7,14 @@ import 'package:transkriptor_uz/core/storage/token_storage.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
+import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart';
 
 @LazySingleton(as: IAuthFacade)
 class AuthFacade implements IAuthFacade {
-  AuthFacade(this._repository, this._storage, this._session);
+  AuthFacade(this._repository, this._storage, this._session, this._google);
 
   final AuthRepository _repository;
+  final GoogleIdTokenSource _google;
   final TokenStorage _storage;
   final SessionManager _session;
 
@@ -36,6 +38,28 @@ class AuthFacade implements IAuthFacade {
       password: password,
       fullName: fullName,
     );
+    return await _signIn(tokens);
+  }
+
+  @override
+  Future<Either<Failure, String?>> googleClientId() =>
+      _repository.googleClientId();
+
+  @override
+  Future<Either<Failure, Account>> signInWithGoogle({
+    required String clientId,
+  }) async {
+    final String? idToken;
+    try {
+      idToken = await _google.idToken(clientId);
+    } on Object {
+      // The SDK's own errors (no Play services, the Android client not
+      // registered, no network) say nothing the person can act on.
+      return const Left(Failure.unknown());
+    }
+    if (idToken == null) return const Left(Failure.cancelled());
+    if (idToken.isEmpty) return const Left(Failure.parsing());
+    final tokens = await _repository.googleSignIn(idToken: idToken);
     return await _signIn(tokens);
   }
 
@@ -94,6 +118,8 @@ class AuthFacade implements IAuthFacade {
     if (refreshToken != null && refreshToken.isNotEmpty) {
       await _repository.logout(refreshToken: refreshToken);
     }
+    // The next Google sign-in shows the account picker again.
+    await _google.signOut();
     try {
       await _storage.clear();
     } on Object {

@@ -217,6 +217,60 @@ void main() {
     });
   });
 
+  group('AuthRepository Google', () {
+    test('providers: the client id, or null when Google is off', () async {
+      final on = FakeHttpAdapter({
+        'GET /api/v1/auth/oauth/providers': (
+          200,
+          ok({
+            'google': {'client_id': 'web-id'},
+            'apple': null,
+          }),
+        ),
+      });
+      final off = FakeHttpAdapter({
+        'GET /api/v1/auth/oauth/providers': (
+          200,
+          ok({'google': null, 'apple': null}),
+        ),
+      });
+      expect(
+        (await AuthRepository(
+          fakeDio(on),
+        ).googleClientId()).getOrElse(() => throw StateError('left')),
+        'web-id',
+      );
+      expect(
+        (await AuthRepository(
+          fakeDio(off),
+        ).googleClientId()).getOrElse(() => throw StateError('left')),
+        isNull,
+      );
+    });
+
+    test('sign-in posts only id_token and reads the top-level pair', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/auth/oauth/google': (
+          200,
+          ok({
+            'access_token': 'a',
+            'refresh_token': 'r',
+            'token_type': 'Bearer',
+            'expires_in': 900,
+            'user': {'id': 'u1'},
+            'created': true,
+          }),
+        ),
+      });
+      final pair = (await AuthRepository(
+        fakeDio(http),
+      ).googleSignIn(idToken: 'g')).getOrElse(() => throw StateError('left'));
+      expect(pair.accessToken, 'a');
+      expect(pair.refreshToken, 'r');
+      expect(http.sent.single.body, {'id_token': 'g'});
+    });
+  });
+
   group('JobRepository', () {
     test('create sends the key in header and body, no null fields', () async {
       final http = FakeHttpAdapter({

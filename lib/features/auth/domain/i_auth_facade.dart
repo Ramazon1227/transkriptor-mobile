@@ -18,6 +18,15 @@ abstract interface class IAuthFacade {
     required String fullName,
   });
 
+  /// The backend's Google web client id, or null when Google sign-in is
+  /// off there.
+  Future<Either<Failure, String?>> googleClientId();
+
+  /// Google's account picker, then sign-in with its ID token, like
+  /// [login]. Closing the picker is `Failure.cancelled()`. A Google email
+  /// that is not verified is `Failure.server(statusCode: 403)`.
+  Future<Either<Failure, Account>> signInWithGoogle({required String clientId});
+
   /// The current account (`GET /me`).
   Future<Either<Failure, Account>> loadAccount();
 

@@ -19,6 +19,75 @@ void main() {
 
   setUp(() => facade = _MockAuthFacade());
 
+  group('LoginBloc with Google', () {
+    blocTest<LoginBloc, LoginState>(
+      'the Google button appears when the backend has a client id',
+      setUp: () =>
+          when(() => facade.googleClientId())
+              .thenAnswer((_) async => const Right('web-id')),
+      build: () => LoginBloc(facade),
+      act: (bloc) => bloc.add(const LoginStarted()),
+      expect: () => const [LoginState(googleClientId: 'web-id')],
+    );
+
+    blocTest<LoginBloc, LoginState>(
+      'a failed provider check just leaves the button out',
+      setUp: () =>
+          when(() => facade.googleClientId())
+              .thenAnswer((_) async => const Left(Failure.network())),
+      build: () => LoginBloc(facade),
+      act: (bloc) => bloc.add(const LoginStarted()),
+      expect: () => const <LoginState>[],
+    );
+
+    blocTest<LoginBloc, LoginState>(
+      'signs in with Google',
+      setUp: () =>
+          when(() => facade.signInWithGoogle(clientId: 'web-id'))
+              .thenAnswer((_) async => const Right(account)),
+      build: () => LoginBloc(facade),
+      seed: () => const LoginState(googleClientId: 'web-id'),
+      act: (bloc) => bloc.add(const LoginGoogleRequested()),
+      expect: () => const [
+        LoginState(
+          status: LoginStatus.loading,
+          googleClientId: 'web-id',
+          viaGoogle: true,
+        ),
+        LoginState(
+          status: LoginStatus.success,
+          googleClientId: 'web-id',
+          viaGoogle: true,
+          account: account,
+        ),
+      ],
+    );
+
+    blocTest<LoginBloc, LoginState>(
+      'a closed picker goes back quietly',
+      setUp: () =>
+          when(() => facade.signInWithGoogle(clientId: 'web-id'))
+              .thenAnswer((_) async => const Left(Failure.cancelled())),
+      build: () => LoginBloc(facade),
+      seed: () => const LoginState(googleClientId: 'web-id'),
+      act: (bloc) => bloc.add(const LoginGoogleRequested()),
+      skip: 1,
+      expect: () => const [
+        LoginState(googleClientId: 'web-id', viaGoogle: true),
+      ],
+    );
+
+    blocTest<LoginBloc, LoginState>(
+      'without a client id the tap does nothing',
+      build: () => LoginBloc(facade),
+      act: (bloc) => bloc.add(const LoginGoogleRequested()),
+      expect: () => const <LoginState>[],
+      verify: (_) => verifyNever(
+        () => facade.signInWithGoogle(clientId: any(named: 'clientId')),
+      ),
+    );
+  });
+
   group('LoginBloc', () {
     blocTest<LoginBloc, LoginState>(
       'flags empty fields and sends nothing',

@@ -80,6 +80,13 @@
     "placeholders": { "minutes": { "type": "int" } }
   },
 
+  "loginOr": "yoki",
+  "loginGoogle": "Google bilan kirish",
+  "loginGoogleUnverified": "Google bu pochtani tasdiqlamagan — email va parol bilan kiring.",
+  "loginGoogleRejected": "Google kirishi tasdiqlanmadi. Qaytadan urinib koʻring.",
+  "loginGoogleDisabled": "Google bilan kirish serverda yoqilmagan.",
+  "loginGoogleUnavailable": "Google hozir javob bermayapti. Birozdan keyin urinib koʻring.",
+  "loginGoogleFailed": "Google bilan kirib boʻlmadi. Telefonda Google Play xizmatlari borligini tekshiring.",
   "filesTitle": "Fayllar",
   "filesEmptyTitle": "Hali fayl yoʻq",
   "filesEmptyBody": "Birinchi suhbatni yozib oling yoki telefoningizdagi audio faylni yuklang. Natija shu yerda paydo boʻladi.",
