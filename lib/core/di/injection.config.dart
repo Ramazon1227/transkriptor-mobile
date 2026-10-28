@@ -71,6 +71,16 @@ import 'package:transkriptor_uz/features/library/infrastructure/facades/library_
     as _i985;
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart'
     as _i203;
+import 'package:transkriptor_uz/features/push/application/push_cubit.dart'
+    as _i752;
+import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart'
+    as _i201;
+import 'package:transkriptor_uz/features/push/infrastructure/facades/push_facade.dart'
+    as _i32;
+import 'package:transkriptor_uz/features/push/infrastructure/messaging/messaging_source.dart'
+    as _i1027;
+import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart'
+    as _i765;
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart'
     as _i206;
 import 'package:transkriptor_uz/features/recorder/domain/i_recorder_facade.dart'
@@ -136,6 +146,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1008.AppRouter>(
       () => _i1008.AppRouter(gh<_i754.SessionManager>()),
     );
+    gh.lazySingleton<_i1027.MessagingSource>(
+      () => _i1027.FirebaseMessagingSource(),
+    );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.retryDio(),
       instanceName: 'retryDio',
@@ -174,6 +187,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i203.LibraryRepository>(
       () => _i203.LibraryRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i765.PushRepository>(
+      () => _i765.PushRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i438.ShareRepository>(
       () => _i438.ShareRepository(gh<_i361.Dio>()),
@@ -216,13 +232,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i644.ExportCubit>(
       () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
     );
-    gh.factory<_i322.AccountCubit>(
-      () => _i322.AccountCubit(
-        gh<_i865.IAuthFacade>(),
-        gh<_i252.LibraryChanges>(),
-        gh<_i754.SessionManager>(),
-      ),
-    );
     gh.factory<_i224.LibraryBloc>(
       () => _i224.LibraryBloc(
         gh<_i118.ILibraryFacade>(),
@@ -238,6 +247,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1064.IShareFacade>(
       () => _i68.ShareFacade(gh<_i438.ShareRepository>()),
+    );
+    gh.lazySingleton<_i201.IPushFacade>(
+      () => _i32.PushFacade(
+        gh<_i1027.MessagingSource>(),
+        gh<_i765.PushRepository>(),
+      ),
     );
     gh.lazySingleton<_i900.ITranscriptFacade>(
       () => _i39.TranscriptFacade(gh<_i77.TranscriptRepository>()),
@@ -259,6 +274,10 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
+    gh.factory<_i752.PushCubit>(
+      () =>
+          _i752.PushCubit(gh<_i201.IPushFacade>(), gh<_i252.LibraryChanges>()),
+    );
     gh.factory<_i86.TranscriptCubit>(
       () => _i86.TranscriptCubit(gh<_i900.ITranscriptFacade>()),
     );
@@ -267,6 +286,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i727.IJobFacade>(),
         gh<_i669.JobPollPolicy>(),
         gh<_i252.LibraryChanges>(),
+      ),
+    );
+    gh.factory<_i322.AccountCubit>(
+      () => _i322.AccountCubit(
+        gh<_i865.IAuthFacade>(),
+        gh<_i252.LibraryChanges>(),
+        gh<_i754.SessionManager>(),
+        gh<_i201.IPushFacade>(),
       ),
     );
     gh.factory<_i741.PickFileCubit>(

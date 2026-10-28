@@ -6,6 +6,7 @@ import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_r
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart';
+import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart';
 import 'package:transkriptor_uz/features/share/infrastructure/repositories/share_repository.dart';
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/repositories/upload_repository.dart';
@@ -269,6 +270,21 @@ void main() {
       expect(pair.refreshToken, 'r');
       expect(http.sent.single.body, {'id_token': 'g'});
     });
+  });
+
+  test('PushRepository registers and removes by body token', () async {
+    final http = FakeHttpAdapter({
+      'POST /api/v1/me/devices': (200, ok({'registered': true})),
+      'DELETE /api/v1/me/devices': (200, ok({'deleted': true})),
+    });
+    final repo = PushRepository(fakeDio(http));
+    expect(
+      (await repo.register(token: 't', platform: 'ANDROID')).isRight(),
+      isTrue,
+    );
+    expect((await repo.unregister(token: 't')).isRight(), isTrue);
+    expect(http.sent[0].body, {'token': 't', 'platform': 'ANDROID'});
+    expect(http.sent[1].body, {'token': 't'});
   });
 
   group('JobRepository', () {

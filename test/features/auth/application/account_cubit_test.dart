@@ -10,13 +10,17 @@ import 'package:transkriptor_uz/core/network/session_manager.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
+import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart';
 
 class _MockAuthFacade extends Mock implements IAuthFacade;
+
+class _MockPushFacade extends Mock implements IPushFacade;
 
 void main() {
   late _MockAuthFacade facade;
   late LibraryChanges changes;
   late SessionManager session;
+  late _MockPushFacade push;
 
   const before = Account(
     user: AppUser(id: 'u1', email: 'e'),
@@ -31,6 +35,8 @@ void main() {
     facade = _MockAuthFacade();
     changes = LibraryChanges();
     session = SessionManager();
+    push = _MockPushFacade();
+    when(() => push.unregister()).thenAnswer((_) async {});
   });
 
   tearDown(() => changes.dispose());
@@ -41,7 +47,7 @@ void main() {
       setUp: () =>
           when(() => facade.loadAccount())
               .thenAnswer((_) async => const Right(before)),
-      build: () => AccountCubit(facade, changes, session),
+      build: () => AccountCubit(facade, changes, session, push),
       act: (cubit) => cubit.load(),
       expect: () => const [
         AccountState(status: AccountStatus.loading),
@@ -54,7 +60,7 @@ void main() {
       setUp: () =>
           when(() => facade.loadAccount())
               .thenAnswer((_) async => const Left(Failure.network())),
-      build: () => AccountCubit(facade, changes, session),
+      build: () => AccountCubit(facade, changes, session, push),
       seed: () =>
           const AccountState(status: AccountStatus.success, account: before),
       act: (cubit) => cubit.load(),
@@ -73,7 +79,7 @@ void main() {
       setUp: () =>
           when(() => facade.loadAccount())
               .thenAnswer((_) async => const Right(after)),
-      build: () => AccountCubit(facade, changes, session),
+      build: () => AccountCubit(facade, changes, session, push),
       seed: () =>
           const AccountState(status: AccountStatus.success, account: before),
       act: (_) => changes.notify(),
@@ -88,16 +94,18 @@ void main() {
       setUp: () =>
           when(() => facade.logout())
               .thenAnswer((_) async => const Right(unit)),
-      build: () => AccountCubit(facade, changes, session),
+      build: () => AccountCubit(facade, changes, session, push),
       seed: () =>
           const AccountState(status: AccountStatus.success, account: before),
       act: (cubit) => cubit.logout(),
       expect: () => const [AccountState()],
+      // The phone's push token goes first, while the session still works.
+      verify: (_) => verifyInOrder([push.unregister, facade.logout]),
     );
 
     blocTest<AccountCubit, AccountState>(
       'an expired session clears the account',
-      build: () => AccountCubit(facade, changes, session),
+      build: () => AccountCubit(facade, changes, session, push),
       seed: () =>
           const AccountState(status: AccountStatus.success, account: before),
       act: (_) => session.expire(),
@@ -110,7 +118,8 @@ void main() {
         final slow = Completer<Either<Failure, Account>>();
         when(() => facade.loadAccount()).thenAnswer((_) => slow.future);
         when(() => facade.logout()).thenAnswer((_) async => const Right(unit));
-        final cubit = AccountCubit(facade, changes, session)..signedIn(before);
+        final cubit = AccountCubit(facade, changes, session, push)
+          ..signedIn(before);
 
         final loading = cubit.load();
         await cubit.logout();

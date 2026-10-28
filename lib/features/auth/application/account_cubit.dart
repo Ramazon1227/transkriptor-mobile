@@ -8,6 +8,7 @@ import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/core/network/session_manager.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
+import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart';
 
 part 'account_cubit.freezed.dart';
 
@@ -26,7 +27,7 @@ abstract class AccountState with _$AccountState {
 /// pass it into their own blocs.
 @injectable
 class AccountCubit extends Cubit<AccountState> {
-  AccountCubit(this._facade, LibraryChanges changes, this._session)
+  AccountCubit(this._facade, LibraryChanges changes, this._session, this._push)
     : super(const AccountState()) {
     // Sending, cancelling and finishing all move the balance.
     _changes = changes.stream.listen((_) {
@@ -39,6 +40,7 @@ class AccountCubit extends Cubit<AccountState> {
 
   final IAuthFacade _facade;
   final SessionManager _session;
+  final IPushFacade _push;
   late final StreamSubscription<void> _changes;
 
   /// Bumped on every load and on sign-out; a `GET /me` answer from an
@@ -75,6 +77,9 @@ class AccountCubit extends Cubit<AccountState> {
 
   Future<void> logout() async {
     _generation++;
+    // While the session still works: this phone stops getting the
+    // account's notifications.
+    await _push.unregister();
     await _facade.logout();
     if (isClosed) return;
     emit(const AccountState());

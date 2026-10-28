@@ -254,6 +254,34 @@ Mikrofon ruxsati birinchi yozishda soʻraladi (matni `Info.plist`da).
 
 ---
 
+## 5.6 Google bilan kirish va push bildirishnoma
+
+**Google bilan kirish** — ilova tugmani faqat backend'da `GOOGLE_CLIENT_ID`
+yoqilgan boʻlsa koʻrsatadi (web client ID'ni backend'dan oladi). Telefonda
+ishlashi uchun Google Cloud'da **oʻsha loyihada** Android turidagi OAuth
+client yaratilishi kerak: paket nomi `uz.transkriptor.transkriptor_uz` va
+imzo kalitining SHA-1'i (debug uchun `~/.android/debug.keystore`, release
+uchun §4.2 dagi kalit — ikkalasi alohida client). Backend `b033e22` dan
+eskisi mobil `id_token`'ni qabul qilmaydi.
+
+**Push** — Firebase loyihasi ulanmaguncha oʻchiq: ilova Firebase'ga umuman
+tegmaydi. Yoqish uchun Firebase konsolida Android ilova
+(`uz.transkriptor.transkriptor_uz`) qoʻshing va toʻrtta qiymatni build'ga bering
+(`google-services.json` kerak emas):
+
+```bash
+flutter run --dart-define=API_BASE_URL=... \
+  --dart-define=FIREBASE_API_KEY=... --dart-define=FIREBASE_APP_ID=... \
+  --dart-define=FIREBASE_SENDER_ID=... --dart-define=FIREBASE_PROJECT_ID=...
+```
+
+Backend tomonda shu loyihaning service account JSON fayli
+`FCM_CREDENTIALS_FILE` orqali beriladi. Bildirishnoma transkript tayyor
+boʻlganda yoki xato bilan tugaganda ishni boshlagan odamga keladi; bosilsa
+transkript (yoki job) sahifasi ochiladi.
+
+---
+
 ## 6. Tekshiruvlar
 
 ```bash

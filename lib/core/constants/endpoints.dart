@@ -9,6 +9,7 @@ abstract final class Endpoints {
   static const String authOAuthProviders = '/api/v1/auth/oauth/providers';
   static const String authOAuthGoogle = '/api/v1/auth/oauth/google';
   static const String me = '/api/v1/me';
+  static const String meDevices = '/api/v1/me/devices';
 
   // Files.
   static const String library = '/api/v1/library';
