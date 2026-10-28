@@ -5,6 +5,7 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
@@ -43,45 +44,50 @@ class ProfilePage extends StatelessWidget {
         title: Text(l10n.profileTitle, style: AppText.title),
         centerTitle: false,
       ),
-      body: WorkspaceGate(
-        builder: (context, _) {
-          final account = context.select<AccountCubit, Account?>(
-            (c) => c.state.account,
-          );
-          if (account == null) return const SizedBox.shrink();
-          return RefreshIndicator(
-            onRefresh: () => context.read<AccountCubit>().load(),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-              children: [
-                _UserRow(user: account.user),
-                const SizedBox(height: 20),
-                _BalanceCard(workspace: account.currentWorkspace!),
-                const SizedBox(height: 24),
-                Text(l10n.profileWorkspace.toUpperCase(), style: AppText.label),
-                for (final w in account.workspaces)
+      body: ContentWidth(
+        child: WorkspaceGate(
+          builder: (context, _) {
+            final account = context.select<AccountCubit, Account?>(
+              (c) => c.state.account,
+            );
+            if (account == null) return const SizedBox.shrink();
+            return RefreshIndicator(
+              onRefresh: () => context.read<AccountCubit>().load(),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                children: [
+                  _UserRow(user: account.user),
+                  const SizedBox(height: 20),
+                  _BalanceCard(workspace: account.currentWorkspace!),
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.profileWorkspace.toUpperCase(),
+                    style: AppText.label,
+                  ),
+                  for (final w in account.workspaces)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(w.name),
+                      trailing: Text(
+                        l10n.minutesShort(
+                          Formatters.minutesLeft(w.balanceSeconds),
+                        ),
+                        style: AppText.mono,
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  const Divider(),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text(w.name),
-                    trailing: Text(
-                      l10n.minutesShort(
-                        Formatters.minutesLeft(w.balanceSeconds),
-                      ),
-                      style: AppText.mono,
-                    ),
+                    leading: const Icon(Icons.logout_rounded),
+                    title: Text(l10n.profileLogout),
+                    onTap: () => _confirmLogout(context),
                   ),
-                const SizedBox(height: 16),
-                const Divider(),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.logout_rounded),
-                  title: Text(l10n.profileLogout),
-                  onTap: () => _confirmLogout(context),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -169,7 +175,10 @@ class _BalanceCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(l10n.profileMinutesLeft, style: AppText.muted),
+              // The label gives way to a large balance under large text.
+              Flexible(
+                child: Text(l10n.profileMinutesLeft, style: AppText.muted),
+              ),
             ],
           ),
           const SizedBox(height: 6),

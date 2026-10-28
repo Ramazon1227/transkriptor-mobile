@@ -6,6 +6,7 @@ import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_mark.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.dart';
 
 /// Asks for a reset link by mail. The link opens the web app, where the
@@ -65,22 +66,24 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
         final sentTo = state.sentTo;
         return Scaffold(
           appBar: AppBar(),
-          body: SafeArea(
-            top: false,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: AppMark(size: 40),
-                ),
-                const SizedBox(height: 18),
-                if (state.status == ForgotPasswordStatus.success &&
-                    sentTo != null)
-                  ..._sent(context, l10n, sentTo)
-                else
-                  ..._form(context, l10n, state),
-              ],
+          body: ContentWidth(
+            child: SafeArea(
+              top: false,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: AppMark(size: 40),
+                  ),
+                  const SizedBox(height: 18),
+                  if (state.status == ForgotPasswordStatus.success &&
+                      sentTo != null)
+                    ..._sent(context, l10n, sentTo)
+                  else
+                    ..._form(context, l10n, state),
+                ],
+              ),
             ),
           ),
         );
@@ -170,8 +173,10 @@ class _BackToLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    // Wraps under large text instead of running off the right edge.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(l10n.forgotRemembered, style: AppText.muted),
         TextButton(

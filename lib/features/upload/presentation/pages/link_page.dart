@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
@@ -20,9 +21,11 @@ class LinkPage extends StatelessWidget {
       create: (_) => getIt<UploadBloc>(),
       child: Scaffold(
         appBar: AppBar(title: Text(context.l10n.linkTitle)),
-        body: WorkspaceGate(
-          builder: (context, workspaceId) =>
-              _LinkForm(workspaceId: workspaceId),
+        body: ContentWidth(
+          child: WorkspaceGate(
+            builder: (context, workspaceId) =>
+                _LinkForm(workspaceId: workspaceId),
+          ),
         ),
       ),
     );

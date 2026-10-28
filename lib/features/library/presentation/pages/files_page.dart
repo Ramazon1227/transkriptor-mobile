@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/library/application/folders_cubit.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
@@ -26,24 +27,27 @@ class FilesPage extends StatelessWidget {
         title: Text(context.l10n.filesTitle, style: AppText.title),
         centerTitle: false,
       ),
-      body: WorkspaceGate(
-        builder: (context, workspaceId) => MultiBlocProvider(
-          // A new workspace is a new list, not a refresh of the old one.
-          key: ValueKey(workspaceId),
-          providers: [
-            BlocProvider(
-              create: (_) =>
-                  getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
-            ),
-            BlocProvider(
-              create: (_) {
-                final folders = getIt<FoldersCubit>();
-                unawaited(folders.load(workspaceId));
-                return folders;
-              },
-            ),
-          ],
-          child: const _FilesBody(),
+      body: ContentWidth(
+        maxWidth: ContentWidth.list,
+        child: WorkspaceGate(
+          builder: (context, workspaceId) => MultiBlocProvider(
+            // A new workspace is a new list, not a refresh of the old one.
+            key: ValueKey(workspaceId),
+            providers: [
+              BlocProvider(
+                create: (_) =>
+                    getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
+              ),
+              BlocProvider(
+                create: (_) {
+                  final folders = getIt<FoldersCubit>();
+                  unawaited(folders.load(workspaceId));
+                  return folders;
+                },
+              ),
+            ],
+            child: const _FilesBody(),
+          ),
         ),
       ),
     );

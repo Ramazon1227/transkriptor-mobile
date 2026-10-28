@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_mark.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/register_bloc.dart';
 import 'package:transkriptor_uz/features/auth/domain/password_rules.dart';
@@ -86,109 +87,112 @@ class _RegisterViewState extends State<_RegisterView> {
         final failure = state.failure;
         return Scaffold(
           appBar: AppBar(),
-          body: SafeArea(
-            top: false,
-            child: AutofillGroup(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: AppMark(size: 40),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(l10n.registerTitle, style: AppText.display),
-                  const SizedBox(height: 8),
-                  Text(l10n.registerSubtitle, style: AppText.muted),
-                  const SizedBox(height: 28),
-                  TextField(
-                    key: const Key('register_name'),
-                    controller: _name,
-                    enabled: !loading,
-                    textCapitalization: TextCapitalization.words,
-                    autofillHints: const [AutofillHints.name],
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: l10n.registerName,
-                      helperText: l10n.registerNameHint,
+          body: ContentWidth(
+            child: SafeArea(
+              top: false,
+              child: AutofillGroup(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: AppMark(size: 40),
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    key: const Key('register_email'),
-                    controller: _email,
-                    enabled: !loading,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: l10n.emailLabel,
-                      errorText: state.emailInvalid
-                          ? l10n.registerEmailInvalid
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    key: const Key('register_password'),
-                    controller: _password,
-                    enabled: !loading,
-                    obscureText: _obscure,
-                    autofillHints: const [AutofillHints.newPassword],
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submit(),
-                    decoration: InputDecoration(
-                      labelText: l10n.passwordLabel,
-                      // The rule is shown up front, not only after a miss.
-                      helperText: l10n.passwordRules,
-                      helperMaxLines: 2,
-                      errorText: _passwordError(l10n, state.passwordProblem),
-                      errorMaxLines: 2,
-                      suffixIcon: IconButton(
-                        tooltip: _obscure
-                            ? l10n.showPassword
-                            : l10n.hidePassword,
-                        icon: Icon(
-                          _obscure
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () => setState(() => _obscure = !_obscure),
+                    const SizedBox(height: 18),
+                    Text(l10n.registerTitle, style: AppText.display),
+                    const SizedBox(height: 8),
+                    Text(l10n.registerSubtitle, style: AppText.muted),
+                    const SizedBox(height: 28),
+                    TextField(
+                      key: const Key('register_name'),
+                      controller: _name,
+                      enabled: !loading,
+                      textCapitalization: TextCapitalization.words,
+                      autofillHints: const [AutofillHints.name],
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: l10n.registerName,
+                        helperText: l10n.registerNameHint,
                       ),
                     ),
-                  ),
-                  if (failure != null) ...[
                     const SizedBox(height: 14),
-                    Text(
-                      _failureText(l10n, failure),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                    TextField(
+                      key: const Key('register_email'),
+                      controller: _email,
+                      enabled: !loading,
+                      keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: l10n.emailLabel,
+                        errorText: state.emailInvalid
+                            ? l10n.registerEmailInvalid
+                            : null,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    key: const Key('register_submit'),
-                    onPressed: loading ? null : _submit,
-                    child: loading
-                        ? const SizedBox.square(
-                            dimension: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.registerButton),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(l10n.registerHaveAccount, style: AppText.muted),
-                      TextButton(
-                        onPressed: loading ? null : () => context.pop(),
-                        child: Text(l10n.loginButton),
+                    const SizedBox(height: 14),
+                    TextField(
+                      key: const Key('register_password'),
+                      controller: _password,
+                      enabled: !loading,
+                      obscureText: _obscure,
+                      autofillHints: const [AutofillHints.newPassword],
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _submit(),
+                      decoration: InputDecoration(
+                        labelText: l10n.passwordLabel,
+                        // The rule is shown up front, not only after a miss.
+                        helperText: l10n.passwordRules,
+                        helperMaxLines: 2,
+                        errorText: _passwordError(l10n, state.passwordProblem),
+                        errorMaxLines: 2,
+                        suffixIcon: IconButton(
+                          tooltip: _obscure
+                              ? l10n.showPassword
+                              : l10n.hidePassword,
+                          icon: Icon(
+                            _obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () => setState(() => _obscure = !_obscure),
+                        ),
+                      ),
+                    ),
+                    if (failure != null) ...[
+                      const SizedBox(height: 14),
+                      Text(
+                        _failureText(l10n, failure),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ],
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      key: const Key('register_submit'),
+                      onPressed: loading ? null : _submit,
+                      child: loading
+                          ? const SizedBox.square(
+                              dimension: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(l10n.registerButton),
+                    ),
+                    const SizedBox(height: 20),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(l10n.registerHaveAccount, style: AppText.muted),
+                        TextButton(
+                          onPressed: loading ? null : () => context.pop(),
+                          child: Text(l10n.loginButton),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

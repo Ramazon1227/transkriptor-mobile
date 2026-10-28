@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
@@ -121,48 +122,62 @@ class _RecorderView extends StatelessWidget {
               title: _StatusTitle(status: state.status),
               centerTitle: true,
             ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-                child: Column(
-                  children: [
-                    const Spacer(),
-                    Text(
-                      Formatters.timecode(state.elapsed),
-                      style: AppText.mono.copyWith(
-                        fontSize: 52,
-                        color: AppColors.cotton,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.recorderFormat.toUpperCase(),
-                      style: AppText.label,
-                    ),
-                    const SizedBox(height: 48),
-                    SizedBox(
-                      height: 120,
-                      child: LevelMeter(levels: state.levels),
-                    ),
-                    if (state.status == RecorderStatus.failure) ...[
-                      const SizedBox(height: 24),
-                      Text(
-                        state.failure!.message(l10n),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+            body: ContentWidth(
+              child: SafeArea(
+                // Fills the screen when it fits, as before; scrolls when it
+                // does not (phone landscape, large text, an error message).
+                child: LayoutBuilder(
+                  builder: (context, box) => SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: box.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+                          child: Column(
+                            children: [
+                              const Spacer(),
+                              Text(
+                                Formatters.timecode(state.elapsed),
+                                style: AppText.mono.copyWith(
+                                  fontSize: 52,
+                                  color: AppColors.cotton,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.recorderFormat.toUpperCase(),
+                                style: AppText.label,
+                              ),
+                              const SizedBox(height: 48),
+                              SizedBox(
+                                height: 120,
+                                child: LevelMeter(levels: state.levels),
+                              ),
+                              if (state.status == RecorderStatus.failure) ...[
+                                const SizedBox(height: 24),
+                                Text(
+                                  state.failure!.message(l10n),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      context.read<RecorderCubit>().start(),
+                                  child: Text(l10n.retry),
+                                ),
+                              ],
+                              const Spacer(),
+                              _Controls(state: state),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      OutlinedButton(
-                        onPressed: () => context.read<RecorderCubit>().start(),
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                    const Spacer(),
-                    _Controls(state: state),
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ),

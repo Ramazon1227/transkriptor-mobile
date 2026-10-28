@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_mark.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/balance_pill.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
@@ -28,13 +29,16 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<PickFileCubit>(),
       child: Scaffold(
-        body: SafeArea(
-          child: WorkspaceGate(
-            builder: (context, workspaceId) => BlocProvider(
-              key: ValueKey(workspaceId),
-              create: (_) =>
-                  getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
-              child: const _HomeBody(),
+        body: ContentWidth(
+          maxWidth: ContentWidth.list,
+          child: SafeArea(
+            child: WorkspaceGate(
+              builder: (context, workspaceId) => BlocProvider(
+                key: ValueKey(workspaceId),
+                create: (_) =>
+                    getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
+                child: const _HomeBody(),
+              ),
             ),
           ),
         ),

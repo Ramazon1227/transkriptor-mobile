@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/presentation/widgets/job_status_chip.dart';
@@ -50,14 +51,16 @@ class _JobView extends StatelessWidget {
                 ),
             ],
           ),
-          body: switch ((state.status, job)) {
-            (JobViewStatus.failure, null) => AppErrorView(
-              failure: state.failure!,
-              onRetry: context.read<JobCubit>().refresh,
-            ),
-            (_, null) => const AppLoadingView(),
-            (_, final Job job) => _JobBody(job: job, state: state),
-          },
+          body: ContentWidth(
+            child: switch ((state.status, job)) {
+              (JobViewStatus.failure, null) => AppErrorView(
+                failure: state.failure!,
+                onRetry: context.read<JobCubit>().refresh,
+              ),
+              (_, null) => const AppLoadingView(),
+              (_, final Job job) => _JobBody(job: job, state: state),
+            },
+          ),
         );
       },
     );

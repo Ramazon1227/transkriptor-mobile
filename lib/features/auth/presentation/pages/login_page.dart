@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_mark.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/login_bloc.dart';
 
@@ -64,130 +65,135 @@ class _LoginViewState extends State<_LoginView> {
         final loading = state.status == LoginStatus.loading;
         final failure = state.failure;
         return Scaffold(
-          body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-              children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: AppMark(size: 48),
-                ),
-                const SizedBox(height: 18),
-                Text(l10n.loginTitle, style: AppText.display),
-                const SizedBox(height: 8),
-                Text(l10n.loginSubtitle, style: AppText.muted),
-                const SizedBox(height: 32),
-                TextField(
-                  key: const Key('login_email'),
-                  controller: _email,
-                  enabled: !loading,
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.emailLabel,
-                    errorText: state.emailMissing
-                        ? l10n.loginEmailRequired
-                        : null,
+          body: ContentWidth(
+            child: SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: AppMark(size: 48),
                   ),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  key: const Key('login_password'),
-                  controller: _password,
-                  enabled: !loading,
-                  obscureText: _obscure,
-                  autofillHints: const [AutofillHints.password],
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _submit(),
-                  decoration: InputDecoration(
-                    labelText: l10n.passwordLabel,
-                    errorText: state.passwordMissing
-                        ? l10n.loginPasswordRequired
-                        : null,
-                    suffixIcon: IconButton(
-                      tooltip: _obscure ? l10n.showPassword : l10n.hidePassword,
-                      icon: Icon(
-                        _obscure
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () => setState(() => _obscure = !_obscure),
+                  const SizedBox(height: 18),
+                  Text(l10n.loginTitle, style: AppText.display),
+                  const SizedBox(height: 8),
+                  Text(l10n.loginSubtitle, style: AppText.muted),
+                  const SizedBox(height: 32),
+                  TextField(
+                    key: const Key('login_email'),
+                    controller: _email,
+                    enabled: !loading,
+                    keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      labelText: l10n.emailLabel,
+                      errorText: state.emailMissing
+                          ? l10n.loginEmailRequired
+                          : null,
                     ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    key: const Key('login_to_forgot'),
-                    onPressed: loading
-                        ? null
-                        : () => context.push(
-                            Routes.forgotPassword,
-                            extra: _email.text.trim(),
-                          ),
-                    child: Text(l10n.loginForgot),
-                  ),
-                ),
-                if (failure != null) ...[
                   const SizedBox(height: 14),
-                  Text(
-                    _failureText(l10n, failure, viaGoogle: state.viaGoogle),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                  TextField(
+                    key: const Key('login_password'),
+                    controller: _password,
+                    enabled: !loading,
+                    obscureText: _obscure,
+                    autofillHints: const [AutofillHints.password],
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _submit(),
+                    decoration: InputDecoration(
+                      labelText: l10n.passwordLabel,
+                      errorText: state.passwordMissing
+                          ? l10n.loginPasswordRequired
+                          : null,
+                      suffixIcon: IconButton(
+                        tooltip: _obscure
+                            ? l10n.showPassword
+                            : l10n.hidePassword,
+                        icon: Icon(
+                          _obscure
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                      ),
                     ),
                   ),
-                ],
-                const SizedBox(height: 24),
-                FilledButton(
-                  key: const Key('login_submit'),
-                  onPressed: loading ? null : _submit,
-                  child: loading
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.loginButton),
-                ),
-                if (state.googleClientId != null) ...[
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Expanded(child: Divider()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(l10n.loginOr, style: AppText.muted),
-                      ),
-                      const Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    key: const Key('login_google'),
-                    onPressed: loading
-                        ? null
-                        : () => context.read<LoginBloc>().add(
-                            const LoginGoogleRequested(),
-                          ),
-                    icon: const Icon(Icons.account_circle_outlined, size: 18),
-                    label: Text(l10n.loginGoogle),
-                  ),
-                ],
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(l10n.loginNoAccount, style: AppText.muted),
-                    TextButton(
-                      key: const Key('login_to_register'),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      key: const Key('login_to_forgot'),
                       onPressed: loading
                           ? null
-                          : () => context.push(Routes.register),
-                      child: Text(l10n.registerButton),
+                          : () => context.push(
+                              Routes.forgotPassword,
+                              extra: _email.text.trim(),
+                            ),
+                      child: Text(l10n.loginForgot),
+                    ),
+                  ),
+                  if (failure != null) ...[
+                    const SizedBox(height: 14),
+                    Text(
+                      _failureText(l10n, failure, viaGoogle: state.viaGoogle),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ],
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    key: const Key('login_submit'),
+                    onPressed: loading ? null : _submit,
+                    child: loading
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.loginButton),
+                  ),
+                  if (state.googleClientId != null) ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        const Expanded(child: Divider()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(l10n.loginOr, style: AppText.muted),
+                        ),
+                        const Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      key: const Key('login_google'),
+                      onPressed: loading
+                          ? null
+                          : () => context.read<LoginBloc>().add(
+                              const LoginGoogleRequested(),
+                            ),
+                      icon: const Icon(Icons.account_circle_outlined, size: 18),
+                      label: Text(l10n.loginGoogle),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(l10n.loginNoAccount, style: AppText.muted),
+                      TextButton(
+                        key: const Key('login_to_register'),
+                        onPressed: loading
+                            ? null
+                            : () => context.push(Routes.register),
+                        child: Text(l10n.registerButton),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

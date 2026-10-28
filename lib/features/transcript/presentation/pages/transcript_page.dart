@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
+import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/export/presentation/widgets/export_sheet.dart';
 import 'package:transkriptor_uz/features/share/presentation/widgets/share_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
@@ -77,26 +78,30 @@ class _TranscriptView extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<TranscriptCubit, TranscriptState>(
-        builder: (context, state) {
-          final transcript = state.transcript;
-          return switch (state.status) {
-            TranscriptStatus.initial ||
-            TranscriptStatus.loading => const AppLoadingView(),
-            TranscriptStatus.failure => AppErrorView(
-              failure: state.failure!,
-              onRetry: () => context.read<TranscriptCubit>().load(transcriptId),
-            ),
-            TranscriptStatus.empty => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (transcript != null) _Header(transcript: transcript),
-                Expanded(child: AppEmptyView(message: l10n.transcriptEmpty)),
-              ],
-            ),
-            TranscriptStatus.success => _Body(state: state),
-          };
-        },
+      body: ContentWidth(
+        maxWidth: ContentWidth.list,
+        child: BlocBuilder<TranscriptCubit, TranscriptState>(
+          builder: (context, state) {
+            final transcript = state.transcript;
+            return switch (state.status) {
+              TranscriptStatus.initial ||
+              TranscriptStatus.loading => const AppLoadingView(),
+              TranscriptStatus.failure => AppErrorView(
+                failure: state.failure!,
+                onRetry: () =>
+                    context.read<TranscriptCubit>().load(transcriptId),
+              ),
+              TranscriptStatus.empty => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (transcript != null) _Header(transcript: transcript),
+                  Expanded(child: AppEmptyView(message: l10n.transcriptEmpty)),
+                ],
+              ),
+              TranscriptStatus.success => _Body(state: state),
+            };
+          },
+        ),
       ),
     );
   }
@@ -121,7 +126,14 @@ class _Header extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(transcript.title, style: AppText.title),
+          // Two lines at most: a long title must not squeeze the
+          // segments off a small screen or under large text.
+          Text(
+            transcript.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppText.title,
+          ),
           if (meta.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(meta, style: AppText.mono),
