@@ -222,6 +222,16 @@
   "exportPlainApostrophe": "Oddiy apostrof (o'zbek, ta'lim)",
   "exportPlainApostropheHint": "Koʻp odam shu belgi bilan qidiradi va yozadi. Saqlangan matn oʻzgarmaydi.",
   "exportShare": "Faylni saqlash yoki yuborish",
+  "exportLayout": "Matn tuzilishi",
+  "exportLayoutSegments": "Segmentlar",
+  "exportLayoutSpeaker": "Maʼruzachi boʻyicha",
+  "exportLayoutParagraphs": "Paragraflar",
+  "exportLayoutSingle": "Bitta paragraf",
+  "exportSentences": "Paragrafda gap",
+  "exportSentenceCount": "{count} ta gap",
+  "@exportSentenceCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
 
   "profileTitle": "Profil",
   "profileMinutesLeft": "daqiqa qoldi",

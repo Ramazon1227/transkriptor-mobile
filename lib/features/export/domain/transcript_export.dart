@@ -20,7 +20,10 @@ abstract final class TranscriptExport {
   ) {
     final rows = _rows(transcript, options);
     return switch (format) {
-      ExportFormat.txt => _txt(rows, options),
+      // DOCX and PDF read as TXT does, as the web's preview and copy do.
+      ExportFormat.txt ||
+      ExportFormat.docx ||
+      ExportFormat.pdf => _txt(rows, options),
       ExportFormat.srt => _srt(rows, options),
       ExportFormat.vtt => _vtt(rows, options),
       ExportFormat.csv => _csv(rows),
@@ -36,6 +39,14 @@ abstract final class TranscriptExport {
   ) =>
       '${format.hasBom ? '\uFEFF' : ''}'
       '${render(format, transcript, options)}';
+
+  /// The paragraphs DOCX and PDF are made of — the web's `blocks`.
+  static List<ExportBlock> blocks(Transcript t, ExportOptions o) =>
+      _blocks(_rows(t, o), o);
+
+  /// The document heading: the title, with plain apostrophes if chosen.
+  static String title(Transcript t, ExportOptions o) =>
+      o.plainApostrophe ? plain(t.title) : t.title;
 
   /// The web's `saveFile` name: characters no file system takes become `_`.
   static String fileName(String title, ExportFormat format) {
@@ -61,13 +72,98 @@ abstract final class TranscriptExport {
   }
 
   static String _txt(List<_Row> rows, ExportOptions o) {
-    String line(_Row r) {
-      final time = o.timecodes ? '[${_short(r.start)}] ' : '';
-      final who = o.speakers && r.speaker.isNotEmpty ? '${r.speaker}: ' : '';
-      return '$time$who${r.text}';
+    String line(ExportBlock b) {
+      final time = b.time != null ? '[${b.time}] ' : '';
+      final who = b.speaker.isNotEmpty ? '${b.speaker}: ' : '';
+      return '$time$who${b.text}';
     }
 
-    return '${rows.map(line).join('\n\n')}\n';
+    return '${_blocks(rows, o).map(line).join('\n\n')}\n';
+  }
+
+  /// The web's `blocks`: TXT's paragraphs by [ExportOptions.layout]. A
+  /// block's time is null and its speaker empty when the switch is off.
+  static List<ExportBlock> _blocks(List<_Row> rows, ExportOptions o) {
+    ExportBlock block(int start, String speaker, String text) => ExportBlock(
+      time: o.timecodes ? _short(start) : null,
+      speaker: o.speakers ? speaker : '',
+      text: text,
+    );
+    String joined(List<_Row> list) =>
+        list.map((r) => r.text.trim()).where((t) => t.isNotEmpty).join(' ');
+
+    switch (o.layout) {
+      case ExportLayout.single:
+        return [ExportBlock(time: null, speaker: '', text: joined(rows))];
+      case ExportLayout.speaker:
+        return [
+          for (final t in _turns(rows))
+            block(t.first.start, t.first.speaker, joined(t)),
+        ];
+      case ExportLayout.paragraphs:
+        final size = math.max(1, o.sentences);
+        final out = <ExportBlock>[];
+        for (final t in _turns(rows)) {
+          final list = _sentences(t);
+          for (var i = 0; i < list.length; i += size) {
+            final group = list.sublist(i, math.min(i + size, list.length));
+            out.add(
+              block(
+                group.first.start,
+                i == 0 ? t.first.speaker : '',
+                group.map((g) => g.text).join(' '),
+              ),
+            );
+          }
+        }
+        return out;
+      case ExportLayout.segments:
+        return [for (final r in rows) block(r.start, r.speaker, r.text)];
+    }
+  }
+
+  /// Consecutive segments of one speaker — one turn. Grouped by the name,
+  /// as the web does.
+  static List<List<_Row>> _turns(List<_Row> rows) {
+    final out = <List<_Row>>[];
+    for (final r in rows) {
+      if (out.isNotEmpty && out.last.last.speaker == r.speaker) {
+        out.last.add(r);
+      } else {
+        out.add([r]);
+      }
+    }
+    return out;
+  }
+
+  static final _sentenceBreak = RegExp(r'(?<=[.!?…])\s+');
+  static final _sentenceEnd = RegExp('[.!?…]["»”\')]*\$');
+
+  /// A turn cut into sentences. A sentence may cross a segment boundary;
+  /// its time is the start of the segment it began in — there is no
+  /// word-level timing.
+  static List<_Sentence> _sentences(List<_Row> turn) {
+    final out = <_Sentence>[];
+    _Sentence? open;
+    for (final r in turn) {
+      final pieces = r.text
+          .trim()
+          .split(_sentenceBreak)
+          .where((p) => p.isNotEmpty);
+      for (final piece in pieces) {
+        final current = open;
+        open = current == null
+            ? _Sentence(start: r.start, text: piece)
+            : _Sentence(start: current.start, text: '${current.text} $piece');
+        if (_sentenceEnd.hasMatch(piece)) {
+          out.add(open);
+          open = null;
+        }
+      }
+    }
+    final last = open;
+    if (last != null) out.add(last);
+    return out;
   }
 
   static String _srt(List<_Row> rows, ExportOptions o) {
@@ -220,5 +316,26 @@ class _Cue {
 
   final num start;
   final num end;
+  final String text;
+}
+
+/// One paragraph of the prose formats. [time] is null and [speaker] empty
+/// when the switch is off or the layout leaves them out.
+class ExportBlock {
+  const ExportBlock({
+    required this.time,
+    required this.speaker,
+    required this.text,
+  });
+
+  final String? time;
+  final String speaker;
+  final String text;
+}
+
+class _Sentence {
+  const _Sentence({required this.start, required this.text});
+
+  final int start;
   final String text;
 }

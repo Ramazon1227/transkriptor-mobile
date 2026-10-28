@@ -593,6 +593,29 @@ class AppLocalizationsUz extends AppLocalizations {
   String get exportShare => 'Faylni saqlash yoki yuborish';
 
   @override
+  String get exportLayout => 'Matn tuzilishi';
+
+  @override
+  String get exportLayoutSegments => 'Segmentlar';
+
+  @override
+  String get exportLayoutSpeaker => 'Maʼruzachi boʻyicha';
+
+  @override
+  String get exportLayoutParagraphs => 'Paragraflar';
+
+  @override
+  String get exportLayoutSingle => 'Bitta paragraf';
+
+  @override
+  String get exportSentences => 'Paragrafda gap';
+
+  @override
+  String exportSentenceCount(int count) {
+    return '$count ta gap';
+  }
+
+  @override
   String get profileTitle => 'Profil';
 
   @override

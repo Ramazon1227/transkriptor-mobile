@@ -17,7 +17,8 @@ mixin _$ExportOptions {
 
  bool get timecodes; bool get speakers;/// oʻ/gʻ and the tutuq as a plain `'` — many people search and type
 /// with it. The stored text keeps U+02BB / U+02BC.
- bool get plainApostrophe;
+ bool get plainApostrophe; ExportLayout get layout;/// Sentences per paragraph in [ExportLayout.paragraphs].
+ int get sentences;
 /// Create a copy of ExportOptions
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +30,20 @@ $ExportOptionsCopyWith<ExportOptions> get copyWith => _$ExportOptionsCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as ExportOptions;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportOptions&&(identical(other.timecodes, _this.timecodes) || other.timecodes == _this.timecodes)&&(identical(other.speakers, _this.speakers) || other.speakers == _this.speakers)&&(identical(other.plainApostrophe, _this.plainApostrophe) || other.plainApostrophe == _this.plainApostrophe));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportOptions&&(identical(other.timecodes, _this.timecodes) || other.timecodes == _this.timecodes)&&(identical(other.speakers, _this.speakers) || other.speakers == _this.speakers)&&(identical(other.plainApostrophe, _this.plainApostrophe) || other.plainApostrophe == _this.plainApostrophe)&&(identical(other.layout, _this.layout) || other.layout == _this.layout)&&(identical(other.sentences, _this.sentences) || other.sentences == _this.sentences));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ExportOptions;
-  return Object.hash(runtimeType,_this.timecodes,_this.speakers,_this.plainApostrophe);
+  return Object.hash(runtimeType,_this.timecodes,_this.speakers,_this.plainApostrophe,_this.layout,_this.sentences);
 }
 
 @override
 String toString() {
   final _this = this as ExportOptions;
-  return 'ExportOptions(timecodes: ${_this.timecodes}, speakers: ${_this.speakers}, plainApostrophe: ${_this.plainApostrophe})';
+  return 'ExportOptions(timecodes: ${_this.timecodes}, speakers: ${_this.speakers}, plainApostrophe: ${_this.plainApostrophe}, layout: ${_this.layout}, sentences: ${_this.sentences})';
 }
 
 
@@ -53,7 +54,7 @@ abstract mixin class $ExportOptionsCopyWith<$Res>  {
   factory $ExportOptionsCopyWith(ExportOptions value, $Res Function(ExportOptions) _then) = _$ExportOptionsCopyWithImpl;
 @useResult
 $Res call({
- bool timecodes, bool speakers, bool plainApostrophe
+ bool timecodes, bool speakers, bool plainApostrophe, ExportLayout layout, int sentences
 });
 
 
@@ -70,12 +71,14 @@ class _$ExportOptionsCopyWithImpl<$Res>
 
 /// Create a copy of ExportOptions
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? timecodes = null,Object? speakers = null,Object? plainApostrophe = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? timecodes = null,Object? speakers = null,Object? plainApostrophe = null,Object? layout = null,Object? sentences = null,}) {
   return _then(ExportOptions(
 timecodes: null == timecodes ? _self.timecodes : timecodes // ignore: cast_nullable_to_non_nullable
 as bool,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as bool,plainApostrophe: null == plainApostrophe ? _self.plainApostrophe : plainApostrophe // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
+as ExportLayout,sentences: null == sentences ? _self.sentences : sentences // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool timecodes,  bool speakers,  bool plainApostrophe)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool timecodes,  bool speakers,  bool plainApostrophe,  ExportLayout layout,  int sentences)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExportOptions() when $default != null:
-return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
+return $default(_that.timecodes,_that.speakers,_that.plainApostrophe,_that.layout,_that.sentences);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool timecodes,  bool speakers,  bool plainApostrophe)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool timecodes,  bool speakers,  bool plainApostrophe,  ExportLayout layout,  int sentences)  $default,) {final _that = this;
 switch (_that) {
 case _ExportOptions():
-return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
+return $default(_that.timecodes,_that.speakers,_that.plainApostrophe,_that.layout,_that.sentences);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool timecodes,  bool speakers,  bool plainApostrophe)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool timecodes,  bool speakers,  bool plainApostrophe,  ExportLayout layout,  int sentences)?  $default,) {final _that = this;
 switch (_that) {
 case _ExportOptions() when $default != null:
-return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
+return $default(_that.timecodes,_that.speakers,_that.plainApostrophe,_that.layout,_that.sentences);case _:
   return null;
 
 }
@@ -216,7 +219,7 @@ return $default(_that.timecodes,_that.speakers,_that.plainApostrophe);case _:
 
 
 class _ExportOptions implements ExportOptions {
-  const _ExportOptions({this.timecodes = true, this.speakers = true, this.plainApostrophe = false});
+  const _ExportOptions({this.timecodes = true, this.speakers = true, this.plainApostrophe = false, this.layout = ExportLayout.segments, this.sentences = 2});
   
 
 @override@JsonKey() final  bool timecodes;
@@ -224,6 +227,9 @@ class _ExportOptions implements ExportOptions {
 /// oʻ/gʻ and the tutuq as a plain `'` — many people search and type
 /// with it. The stored text keeps U+02BB / U+02BC.
 @override@JsonKey() final  bool plainApostrophe;
+@override@JsonKey() final  ExportLayout layout;
+/// Sentences per paragraph in [ExportLayout.paragraphs].
+@override@JsonKey() final  int sentences;
 
 /// Create a copy of ExportOptions
 /// with the given fields replaced by the non-null parameter values.
@@ -235,18 +241,18 @@ _$ExportOptionsCopyWith<_ExportOptions> get copyWith => __$ExportOptionsCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportOptions&&(identical(other.timecodes, timecodes) || other.timecodes == timecodes)&&(identical(other.speakers, speakers) || other.speakers == speakers)&&(identical(other.plainApostrophe, plainApostrophe) || other.plainApostrophe == plainApostrophe));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportOptions&&(identical(other.timecodes, timecodes) || other.timecodes == timecodes)&&(identical(other.speakers, speakers) || other.speakers == speakers)&&(identical(other.plainApostrophe, plainApostrophe) || other.plainApostrophe == plainApostrophe)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.sentences, sentences) || other.sentences == sentences));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,timecodes,speakers,plainApostrophe);
+    return Object.hash(runtimeType,timecodes,speakers,plainApostrophe,layout,sentences);
 }
 
 @override
 String toString() {
-    return 'ExportOptions(timecodes: $timecodes, speakers: $speakers, plainApostrophe: $plainApostrophe)';
+    return 'ExportOptions(timecodes: $timecodes, speakers: $speakers, plainApostrophe: $plainApostrophe, layout: $layout, sentences: $sentences)';
 }
 
 
@@ -257,7 +263,7 @@ abstract mixin class _$ExportOptionsCopyWith<$Res> implements $ExportOptionsCopy
   factory _$ExportOptionsCopyWith(_ExportOptions value, $Res Function(_ExportOptions) _then) = __$ExportOptionsCopyWithImpl;
 @override @useResult
 $Res call({
- bool timecodes, bool speakers, bool plainApostrophe
+ bool timecodes, bool speakers, bool plainApostrophe, ExportLayout layout, int sentences
 });
 
 
@@ -274,12 +280,14 @@ class __$ExportOptionsCopyWithImpl<$Res>
 
 /// Create a copy of ExportOptions
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? timecodes = null,Object? speakers = null,Object? plainApostrophe = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? timecodes = null,Object? speakers = null,Object? plainApostrophe = null,Object? layout = null,Object? sentences = null,}) {
   return _then(_ExportOptions(
 timecodes: null == timecodes ? _self.timecodes : timecodes // ignore: cast_nullable_to_non_nullable
 as bool,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as bool,plainApostrophe: null == plainApostrophe ? _self.plainApostrophe : plainApostrophe // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
+as ExportLayout,sentences: null == sentences ? _self.sentences : sentences // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

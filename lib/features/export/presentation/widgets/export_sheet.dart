@@ -47,6 +47,10 @@ class _ExportView extends StatelessWidget {
         final busy = state.status == ExportStatus.sharing;
         final options = state.options;
         final failure = state.failure;
+        // «Bitta paragraf» carries no times and no names; the web disables
+        // both switches for it.
+        final single =
+            state.format.usesLayout && options.layout == ExportLayout.single;
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           child: Column(
@@ -67,12 +71,56 @@ class _ExportView extends StatelessWidget {
                     ),
                 ],
               ),
+              if (state.format.usesLayout) ...[
+                const SizedBox(height: 16),
+                Text(l10n.exportLayout, style: AppText.muted),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final layout in ExportLayout.values)
+                      ChoiceChip(
+                        key: Key('export_layout_${layout.name}'),
+                        label: Text(_layoutLabel(l10n, layout)),
+                        selected: options.layout == layout,
+                        onSelected: busy
+                            ? null
+                            : (_) => cubit.setOptions(
+                                options.copyWith(layout: layout),
+                              ),
+                      ),
+                  ],
+                ),
+                if (options.layout == ExportLayout.paragraphs) ...[
+                  const SizedBox(height: 16),
+                  Text(l10n.exportSentences, style: AppText.muted),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final n in sentenceCounts)
+                        ChoiceChip(
+                          key: Key('export_sentences_$n'),
+                          label: Text(l10n.exportSentenceCount(n)),
+                          selected: options.sentences == n,
+                          onSelected: busy
+                              ? null
+                              : (_) => cubit.setOptions(
+                                  options.copyWith(sentences: n),
+                                ),
+                        ),
+                    ],
+                  ),
+                ],
+              ],
               const SizedBox(height: 8),
               if (state.format.usesTimecodeSwitch)
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: options.timecodes,
-                  onChanged: busy
+                  onChanged: busy || single
                       ? null
                       : (v) => cubit.setOptions(options.copyWith(timecodes: v)),
                   title: Text(l10n.exportTimecodes),
@@ -82,7 +130,7 @@ class _ExportView extends StatelessWidget {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: options.speakers,
-                  onChanged: busy
+                  onChanged: busy || single
                       ? null
                       : (v) => cubit.setOptions(options.copyWith(speakers: v)),
                   title: Text(l10n.exportSpeakers),
@@ -122,3 +170,11 @@ class _ExportView extends StatelessWidget {
     );
   }
 }
+
+String _layoutLabel(AppLocalizations l10n, ExportLayout layout) =>
+    switch (layout) {
+      ExportLayout.segments => l10n.exportLayoutSegments,
+      ExportLayout.speaker => l10n.exportLayoutSpeaker,
+      ExportLayout.paragraphs => l10n.exportLayoutParagraphs,
+      ExportLayout.single => l10n.exportLayoutSingle,
+    };

@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:dio/dio.dart' as _i361;
+import 'package:flutter/services.dart' as _i281;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -117,6 +118,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
     gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
+    gh.lazySingleton<_i281.AssetBundle>(() => shareModule.assetBundle);
     gh.lazySingleton<_i669.JobPollPolicy>(() => _i669.JobPollPolicy());
     gh.lazySingleton<_i1039.AudioRecorder>(() => recorderModule.audioRecorder);
     gh.lazySingleton<_i155.MediaPicker>(() => _i155.MediaPicker());
@@ -126,9 +128,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.retryDio(),
       instanceName: 'retryDio',
-    );
-    gh.lazySingleton<_i938.IExportFacade>(
-      () => _i469.ExportFacade(gh<_i998.SharePlus>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.uploadDio(),
@@ -144,8 +143,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
     );
-    gh.factory<_i644.ExportCubit>(
-      () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
+    gh.lazySingleton<_i938.IExportFacade>(
+      () => _i469.ExportFacade(gh<_i998.SharePlus>(), gh<_i281.AssetBundle>()),
     );
     gh.lazySingleton<_i239.IRecorderFacade>(
       () => _i293.RecorderFacade(gh<_i1039.AudioRecorder>()),
@@ -179,6 +178,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(),
         gh<_i361.Dio>(instanceName: 'uploadDio'),
       ),
+    );
+    gh.factory<_i644.ExportCubit>(
+      () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
     );
     gh.lazySingleton<_i865.IAuthFacade>(
       () => _i1041.AuthFacade(

@@ -1162,6 +1162,48 @@ abstract class AppLocalizations {
   /// **'Faylni saqlash yoki yuborish'**
   String get exportShare;
 
+  /// No description provided for @exportLayout.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn tuzilishi'**
+  String get exportLayout;
+
+  /// No description provided for @exportLayoutSegments.
+  ///
+  /// In uz, this message translates to:
+  /// **'Segmentlar'**
+  String get exportLayoutSegments;
+
+  /// No description provided for @exportLayoutSpeaker.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi boʻyicha'**
+  String get exportLayoutSpeaker;
+
+  /// No description provided for @exportLayoutParagraphs.
+  ///
+  /// In uz, this message translates to:
+  /// **'Paragraflar'**
+  String get exportLayoutParagraphs;
+
+  /// No description provided for @exportLayoutSingle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bitta paragraf'**
+  String get exportLayoutSingle;
+
+  /// No description provided for @exportSentences.
+  ///
+  /// In uz, this message translates to:
+  /// **'Paragrafda gap'**
+  String get exportSentences;
+
+  /// No description provided for @exportSentenceCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta gap'**
+  String exportSentenceCount(int count);
+
   /// No description provided for @profileTitle.
   ///
   /// In uz, this message translates to:

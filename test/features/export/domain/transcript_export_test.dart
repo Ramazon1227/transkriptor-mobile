@@ -31,6 +31,24 @@ const _csvQuoted =
 const _csvPlain =
     'start,end,speaker,text\n01:02:03,01:02:05,"Ali, Vali","U ""ha"" dedi"\n00:00:00,00:00:01,G\'ani,ta\'lim o\'zbek\n';
 
+// Layouts: tr-frontend/src/lib/export.ts `render("txt")` run in Node,
+// 2026-10-28, on [_layoutTranscript] below. One turn of Ali crosses three
+// segments with a sentence split across two of them; a speakerless
+// segment ends in `.»` (not a break, as on the web); the last one has
+// trailing spaces.
+const _layoutSpeaker =
+    '[00:00:00] Ali: Salom. Bugun reja bor. Birinchi masala byudjet, ikkinchisi muddat. Uchinchisi jamoa.\n\n[00:01:05] Vali: Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n\n[00:01:20] U dedi: «Ha.» Keyin ketdi\n\n[00:01:23] Vali: Tamom…\n';
+const _layoutSpeakerBare =
+    'Salom. Bugun reja bor. Birinchi masala byudjet, ikkinchisi muddat. Uchinchisi jamoa.\n\nRoziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n\nU dedi: «Ha.» Keyin ketdi\n\nTamom…\n';
+const _layoutPara1 =
+    '[00:00:00] Ali: Salom.\n\n[00:00:00] Bugun reja bor.\n\n[00:00:04] Birinchi masala byudjet, ikkinchisi muddat.\n\n[00:00:09] Uchinchisi jamoa.\n\n[00:01:05] Vali: Roziman!\n\n[00:01:05] Davom etamiz?\n\n[00:01:05] Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n\n[00:01:20] U dedi: «Ha.» Keyin ketdi\n\n[00:01:23] Vali: Tamom…\n';
+const _layoutPara2 =
+    '[00:00:00] Ali: Salom. Bugun reja bor.\n\n[00:00:04] Birinchi masala byudjet, ikkinchisi muddat. Uchinchisi jamoa.\n\n[00:01:05] Vali: Roziman! Davom etamiz?\n\n[00:01:05] Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n\n[00:01:20] U dedi: «Ha.» Keyin ketdi\n\n[00:01:23] Vali: Tamom…\n';
+const _layoutPara8NoTime =
+    'Ali: Salom. Bugun reja bor. Birinchi masala byudjet, ikkinchisi muddat. Uchinchisi jamoa.\n\nVali: Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.\n\nU dedi: «Ha.» Keyin ketdi\n\nVali: Tamom…\n';
+const _layoutSingle =
+    'Salom. Bugun reja bor. Birinchi masala byudjet, ikkinchisi muddat. Uchinchisi jamoa. Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin. U dedi: «Ha.» Keyin ketdi Tamom…\n';
+
 Segment _seg(String id, String? speaker, int start, int end, String text) =>
     Segment(
       id: id,
@@ -60,6 +78,24 @@ final _transcript = Transcript(
       'Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni '
           'koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.',
     ),
+  ],
+);
+
+final Transcript _layoutTranscript = _transcript.copyWith(
+  segments: [
+    _seg('1', 'a', 0, 4000, 'Salom. Bugun reja bor.'),
+    _seg('2', 'a', 4000, 9000, 'Birinchi masala byudjet, ikkinchisi'),
+    _seg('3', 'a', 9000, 12000, 'muddat. Uchinchisi jamoa.'),
+    _seg(
+      '4',
+      'v',
+      65000,
+      79500,
+      'Roziman! Davom etamiz? Keyingi yigʻilishda moliyaviy hisobotni '
+          'koʻrib chiqamiz va qarorni ovozga qoʻyamiz, chunki muddat yaqin.',
+    ),
+    _seg('5', null, 80000, 82000, 'U dedi: «Ha.» Keyin ketdi'),
+    _seg('6', 'v', 83000, 85000, 'Tamom…   '),
   ],
 );
 
@@ -165,6 +201,69 @@ void main() {
       TranscriptExport.fileName('Kengash', ExportFormat.csv),
       'Kengash.csv',
     );
+  });
+
+  group('TXT layouts match the web', () {
+    String txt(ExportOptions o) =>
+        TranscriptExport.render(ExportFormat.txt, _layoutTranscript, o);
+
+    test("by speaker joins one speaker's consecutive segments", () {
+      expect(
+        txt(const ExportOptions(layout: ExportLayout.speaker)),
+        _layoutSpeaker,
+      );
+      expect(
+        txt(
+          const ExportOptions(
+            layout: ExportLayout.speaker,
+            timecodes: false,
+            speakers: false,
+          ),
+        ),
+        _layoutSpeakerBare,
+      );
+    });
+
+    test('paragraphs cut each turn every N sentences', () {
+      expect(
+        txt(const ExportOptions(layout: ExportLayout.paragraphs, sentences: 1)),
+        _layoutPara1,
+      );
+      expect(
+        txt(const ExportOptions(layout: ExportLayout.paragraphs)),
+        _layoutPara2,
+      );
+      expect(
+        txt(
+          const ExportOptions(
+            layout: ExportLayout.paragraphs,
+            sentences: 8,
+            timecodes: false,
+          ),
+        ),
+        _layoutPara8NoTime,
+      );
+    });
+
+    test('single ignores both switches', () {
+      expect(
+        txt(const ExportOptions(layout: ExportLayout.single)),
+        _layoutSingle,
+      );
+    });
+
+    test('subtitles and CSV ignore the layout', () {
+      for (final f in [ExportFormat.srt, ExportFormat.csv]) {
+        expect(
+          TranscriptExport.render(
+            f,
+            _transcript,
+            const ExportOptions(layout: ExportLayout.single),
+          ),
+          TranscriptExport.render(f, _transcript, base),
+        );
+      }
+    });
   });
 
   test('file names drop characters a file system refuses', () {
