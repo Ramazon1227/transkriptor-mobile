@@ -11,6 +11,11 @@ abstract final class Endpoints {
   // Files.
   static const String library = '/api/v1/library';
   static const String media = '/api/v1/media';
+  static String mediaById(String id) => '/api/v1/media/$id';
+  static String workspaceFolders(String workspaceId) =>
+      '/api/v1/workspaces/$workspaceId/folders';
+  static String workspaceFolder(String workspaceId, String folderId) =>
+      '/api/v1/workspaces/$workspaceId/folders/$folderId';
   static String mediaConfirm(String id) => '/api/v1/media/$id/confirm';
   static const String mediaYoutube = '/api/v1/media/youtube';
   static const String mediaCloud = '/api/v1/media/cloud';

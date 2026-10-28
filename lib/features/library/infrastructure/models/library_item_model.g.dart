@@ -30,6 +30,7 @@ _LibraryItemModel _$LibraryItemModelFromJson(Map<String, dynamic> json) =>
       jobId: json['job_id'] as String?,
       jobStatus: json['job_status'] as String?,
       transcriptId: json['transcript_id'] as String?,
+      folderId: json['folder_id'] as String?,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const <String>[],
@@ -47,6 +48,7 @@ Map<String, dynamic> _$LibraryItemModelToJson(_LibraryItemModel instance) =>
       'job_id': instance.jobId,
       'job_status': instance.jobStatus,
       'transcript_id': instance.transcriptId,
+      'folder_id': instance.folderId,
       'tags': instance.tags,
     };
 

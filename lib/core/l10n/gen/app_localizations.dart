@@ -514,6 +514,162 @@ abstract class AppLocalizations {
   /// **'Birinchi suhbatni yozib oling yoki telefoningizdagi audio faylni yuklang. Natija shu yerda paydo boʻladi.'**
   String get filesEmptyBody;
 
+  /// No description provided for @filesAll.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi'**
+  String get filesAll;
+
+  /// No description provided for @filesFolderEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka boʻsh.'**
+  String get filesFolderEmpty;
+
+  /// No description provided for @filesFolderEmptyHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni bosib turing va «Papkaga koʻchirish»ni tanlang.'**
+  String get filesFolderEmptyHint;
+
+  /// No description provided for @filesTagAll.
+  ///
+  /// In uz, this message translates to:
+  /// **'Teg: hammasi'**
+  String get filesTagAll;
+
+  /// No description provided for @filesForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ish maydonida fayllarni oʻzgartirish huquqingiz yoʻq.'**
+  String get filesForbidden;
+
+  /// No description provided for @folderNew.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka'**
+  String get folderNew;
+
+  /// No description provided for @folderCreateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi papka'**
+  String get folderCreateTitle;
+
+  /// No description provided for @folderRenameTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papkani qayta nomlash'**
+  String get folderRenameTitle;
+
+  /// No description provided for @folderNameHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka nomi'**
+  String get folderNameHint;
+
+  /// No description provided for @folderNameInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nom boʻsh boʻlmasin va {max} belgidan oshmasin.'**
+  String folderNameInvalid(int max);
+
+  /// No description provided for @folderExists.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu nomli papka allaqachon bor yoki papkalar soni chegarasiga yetgan.'**
+  String get folderExists;
+
+  /// No description provided for @folderRename.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomini oʻzgartirish'**
+  String get folderRename;
+
+  /// No description provided for @folderDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get folderDelete;
+
+  /// No description provided for @folderDeleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papkani oʻchirish'**
+  String get folderDeleteTitle;
+
+  /// No description provided for @folderDeleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{name}» papkasi oʻchadi. Ichidagi {count} ta fayl oʻchmaydi — papkasiz qoladi va «Hammasi»da koʻrinadi.'**
+  String folderDeleteBody(String name, int count);
+
+  /// No description provided for @folderDeleteEmptyBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{name}» papkasi oʻchadi. Papka boʻsh.'**
+  String folderDeleteEmptyBody(String name);
+
+  /// No description provided for @folderNone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papkasiz'**
+  String get folderNone;
+
+  /// No description provided for @folderGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka topilmadi — u boshqa joyda oʻchirilgan boʻlishi mumkin. Roʻyxatni yangilang.'**
+  String get folderGone;
+
+  /// No description provided for @fileMove.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papkaga koʻchirish'**
+  String get fileMove;
+
+  /// No description provided for @fileTags.
+  ///
+  /// In uz, this message translates to:
+  /// **'Teglar'**
+  String get fileTags;
+
+  /// No description provided for @tagNewHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi teg'**
+  String get tagNewHint;
+
+  /// No description provided for @tagAdd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻshish'**
+  String get tagAdd;
+
+  /// No description provided for @tagInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Teg boʻsh boʻlmasin, vergul boʻlmasin va {max} belgidan oshmasin.'**
+  String tagInvalid(int max);
+
+  /// No description provided for @tagTooMany.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bir faylda koʻpi bilan {max} ta teg.'**
+  String tagTooMany(int max);
+
+  /// No description provided for @tagsNone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Teglar yoʻq'**
+  String get tagsNone;
+
+  /// No description provided for @actionSave.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlash'**
+  String get actionSave;
+
   /// No description provided for @statusQueued.
   ///
   /// In uz, this message translates to:

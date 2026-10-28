@@ -155,6 +155,68 @@ void main() {
     expect(http.sent.single.options.queryParameters, {'workspace_id': 'w1'});
   });
 
+  group('LibraryRepository folders and file patch', () {
+    test('folder_id narrows the list', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/library': (200, ok({'items': <Object>[]})),
+      });
+      await LibraryRepository(fakeDio(http))
+          .getItems(workspaceId: 'w1', folderId: 'f1');
+      expect(http.sent.single.options.queryParameters, {
+        'workspace_id': 'w1',
+        'folder_id': 'f1',
+      });
+    });
+
+    test('folders are listed, created, renamed and deleted by path', () async {
+      const folder = {'id': 'f1', 'name': 'Sud', 'file_count': 3};
+      final http = FakeHttpAdapter({
+        'GET /api/v1/workspaces/w1/folders': (
+          200,
+          ok({
+            'items': [folder],
+          }),
+        ),
+        'POST /api/v1/workspaces/w1/folders': (201, ok({'folder': folder})),
+        'PATCH /api/v1/workspaces/w1/folders/f1': (200, ok({'folder': folder})),
+        'DELETE /api/v1/workspaces/w1/folders/f1': (200, ok({'deleted': true})),
+      });
+      final repo = LibraryRepository(fakeDio(http));
+      final list = (await repo.getFolders(workspaceId: 'w1'))
+          .getOrElse(() => throw StateError('left'));
+      expect(list.single.toEntity().fileCount, 3);
+      await repo.createFolder(workspaceId: 'w1', name: 'Sud');
+      await repo.renameFolder(workspaceId: 'w1', folderId: 'f1', name: 'Sud');
+      final deleted = await repo.deleteFolder(
+        workspaceId: 'w1',
+        folderId: 'f1',
+      );
+      expect(deleted.isRight(), isTrue);
+      expect(http.sent[1].body, {'name': 'Sud'});
+      expect(http.sent[2].body, {'name': 'Sud'});
+    });
+
+    test('a move out of every folder sends folder_id: null', () async {
+      final http = FakeHttpAdapter({
+        'PATCH /api/v1/media/m1': (
+          200,
+          ok({
+            'item': {'media_id': 'm1', 'name': 'A', 'folder_id': null},
+          }),
+        ),
+      });
+      final item = (await LibraryRepository(fakeDio(http)).updateMedia(
+        mediaId: 'm1',
+        patch: {'folder_id': null},
+      )).getOrElse(() => throw StateError('left'));
+      final body = http.sent.single.body! as Map<String, Object?>;
+      expect(body.containsKey('folder_id'), isTrue);
+      expect(body['folder_id'], isNull);
+      expect(body.containsKey('tags'), isFalse);
+      expect(item.toEntity().folderId, isNull);
+    });
+  });
+
   group('JobRepository', () {
     test('create sends the key in header and body, no null fields', () async {
       final http = FakeHttpAdapter({

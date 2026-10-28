@@ -119,6 +119,96 @@ void main() {
     );
   });
 
+  group('LibraryBloc folders and tags', () {
+    const tagged = [
+      LibraryItem(mediaId: 'm1', name: 'A', tags: ['sud', 'majlis']),
+      LibraryItem(mediaId: 'm2', name: 'B', tags: ['majlis']),
+      LibraryItem(mediaId: 'm3', name: 'C'),
+    ];
+
+    blocTest<LibraryBloc, LibraryState>(
+      'a folder is a new list: rows blanked, tag dropped, folder_id sent',
+      setUp: () =>
+          when(() => facade.getItems(workspaceId: 'w1', folderId: 'f1'))
+              .thenAnswer((_) async => const Right(<LibraryItem>[])),
+      build: () => LibraryBloc(facade, changes),
+      seed: () => const LibraryState(
+        status: LibraryStatus.success,
+        workspaceId: 'w1',
+        items: tagged,
+        tag: 'sud',
+      ),
+      act: (bloc) => bloc.add(const LibraryFolderSelected('f1')),
+      expect: () => const [
+        LibraryState(
+          status: LibraryStatus.loading,
+          workspaceId: 'w1',
+          folderId: 'f1',
+        ),
+        LibraryState(
+          status: LibraryStatus.empty,
+          workspaceId: 'w1',
+          folderId: 'f1',
+        ),
+      ],
+    );
+
+    blocTest<LibraryBloc, LibraryState>(
+      'a refresh stays in the open folder',
+      setUp: () =>
+          when(() => facade.getItems(workspaceId: 'w1', folderId: 'f1'))
+              .thenAnswer((_) async => const Right(tagged)),
+      build: () => LibraryBloc(facade, changes),
+      seed: () => const LibraryState(
+        status: LibraryStatus.success,
+        workspaceId: 'w1',
+        folderId: 'f1',
+        items: tagged,
+      ),
+      act: (bloc) => bloc.add(const LibraryRefreshed()),
+      verify: (_) =>
+          verify(() => facade.getItems(workspaceId: 'w1', folderId: 'f1'))
+              .called(1),
+    );
+
+    blocTest<LibraryBloc, LibraryState>(
+      'a tag narrows the rows on screen without a request',
+      build: () => LibraryBloc(facade, changes),
+      seed: () => const LibraryState(
+        status: LibraryStatus.success,
+        workspaceId: 'w1',
+        items: tagged,
+      ),
+      act: (bloc) => bloc.add(const LibraryTagSelected('sud')),
+      verify: (bloc) {
+        expect(bloc.state.tags, ['sud', 'majlis']);
+        expect(bloc.state.visibleItems.map((i) => i.mediaId), ['m1']);
+        verifyNever(
+          () => facade.getItems(
+            workspaceId: any(named: 'workspaceId'),
+            folderId: any(named: 'folderId'),
+          ),
+        );
+      },
+    );
+
+    blocTest<LibraryBloc, LibraryState>(
+      'a tag no row carries after a reload is dropped',
+      setUp: () => when(() => facade.getItems(workspaceId: 'w1')).thenAnswer(
+        (_) async => const Right([LibraryItem(mediaId: 'm3', name: 'C')]),
+      ),
+      build: () => LibraryBloc(facade, changes),
+      seed: () => const LibraryState(
+        status: LibraryStatus.success,
+        workspaceId: 'w1',
+        items: tagged,
+        tag: 'sud',
+      ),
+      act: (bloc) => bloc.add(const LibraryRefreshed()),
+      verify: (bloc) => expect(bloc.state.tag, isNull),
+    );
+  });
+
   group('LibraryItemModel', () {
     test('reads blanks as null and an unknown status as unknown', () {
       final item = LibraryItemModel.fromJson(const {
@@ -151,6 +241,15 @@ void main() {
       }).toEntity();
       expect(item.jobStatus, isNull);
       expect(item.kind, MediaKind.unknown);
+      expect(item.folderId, isNull);
+    });
+
+    test('reads folder_id', () {
+      final item = LibraryItemModel.fromJson(const {
+        'media_id': 'm1',
+        'folder_id': 'f1',
+      }).toEntity();
+      expect(item.folderId, 'f1');
     });
   });
 }

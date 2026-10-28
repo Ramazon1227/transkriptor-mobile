@@ -1,10 +1,11 @@
-import 'package:dartz/dartz.dart' show Either;
+import 'package:dartz/dartz.dart' show Either, Unit, unit;
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/constants/endpoints.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
+import 'package:transkriptor_uz/features/library/infrastructure/models/folder_model.dart';
 import 'package:transkriptor_uz/features/library/infrastructure/models/library_item_model.dart';
 
 @lazySingleton
@@ -13,13 +14,15 @@ class LibraryRepository {
 
   final Dio _dio;
 
+  /// [folderId] null lists every file, folders included.
   Future<Either<Failure, List<LibraryItemModel>>> getItems({
     required String workspaceId,
+    String? folderId,
   }) {
     return runRequest(() async {
       final response = await _dio.get<Map<String, dynamic>>(
         Endpoints.library,
-        queryParameters: {'workspace_id': workspaceId},
+        queryParameters: {'workspace_id': workspaceId, 'folder_id': ?folderId},
       );
       final items = envelopeData(response.data)['items'];
       return ((items as List<dynamic>?) ?? const [])
@@ -28,4 +31,81 @@ class LibraryRepository {
           .toList();
     });
   }
+
+  Future<Either<Failure, List<FolderModel>>> getFolders({
+    required String workspaceId,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.get<Map<String, dynamic>>(
+        Endpoints.workspaceFolders(workspaceId),
+      );
+      final items = envelopeData(response.data)['items'];
+      return ((items as List<dynamic>?) ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map(FolderModel.fromJson)
+          .toList();
+    });
+  }
+
+  Future<Either<Failure, FolderModel>> createFolder({
+    required String workspaceId,
+    required String name,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        Endpoints.workspaceFolders(workspaceId),
+        data: {'name': name},
+      );
+      return _folder(response.data);
+    });
+  }
+
+  Future<Either<Failure, FolderModel>> renameFolder({
+    required String workspaceId,
+    required String folderId,
+    required String name,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        Endpoints.workspaceFolder(workspaceId, folderId),
+        data: {'name': name},
+      );
+      return _folder(response.data);
+    });
+  }
+
+  /// The files inside move out of the folder; they are not deleted.
+  Future<Either<Failure, Unit>> deleteFolder({
+    required String workspaceId,
+    required String folderId,
+  }) {
+    return runRequest(() async {
+      await _dio.delete<Map<String, dynamic>>(
+        Endpoints.workspaceFolder(workspaceId, folderId),
+      );
+      return unit;
+    });
+  }
+
+  /// `PATCH /media/:id`. Only the keys in [patch] change; `folder_id: null`
+  /// moves the file out of its folder, which is why the body is a map.
+  Future<Either<Failure, LibraryItemModel>> updateMedia({
+    required String mediaId,
+    required Map<String, Object?> patch,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        Endpoints.mediaById(mediaId),
+        data: patch,
+      );
+      return LibraryItemModel.fromJson(
+        envelopeData(response.data)['item'] as Map<String, dynamic>,
+      );
+    });
+  }
+
+  static FolderModel _folder(Map<String, dynamic>? body) =>
+      FolderModel.fromJson(
+        envelopeData(body)['folder'] as Map<String, dynamic>,
+      );
 }

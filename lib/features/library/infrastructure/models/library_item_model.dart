@@ -25,6 +25,7 @@ abstract class LibraryItemModel with _$LibraryItemModel {
     /// Empty string when there is no job; read as null.
     @JsonKey(name: 'job_status') String? jobStatus,
     @JsonKey(name: 'transcript_id') String? transcriptId,
+    @JsonKey(name: 'folder_id') String? folderId,
     @JsonKey(name: 'tags') @Default(<String>[]) List<String> tags,
   }) = _LibraryItemModel;
 
@@ -46,6 +47,7 @@ abstract class LibraryItemModel with _$LibraryItemModel {
     jobId: _blankToNull(jobId),
     jobStatus: _jobStatus(jobStatus),
     transcriptId: _blankToNull(transcriptId),
+    folderId: _blankToNull(folderId),
     tags: tags,
   );
 }

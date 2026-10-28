@@ -83,6 +83,47 @@
   "filesTitle": "Fayllar",
   "filesEmptyTitle": "Hali fayl yoʻq",
   "filesEmptyBody": "Birinchi suhbatni yozib oling yoki telefoningizdagi audio faylni yuklang. Natija shu yerda paydo boʻladi.",
+  "filesAll": "Hammasi",
+  "filesFolderEmpty": "Papka boʻsh.",
+  "filesFolderEmptyHint": "Faylni bosib turing va «Papkaga koʻchirish»ni tanlang.",
+  "filesTagAll": "Teg: hammasi",
+  "filesForbidden": "Bu ish maydonida fayllarni oʻzgartirish huquqingiz yoʻq.",
+  "folderNew": "Papka",
+  "folderCreateTitle": "Yangi papka",
+  "folderRenameTitle": "Papkani qayta nomlash",
+  "folderNameHint": "Papka nomi",
+  "folderNameInvalid": "Nom boʻsh boʻlmasin va {max} belgidan oshmasin.",
+  "@folderNameInvalid": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "folderExists": "Shu nomli papka allaqachon bor yoki papkalar soni chegarasiga yetgan.",
+  "folderRename": "Nomini oʻzgartirish",
+  "folderDelete": "Oʻchirish",
+  "folderDeleteTitle": "Papkani oʻchirish",
+  "folderDeleteBody": "«{name}» papkasi oʻchadi. Ichidagi {count} ta fayl oʻchmaydi — papkasiz qoladi va «Hammasi»da koʻrinadi.",
+  "@folderDeleteBody": {
+    "placeholders": { "name": { "type": "String" }, "count": { "type": "int" } }
+  },
+  "folderDeleteEmptyBody": "«{name}» papkasi oʻchadi. Papka boʻsh.",
+  "@folderDeleteEmptyBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "folderNone": "Papkasiz",
+  "folderGone": "Papka topilmadi — u boshqa joyda oʻchirilgan boʻlishi mumkin. Roʻyxatni yangilang.",
+  "fileMove": "Papkaga koʻchirish",
+  "fileTags": "Teglar",
+  "tagNewHint": "Yangi teg",
+  "tagAdd": "Qoʻshish",
+  "tagInvalid": "Teg boʻsh boʻlmasin, vergul boʻlmasin va {max} belgidan oshmasin.",
+  "@tagInvalid": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "tagTooMany": "Bir faylda koʻpi bilan {max} ta teg.",
+  "@tagTooMany": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "tagsNone": "Teglar yoʻq",
+  "actionSave": "Saqlash",
   "statusQueued": "Navbatda",
   "statusRunning": "Ishlanmoqda",
   "statusDone": "Tayyor",

@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LibraryState {
 
- LibraryStatus get status; List<LibraryItem> get items; String? get workspaceId;/// A reload is running while the previous rows stay visible.
+ LibraryStatus get status; List<LibraryItem> get items; String? get workspaceId;/// The open folder; null is every file.
+ String? get folderId;/// The tag the rows are narrowed to; null shows them all.
+ String? get tag;/// A reload is running while the previous rows stay visible.
  bool get refreshing; Failure? get failure;
 /// Create a copy of LibraryState
 /// with the given fields replaced by the non-null parameter values.
@@ -28,20 +30,20 @@ $LibraryStateCopyWith<LibraryState> get copyWith => _$LibraryStateCopyWithImpl<L
 @override
 bool operator ==(Object other) {
   final _this = this as LibraryState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LibraryState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.workspaceId, _this.workspaceId) || other.workspaceId == _this.workspaceId)&&(identical(other.refreshing, _this.refreshing) || other.refreshing == _this.refreshing)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LibraryState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.workspaceId, _this.workspaceId) || other.workspaceId == _this.workspaceId)&&(identical(other.folderId, _this.folderId) || other.folderId == _this.folderId)&&(identical(other.tag, _this.tag) || other.tag == _this.tag)&&(identical(other.refreshing, _this.refreshing) || other.refreshing == _this.refreshing)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as LibraryState;
-  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.workspaceId,_this.refreshing,_this.failure);
+  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.workspaceId,_this.folderId,_this.tag,_this.refreshing,_this.failure);
 }
 
 @override
 String toString() {
   final _this = this as LibraryState;
-  return 'LibraryState(status: ${_this.status}, items: ${_this.items}, workspaceId: ${_this.workspaceId}, refreshing: ${_this.refreshing}, failure: ${_this.failure})';
+  return 'LibraryState(status: ${_this.status}, items: ${_this.items}, workspaceId: ${_this.workspaceId}, folderId: ${_this.folderId}, tag: ${_this.tag}, refreshing: ${_this.refreshing}, failure: ${_this.failure})';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $LibraryStateCopyWith<$Res>  {
   factory $LibraryStateCopyWith(LibraryState value, $Res Function(LibraryState) _then) = _$LibraryStateCopyWithImpl;
 @useResult
 $Res call({
- LibraryStatus status, List<LibraryItem> items, String? workspaceId, bool refreshing, Failure? failure
+ LibraryStatus status, List<LibraryItem> items, String? workspaceId, String? folderId, String? tag, bool refreshing, Failure? failure
 });
 
 
@@ -69,11 +71,13 @@ class _$LibraryStateCopyWithImpl<$Res>
 
 /// Create a copy of LibraryState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? workspaceId = freezed,Object? refreshing = null,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? workspaceId = freezed,Object? folderId = freezed,Object? tag = freezed,Object? refreshing = null,Object? failure = freezed,}) {
   return _then(LibraryState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as LibraryStatus,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<LibraryItem>,workspaceId: freezed == workspaceId ? _self.workspaceId : workspaceId // ignore: cast_nullable_to_non_nullable
+as String?,folderId: freezed == folderId ? _self.folderId : folderId // ignore: cast_nullable_to_non_nullable
+as String?,tag: freezed == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
 as String?,refreshing: null == refreshing ? _self.refreshing : refreshing // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
@@ -173,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  bool refreshing,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  String? folderId,  String? tag,  bool refreshing,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LibraryState() when $default != null:
-return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_that.failure);case _:
+return $default(_that.status,_that.items,_that.workspaceId,_that.folderId,_that.tag,_that.refreshing,_that.failure);case _:
   return orElse();
 
 }
@@ -194,10 +198,10 @@ return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  bool refreshing,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  String? folderId,  String? tag,  bool refreshing,  Failure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _LibraryState():
-return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_that.failure);case _:
+return $default(_that.status,_that.items,_that.workspaceId,_that.folderId,_that.tag,_that.refreshing,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -214,10 +218,10 @@ return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  bool refreshing,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LibraryStatus status,  List<LibraryItem> items,  String? workspaceId,  String? folderId,  String? tag,  bool refreshing,  Failure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _LibraryState() when $default != null:
-return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_that.failure);case _:
+return $default(_that.status,_that.items,_that.workspaceId,_that.folderId,_that.tag,_that.refreshing,_that.failure);case _:
   return null;
 
 }
@@ -229,7 +233,7 @@ return $default(_that.status,_that.items,_that.workspaceId,_that.refreshing,_tha
 
 
 class _LibraryState implements LibraryState {
-  const _LibraryState({this.status = LibraryStatus.initial,  List<LibraryItem> items = const <LibraryItem>[], this.workspaceId, this.refreshing = false, this.failure}): _items = items;
+  const _LibraryState({this.status = LibraryStatus.initial,  List<LibraryItem> items = const <LibraryItem>[], this.workspaceId, this.folderId, this.tag, this.refreshing = false, this.failure}): _items = items;
   
 
 @override@JsonKey() final  LibraryStatus status;
@@ -241,6 +245,10 @@ class _LibraryState implements LibraryState {
 }
 
 @override final  String? workspaceId;
+/// The open folder; null is every file.
+@override final  String? folderId;
+/// The tag the rows are narrowed to; null shows them all.
+@override final  String? tag;
 /// A reload is running while the previous rows stay visible.
 @override@JsonKey() final  bool refreshing;
 @override final  Failure? failure;
@@ -255,18 +263,18 @@ _$LibraryStateCopyWith<_LibraryState> get copyWith => __$LibraryStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LibraryState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.workspaceId, workspaceId) || other.workspaceId == workspaceId)&&(identical(other.refreshing, refreshing) || other.refreshing == refreshing)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LibraryState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.workspaceId, workspaceId) || other.workspaceId == workspaceId)&&(identical(other.folderId, folderId) || other.folderId == folderId)&&(identical(other.tag, tag) || other.tag == tag)&&(identical(other.refreshing, refreshing) || other.refreshing == refreshing)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),workspaceId,refreshing,failure);
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),workspaceId,folderId,tag,refreshing,failure);
 }
 
 @override
 String toString() {
-    return 'LibraryState(status: $status, items: $items, workspaceId: $workspaceId, refreshing: $refreshing, failure: $failure)';
+    return 'LibraryState(status: $status, items: $items, workspaceId: $workspaceId, folderId: $folderId, tag: $tag, refreshing: $refreshing, failure: $failure)';
 }
 
 
@@ -277,7 +285,7 @@ abstract mixin class _$LibraryStateCopyWith<$Res> implements $LibraryStateCopyWi
   factory _$LibraryStateCopyWith(_LibraryState value, $Res Function(_LibraryState) _then) = __$LibraryStateCopyWithImpl;
 @override @useResult
 $Res call({
- LibraryStatus status, List<LibraryItem> items, String? workspaceId, bool refreshing, Failure? failure
+ LibraryStatus status, List<LibraryItem> items, String? workspaceId, String? folderId, String? tag, bool refreshing, Failure? failure
 });
 
 
@@ -294,11 +302,13 @@ class __$LibraryStateCopyWithImpl<$Res>
 
 /// Create a copy of LibraryState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? workspaceId = freezed,Object? refreshing = null,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? workspaceId = freezed,Object? folderId = freezed,Object? tag = freezed,Object? refreshing = null,Object? failure = freezed,}) {
   return _then(_LibraryState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as LibraryStatus,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<LibraryItem>,workspaceId: freezed == workspaceId ? _self.workspaceId : workspaceId // ignore: cast_nullable_to_non_nullable
+as String?,folderId: freezed == folderId ? _self.folderId : folderId // ignore: cast_nullable_to_non_nullable
+as String?,tag: freezed == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
 as String?,refreshing: null == refreshing ? _self.refreshing : refreshing // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,

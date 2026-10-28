@@ -240,6 +240,98 @@ class AppLocalizationsUz extends AppLocalizations {
       'Birinchi suhbatni yozib oling yoki telefoningizdagi audio faylni yuklang. Natija shu yerda paydo boʻladi.';
 
   @override
+  String get filesAll => 'Hammasi';
+
+  @override
+  String get filesFolderEmpty => 'Papka boʻsh.';
+
+  @override
+  String get filesFolderEmptyHint =>
+      'Faylni bosib turing va «Papkaga koʻchirish»ni tanlang.';
+
+  @override
+  String get filesTagAll => 'Teg: hammasi';
+
+  @override
+  String get filesForbidden =>
+      'Bu ish maydonida fayllarni oʻzgartirish huquqingiz yoʻq.';
+
+  @override
+  String get folderNew => 'Papka';
+
+  @override
+  String get folderCreateTitle => 'Yangi papka';
+
+  @override
+  String get folderRenameTitle => 'Papkani qayta nomlash';
+
+  @override
+  String get folderNameHint => 'Papka nomi';
+
+  @override
+  String folderNameInvalid(int max) {
+    return 'Nom boʻsh boʻlmasin va $max belgidan oshmasin.';
+  }
+
+  @override
+  String get folderExists =>
+      'Shu nomli papka allaqachon bor yoki papkalar soni chegarasiga yetgan.';
+
+  @override
+  String get folderRename => 'Nomini oʻzgartirish';
+
+  @override
+  String get folderDelete => 'Oʻchirish';
+
+  @override
+  String get folderDeleteTitle => 'Papkani oʻchirish';
+
+  @override
+  String folderDeleteBody(String name, int count) {
+    return '«$name» papkasi oʻchadi. Ichidagi $count ta fayl oʻchmaydi — papkasiz qoladi va «Hammasi»da koʻrinadi.';
+  }
+
+  @override
+  String folderDeleteEmptyBody(String name) {
+    return '«$name» papkasi oʻchadi. Papka boʻsh.';
+  }
+
+  @override
+  String get folderNone => 'Papkasiz';
+
+  @override
+  String get folderGone =>
+      'Papka topilmadi — u boshqa joyda oʻchirilgan boʻlishi mumkin. Roʻyxatni yangilang.';
+
+  @override
+  String get fileMove => 'Papkaga koʻchirish';
+
+  @override
+  String get fileTags => 'Teglar';
+
+  @override
+  String get tagNewHint => 'Yangi teg';
+
+  @override
+  String get tagAdd => 'Qoʻshish';
+
+  @override
+  String tagInvalid(int max) {
+    return 'Teg boʻsh boʻlmasin, vergul boʻlmasin va $max belgidan oshmasin.';
+  }
+
+  @override
+  String tagTooMany(int max) {
+    return 'Bir faylda koʻpi bilan $max ta teg.';
+  }
+
+  @override
+  String get tagsNone => 'Teglar yoʻq';
+
+  @override
+  String get actionSave => 'Saqlash';
+
+  @override
   String get statusQueued => 'Navbatda';
 
   @override

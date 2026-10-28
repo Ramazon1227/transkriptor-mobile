@@ -42,6 +42,9 @@ abstract class LibraryItem with _$LibraryItem {
     /// Null when the file was saved without starting transcription.
     JobStatus? jobStatus,
     String? transcriptId,
+
+    /// Null when the file sits outside every folder.
+    String? folderId,
     @Default(<String>[]) List<String> tags,
   }) = _LibraryItem;
 }

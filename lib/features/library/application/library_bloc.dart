@@ -21,7 +21,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     : super(const LibraryState()) {
     // One handler for both events, so restartable() cancels across them:
     // a late answer for another workspace never overwrites the newer one.
-    on<LibraryEvent>(_onLoad, transformer: restartable());
+    on<LibraryLoadEvent>(_onLoad, transformer: restartable());
+    on<LibraryTagSelected>(
+      (event, emit) => emit(state.copyWith(tag: event.tag)),
+    );
     _changes = changes.stream.listen((_) => add(const LibraryRefreshed()));
   }
 
@@ -52,14 +55,33 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     });
   }
 
-  Future<void> _onLoad(LibraryEvent event, Emitter<LibraryState> emit) async {
+  Future<void> _onLoad(
+    LibraryLoadEvent event,
+    Emitter<LibraryState> emit,
+  ) async {
     final workspaceId = switch (event) {
       LibraryStarted(:final workspaceId) => workspaceId,
-      LibraryRefreshed() => state.workspaceId,
+      LibraryRefreshed() || LibraryFolderSelected() => state.workspaceId,
     };
     if (workspaceId == null) return;
 
-    // A refresh keeps the rows on screen; only the first load blanks them.
+    // Another folder is another list: its first load blanks the rows and
+    // drops the tag. A refresh keeps the rows on screen.
+    if (event case LibraryFolderSelected(:final folderId)) {
+      _inFlight?.cancel();
+      emit(
+        state.copyWith(
+          status: LibraryStatus.loading,
+          items: const [],
+          folderId: folderId,
+          tag: null,
+          refreshing: false,
+          failure: null,
+        ),
+      );
+    }
+    final folderId = state.folderId;
+
     final hasItems = state.items.isNotEmpty;
     emit(
       state.copyWith(
@@ -70,7 +92,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       ),
     );
 
-    final result = await _facade.getItems(workspaceId: workspaceId);
+    final result = await _facade.getItems(
+      workspaceId: workspaceId,
+      folderId: folderId,
+    );
 
     result.fold(
       // A failed refresh keeps the rows and only reports the failure.
@@ -87,6 +112,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
             status: items.isEmpty ? LibraryStatus.empty : LibraryStatus.success,
             refreshing: false,
             items: items,
+            // A tag no row carries any more would filter to nothing.
+            tag: items.any((i) => i.tags.contains(state.tag))
+                ? state.tag
+                : null,
           ),
         );
         _scheduleWhileInFlight(items);

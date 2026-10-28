@@ -10,10 +10,18 @@ import 'package:transkriptor_uz/features/job/presentation/widgets/job_status_chi
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 
 class LibraryTile extends StatelessWidget {
-  const LibraryTile({required this.item, this.showTags = true, super.key});
+  const LibraryTile({
+    required this.item,
+    this.showTags = true,
+    this.onLongPress,
+    super.key,
+  });
 
   final LibraryItem item;
   final bool showTags;
+
+  /// The files screen's move / tags menu; null elsewhere.
+  final VoidCallback? onLongPress;
 
   /// A finished transcript opens; anything with a job shows its progress.
   String? get _target {
@@ -30,6 +38,7 @@ class LibraryTile extends StatelessWidget {
     final target = _target;
     return InkWell(
       onTap: target == null ? null : () => context.push(target),
+      onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
