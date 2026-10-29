@@ -131,6 +131,28 @@ class AuthFacade implements IAuthFacade {
   }
 
   @override
+  Future<Either<Failure, Unit>> deleteAccount({
+    String? password,
+    String? email,
+  }) async {
+    final result = await _repository.deleteAccount(
+      password: password,
+      email: email,
+    );
+    if (result.isLeft()) return result;
+    // The server already closed every session; nothing to revoke here.
+    await _google.signOut();
+    try {
+      await _storage.clear();
+    } on Object {
+      // The account is gone either way; the expiry below still signs out.
+    } finally {
+      _session.expire();
+    }
+    return const Right(unit);
+  }
+
+  @override
   Future<Either<Failure, Unit>> requestPasswordReset({required String email}) =>
       _repository.requestPasswordReset(email: email);
 }

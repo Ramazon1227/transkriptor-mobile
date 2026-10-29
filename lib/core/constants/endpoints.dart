@@ -11,6 +11,16 @@ abstract final class Endpoints {
   static const String me = '/api/v1/me';
   static const String meDevices = '/api/v1/me/devices';
 
+  // Workspaces and billing.
+  static const String workspaces = '/api/v1/workspaces';
+  static String workspaceBalance(String workspaceId) =>
+      '/api/v1/workspaces/$workspaceId/balance';
+  static const String plans = '/api/v1/plans';
+
+  // Google Calendar (read-only; connected on the web).
+  static const String calendar = '/api/v1/calendar';
+  static const String calendarEvents = '/api/v1/calendar/events';
+
   // Files.
   static const String library = '/api/v1/library';
   static const String media = '/api/v1/media';

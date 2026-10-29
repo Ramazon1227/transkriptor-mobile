@@ -17,7 +17,9 @@ mixin _$PushState {
 
 /// The last notification tapped; the app opens its page.
  PushMessage? get opened;/// Bumped per tap, so the same message tapped twice opens twice.
- int get tapCount;
+ int get tapCount;/// False when this build carries no Firebase settings; settings says
+/// notifications are not set up.
+ bool get available;
 /// Create a copy of PushState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +31,20 @@ $PushStateCopyWith<PushState> get copyWith => _$PushStateCopyWithImpl<PushState>
 @override
 bool operator ==(Object other) {
   final _this = this as PushState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PushState&&(identical(other.opened, _this.opened) || other.opened == _this.opened)&&(identical(other.tapCount, _this.tapCount) || other.tapCount == _this.tapCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PushState&&(identical(other.opened, _this.opened) || other.opened == _this.opened)&&(identical(other.tapCount, _this.tapCount) || other.tapCount == _this.tapCount)&&(identical(other.available, _this.available) || other.available == _this.available));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PushState;
-  return Object.hash(runtimeType,_this.opened,_this.tapCount);
+  return Object.hash(runtimeType,_this.opened,_this.tapCount,_this.available);
 }
 
 @override
 String toString() {
   final _this = this as PushState;
-  return 'PushState(opened: ${_this.opened}, tapCount: ${_this.tapCount})';
+  return 'PushState(opened: ${_this.opened}, tapCount: ${_this.tapCount}, available: ${_this.available})';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $PushStateCopyWith<$Res>  {
   factory $PushStateCopyWith(PushState value, $Res Function(PushState) _then) = _$PushStateCopyWithImpl;
 @useResult
 $Res call({
- PushMessage? opened, int tapCount
+ PushMessage? opened, int tapCount, bool available
 });
 
 
@@ -70,11 +72,12 @@ class _$PushStateCopyWithImpl<$Res>
 
 /// Create a copy of PushState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? opened = freezed,Object? tapCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? opened = freezed,Object? tapCount = null,Object? available = null,}) {
   return _then(PushState(
 opened: freezed == opened ? _self.opened : opened // ignore: cast_nullable_to_non_nullable
 as PushMessage?,tapCount: null == tapCount ? _self.tapCount : tapCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,available: null == available ? _self.available : available // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of PushState
@@ -171,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PushMessage? opened,  int tapCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PushMessage? opened,  int tapCount,  bool available)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PushState() when $default != null:
-return $default(_that.opened,_that.tapCount);case _:
+return $default(_that.opened,_that.tapCount,_that.available);case _:
   return orElse();
 
 }
@@ -192,10 +195,10 @@ return $default(_that.opened,_that.tapCount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PushMessage? opened,  int tapCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PushMessage? opened,  int tapCount,  bool available)  $default,) {final _that = this;
 switch (_that) {
 case _PushState():
-return $default(_that.opened,_that.tapCount);case _:
+return $default(_that.opened,_that.tapCount,_that.available);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +215,10 @@ return $default(_that.opened,_that.tapCount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PushMessage? opened,  int tapCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PushMessage? opened,  int tapCount,  bool available)?  $default,) {final _that = this;
 switch (_that) {
 case _PushState() when $default != null:
-return $default(_that.opened,_that.tapCount);case _:
+return $default(_that.opened,_that.tapCount,_that.available);case _:
   return null;
 
 }
@@ -227,13 +230,16 @@ return $default(_that.opened,_that.tapCount);case _:
 
 
 class _PushState implements PushState {
-  const _PushState({this.opened, this.tapCount = 0});
+  const _PushState({this.opened, this.tapCount = 0, this.available = false});
   
 
 /// The last notification tapped; the app opens its page.
 @override final  PushMessage? opened;
 /// Bumped per tap, so the same message tapped twice opens twice.
 @override@JsonKey() final  int tapCount;
+/// False when this build carries no Firebase settings; settings says
+/// notifications are not set up.
+@override@JsonKey() final  bool available;
 
 /// Create a copy of PushState
 /// with the given fields replaced by the non-null parameter values.
@@ -245,18 +251,18 @@ _$PushStateCopyWith<_PushState> get copyWith => __$PushStateCopyWithImpl<_PushSt
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PushState&&(identical(other.opened, opened) || other.opened == opened)&&(identical(other.tapCount, tapCount) || other.tapCount == tapCount));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PushState&&(identical(other.opened, opened) || other.opened == opened)&&(identical(other.tapCount, tapCount) || other.tapCount == tapCount)&&(identical(other.available, available) || other.available == available));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,opened,tapCount);
+    return Object.hash(runtimeType,opened,tapCount,available);
 }
 
 @override
 String toString() {
-    return 'PushState(opened: $opened, tapCount: $tapCount)';
+    return 'PushState(opened: $opened, tapCount: $tapCount, available: $available)';
 }
 
 
@@ -267,7 +273,7 @@ abstract mixin class _$PushStateCopyWith<$Res> implements $PushStateCopyWith<$Re
   factory _$PushStateCopyWith(_PushState value, $Res Function(_PushState) _then) = __$PushStateCopyWithImpl;
 @override @useResult
 $Res call({
- PushMessage? opened, int tapCount
+ PushMessage? opened, int tapCount, bool available
 });
 
 
@@ -284,11 +290,12 @@ class __$PushStateCopyWithImpl<$Res>
 
 /// Create a copy of PushState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? opened = freezed,Object? tapCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? opened = freezed,Object? tapCount = null,Object? available = null,}) {
   return _then(_PushState(
 opened: freezed == opened ? _self.opened : opened // ignore: cast_nullable_to_non_nullable
 as PushMessage?,tapCount: null == tapCount ? _self.tapCount : tapCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,available: null == available ? _self.available : available // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

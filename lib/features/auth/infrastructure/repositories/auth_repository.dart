@@ -92,6 +92,22 @@ class AuthRepository {
     });
   }
 
+  /// `DELETE /me`: a password account confirms with [password], a
+  /// Google-only one with its own [email]. 403 = wrong confirmation, 409 =
+  /// sole owner of a workspace that has other members.
+  Future<Either<Failure, Unit>> deleteAccount({
+    String? password,
+    String? email,
+  }) {
+    return runRequest(() async {
+      await _dio.delete<Map<String, dynamic>>(
+        Endpoints.me,
+        data: {'password': ?password, 'email': ?email},
+      );
+      return unit;
+    });
+  }
+
   /// 202 with the same body whether or not the email has an account.
   Future<Either<Failure, Unit>> requestPasswordReset({required String email}) {
     return runRequest(() async {

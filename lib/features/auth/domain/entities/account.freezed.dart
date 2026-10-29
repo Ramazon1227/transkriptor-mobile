@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppUser {
 
- String get id; String get email; String get fullName;
+ String get id; String get email; String get fullName;/// False when the account was opened with Google only. Deleting the
+/// account then asks for the email instead of a password.
+ bool get hasPassword;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +29,20 @@ $AppUserCopyWith<AppUser> get copyWith => _$AppUserCopyWithImpl<AppUser>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as AppUser;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.hasPassword, _this.hasPassword) || other.hasPassword == _this.hasPassword));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AppUser;
-  return Object.hash(runtimeType,_this.id,_this.email,_this.fullName);
+  return Object.hash(runtimeType,_this.id,_this.email,_this.fullName,_this.hasPassword);
 }
 
 @override
 String toString() {
   final _this = this as AppUser;
-  return 'AppUser(id: ${_this.id}, email: ${_this.email}, fullName: ${_this.fullName})';
+  return 'AppUser(id: ${_this.id}, email: ${_this.email}, fullName: ${_this.fullName}, hasPassword: ${_this.hasPassword})';
 }
 
 
@@ -51,7 +53,7 @@ abstract mixin class $AppUserCopyWith<$Res>  {
   factory $AppUserCopyWith(AppUser value, $Res Function(AppUser) _then) = _$AppUserCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String fullName
+ String id, String email, String fullName, bool hasPassword
 });
 
 
@@ -68,12 +70,13 @@ class _$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? hasPassword = null,}) {
   return _then(AppUser(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,
+as String,hasPassword: null == hasPassword ? _self.hasPassword : hasPassword // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -158,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String fullName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  bool hasPassword)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   return orElse();
 
 }
@@ -179,10 +182,10 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String fullName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String fullName,  bool hasPassword)  $default,) {final _that = this;
 switch (_that) {
 case _AppUser():
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +202,10 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String fullName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String fullName,  bool hasPassword)?  $default,) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   return null;
 
 }
@@ -214,12 +217,15 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 
 
 class _AppUser implements AppUser {
-  const _AppUser({required this.id, required this.email, this.fullName = ''});
+  const _AppUser({required this.id, required this.email, this.fullName = '', this.hasPassword = true});
   
 
 @override final  String id;
 @override final  String email;
 @override@JsonKey() final  String fullName;
+/// False when the account was opened with Google only. Deleting the
+/// account then asks for the email instead of a password.
+@override@JsonKey() final  bool hasPassword;
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
@@ -231,18 +237,18 @@ _$AppUserCopyWith<_AppUser> get copyWith => __$AppUserCopyWithImpl<_AppUser>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.hasPassword, hasPassword) || other.hasPassword == hasPassword));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,email,fullName);
+    return Object.hash(runtimeType,id,email,fullName,hasPassword);
 }
 
 @override
 String toString() {
-    return 'AppUser(id: $id, email: $email, fullName: $fullName)';
+    return 'AppUser(id: $id, email: $email, fullName: $fullName, hasPassword: $hasPassword)';
 }
 
 
@@ -253,7 +259,7 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   factory _$AppUserCopyWith(_AppUser value, $Res Function(_AppUser) _then) = __$AppUserCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String fullName
+ String id, String email, String fullName, bool hasPassword
 });
 
 
@@ -270,12 +276,13 @@ class __$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? hasPassword = null,}) {
   return _then(_AppUser(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,
+as String,hasPassword: null == hasPassword ? _self.hasPassword : hasPassword // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -286,7 +293,9 @@ as String,
 mixin _$Workspace {
 
  String get id; String get name; bool get isPersonal;/// Minutes are the currency: what is left to transcribe, in seconds.
- int get balanceSeconds;
+ int get balanceSeconds; WorkspaceRole get role;/// The current plan's code (`free`, `pro`, `team`) and display name;
+/// empty when the server did not send one.
+ String get planCode; String get planName;
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -298,20 +307,20 @@ $WorkspaceCopyWith<Workspace> get copyWith => _$WorkspaceCopyWithImpl<Workspace>
 @override
 bool operator ==(Object other) {
   final _this = this as Workspace;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Workspace&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Workspace&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.planCode, _this.planCode) || other.planCode == _this.planCode)&&(identical(other.planName, _this.planName) || other.planName == _this.planName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Workspace;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds,_this.role,_this.planCode,_this.planName);
 }
 
 @override
 String toString() {
   final _this = this as Workspace;
-  return 'Workspace(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds})';
+  return 'Workspace(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, planCode: ${_this.planCode}, planName: ${_this.planName})';
 }
 
 
@@ -322,7 +331,7 @@ abstract mixin class $WorkspaceCopyWith<$Res>  {
   factory $WorkspaceCopyWith(Workspace value, $Res Function(Workspace) _then) = _$WorkspaceCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, bool isPersonal, int balanceSeconds
+ String id, String name, bool isPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
 });
 
 
@@ -339,13 +348,16 @@ class _$WorkspaceCopyWithImpl<$Res>
 
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
   return _then(Workspace(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,planCode: null == planCode ? _self.planCode : planCode // ignore: cast_nullable_to_non_nullable
+as String,planName: null == planName ? _self.planName : planName // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -430,10 +442,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Workspace() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   return orElse();
 
 }
@@ -451,10 +463,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)  $default,) {final _that = this;
 switch (_that) {
 case _Workspace():
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -471,10 +483,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool isPersonal,  int balanceSeconds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,) {final _that = this;
 switch (_that) {
 case _Workspace() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   return null;
 
 }
@@ -486,7 +498,7 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 
 
 class _Workspace implements Workspace {
-  const _Workspace({required this.id, required this.name, this.isPersonal = false, this.balanceSeconds = 0});
+  const _Workspace({required this.id, required this.name, this.isPersonal = false, this.balanceSeconds = 0, this.role = WorkspaceRole.unknown, this.planCode = '', this.planName = ''});
   
 
 @override final  String id;
@@ -494,6 +506,11 @@ class _Workspace implements Workspace {
 @override@JsonKey() final  bool isPersonal;
 /// Minutes are the currency: what is left to transcribe, in seconds.
 @override@JsonKey() final  int balanceSeconds;
+@override@JsonKey() final  WorkspaceRole role;
+/// The current plan's code (`free`, `pro`, `team`) and display name;
+/// empty when the server did not send one.
+@override@JsonKey() final  String planCode;
+@override@JsonKey() final  String planName;
 
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
@@ -505,18 +522,18 @@ _$WorkspaceCopyWith<_Workspace> get copyWith => __$WorkspaceCopyWithImpl<_Worksp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Workspace&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Workspace&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.planCode, planCode) || other.planCode == planCode)&&(identical(other.planName, planName) || other.planName == planName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds);
+    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds,role,planCode,planName);
 }
 
 @override
 String toString() {
-    return 'Workspace(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds)';
+    return 'Workspace(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds, role: $role, planCode: $planCode, planName: $planName)';
 }
 
 
@@ -527,7 +544,7 @@ abstract mixin class _$WorkspaceCopyWith<$Res> implements $WorkspaceCopyWith<$Re
   factory _$WorkspaceCopyWith(_Workspace value, $Res Function(_Workspace) _then) = __$WorkspaceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, bool isPersonal, int balanceSeconds
+ String id, String name, bool isPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
 });
 
 
@@ -544,13 +561,16 @@ class __$WorkspaceCopyWithImpl<$Res>
 
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
   return _then(_Workspace(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,planCode: null == planCode ? _self.planCode : planCode // ignore: cast_nullable_to_non_nullable
+as String,planName: null == planName ? _self.planName : planName // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -560,7 +580,9 @@ as int,
 /// @nodoc
 mixin _$Account {
 
- AppUser get user; List<Workspace> get workspaces;
+ AppUser get user; List<Workspace> get workspaces;/// The workspace the person switched to; null or gone means the
+/// personal one.
+ String? get selectedWorkspaceId;
 /// Create a copy of Account
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -572,20 +594,20 @@ $AccountCopyWith<Account> get copyWith => _$AccountCopyWithImpl<Account>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Account;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Account&&(identical(other.user, _this.user) || other.user == _this.user)&&const DeepCollectionEquality().equals(other.workspaces, _this.workspaces));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Account&&(identical(other.user, _this.user) || other.user == _this.user)&&const DeepCollectionEquality().equals(other.workspaces, _this.workspaces)&&(identical(other.selectedWorkspaceId, _this.selectedWorkspaceId) || other.selectedWorkspaceId == _this.selectedWorkspaceId));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Account;
-  return Object.hash(runtimeType,_this.user,const DeepCollectionEquality().hash(_this.workspaces));
+  return Object.hash(runtimeType,_this.user,const DeepCollectionEquality().hash(_this.workspaces),_this.selectedWorkspaceId);
 }
 
 @override
 String toString() {
   final _this = this as Account;
-  return 'Account(user: ${_this.user}, workspaces: ${_this.workspaces})';
+  return 'Account(user: ${_this.user}, workspaces: ${_this.workspaces}, selectedWorkspaceId: ${_this.selectedWorkspaceId})';
 }
 
 
@@ -596,7 +618,7 @@ abstract mixin class $AccountCopyWith<$Res>  {
   factory $AccountCopyWith(Account value, $Res Function(Account) _then) = _$AccountCopyWithImpl;
 @useResult
 $Res call({
- AppUser user, List<Workspace> workspaces
+ AppUser user, List<Workspace> workspaces, String? selectedWorkspaceId
 });
 
 
@@ -613,11 +635,12 @@ class _$AccountCopyWithImpl<$Res>
 
 /// Create a copy of Account
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? workspaces = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? workspaces = null,Object? selectedWorkspaceId = freezed,}) {
   return _then(Account(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as AppUser,workspaces: null == workspaces ? _self.workspaces : workspaces // ignore: cast_nullable_to_non_nullable
-as List<Workspace>,
+as List<Workspace>,selectedWorkspaceId: freezed == selectedWorkspaceId ? _self.selectedWorkspaceId : selectedWorkspaceId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of Account
@@ -711,10 +734,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppUser user,  List<Workspace> workspaces)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppUser user,  List<Workspace> workspaces,  String? selectedWorkspaceId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Account() when $default != null:
-return $default(_that.user,_that.workspaces);case _:
+return $default(_that.user,_that.workspaces,_that.selectedWorkspaceId);case _:
   return orElse();
 
 }
@@ -732,10 +755,10 @@ return $default(_that.user,_that.workspaces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppUser user,  List<Workspace> workspaces)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppUser user,  List<Workspace> workspaces,  String? selectedWorkspaceId)  $default,) {final _that = this;
 switch (_that) {
 case _Account():
-return $default(_that.user,_that.workspaces);case _:
+return $default(_that.user,_that.workspaces,_that.selectedWorkspaceId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -752,10 +775,10 @@ return $default(_that.user,_that.workspaces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppUser user,  List<Workspace> workspaces)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppUser user,  List<Workspace> workspaces,  String? selectedWorkspaceId)?  $default,) {final _that = this;
 switch (_that) {
 case _Account() when $default != null:
-return $default(_that.user,_that.workspaces);case _:
+return $default(_that.user,_that.workspaces,_that.selectedWorkspaceId);case _:
   return null;
 
 }
@@ -767,7 +790,7 @@ return $default(_that.user,_that.workspaces);case _:
 
 
 class _Account extends Account {
-  const _Account({required this.user,  List<Workspace> workspaces = const <Workspace>[]}): _workspaces = workspaces,super._();
+  const _Account({required this.user,  List<Workspace> workspaces = const <Workspace>[], this.selectedWorkspaceId}): _workspaces = workspaces,super._();
   
 
 @override final  AppUser user;
@@ -778,6 +801,9 @@ class _Account extends Account {
   return EqualUnmodifiableListView(_workspaces);
 }
 
+/// The workspace the person switched to; null or gone means the
+/// personal one.
+@override final  String? selectedWorkspaceId;
 
 /// Create a copy of Account
 /// with the given fields replaced by the non-null parameter values.
@@ -789,18 +815,18 @@ _$AccountCopyWith<_Account> get copyWith => __$AccountCopyWithImpl<_Account>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Account&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.workspaces, _workspaces));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Account&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.workspaces, _workspaces)&&(identical(other.selectedWorkspaceId, selectedWorkspaceId) || other.selectedWorkspaceId == selectedWorkspaceId));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_workspaces));
+    return Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_workspaces),selectedWorkspaceId);
 }
 
 @override
 String toString() {
-    return 'Account(user: $user, workspaces: $workspaces)';
+    return 'Account(user: $user, workspaces: $workspaces, selectedWorkspaceId: $selectedWorkspaceId)';
 }
 
 
@@ -811,7 +837,7 @@ abstract mixin class _$AccountCopyWith<$Res> implements $AccountCopyWith<$Res> {
   factory _$AccountCopyWith(_Account value, $Res Function(_Account) _then) = __$AccountCopyWithImpl;
 @override @useResult
 $Res call({
- AppUser user, List<Workspace> workspaces
+ AppUser user, List<Workspace> workspaces, String? selectedWorkspaceId
 });
 
 
@@ -828,11 +854,12 @@ class __$AccountCopyWithImpl<$Res>
 
 /// Create a copy of Account
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? workspaces = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? workspaces = null,Object? selectedWorkspaceId = freezed,}) {
   return _then(_Account(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as AppUser,workspaces: null == workspaces ? _self._workspaces : workspaces // ignore: cast_nullable_to_non_nullable
-as List<Workspace>,
+as List<Workspace>,selectedWorkspaceId: freezed == selectedWorkspaceId ? _self.selectedWorkspaceId : selectedWorkspaceId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

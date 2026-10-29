@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'email') String get email;@JsonKey(name: 'full_name') String get fullName;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'email') String get email;@JsonKey(name: 'full_name') String get fullName;/// Missing on an older server: assume a password account.
+@JsonKey(name: 'has_password') bool get hasPassword;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 @override
 bool operator ==(Object other) {
   final _this = this as UserModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.hasPassword, _this.hasPassword) || other.hasPassword == _this.hasPassword));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as UserModel;
-  return Object.hash(runtimeType,_this.id,_this.email,_this.fullName);
+  return Object.hash(runtimeType,_this.id,_this.email,_this.fullName,_this.hasPassword);
 }
 
 @override
 String toString() {
   final _this = this as UserModel;
-  return 'UserModel(id: ${_this.id}, email: ${_this.email}, fullName: ${_this.fullName})';
+  return 'UserModel(id: ${_this.id}, email: ${_this.email}, fullName: ${_this.fullName}, hasPassword: ${_this.hasPassword})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'email') String email,@JsonKey(name: 'full_name') String fullName
+@JsonKey(name: 'id') String id,@JsonKey(name: 'email') String email,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'has_password') bool hasPassword
 });
 
 
@@ -71,12 +72,13 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? hasPassword = null,}) {
   return _then(UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,
+as String,hasPassword: null == hasPassword ? _self.hasPassword : hasPassword // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -161,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'has_password')  bool hasPassword)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   return orElse();
 
 }
@@ -182,10 +184,10 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'has_password')  bool hasPassword)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +204,10 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'email')  String email, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'has_password')  bool hasPassword)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.fullName);case _:
+return $default(_that.id,_that.email,_that.fullName,_that.hasPassword);case _:
   return null;
 
 }
@@ -217,12 +219,14 @@ return $default(_that.id,_that.email,_that.fullName);case _:
 @JsonSerializable()
 
 class _UserModel extends UserModel {
-  const _UserModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'email') this.email = '', @JsonKey(name: 'full_name') this.fullName = ''}): super._();
+  const _UserModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'email') this.email = '', @JsonKey(name: 'full_name') this.fullName = '', @JsonKey(name: 'has_password') this.hasPassword = true}): super._();
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
 @override@JsonKey(name: 'email') final  String email;
 @override@JsonKey(name: 'full_name') final  String fullName;
+/// Missing on an older server: assume a password account.
+@override@JsonKey(name: 'has_password') final  bool hasPassword;
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
@@ -237,18 +241,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.hasPassword, hasPassword) || other.hasPassword == hasPassword));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,email,fullName);
+    return Object.hash(runtimeType,id,email,fullName,hasPassword);
 }
 
 @override
 String toString() {
-    return 'UserModel(id: $id, email: $email, fullName: $fullName)';
+    return 'UserModel(id: $id, email: $email, fullName: $fullName, hasPassword: $hasPassword)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'email') String email,@JsonKey(name: 'full_name') String fullName
+@JsonKey(name: 'id') String id,@JsonKey(name: 'email') String email,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'has_password') bool hasPassword
 });
 
 
@@ -276,11 +280,285 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? fullName = null,Object? hasPassword = null,}) {
   return _then(_UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,hasPassword: null == hasPassword ? _self.hasPassword : hasPassword // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$WorkspacePlanModel {
+
+@JsonKey(name: 'code') String get code;@JsonKey(name: 'name') String get name;
+/// Create a copy of WorkspacePlanModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WorkspacePlanModelCopyWith<WorkspacePlanModel> get copyWith => _$WorkspacePlanModelCopyWithImpl<WorkspacePlanModel>(this as WorkspacePlanModel, _$identity);
+
+  /// Serializes this WorkspacePlanModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as WorkspacePlanModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkspacePlanModel&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as WorkspacePlanModel;
+  return Object.hash(runtimeType,_this.code,_this.name);
+}
+
+@override
+String toString() {
+  final _this = this as WorkspacePlanModel;
+  return 'WorkspacePlanModel(code: ${_this.code}, name: ${_this.name})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $WorkspacePlanModelCopyWith<$Res>  {
+  factory $WorkspacePlanModelCopyWith(WorkspacePlanModel value, $Res Function(WorkspacePlanModel) _then) = _$WorkspacePlanModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'code') String code,@JsonKey(name: 'name') String name
+});
+
+
+
+
+}
+/// @nodoc
+class _$WorkspacePlanModelCopyWithImpl<$Res>
+    implements $WorkspacePlanModelCopyWith<$Res> {
+  _$WorkspacePlanModelCopyWithImpl(this._self, this._then);
+
+  final WorkspacePlanModel _self;
+  final $Res Function(WorkspacePlanModel) _then;
+
+/// Create a copy of WorkspacePlanModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? code = null,Object? name = null,}) {
+  return _then(WorkspacePlanModel(
+code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [WorkspacePlanModel].
+extension WorkspacePlanModelPatterns on WorkspacePlanModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _WorkspacePlanModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _WorkspacePlanModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _WorkspacePlanModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _WorkspacePlanModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _WorkspacePlanModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _WorkspacePlanModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'code')  String code, @JsonKey(name: 'name')  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _WorkspacePlanModel() when $default != null:
+return $default(_that.code,_that.name);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'code')  String code, @JsonKey(name: 'name')  String name)  $default,) {final _that = this;
+switch (_that) {
+case _WorkspacePlanModel():
+return $default(_that.code,_that.name);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'code')  String code, @JsonKey(name: 'name')  String name)?  $default,) {final _that = this;
+switch (_that) {
+case _WorkspacePlanModel() when $default != null:
+return $default(_that.code,_that.name);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _WorkspacePlanModel implements WorkspacePlanModel {
+  const _WorkspacePlanModel({@JsonKey(name: 'code') this.code = '', @JsonKey(name: 'name') this.name = ''});
+  factory _WorkspacePlanModel.fromJson(Map<String, dynamic> json) => _$WorkspacePlanModelFromJson(json);
+
+@override@JsonKey(name: 'code') final  String code;
+@override@JsonKey(name: 'name') final  String name;
+
+/// Create a copy of WorkspacePlanModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$WorkspacePlanModelCopyWith<_WorkspacePlanModel> get copyWith => __$WorkspacePlanModelCopyWithImpl<_WorkspacePlanModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$WorkspacePlanModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkspacePlanModel&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,code,name);
+}
+
+@override
+String toString() {
+    return 'WorkspacePlanModel(code: $code, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$WorkspacePlanModelCopyWith<$Res> implements $WorkspacePlanModelCopyWith<$Res> {
+  factory _$WorkspacePlanModelCopyWith(_WorkspacePlanModel value, $Res Function(_WorkspacePlanModel) _then) = __$WorkspacePlanModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'code') String code,@JsonKey(name: 'name') String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$WorkspacePlanModelCopyWithImpl<$Res>
+    implements _$WorkspacePlanModelCopyWith<$Res> {
+  __$WorkspacePlanModelCopyWithImpl(this._self, this._then);
+
+  final _WorkspacePlanModel _self;
+  final $Res Function(_WorkspacePlanModel) _then;
+
+/// Create a copy of WorkspacePlanModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? code = null,Object? name = null,}) {
+  return _then(_WorkspacePlanModel(
+code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -292,7 +570,7 @@ as String,
 /// @nodoc
 mixin _$WorkspaceModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'is_personal') bool get isPersonal;@JsonKey(name: 'balance_seconds') int get balanceSeconds;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'is_personal') bool get isPersonal;@JsonKey(name: 'balance_seconds') int get balanceSeconds;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;@JsonKey(name: 'plan') WorkspacePlanModel? get plan;
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -306,20 +584,20 @@ $WorkspaceModelCopyWith<WorkspaceModel> get copyWith => _$WorkspaceModelCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as WorkspaceModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkspaceModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkspaceModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.plan, _this.plan) || other.plan == _this.plan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as WorkspaceModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds,_this.role,_this.plan);
 }
 
 @override
 String toString() {
   final _this = this as WorkspaceModel;
-  return 'WorkspaceModel(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds})';
+  return 'WorkspaceModel(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, plan: ${_this.plan})';
 }
 
 
@@ -330,11 +608,11 @@ abstract mixin class $WorkspaceModelCopyWith<$Res>  {
   factory $WorkspaceModelCopyWith(WorkspaceModel value, $Res Function(WorkspaceModel) _then) = _$WorkspaceModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
 });
 
 
-
+$WorkspacePlanModelCopyWith<$Res>? get plan;
 
 }
 /// @nodoc
@@ -347,16 +625,30 @@ class _$WorkspaceModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
   return _then(WorkspaceModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,plan: freezed == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
+as WorkspacePlanModel?,
   ));
 }
+/// Create a copy of WorkspaceModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkspacePlanModelCopyWith<$Res>? get plan {
+    if (_self.plan == null) {
+    return null;
+  }
 
+  return $WorkspacePlanModelCopyWith<$Res>(_self.plan!, (value) {
+    return _then(_self.copyWith(plan: value));
+  });
+}
 }
 
 
@@ -438,10 +730,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkspaceModel() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   return orElse();
 
 }
@@ -459,10 +751,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)  $default,) {final _that = this;
 switch (_that) {
 case _WorkspaceModel():
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -479,10 +771,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkspaceModel() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   return null;
 
 }
@@ -494,13 +786,15 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds);case 
 @JsonSerializable()
 
 class _WorkspaceModel extends WorkspaceModel {
-  const _WorkspaceModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'is_personal') this.isPersonal = false, @JsonKey(name: 'balance_seconds') this.balanceSeconds = 0}): super._();
+  const _WorkspaceModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'is_personal') this.isPersonal = false, @JsonKey(name: 'balance_seconds') this.balanceSeconds = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown, @JsonKey(name: 'plan') this.plan}): super._();
   factory _WorkspaceModel.fromJson(Map<String, dynamic> json) => _$WorkspaceModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
 @override@JsonKey(name: 'name') final  String name;
 @override@JsonKey(name: 'is_personal') final  bool isPersonal;
 @override@JsonKey(name: 'balance_seconds') final  int balanceSeconds;
+@override@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) final  WorkspaceRole role;
+@override@JsonKey(name: 'plan') final  WorkspacePlanModel? plan;
 
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
@@ -515,18 +809,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkspaceModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkspaceModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.plan, plan) || other.plan == plan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds);
+    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds,role,plan);
 }
 
 @override
 String toString() {
-    return 'WorkspaceModel(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds)';
+    return 'WorkspaceModel(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds, role: $role, plan: $plan)';
 }
 
 
@@ -537,11 +831,11 @@ abstract mixin class _$WorkspaceModelCopyWith<$Res> implements $WorkspaceModelCo
   factory _$WorkspaceModelCopyWith(_WorkspaceModel value, $Res Function(_WorkspaceModel) _then) = __$WorkspaceModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
 });
 
 
-
+@override $WorkspacePlanModelCopyWith<$Res>? get plan;
 
 }
 /// @nodoc
@@ -554,17 +848,31 @@ class __$WorkspaceModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
   return _then(_WorkspaceModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,plan: freezed == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
+as WorkspacePlanModel?,
   ));
 }
 
+/// Create a copy of WorkspaceModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkspacePlanModelCopyWith<$Res>? get plan {
+    if (_self.plan == null) {
+    return null;
+  }
 
+  return $WorkspacePlanModelCopyWith<$Res>(_self.plan!, (value) {
+    return _then(_self.copyWith(plan: value));
+  });
+}
 }
 
 

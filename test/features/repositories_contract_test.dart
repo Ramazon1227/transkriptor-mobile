@@ -17,6 +17,37 @@ import '../helpers/fake_http_adapter.dart';
 /// declares them (`api/docs/swagger.json`, 2026-10-26).
 void main() {
   group('AuthRepository', () {
+    test('deleteAccount sends DELETE /me with the confirmation', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (200, ok({'deleted': true})),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      expect(result.isRight(), isTrue);
+      // Only the field that applies: the server checks one or the other.
+      expect(http.sent.single.body, {'password': 'p'});
+    });
+
+    test('GET /me reads has_password and the workspace role', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/me': (
+          200,
+          ok({
+            'user': {'id': 'u', 'email': 'e', 'has_password': false},
+            'workspaces': [
+              {'id': 'w', 'name': 'S', 'role': 'VIEWER'},
+            ],
+          }),
+        ),
+      });
+      final me = (await AuthRepository(
+        fakeDio(http),
+      ).me()).getOrElse(() => throw StateError('left'));
+      final account = me.toEntity();
+      expect(account.user.hasPassword, isFalse);
+      expect(account.workspaces.single.role.canWrite, isFalse);
+    });
+
     test('login posts email and password and reads the token pair', () async {
       final http = FakeHttpAdapter({
         'POST /api/v1/auth/login': (

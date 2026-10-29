@@ -38,4 +38,14 @@ abstract interface class IAuthFacade {
   /// email, so success says nothing about whether the account exists. No
   /// mail service on the server is `Failure.server(statusCode: 503)`.
   Future<Either<Failure, Unit>> requestPasswordReset({required String email});
+
+  /// Deletes the account for good (`DELETE /me`), then ends the session
+  /// on this phone like [logout]. A password account passes [password], a
+  /// Google-only one its own [email]. A wrong confirmation is
+  /// `Failure.server(statusCode: 403)`; being the only owner of a shared
+  /// workspace is `Failure.server(statusCode: 409)`.
+  Future<Either<Failure, Unit>> deleteAccount({
+    String? password,
+    String? email,
+  });
 }

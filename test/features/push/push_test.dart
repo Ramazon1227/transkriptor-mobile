@@ -168,10 +168,12 @@ void main() {
         PushState(
           opened: PushMessage(jobId: 'j1', transcriptId: 't1'),
           tapCount: 1,
+          available: true,
         ),
         PushState(
           opened: PushMessage(jobId: 'j1', transcriptId: 't1'),
           tapCount: 2,
+          available: true,
         ),
       ],
       verify: (_) => verify(() => facade.register()).called(1),
@@ -192,7 +194,11 @@ void main() {
       build: () => PushCubit(facade, changes),
       act: (cubit) => cubit.start(),
       expect: () => const <PushState>[],
-      verify: (_) => verifyNever(() => facade.register()),
+      verify: (cubit) {
+        verifyNever(() => facade.register());
+        // Settings says notifications are not set up.
+        expect(cubit.state.available, isFalse);
+      },
     );
   });
 }

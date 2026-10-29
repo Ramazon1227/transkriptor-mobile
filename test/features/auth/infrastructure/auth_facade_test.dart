@@ -228,4 +228,34 @@ void main() {
       expect(session.isExpired, isTrue);
     });
   });
+
+  group('deleteAccount', () {
+    setUp(() => session.markAuthenticated());
+
+    test('success forgets the tokens and ends the session', () async {
+      when(() => repository.deleteAccount(password: 'p'))
+          .thenAnswer((_) async => const Right(unit));
+
+      final result = await facade.deleteAccount(password: 'p');
+
+      expect(result.isRight(), isTrue);
+      expect(session.isExpired, isTrue);
+      verify(() => storage.clear()).called(1);
+      verify(() => google.signOut()).called(1);
+    });
+
+    test('a refusal keeps the session', () async {
+      when(() => repository.deleteAccount(password: 'x'))
+          .thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
+
+      final result = await facade.deleteAccount(password: 'x');
+
+      expect(
+        result,
+        const Left<Failure, Object>(Failure.server(statusCode: 403)),
+      );
+      expect(session.isExpired, isFalse);
+      verifyNever(() => storage.clear());
+    });
+  });
 }

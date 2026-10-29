@@ -17,6 +17,10 @@ abstract class PushState with _$PushState {
 
     /// Bumped per tap, so the same message tapped twice opens twice.
     @Default(0) int tapCount,
+
+    /// False when this build carries no Firebase settings; settings says
+    /// notifications are not set up.
+    @Default(false) bool available,
   }) = _PushState;
 }
 
@@ -24,7 +28,8 @@ abstract class PushState with _$PushState {
 /// unregisters through the account cubit, while the session still works.
 @injectable
 class PushCubit extends Cubit<PushState> {
-  PushCubit(this._facade, this._changes) : super(const PushState());
+  PushCubit(this._facade, this._changes)
+    : super(PushState(available: _facade.isAvailable));
 
   final IPushFacade _facade;
   final LibraryChanges _changes;
@@ -36,7 +41,7 @@ class PushCubit extends Cubit<PushState> {
   Future<void> start() async {
     if (!_facade.isAvailable) return;
     _opened ??= _facade.opened.listen(
-      (m) => emit(PushState(opened: m, tapCount: state.tapCount + 1)),
+      (m) => emit(state.copyWith(opened: m, tapCount: state.tapCount + 1)),
     );
     // A job finished while the app is open: the lists catch up.
     _received ??= _facade.received.listen((_) => _changes.notify());

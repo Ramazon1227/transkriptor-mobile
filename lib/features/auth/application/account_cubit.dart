@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/network/session_manager.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
 import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart';
+import 'package:transkriptor_uz/features/workspace/domain/i_workspace_facade.dart';
 
 part 'account_cubit.freezed.dart';
 
@@ -27,8 +28,13 @@ abstract class AccountState with _$AccountState {
 /// pass it into their own blocs.
 @injectable
 class AccountCubit extends Cubit<AccountState> {
-  AccountCubit(this._facade, LibraryChanges changes, this._session, this._push)
-    : super(const AccountState()) {
+  AccountCubit(
+    this._facade,
+    LibraryChanges changes,
+    this._session,
+    this._push,
+    this._workspaces,
+  ) : super(const AccountState()) {
     // Sending, cancelling and finishing all move the balance.
     _changes = changes.stream.listen((_) {
       if (state.account != null) unawaited(load());
@@ -41,6 +47,7 @@ class AccountCubit extends Cubit<AccountState> {
   final IAuthFacade _facade;
   final SessionManager _session;
   final IPushFacade _push;
+  final IWorkspaceFacade _workspaces;
   late final StreamSubscription<void> _changes;
 
   /// Bumped on every load and on sign-out; a `GET /me` answer from an
@@ -51,6 +58,8 @@ class AccountCubit extends Cubit<AccountState> {
   void _onSession() {
     if (!_session.isExpired || isClosed) return;
     _generation++;
+    // The next person starts in their own personal workspace.
+    unawaited(_workspaces.clearSelectedWorkspace());
     emit(const AccountState());
   }
 
@@ -61,12 +70,41 @@ class AccountCubit extends Cubit<AccountState> {
     emit(state.copyWith(status: AccountStatus.loading, failure: null));
     final result = await _facade.loadAccount();
     if (isClosed || generation != _generation) return;
-    result.fold(
-      (failure) =>
+    await result.fold(
+      (failure) async =>
           emit(state.copyWith(status: AccountStatus.failure, failure: failure)),
-      (account) =>
-          emit(state.copyWith(status: AccountStatus.success, account: account)),
+      (account) async {
+        // The switch survives a restart. Read after the account, so a
+        // failed load costs no storage read.
+        final selected = await _workspaces.selectedWorkspaceId();
+        if (isClosed || generation != _generation) return;
+        emit(
+          state.copyWith(
+            status: AccountStatus.success,
+            account: account.copyWith(selectedWorkspaceId: selected),
+          ),
+        );
+      },
     );
+  }
+
+  /// Makes [workspaceId] the current workspace: every screen behind
+  /// `WorkspaceGate` rebuilds for it, and the choice survives a restart.
+  /// An id the account does not know yet (joined on the web) reloads
+  /// `GET /me`; an id that is not theirs falls back to personal.
+  Future<void> selectWorkspace(String workspaceId) async {
+    if (state.account == null) return;
+    // Remembering is best effort: the switch itself still happens.
+    await _workspaces.saveSelectedWorkspaceId(workspaceId);
+    if (isClosed) return;
+    final current = state.account;
+    if (current == null) return;
+    emit(
+      state.copyWith(
+        account: current.copyWith(selectedWorkspaceId: workspaceId),
+      ),
+    );
+    if (!current.workspaces.any((w) => w.id == workspaceId)) await load();
   }
 
   /// Login already fetched the account; no second request.
@@ -81,6 +119,7 @@ class AccountCubit extends Cubit<AccountState> {
     // account's notifications.
     await _push.unregister();
     await _facade.logout();
+    await _workspaces.clearSelectedWorkspace();
     if (isClosed) return;
     emit(const AccountState());
   }
