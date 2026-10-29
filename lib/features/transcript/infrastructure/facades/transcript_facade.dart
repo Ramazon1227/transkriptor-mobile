@@ -92,4 +92,32 @@ class TranscriptFacade implements ITranscriptFacade {
     );
     return result.map((m) => m.toEntity());
   }
+
+  @override
+  Future<Either<Failure, TranscriptMeta>> renameTranscript({
+    required String transcriptId,
+    required String title,
+    required int revision,
+  }) async {
+    final result = await _repository.renameTranscript(
+      transcriptId: transcriptId,
+      title: title,
+      revision: revision,
+    );
+    return result.map((m) => m.toEntity());
+  }
+
+  @override
+  Future<Either<Failure, int>> deleteSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  }) async {
+    final result = await _repository.deleteSegment(
+      transcriptId: transcriptId,
+      segmentId: segmentId,
+      revision: revision,
+    );
+    return result.map((m) => m.revision);
+  }
 }

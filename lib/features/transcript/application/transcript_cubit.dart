@@ -30,6 +30,14 @@ abstract class TranscriptState with _$TranscriptState {
     Failure? failure,
     @Default(EditStatus.idle) EditStatus editStatus,
     Failure? editFailure,
+
+    /// The eye in the toolbar: speaker chips on or off. Reading only;
+    /// nothing is sent.
+    @Default(true) bool showSpeakers,
+
+    /// The pencil: a double tap on a segment opens its editor. Off, the
+    /// transcript is for reading and following the player.
+    @Default(false) bool editMode,
   }) = _TranscriptState;
 
   const TranscriptState._();
@@ -78,6 +86,51 @@ class TranscriptCubit extends Cubit<TranscriptState> {
 
   void filterSpeaker(String? speakerId) {
     emit(state.copyWith(speakerFilter: speakerId));
+  }
+
+  void setShowSpeakers({required bool value}) =>
+      emit(state.copyWith(showSpeakers: value));
+
+  void setEditMode({required bool value}) =>
+      emit(state.copyWith(editMode: value));
+
+  /// Changes the title. It takes part in the revision like segment text,
+  /// so it goes through the same steps: a 409 fetches the fresh copy. An
+  /// empty or unchanged title sends nothing.
+  Future<void> renameTitle(String title) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    final clean = EditRules.clean(title);
+    if (clean.isEmpty) return;
+    if (clean == transcript.title) return _unchanged();
+    await _edit([
+      (t) async => (await _facade.renameTranscript(
+        transcriptId: t.id,
+        title: clean,
+        revision: t.revision,
+      )).map((meta) => t.copyWith(title: meta.title, revision: meta.revision)),
+    ]);
+  }
+
+  /// Removes one segment. Not optimistic: the row goes once the server
+  /// says so.
+  Future<void> deleteSegment(String segmentId) async {
+    final transcript = state.transcript;
+    if (transcript == null || state.editStatus == EditStatus.saving) return;
+    if (_segment(transcript, segmentId) == null) return _gone();
+    await _edit([
+      (t) async =>
+          (await _facade.deleteSegment(
+            transcriptId: t.id,
+            segmentId: segmentId,
+            revision: t.revision,
+          )).map(
+            (revision) => t.copyWith(
+              revision: revision,
+              segments: t.segments.where((s) => s.id != segmentId).toList(),
+            ),
+          ),
+    ]);
   }
 
   /// Saves one segment's text against the revision on screen. Not

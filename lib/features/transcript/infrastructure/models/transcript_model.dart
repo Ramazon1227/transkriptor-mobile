@@ -55,6 +55,7 @@ abstract class TranscriptModel with _$TranscriptModel {
   const factory TranscriptModel({
     @JsonKey(name: 'id') @Default('') String id,
     @JsonKey(name: 'title') @Default('') String title,
+    @JsonKey(name: 'media_id') @Default('') String mediaId,
     @JsonKey(name: 'duration_ms') int? durationMs,
     @JsonKey(name: 'speakers')
     @Default(<SpeakerModel>[])
@@ -73,6 +74,7 @@ abstract class TranscriptModel with _$TranscriptModel {
   Transcript toEntity() => Transcript(
     id: id,
     title: title,
+    mediaId: mediaId,
     duration: durationMs == null || durationMs! <= 0
         ? null
         : Duration(milliseconds: durationMs!),
@@ -157,4 +159,32 @@ abstract class SegmentMergeModel with _$SegmentMergeModel {
     removedId: removedId,
     revision: revision,
   );
+}
+
+/// `handler.TranscriptMetaResponse` in the backend: the answer to a title
+/// change.
+@freezed
+abstract class TranscriptMetaModel with _$TranscriptMetaModel {
+  const factory TranscriptMetaModel({
+    @JsonKey(name: 'title') @Default('') String title,
+    @JsonKey(name: 'revision') @Default(0) int revision,
+  }) = _TranscriptMetaModel;
+
+  const TranscriptMetaModel._();
+
+  factory TranscriptMetaModel.fromJson(Map<String, dynamic> json) =>
+      _$TranscriptMetaModelFromJson(json);
+
+  TranscriptMeta toEntity() => TranscriptMeta(title: title, revision: revision);
+}
+
+/// `handler.SegmentDeletedResponse` in the backend.
+@freezed
+abstract class SegmentDeletedModel with _$SegmentDeletedModel {
+  const factory SegmentDeletedModel({
+    @JsonKey(name: 'revision') @Default(0) int revision,
+  }) = _SegmentDeletedModel;
+
+  factory SegmentDeletedModel.fromJson(Map<String, dynamic> json) =>
+      _$SegmentDeletedModelFromJson(json);
 }

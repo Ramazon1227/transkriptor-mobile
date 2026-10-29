@@ -5,21 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
-import 'package:transkriptor_uz/core/utils/formatters.dart';
-import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
-import 'package:transkriptor_uz/features/export/presentation/widgets/export_sheet.dart';
-import 'package:transkriptor_uz/features/share/presentation/widgets/share_sheet.dart';
+import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
+import 'package:transkriptor_uz/features/player/presentation/widgets/player_panel.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
-import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
-import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_text_sheet.dart';
-import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_actions_sheet.dart';
-import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
-import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker_filter_bar.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/editor_actions.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_tabs.dart';
 
+/// The editor: player on top, then Transkript · AI suhbat · Xulosa ·
+/// Oʻrganish. The title renames on tap; «…» holds the file's actions.
 class TranscriptPage extends StatelessWidget {
   const TranscriptPage({required this.transcriptId, super.key});
 
@@ -27,196 +24,170 @@ class TranscriptPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) {
-        final cubit = getIt<TranscriptCubit>();
-        unawaited(cubit.load(transcriptId));
-        return cubit;
-      },
-      child: _TranscriptView(transcriptId: transcriptId),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) {
+            final cubit = getIt<TranscriptCubit>();
+            unawaited(cubit.load(transcriptId));
+            return cubit;
+          },
+        ),
+        BlocProvider(create: (_) => getIt<PlayerCubit>()),
+      ],
+      child: _EditorView(transcriptId: transcriptId),
     );
   }
 }
 
-class _TranscriptView extends StatelessWidget {
-  const _TranscriptView({required this.transcriptId});
+class _EditorView extends StatefulWidget {
+  const _EditorView({required this.transcriptId});
 
   final String transcriptId;
 
   @override
+  State<_EditorView> createState() => _EditorViewState();
+}
+
+class _EditorViewState extends State<_EditorView> {
+  /// Playback stops when the app leaves the screen.
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(
+      onHide: () => unawaited(context.read<PlayerCubit>().pause()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          // The copy on screen, so the file carries the edits just made.
-          BlocSelector<TranscriptCubit, TranscriptState, Transcript?>(
-            selector: (state) => (state.transcript?.segments.isEmpty ?? true)
-                ? null
-                : state.transcript,
-            builder: (context, transcript) => transcript == null
-                ? const SizedBox.shrink()
-                : IconButton(
-                    key: const Key('transcript_export'),
-                    tooltip: l10n.exportTitle,
-                    icon: const Icon(Icons.file_download_outlined),
-                    onPressed: () => ExportSheet.show(context, transcript),
-                  ),
-          ),
-          // Only once the transcript is there: a link to a missing one
-          // would be a 404 anyway.
-          BlocSelector<TranscriptCubit, TranscriptState, bool>(
-            selector: (state) => state.transcript != null,
-            builder: (context, loaded) => loaded
-                ? IconButton(
-                    key: const Key('transcript_share'),
-                    tooltip: l10n.shareTitle,
-                    icon: const Icon(Icons.ios_share),
-                    onPressed: () => ShareSheet.show(context, transcriptId),
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ],
+    return BlocListener<TranscriptCubit, TranscriptState>(
+      // The file is known once the transcript is; a 409 refetch keeps the
+      // same one and does not reopen it.
+      listenWhen: (p, n) =>
+          n.transcript != null &&
+          p.transcript?.mediaId != n.transcript?.mediaId,
+      listener: (context, state) => unawaited(
+        context.read<PlayerCubit>().open(state.transcript!.mediaId),
       ),
-      body: ContentWidth(
-        maxWidth: ContentWidth.list,
-        child: BlocBuilder<TranscriptCubit, TranscriptState>(
-          builder: (context, state) {
-            final transcript = state.transcript;
-            return switch (state.status) {
+      child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: const _Title(),
+          actions: [
+            BlocSelector<TranscriptCubit, TranscriptState, bool>(
+              selector: (s) => s.transcript != null,
+              builder: (context, loaded) => loaded
+                  ? IconButton(
+                      key: const Key('transcript_more'),
+                      tooltip: context.l10n.editorMore,
+                      icon: const Icon(Icons.more_horiz_rounded),
+                      onPressed: () => EditorActions.fileActions(context),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+        body: ContentWidth(
+          maxWidth: ContentWidth.list,
+          child: BlocBuilder<TranscriptCubit, TranscriptState>(
+            buildWhen: (p, n) =>
+                p.status != n.status ||
+                (p.transcript == null) != (n.transcript == null),
+            builder: (context, state) => switch (state.status) {
               TranscriptStatus.initial ||
               TranscriptStatus.loading => const AppLoadingView(),
               TranscriptStatus.failure => AppErrorView(
                 failure: state.failure!,
                 onRetry: () =>
-                    context.read<TranscriptCubit>().load(transcriptId),
+                    context.read<TranscriptCubit>().load(widget.transcriptId),
               ),
-              TranscriptStatus.empty => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (transcript != null) _Header(transcript: transcript),
-                  Expanded(child: AppEmptyView(message: l10n.transcriptEmpty)),
-                ],
-              ),
-              TranscriptStatus.success => _Body(state: state),
-            };
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.transcript});
-
-  final Transcript transcript;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final duration = transcript.duration;
-    final meta = [
-      if (duration != null) Formatters.timecode(duration),
-      if (transcript.speakers.isNotEmpty)
-        l10n.transcriptSpeakers(transcript.speakers.length),
-    ].join(' · ');
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Two lines at most: a long title must not squeeze the
-          // segments off a small screen or under large text.
-          Text(
-            transcript.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppText.title,
-          ),
-          if (meta.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Text(meta, style: AppText.mono),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _Body extends StatelessWidget {
-  const _Body({required this.state});
-
-  final TranscriptState state;
-
-  Future<void> _editText(BuildContext context, Segment segment) {
-    final l10n = context.l10n;
-    return EditTextSheet.show(
-      context,
-      EditTextSheet(
-        title: l10n.transcriptEditSegment,
-        initial: segment.text,
-        multiline: true,
-        tooLong: EditRules.segmentTextTooLong,
-        tooLongMessage: l10n.transcriptTextTooLong,
-        onSave: (cubit, text) => cubit.saveSegmentText(segment.id, text),
-        onSplit: (cubit, text, cursor) =>
-            cubit.splitSegment(segment.id, draft: text, cursor: cursor),
-        onMergeNext: state.hasNext(segment.id)
-            ? (cubit, text) => cubit.mergeNext(segment.id, draft: text)
-            : null,
-      ),
-    );
-  }
-
-  Future<void> _rename(BuildContext context, Speaker speaker) {
-    final l10n = context.l10n;
-    return EditTextSheet.show(
-      context,
-      EditTextSheet(
-        title: l10n.transcriptRenameSpeaker,
-        initial: speaker.label,
-        multiline: false,
-        tooLong: EditRules.speakerLabelTooLong,
-        tooLongMessage: l10n.transcriptLabelTooLong,
-        onSave: (cubit, label) => cubit.renameSpeaker(speaker.id, label),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final transcript = state.transcript!;
-    final speakers = {for (final s in transcript.speakers) s.id: s};
-    final segments = state.visibleSegments;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _Header(transcript: transcript),
-        if (transcript.speakers.length > 1)
-          SpeakerFilterBar(
-            speakers: transcript.speakers,
-            selected: state.speakerFilter,
-            onChanged: context.read<TranscriptCubit>().filterSpeaker,
-          ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
-            itemCount: segments.length,
-            itemBuilder: (_, i) {
-              final segment = segments[i];
-              return SegmentTile(
-                segment: segment,
-                speaker: speakers[segment.speakerId],
-                onTap: () => _editText(context, segment),
-                onSpeakerTap: (speaker) => _rename(context, speaker),
-                onLongPress: () =>
-                    SegmentActionsSheet.show(context, segment.id),
-              );
+              TranscriptStatus.empty ||
+              TranscriptStatus.success => const _Editor(),
             },
           ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    final title = context.select<TranscriptCubit, String?>(
+      (c) => c.state.transcript?.title,
+    );
+    if (title == null) return const SizedBox.shrink();
+    return InkWell(
+      key: const Key('transcript_title'),
+      onTap: () => EditorActions.renameTitle(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppText.heading,
+        ),
+      ),
+    );
+  }
+}
+
+/// Player above the tabs; on a short, wide screen (a phone on its side)
+/// the player moves to a column on the left so the text keeps its height.
+class _Editor extends StatefulWidget {
+  const _Editor();
+
+  @override
+  State<_Editor> createState() => _EditorState();
+}
+
+class _EditorState extends State<_Editor> {
+  /// The tabs keep their state when the layout turns with the phone.
+  final GlobalKey _tabsKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    final transcript = context.select<TranscriptCubit, Transcript?>(
+      (c) => c.state.transcript,
+    );
+    if (transcript == null) return const SizedBox.shrink();
+    final tabs = EditorTabs(key: _tabsKey, transcript: transcript);
+    return LayoutBuilder(
+      builder: (context, box) {
+        final side = box.maxWidth > box.maxHeight && box.maxHeight < 600;
+        if (side) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                width: box.maxWidth * .42,
+                child: const SingleChildScrollView(child: PlayerPanel()),
+              ),
+              Expanded(child: tabs),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const PlayerPanel(),
+            Expanded(child: tabs),
+          ],
+        );
+      },
     );
   }
 }

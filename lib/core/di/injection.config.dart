@@ -98,6 +98,14 @@ import 'package:transkriptor_uz/features/capture/infrastructure/repositories/not
     as _i4;
 import 'package:transkriptor_uz/features/capture/infrastructure/sources/screen_audio_source.dart'
     as _i76;
+import 'package:transkriptor_uz/features/comments/application/comments_cubit.dart'
+    as _i643;
+import 'package:transkriptor_uz/features/comments/domain/i_comments_facade.dart'
+    as _i591;
+import 'package:transkriptor_uz/features/comments/infrastructure/facades/comments_facade.dart'
+    as _i201;
+import 'package:transkriptor_uz/features/comments/infrastructure/repositories/comments_repository.dart'
+    as _i1035;
 import 'package:transkriptor_uz/features/export/application/export_cubit.dart'
     as _i644;
 import 'package:transkriptor_uz/features/export/domain/i_export_facade.dart'
@@ -157,16 +165,36 @@ import 'package:transkriptor_uz/features/notes/infrastructure/facades/notes_faca
     as _i2;
 import 'package:transkriptor_uz/features/notes/infrastructure/repositories/notes_repository.dart'
     as _i988;
+import 'package:transkriptor_uz/features/player/application/player_cubit.dart'
+    as _i129;
+import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart'
+    as _i36;
+import 'package:transkriptor_uz/features/player/domain/playback_engine.dart'
+    as _i257;
+import 'package:transkriptor_uz/features/player/infrastructure/engine/video_player_engine.dart'
+    as _i451;
+import 'package:transkriptor_uz/features/player/infrastructure/facades/player_facade.dart'
+    as _i368;
+import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart'
+    as _i422;
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart'
     as _i752;
 import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart'
-    as _i201;
+    as _i202;
 import 'package:transkriptor_uz/features/push/infrastructure/facades/push_facade.dart'
     as _i32;
 import 'package:transkriptor_uz/features/push/infrastructure/messaging/messaging_source.dart'
     as _i1027;
 import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart'
     as _i765;
+import 'package:transkriptor_uz/features/rating/application/rating_cubit.dart'
+    as _i452;
+import 'package:transkriptor_uz/features/rating/domain/i_rating_facade.dart'
+    as _i1031;
+import 'package:transkriptor_uz/features/rating/infrastructure/facades/rating_facade.dart'
+    as _i556;
+import 'package:transkriptor_uz/features/rating/infrastructure/repositories/rating_repository.dart'
+    as _i282;
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart'
     as _i206;
 import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart'
@@ -201,6 +229,8 @@ import 'package:transkriptor_uz/features/summary/infrastructure/repositories/not
     as _i381;
 import 'package:transkriptor_uz/features/summary/infrastructure/repositories/summary_template_repository.dart'
     as _i467;
+import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart'
+    as _i421;
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart'
     as _i86;
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart'
@@ -302,6 +332,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => networkModule.uploadDio(),
       instanceName: 'uploadDio',
     );
+    gh.lazySingleton<_i257.PlaybackEngineFactory>(
+      () => _i451.VideoPlayerEngineFactory(),
+    );
     gh.lazySingleton<_i933.TokenStorage>(
       () => _i933.SecureTokenStorage(gh<_i558.FlutterSecureStorage>()),
     );
@@ -360,6 +393,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i4.NoteRepository>(
       () => _i4.NoteRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i1035.CommentsRepository>(
+      () => _i1035.CommentsRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i730.JobRepository>(
       () => _i730.JobRepository(gh<_i361.Dio>()),
     );
@@ -372,8 +408,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i988.NotesRepository>(
       () => _i988.NotesRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i422.PlayerRepository>(
+      () => _i422.PlayerRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i765.PushRepository>(
       () => _i765.PushRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i282.RatingRepository>(
+      () => _i282.RatingRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i438.ShareRepository>(
       () => _i438.ShareRepository(gh<_i361.Dio>()),
@@ -428,6 +470,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i644.ExportCubit>(
       () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
     );
+    gh.lazySingleton<_i591.ICommentsFacade>(
+      () => _i201.CommentsFacade(gh<_i1035.CommentsRepository>()),
+    );
     gh.lazySingleton<_i537.IWorkspaceFacade>(
       () => _i37.WorkspaceFacade(
         gh<_i385.WorkspaceRepository>(),
@@ -447,6 +492,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i431.DemoSummaryRepository>(),
       ),
     );
+    gh.lazySingleton<_i36.IPlayerFacade>(
+      () => _i368.PlayerFacade(
+        gh<_i422.PlayerRepository>(),
+        gh<_i998.SharePlus>(),
+      ),
+    );
     gh.factory<_i371.SummaryCubit>(
       () => _i371.SummaryCubit(gh<_i1050.ISummaryFacade>()),
     );
@@ -454,6 +505,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i224.LibraryBloc(
         gh<_i118.ILibraryFacade>(),
         gh<_i252.LibraryChanges>(),
+      ),
+    );
+    gh.factory<_i129.PlayerCubit>(
+      () => _i129.PlayerCubit(
+        gh<_i36.IPlayerFacade>(),
+        gh<_i257.PlaybackEngineFactory>(),
       ),
     );
     gh.lazySingleton<_i543.IAiChatFacade>(
@@ -475,7 +532,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1064.IShareFacade>(
       () => _i68.ShareFacade(gh<_i438.ShareRepository>()),
     );
-    gh.lazySingleton<_i201.IPushFacade>(
+    gh.lazySingleton<_i202.IPushFacade>(
       () => _i32.PushFacade(
         gh<_i1027.MessagingSource>(),
         gh<_i765.PushRepository>(),
@@ -483,6 +540,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i899.ITranscriptFacade>(
       () => _i39.TranscriptFacade(gh<_i78.TranscriptRepository>()),
+    );
+    gh.lazySingleton<_i1031.IRatingFacade>(
+      () => _i556.RatingFacade(gh<_i282.RatingRepository>()),
     );
     gh.lazySingleton<_i454.IMeetingBotFacade>(
       () => _i842.MeetingBotFacade(gh<_i714.MeetingBotRepository>()),
@@ -521,6 +581,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
+    gh.factory<_i643.CommentsCubit>(
+      () => _i643.CommentsCubit(gh<_i591.ICommentsFacade>()),
+    );
     gh.lazySingleton<_i122.IUploadFacade>(
       () => _i612.UploadFacade(
         gh<_i198.UploadRepository>(),
@@ -531,10 +594,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i752.PushCubit>(
       () =>
-          _i752.PushCubit(gh<_i201.IPushFacade>(), gh<_i252.LibraryChanges>()),
+          _i752.PushCubit(gh<_i202.IPushFacade>(), gh<_i252.LibraryChanges>()),
     );
     gh.factory<_i720.WorkspaceListCubit>(
       () => _i720.WorkspaceListCubit(gh<_i537.IWorkspaceFacade>()),
+    );
+    gh.factory<_i452.RatingCubit>(
+      () => _i452.RatingCubit(gh<_i1031.IRatingFacade>()),
+    );
+    gh.factory<_i421.RetranscribeCubit>(
+      () => _i421.RetranscribeCubit(gh<_i727.IJobFacade>()),
     );
     gh.factory<_i86.TranscriptCubit>(
       () => _i86.TranscriptCubit(gh<_i899.ITranscriptFacade>()),
@@ -557,7 +626,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i865.IAuthFacade>(),
         gh<_i252.LibraryChanges>(),
         gh<_i754.SessionManager>(),
-        gh<_i201.IPushFacade>(),
+        gh<_i202.IPushFacade>(),
         gh<_i537.IWorkspaceFacade>(),
       ),
     );

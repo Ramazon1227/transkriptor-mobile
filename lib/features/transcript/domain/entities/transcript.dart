@@ -34,6 +34,11 @@ abstract class Transcript with _$Transcript {
   const factory Transcript({
     required String id,
     required String title,
+
+    /// The file this transcript was made from: the player's media and
+    /// what «Qayta transkripsiya» starts again. Empty if the server
+    /// left it out.
+    @Default('') String mediaId,
     Duration? duration,
     @Default(<Speaker>[]) List<Speaker> speakers,
 
@@ -80,4 +85,11 @@ abstract class SegmentMerge with _$SegmentMerge {
     required String removedId,
     required int revision,
   }) = _SegmentMerge;
+}
+
+/// The answer to a title change: the stored title and the revision.
+@freezed
+abstract class TranscriptMeta with _$TranscriptMeta {
+  const factory TranscriptMeta({required String title, required int revision}) =
+      _TranscriptMeta;
 }

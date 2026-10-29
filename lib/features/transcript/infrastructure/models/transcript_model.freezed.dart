@@ -577,7 +577,7 @@ as bool,
 /// @nodoc
 mixin _$TranscriptModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -591,20 +591,20 @@ $TranscriptModelCopyWith<TranscriptModel> get copyWith => _$TranscriptModelCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as TranscriptModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as TranscriptModel;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
+  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
 }
 
 @override
 String toString() {
   final _this = this as TranscriptModel;
-  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
+  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
 }
 
 
@@ -615,7 +615,7 @@ abstract mixin class $TranscriptModelCopyWith<$Res>  {
   factory $TranscriptModelCopyWith(TranscriptModel value, $Res Function(TranscriptModel) _then) = _$TranscriptModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
 });
 
 
@@ -632,10 +632,11 @@ class _$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,durationMs: freezed == durationMs ? _self.durationMs : durationMs // ignore: cast_nullable_to_non_nullable
 as int?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<SpeakerModel>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
@@ -725,10 +726,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
   return orElse();
 
 }
@@ -746,10 +747,10 @@ return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segme
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel():
-return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -766,10 +767,10 @@ return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segme
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
   return null;
 
 }
@@ -781,11 +782,12 @@ return $default(_that.id,_that.title,_that.durationMs,_that.speakers,_that.segme
 @JsonSerializable()
 
 class _TranscriptModel extends TranscriptModel {
-  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0}): _speakers = speakers,_segments = segments,super._();
+  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0}): _speakers = speakers,_segments = segments,super._();
   factory _TranscriptModel.fromJson(Map<String, dynamic> json) => _$TranscriptModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
 @override@JsonKey(name: 'title') final  String title;
+@override@JsonKey(name: 'media_id') final  String mediaId;
 @override@JsonKey(name: 'duration_ms') final  int? durationMs;
  final  List<SpeakerModel> _speakers;
 @override@JsonKey(name: 'speakers') List<SpeakerModel> get speakers {
@@ -816,18 +818,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
+    return Object.hash(runtimeType,id,title,mediaId,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
 }
 
 @override
 String toString() {
-    return 'TranscriptModel(id: $id, title: $title, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision)';
+    return 'TranscriptModel(id: $id, title: $title, mediaId: $mediaId, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision)';
 }
 
 
@@ -838,7 +840,7 @@ abstract mixin class _$TranscriptModelCopyWith<$Res> implements $TranscriptModel
   factory _$TranscriptModelCopyWith(_TranscriptModel value, $Res Function(_TranscriptModel) _then) = __$TranscriptModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
 });
 
 
@@ -855,10 +857,11 @@ class __$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(_TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,durationMs: freezed == durationMs ? _self.durationMs : durationMs // ignore: cast_nullable_to_non_nullable
 as int?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<SpeakerModel>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
@@ -2047,6 +2050,549 @@ $SegmentModelCopyWith<$Res> get segment {
     return _then(_self.copyWith(segment: value));
   });
 }
+}
+
+
+/// @nodoc
+mixin _$TranscriptMetaModel {
+
+@JsonKey(name: 'title') String get title;@JsonKey(name: 'revision') int get revision;
+/// Create a copy of TranscriptMetaModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TranscriptMetaModelCopyWith<TranscriptMetaModel> get copyWith => _$TranscriptMetaModelCopyWithImpl<TranscriptMetaModel>(this as TranscriptMetaModel, _$identity);
+
+  /// Serializes this TranscriptMetaModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as TranscriptMetaModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptMetaModel&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as TranscriptMetaModel;
+  return Object.hash(runtimeType,_this.title,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as TranscriptMetaModel;
+  return 'TranscriptMetaModel(title: ${_this.title}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TranscriptMetaModelCopyWith<$Res>  {
+  factory $TranscriptMetaModelCopyWith(TranscriptMetaModel value, $Res Function(TranscriptMetaModel) _then) = _$TranscriptMetaModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'title') String title,@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class _$TranscriptMetaModelCopyWithImpl<$Res>
+    implements $TranscriptMetaModelCopyWith<$Res> {
+  _$TranscriptMetaModelCopyWithImpl(this._self, this._then);
+
+  final TranscriptMetaModel _self;
+  final $Res Function(TranscriptMetaModel) _then;
+
+/// Create a copy of TranscriptMetaModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? revision = null,}) {
+  return _then(TranscriptMetaModel(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TranscriptMetaModel].
+extension TranscriptMetaModelPatterns on TranscriptMetaModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TranscriptMetaModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TranscriptMetaModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TranscriptMetaModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _TranscriptMetaModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TranscriptMetaModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TranscriptMetaModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'title')  String title, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TranscriptMetaModel() when $default != null:
+return $default(_that.title,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'title')  String title, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _TranscriptMetaModel():
+return $default(_that.title,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'title')  String title, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _TranscriptMetaModel() when $default != null:
+return $default(_that.title,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _TranscriptMetaModel extends TranscriptMetaModel {
+  const _TranscriptMetaModel({@JsonKey(name: 'title') this.title = '', @JsonKey(name: 'revision') this.revision = 0}): super._();
+  factory _TranscriptMetaModel.fromJson(Map<String, dynamic> json) => _$TranscriptMetaModelFromJson(json);
+
+@override@JsonKey(name: 'title') final  String title;
+@override@JsonKey(name: 'revision') final  int revision;
+
+/// Create a copy of TranscriptMetaModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TranscriptMetaModelCopyWith<_TranscriptMetaModel> get copyWith => __$TranscriptMetaModelCopyWithImpl<_TranscriptMetaModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TranscriptMetaModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptMetaModel&&(identical(other.title, title) || other.title == title)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,title,revision);
+}
+
+@override
+String toString() {
+    return 'TranscriptMetaModel(title: $title, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TranscriptMetaModelCopyWith<$Res> implements $TranscriptMetaModelCopyWith<$Res> {
+  factory _$TranscriptMetaModelCopyWith(_TranscriptMetaModel value, $Res Function(_TranscriptMetaModel) _then) = __$TranscriptMetaModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'title') String title,@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class __$TranscriptMetaModelCopyWithImpl<$Res>
+    implements _$TranscriptMetaModelCopyWith<$Res> {
+  __$TranscriptMetaModelCopyWithImpl(this._self, this._then);
+
+  final _TranscriptMetaModel _self;
+  final $Res Function(_TranscriptMetaModel) _then;
+
+/// Create a copy of TranscriptMetaModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? revision = null,}) {
+  return _then(_TranscriptMetaModel(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$SegmentDeletedModel {
+
+@JsonKey(name: 'revision') int get revision;
+/// Create a copy of SegmentDeletedModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SegmentDeletedModelCopyWith<SegmentDeletedModel> get copyWith => _$SegmentDeletedModelCopyWithImpl<SegmentDeletedModel>(this as SegmentDeletedModel, _$identity);
+
+  /// Serializes this SegmentDeletedModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SegmentDeletedModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SegmentDeletedModel&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as SegmentDeletedModel;
+  return Object.hash(runtimeType,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as SegmentDeletedModel;
+  return 'SegmentDeletedModel(revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SegmentDeletedModelCopyWith<$Res>  {
+  factory $SegmentDeletedModelCopyWith(SegmentDeletedModel value, $Res Function(SegmentDeletedModel) _then) = _$SegmentDeletedModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class _$SegmentDeletedModelCopyWithImpl<$Res>
+    implements $SegmentDeletedModelCopyWith<$Res> {
+  _$SegmentDeletedModelCopyWithImpl(this._self, this._then);
+
+  final SegmentDeletedModel _self;
+  final $Res Function(SegmentDeletedModel) _then;
+
+/// Create a copy of SegmentDeletedModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? revision = null,}) {
+  return _then(SegmentDeletedModel(
+revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SegmentDeletedModel].
+extension SegmentDeletedModelPatterns on SegmentDeletedModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SegmentDeletedModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SegmentDeletedModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SegmentDeletedModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentDeletedModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SegmentDeletedModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SegmentDeletedModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SegmentDeletedModel() when $default != null:
+return $default(_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _SegmentDeletedModel():
+return $default(_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _SegmentDeletedModel() when $default != null:
+return $default(_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SegmentDeletedModel implements SegmentDeletedModel {
+  const _SegmentDeletedModel({@JsonKey(name: 'revision') this.revision = 0});
+  factory _SegmentDeletedModel.fromJson(Map<String, dynamic> json) => _$SegmentDeletedModelFromJson(json);
+
+@override@JsonKey(name: 'revision') final  int revision;
+
+/// Create a copy of SegmentDeletedModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SegmentDeletedModelCopyWith<_SegmentDeletedModel> get copyWith => __$SegmentDeletedModelCopyWithImpl<_SegmentDeletedModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SegmentDeletedModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SegmentDeletedModel&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,revision);
+}
+
+@override
+String toString() {
+    return 'SegmentDeletedModel(revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SegmentDeletedModelCopyWith<$Res> implements $SegmentDeletedModelCopyWith<$Res> {
+  factory _$SegmentDeletedModelCopyWith(_SegmentDeletedModel value, $Res Function(_SegmentDeletedModel) _then) = __$SegmentDeletedModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'revision') int revision
+});
+
+
+
+
+}
+/// @nodoc
+class __$SegmentDeletedModelCopyWithImpl<$Res>
+    implements _$SegmentDeletedModelCopyWith<$Res> {
+  __$SegmentDeletedModelCopyWithImpl(this._self, this._then);
+
+  final _SegmentDeletedModel _self;
+  final $Res Function(_SegmentDeletedModel) _then;
+
+/// Create a copy of SegmentDeletedModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? revision = null,}) {
+  return _then(_SegmentDeletedModel(
+revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
 }
 
 // dart format on
