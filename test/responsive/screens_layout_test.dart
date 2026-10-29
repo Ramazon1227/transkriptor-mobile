@@ -43,7 +43,12 @@ import 'package:transkriptor_uz/features/billing/domain/entities/billing.dart';
 import 'package:transkriptor_uz/features/billing/presentation/pages/plans_page.dart';
 import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart';
 import 'package:transkriptor_uz/features/calendar/domain/entities/calendar_event.dart';
+import 'package:transkriptor_uz/features/capture/application/dictation_cubit.dart';
+import 'package:transkriptor_uz/features/capture/application/screen_capture_cubit.dart';
+import 'package:transkriptor_uz/features/capture/application/url_import_cubit.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/dictation_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/screen_record_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/url_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/source_sheet.dart';
@@ -56,10 +61,16 @@ import 'package:transkriptor_uz/features/library/domain/entities/folder.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
+import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart';
+import 'package:transkriptor_uz/features/meeting_bot/domain/entities/meeting_bot.dart';
+import 'package:transkriptor_uz/features/meeting_bot/presentation/pages/meeting_page.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
+import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart';
+import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
+import 'package:transkriptor_uz/features/recorder/presentation/widgets/recovery_widgets.dart';
 import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
@@ -114,6 +125,17 @@ class _WorkspaceList extends MockCubit<WorkspaceListState>
 
 class _Delete extends MockCubit<DeleteAccountState>
     implements DeleteAccountCubit;
+
+class _Recovery extends MockCubit<RecoveryState> implements RecoveryCubit;
+
+class _Screen extends MockCubit<ScreenCaptureState>
+    implements ScreenCaptureCubit;
+
+class _Meeting extends MockCubit<MeetingBotState> implements MeetingBotCubit;
+
+class _UrlImport extends MockCubit<UrlImportState> implements UrlImportCubit;
+
+class _Dictation extends MockCubit<DictationState> implements DictationCubit;
 
 // ---------------------------------------------------------- stress data
 
@@ -295,6 +317,32 @@ const _longError =
     'Iltimos, havolani tekshirib, qaytadan urinib koʻring. '
     'Файл не удалось загрузить: ссылка закрыта или файл удалён.';
 
+final List<RecoverableRecording> _recoverable = [
+  for (var i = 0; i < 3; i++)
+    RecoverableRecording(
+      path: '/r$i.aac',
+      kind: i.isEven ? RecordingKind.microphone : RecordingKind.screen,
+      state: i == 0
+          ? RecordingCompletion.interrupted
+          : RecordingCompletion.finished,
+      createdAt: DateTime(2026, 10, 20 + i, 18, 40),
+      sizeBytes: 987654321,
+      duration: i == 2 ? null : Duration(hours: 9, minutes: 59, seconds: i),
+    ),
+];
+
+final List<MeetingBot> _bots = [
+  for (var i = 0; i < 6; i++)
+    MeetingBot(
+      id: 'b$i',
+      status: MeetingBotStatus.values[i % MeetingBotStatus.values.length],
+      meetUrl: 'https://meet.google.com/abc-defg-hij',
+      botName: 'Abdulazizxoʻja Muhammadqodirov yordamchisi (yozib olmoqda)',
+      meetingTitle: i.isEven ? _longName : null,
+      createdAt: DateTime(2026, 10, 29, 9, 30),
+    ),
+];
+
 // ------------------------------------------------------------ registry
 
 late _Account account;
@@ -314,6 +362,11 @@ late _Plans plans;
 late _Push push;
 late _WorkspaceList workspaceList;
 late _Delete deleteAccount;
+late _Recovery recovery;
+late _Screen screen;
+late _Meeting meeting;
+late _UrlImport urlImport;
+late _Dictation dictation;
 
 void _makeMocks() {
   account = _Account();
@@ -333,6 +386,20 @@ void _makeMocks() {
   push = _Push();
   workspaceList = _WorkspaceList();
   deleteAccount = _Delete();
+  recovery = _Recovery();
+  screen = _Screen();
+  meeting = _Meeting();
+  urlImport = _UrlImport();
+  dictation = _Dictation();
+
+  when(() => recovery.state).thenReturn(const RecoveryState());
+  when(() => recovery.load()).thenAnswer((_) async {});
+  when(() => screen.state).thenReturn(const ScreenCaptureState());
+  when(() => screen.init()).thenAnswer((_) async {});
+  when(() => meeting.state).thenReturn(const MeetingBotState());
+  when(() => meeting.load(any())).thenAnswer((_) async {});
+  when(() => urlImport.state).thenReturn(const UrlImportState());
+  when(() => dictation.state).thenReturn(const DictationState());
 
   when(() => account.state).thenReturn(_account);
   when(() => account.load()).thenAnswer((_) async {});
@@ -403,7 +470,12 @@ void _makeMocks() {
     ..registerFactory<BalanceCubit>(() => balance)
     ..registerFactory<PlansCubit>(() => plans)
     ..registerFactory<WorkspaceListCubit>(() => workspaceList)
-    ..registerFactory<DeleteAccountCubit>(() => deleteAccount);
+    ..registerFactory<DeleteAccountCubit>(() => deleteAccount)
+    ..registerFactory<RecoveryCubit>(() => recovery)
+    ..registerFactory<ScreenCaptureCubit>(() => screen)
+    ..registerFactory<MeetingBotCubit>(() => meeting)
+    ..registerFactory<UrlImportCubit>(() => urlImport)
+    ..registerFactory<DictationCubit>(() => dictation);
 }
 
 // ----------------------------------------------------------- scenarios
@@ -470,7 +542,162 @@ final _scenarios = <_Scenario>[
   ),
   const _Scenario('profile', ProfilePage.new),
   const _Scenario('plans', PlansPage.new),
-  const _Scenario('placeholder(dictation)', DictationPage.new),
+  _Scenario(
+    'home(recovery banner)',
+    HomePage.new,
+    shell: _Shell.home,
+    arrange: () => when(() => recovery.state).thenReturn(
+      RecoveryState(
+        status: RecoveryStatus.success,
+        items: [_recoverable.first],
+      ),
+    ),
+  ),
+  _Scenario(
+    'sheet(recovery)',
+    () => Scaffold(
+      body: BlocProvider<RecoveryCubit>.value(
+        value: recovery,
+        child: const RecoverySheet(),
+      ),
+    ),
+    arrange: () => when(() => recovery.state).thenReturn(
+      RecoveryState(
+        status: RecoveryStatus.success,
+        items: _recoverable,
+        busyPath: _recoverable.last.path,
+        failure: const Failure.storage(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'recorder(idle+recovery)',
+    RecorderPage.new,
+    arrange: () => when(() => recovery.state).thenReturn(
+      RecoveryState(status: RecoveryStatus.success, items: _recoverable),
+    ),
+  ),
+  _Scenario(
+    'screen(unsupported)',
+    ScreenRecordPage.new,
+    arrange: () =>
+        when(() => screen.state)
+            .thenReturn(const ScreenCaptureState(supported: false)),
+  ),
+  _Scenario(
+    'screen(idle)',
+    ScreenRecordPage.new,
+    arrange: () =>
+        when(() => screen.state)
+            .thenReturn(const ScreenCaptureState(supported: true)),
+    measure: {'FilledButton': _filled},
+  ),
+  _Scenario(
+    'screen(failure)',
+    ScreenRecordPage.new,
+    arrange: () => when(() => screen.state).thenReturn(
+      const ScreenCaptureState(
+        supported: true,
+        status: ScreenCaptureStatus.failure,
+        failure: Failure.permissionDenied(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'screen(recording+silent)',
+    ScreenRecordPage.new,
+    arrange: () => when(() => screen.state).thenReturn(
+      ScreenCaptureState(
+        supported: true,
+        status: ScreenCaptureStatus.recording,
+        withMic: true,
+        playbackSilent: true,
+        elapsed: const Duration(hours: 10, minutes: 1),
+        levels: [for (var i = 0; i < 48; i++) (i % 5) / 5],
+      ),
+    ),
+  ),
+  _Scenario(
+    'meeting(form+list)',
+    MeetingPage.new,
+    arrange: () => when(() => meeting.state).thenReturn(
+      MeetingBotState(
+        workspaceId: 'w1',
+        listStatus: MeetingListStatus.success,
+        items: _bots,
+        available: false,
+        defaultBotName: _bots.first.botName,
+        urlInvalid: true,
+        actionFailure: const Failure.server(statusCode: 402),
+      ),
+    ),
+    measure: {'TextField': _field, 'FilledButton': _filled},
+  ),
+  _Scenario(
+    'meeting(recording)',
+    MeetingPage.new,
+    arrange: () => when(() => meeting.state).thenReturn(
+      MeetingBotState(
+        workspaceId: 'w1',
+        active: _bots.first.copyWith(status: MeetingBotStatus.recording),
+        pollFailure: const Failure.network(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'meeting(denied)',
+    MeetingPage.new,
+    arrange: () => when(() => meeting.state).thenReturn(
+      MeetingBotState(
+        workspaceId: 'w1',
+        active: _bots.first.copyWith(
+          status: MeetingBotStatus.denied,
+          errorMessage: _longError,
+        ),
+      ),
+    ),
+  ),
+  _Scenario(
+    'meeting(route missing)',
+    MeetingPage.new,
+    arrange: () =>
+        when(() => meeting.state)
+            .thenReturn(const MeetingBotState(routeMissing: true)),
+  ),
+  _Scenario(
+    'url(not available)',
+    UrlPage.new,
+    arrange: () => when(() => urlImport.state)
+        .thenReturn(const UrlImportState(status: UrlImportStatus.notAvailable)),
+    measure: {'TextField': _field, 'FilledButton': _filled},
+  ),
+  _Scenario(
+    'url(invalid)',
+    UrlPage.new,
+    arrange: () =>
+        when(() => urlImport.state)
+            .thenReturn(const UrlImportState(urlInvalid: true)),
+  ),
+  const _Scenario('dictation(idle)', DictationPage.new),
+  _Scenario(
+    'dictation(listening)',
+    DictationPage.new,
+    arrange: () => when(() => dictation.state).thenReturn(
+      DictationState(
+        status: DictationStatus.listening,
+        finals: [
+          for (var i = 0; i < 6; i++) ...[_longName, _cyrName],
+        ],
+        partial: _longError,
+        elapsed: const Duration(hours: 1, minutes: 2),
+      ),
+    ),
+  ),
+  const _Scenario(
+    'dictation(stopped)',
+    DictationPage.new,
+    arrange: _dictationStopped,
+  ),
   _Scenario('sheet(sources)', () => const Scaffold(body: SourceSheet())),
   _Scenario(
     'sheet(workspaces)',
@@ -863,3 +1090,11 @@ void main() {
     File('build/responsive_raw.txt').writeAsStringSync(_raw.toString());
   });
 }
+
+void _dictationStopped() => when(() => dictation.state).thenReturn(
+  const DictationState(
+    status: DictationStatus.stopped,
+    finals: [_longName, _cyrName],
+    failure: Failure.network(),
+  ),
+);
