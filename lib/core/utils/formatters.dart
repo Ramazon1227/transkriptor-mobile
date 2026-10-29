@@ -16,6 +16,24 @@ abstract final class Formatters {
     return '${_two(l.day)}.${_two(l.month)}.${l.year}';
   }
 
+  /// `14:05` in local time.
+  static String clock(DateTime d) {
+    final l = d.toLocal();
+    return '${_two(l.hour)}:${_two(l.minute)}';
+  }
+
+  /// `49 000` — whole so'm, thousands split by a space as Uzbek writes
+  /// prices.
+  static String money(num amount) {
+    final digits = amount.round().abs().toString();
+    final out = StringBuffer(amount < 0 ? '-' : '');
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) out.write(' ');
+      out.write(digits[i]);
+    }
+    return out.toString();
+  }
+
   /// Whole minutes left; a partial minute is not promised.
   static int minutesLeft(int seconds) => seconds <= 0 ? 0 : seconds ~/ 60;
 

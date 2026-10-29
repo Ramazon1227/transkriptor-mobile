@@ -23,8 +23,9 @@ class LibraryTile extends StatelessWidget {
   /// The files screen's move / tags menu; null elsewhere.
   final VoidCallback? onLongPress;
 
-  /// A finished transcript opens; anything with a job shows its progress.
-  String? get _target {
+  /// Where tapping [item] leads: a finished transcript opens, anything
+  /// with a job shows its progress, a file without a job goes nowhere.
+  static String? targetOf(LibraryItem item) {
     final transcriptId = item.transcriptId;
     if (item.jobStatus == JobStatus.succeeded && transcriptId != null) {
       return Routes.transcriptOf(transcriptId);
@@ -35,7 +36,7 @@ class LibraryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final target = _target;
+    final target = targetOf(item);
     return InkWell(
       onTap: target == null ? null : () => context.push(target),
       onLongPress: onLongPress,
@@ -57,7 +58,10 @@ class LibraryTile extends StatelessWidget {
                           item.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontVariations: [FontVariation('wght', 500)],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),

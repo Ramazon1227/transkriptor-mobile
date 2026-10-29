@@ -6,28 +6,37 @@ import 'package:go_router/go_router.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
-import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/app_mark.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
+import 'package:transkriptor_uz/core/widgets/illustrated_card.dart';
+import 'package:transkriptor_uz/core/widgets/section_header.dart';
+import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/balance_pill.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
-import 'package:transkriptor_uz/features/home/presentation/widgets/entry_cards.dart';
+import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart';
+import 'package:transkriptor_uz/features/calendar/presentation/widgets/calendar_section.dart';
+import 'package:transkriptor_uz/features/home/presentation/widgets/capture_actions.dart';
+import 'package:transkriptor_uz/features/home/presentation/widgets/recent_files.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
-import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
+import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_chip.dart';
 
-/// How many files the home screen previews.
-const int _recentCount = 3;
-
+/// Studio: the home tab. The shell above it provides the file picker.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<PickFileCubit>(),
+      // The calendar belongs to the person, not the workspace: it is not
+      // rebuilt when the workspace changes.
+      create: (_) {
+        final cubit = getIt<CalendarCubit>();
+        unawaited(cubit.load());
+        return cubit;
+      },
       child: Scaffold(
         body: ContentWidth(
           maxWidth: ContentWidth.list,
@@ -50,6 +59,15 @@ class HomePage extends StatelessWidget {
 class _HomeBody extends StatelessWidget {
   const _HomeBody();
 
+  Future<void> _refresh(BuildContext context) async {
+    final library = context.read<LibraryBloc>()..add(const LibraryRefreshed());
+    await Future.wait([
+      context.read<AccountCubit>().load(),
+      context.read<CalendarCubit>().load(),
+      library.stream.firstWhere((s) => !s.refreshing),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -58,102 +76,96 @@ class _HomeBody extends StatelessWidget {
     );
     final firstName = name.split(' ').first;
 
-    return BlocListener<PickFileCubit, PickFileState>(
-      listener: (context, state) {
-        final file = state.file;
-        if (state.status == PickFileStatus.picked && file != null) {
-          context.read<PickFileCubit>().consumed();
-          unawaited(context.push(Routes.send, extra: file));
-        } else if (state.status == PickFileStatus.failure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.failure!.message(l10n))));
-        }
-      },
-      child: RefreshIndicator(
-        onRefresh: () async {
-          final library = context.read<LibraryBloc>()
-            ..add(const LibraryRefreshed());
-          await Future.wait([
-            context.read<AccountCubit>().load(),
-            library.stream.firstWhere((s) => !s.refreshing),
-          ]);
-        },
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            const Row(children: [AppMark(), Spacer(), BalancePill()]),
-            const SizedBox(height: 22),
-            Text(
-              firstName.isEmpty
-                  ? l10n.homeGreetingNoName
-                  : l10n.homeGreeting(firstName),
-              style: AppText.display,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.homeSubtitle,
-              style: AppText.muted.copyWith(fontSize: 15),
-            ),
-            const SizedBox(height: 20),
-            const EntryCards(),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.homeRecent.toUpperCase(),
-                    style: AppText.label,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => context.go(Routes.files),
-                  child: Text(l10n.homeSeeAll),
-                ),
-              ],
-            ),
-            const _RecentFiles(),
-          ],
-        ),
+    return RefreshIndicator(
+      onRefresh: () => _refresh(context),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        children: [
+          Row(
+            children: [
+              const AppMark(),
+              const SizedBox(width: 12),
+              const Flexible(child: WorkspaceChip()),
+              const Spacer(),
+              IconButton(
+                tooltip: l10n.settingsTitle,
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: () => context.push(Routes.settings),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            firstName.isEmpty
+                ? l10n.homeWelcomeNoName
+                : l10n.homeWelcome(firstName),
+            style: AppText.display,
+          ),
+          const SizedBox(height: 12),
+          const Align(alignment: Alignment.centerLeft, child: BalancePill()),
+          const SizedBox(height: 24),
+          SectionHeader(title: l10n.sourceSheetTitle),
+          const SizedBox(height: 8),
+          const _StartGrid(),
+          const SizedBox(height: 24),
+          SectionHeader(
+            title: l10n.homeRecent,
+            actionLabel: l10n.homeSeeAll,
+            onAction: () => context.go(Routes.files),
+          ),
+          const SizedBox(height: 4),
+          const RecentFiles(),
+          const SizedBox(height: 24),
+          const CalendarSection(),
+        ],
       ),
     );
   }
 }
 
-class _RecentFiles extends StatelessWidget {
-  const _RecentFiles();
+/// «Boshlash»: the four most common ways in, two by two.
+class _StartGrid extends StatelessWidget {
+  const _StartGrid();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LibraryBloc, LibraryState>(
-      buildWhen: (prev, next) =>
-          prev.status != next.status || prev.items != next.items,
-      builder: (context, state) {
-        final l10n = context.l10n;
-        return switch (state.status) {
-          LibraryStatus.initial || LibraryStatus.loading => const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
+    final l10n = context.l10n;
+    final picking = context.select<PickFileCubit, bool>(
+      (c) => c.state.status == PickFileStatus.picking,
+    );
+    Widget card(CaptureSource source, String title, {bool busy = false}) =>
+        Expanded(
+          child: IllustratedCard(
+            source: source,
+            title: title,
+            busy: busy,
+            onTap: () => startCapture(context, source),
           ),
-          // The home screen still works without the list; keep it short.
-          LibraryStatus.failure => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(state.failure!.message(l10n), style: AppText.muted),
-          ),
-          LibraryStatus.empty => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(l10n.filesEmptyTitle, style: AppText.muted),
-          ),
-          LibraryStatus.success => Column(
+        );
+    return Column(
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final item in state.items.take(_recentCount)) ...[
-                LibraryTile(item: item, showTags: false),
-                const Divider(color: AppColors.sf2),
-              ],
+              card(CaptureSource.upload, l10n.sourceUploadTitle, busy: picking),
+              const SizedBox(width: 10),
+              card(CaptureSource.youtube, l10n.sourceYoutubeTitle),
             ],
           ),
-        };
-      },
+        ),
+        const SizedBox(height: 10),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              card(CaptureSource.recording, l10n.homeCardRecord),
+              const SizedBox(width: 10),
+              card(CaptureSource.meeting, l10n.sourceMeetingTitle),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

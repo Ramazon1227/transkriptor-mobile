@@ -24,7 +24,7 @@ class BalancePill extends StatelessWidget {
       borderRadius: BorderRadius.circular(7),
       child: InkWell(
         borderRadius: BorderRadius.circular(7),
-        onTap: () => context.go(Routes.profile),
+        onTap: () => context.push(Routes.settings),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 40),
           child: Padding(
@@ -40,6 +40,7 @@ class BalancePill extends StatelessWidget {
                     color: AppColors.cotton,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
+                    fontVariations: const [FontVariation('wght', 500)],
                   ),
                 ),
               ],

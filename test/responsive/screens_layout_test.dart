@@ -25,7 +25,9 @@ import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/core/widgets/illustrated_card.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
+import 'package:transkriptor_uz/features/auth/application/delete_account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.dart';
 import 'package:transkriptor_uz/features/auth/application/login_bloc.dart';
 import 'package:transkriptor_uz/features/auth/application/register_bloc.dart';
@@ -35,9 +37,16 @@ import 'package:transkriptor_uz/features/auth/presentation/pages/forgot_password
 import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
+import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart';
+import 'package:transkriptor_uz/features/billing/application/plans_cubit.dart';
+import 'package:transkriptor_uz/features/billing/domain/entities/billing.dart';
+import 'package:transkriptor_uz/features/billing/presentation/pages/plans_page.dart';
+import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart';
+import 'package:transkriptor_uz/features/calendar/domain/entities/calendar_event.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/dictation_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
-import 'package:transkriptor_uz/features/home/presentation/widgets/entry_cards.dart';
+import 'package:transkriptor_uz/features/home/presentation/widgets/source_sheet.dart';
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
@@ -47,9 +56,12 @@ import 'package:transkriptor_uz/features/library/domain/entities/folder.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
+import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
+import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
+import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
@@ -59,6 +71,8 @@ import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
+import 'package:transkriptor_uz/features/workspace/application/workspace_list_cubit.dart';
+import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_switcher_sheet.dart';
 
 // ---------------------------------------------------------------- mocks
 
@@ -87,6 +101,20 @@ class _Recorder extends MockCubit<RecorderState> implements RecorderCubit;
 
 class _Transcript extends MockCubit<TranscriptState> implements TranscriptCubit;
 
+class _Calendar extends MockCubit<CalendarState> implements CalendarCubit;
+
+class _Balance extends MockCubit<BalanceState> implements BalanceCubit;
+
+class _Plans extends MockCubit<PlansState> implements PlansCubit;
+
+class _Push extends MockCubit<PushState> implements PushCubit;
+
+class _WorkspaceList extends MockCubit<WorkspaceListState>
+    implements WorkspaceListCubit;
+
+class _Delete extends MockCubit<DeleteAccountState>
+    implements DeleteAccountCubit;
+
 // ---------------------------------------------------------- stress data
 
 const _longName =
@@ -110,6 +138,9 @@ const _workspaces = [
         'va jamoatchilik bilan ishlash boshqarmasi',
     isPersonal: true,
     balanceSeconds: 5999 * 60 + 59,
+    role: WorkspaceRole.owner,
+    planCode: 'team',
+    planName: 'Jamoa — korporativ tarif',
   ),
   Workspace(
     id: 'w2',
@@ -117,8 +148,13 @@ const _workspaces = [
         'Ташкентский областной хокимият — '
         'пресс-служба и связи с общественностью',
     balanceSeconds: 123456,
+    role: WorkspaceRole.admin,
   ),
-  Workspace(id: 'w3', name: 'Call-markaz «1092» — tungi smena'),
+  Workspace(
+    id: 'w3',
+    name: 'Call-markaz «1092» — tungi smena',
+    role: WorkspaceRole.viewer,
+  ),
 ];
 
 const _account = AccountState(
@@ -213,6 +249,47 @@ const _pickedFile = PendingFile(
   source: UploadSource.upload,
 );
 
+final List<CalendarEvent> _events = [
+  for (var i = 0; i < 5; i++)
+    CalendarEvent(
+      id: 'e$i',
+      title: i.isEven ? _longName : _cyrName,
+      startsAt: DateTime(2026, 10, 30 + i, 9, 30),
+      joinUrl: i.isEven ? 'https://meet.google.com/abc-defg-hij' : '',
+      platform: i.isEven ? 'MEET' : '',
+    ),
+];
+
+final _balance = Balance(
+  balanceSeconds: 5999 * 60,
+  plan: const Plan(
+    code: 'team',
+    name: 'Jamoa — korporativ tarif',
+    monthlySeconds: 600000,
+    priceUzs: 1999000,
+    maxMembers: 50,
+  ),
+  status: SubscriptionStatus.pastDue,
+  periodEnd: DateTime(2026, 11, 29),
+);
+
+const _plans = [
+  Plan(code: 'free', name: 'Bepul', monthlySeconds: 1800),
+  Plan(
+    code: 'pro',
+    name: 'Pro — mustaqil jurnalistlar uchun',
+    monthlySeconds: 36000,
+    priceUzs: 99000,
+  ),
+  Plan(
+    code: 'team',
+    name: 'Jamoa — korporativ tarif',
+    monthlySeconds: 600000,
+    priceUzs: 1999000,
+    maxMembers: 50,
+  ),
+];
+
 const _longError =
     'Faylni yuklab boʻlmadi: havola yopiq yoki fayl oʻchirilgan. '
     'Iltimos, havolani tekshirib, qaytadan urinib koʻring. '
@@ -231,6 +308,12 @@ late _Upload upload;
 late _Job job;
 late _Recorder recorder;
 late _Transcript transcript;
+late _Calendar calendar;
+late _Balance balance;
+late _Plans plans;
+late _Push push;
+late _WorkspaceList workspaceList;
+late _Delete deleteAccount;
 
 void _makeMocks() {
   account = _Account();
@@ -244,6 +327,12 @@ void _makeMocks() {
   job = _Job();
   recorder = _Recorder();
   transcript = _Transcript();
+  calendar = _Calendar();
+  balance = _Balance();
+  plans = _Plans();
+  push = _Push();
+  workspaceList = _WorkspaceList();
+  deleteAccount = _Delete();
 
   when(() => account.state).thenReturn(_account);
   when(() => account.load()).thenAnswer((_) async {});
@@ -269,6 +358,35 @@ void _makeMocks() {
   when(() => recorder.start()).thenAnswer((_) async {});
   when(() => transcript.state).thenReturn(const TranscriptState());
   when(() => transcript.load(any())).thenAnswer((_) async {});
+  when(
+    () => calendar.state,
+  ).thenReturn(CalendarState(status: CalendarStatus.success, events: _events));
+  when(() => calendar.load()).thenAnswer((_) async {});
+  when(() => balance.state).thenReturn(
+    BalanceState(
+      status: BalanceStatus.success,
+      workspaceId: 'w1',
+      balance: _balance,
+    ),
+  );
+  when(() => balance.load(any())).thenAnswer((_) async {});
+  when(() => plans.state)
+      .thenReturn(const PlansState(status: PlansStatus.success, plans: _plans));
+  when(() => plans.load()).thenAnswer((_) async {});
+  when(() => push.state).thenReturn(const PushState());
+  when(() => workspaceList.state).thenReturn(
+    const WorkspaceListState(
+      status: WorkspaceListStatus.success,
+      items: _workspaces,
+    ),
+  );
+  when(() => workspaceList.load()).thenAnswer((_) async {});
+  when(() => deleteAccount.state).thenReturn(
+    const DeleteAccountState(
+      status: DeleteAccountStatus.failure,
+      failure: Failure.server(statusCode: 409),
+    ),
+  );
 
   getIt
     ..registerFactory<LibraryBloc>(() => library)
@@ -280,13 +398,18 @@ void _makeMocks() {
     ..registerFactory<UploadBloc>(() => upload)
     ..registerFactory<JobCubit>(() => job)
     ..registerFactory<RecorderCubit>(() => recorder)
-    ..registerFactory<TranscriptCubit>(() => transcript);
+    ..registerFactory<TranscriptCubit>(() => transcript)
+    ..registerFactory<CalendarCubit>(() => calendar)
+    ..registerFactory<BalanceCubit>(() => balance)
+    ..registerFactory<PlansCubit>(() => plans)
+    ..registerFactory<WorkspaceListCubit>(() => workspaceList)
+    ..registerFactory<DeleteAccountCubit>(() => deleteAccount);
 }
 
 // ----------------------------------------------------------- scenarios
 
 /// Which page sits in the bottom-nav shell, as in the real router.
-enum _Shell { none, home, files, profile }
+enum _Shell { none, home, files }
 
 class _Scenario {
   const _Scenario(
@@ -314,10 +437,7 @@ final _scenarios = <_Scenario>[
     'home',
     HomePage.new,
     shell: _Shell.home,
-    measure: {
-      'EntryCards': () => find.byType(EntryCards),
-      'LibraryTile': () => find.byType(LibraryTile),
-    },
+    measure: {'IllustratedCard': () => find.byType(IllustratedCard)},
   ),
   _Scenario(
     'files',
@@ -326,10 +446,49 @@ final _scenarios = <_Scenario>[
     measure: {'LibraryTile': () => find.byType(LibraryTile)},
   ),
   _Scenario(
-    'profile',
-    ProfilePage.new,
-    shell: _Shell.profile,
-    measure: {'ListTile(workspace)': () => find.byType(ListTile)},
+    'home(calendar off)',
+    HomePage.new,
+    shell: _Shell.home,
+    arrange: () => when(() => calendar.state)
+        .thenReturn(const CalendarState(status: CalendarStatus.notConnected)),
+  ),
+  const _Scenario('settings', SettingsPage.new),
+  _Scenario(
+    'settings(google, no plan)',
+    SettingsPage.new,
+    arrange: () {
+      when(() => account.state).thenReturn(
+        AccountState(
+          status: AccountStatus.success,
+          account: _account.account!.copyWith(
+            user: _user.copyWith(hasPassword: false),
+          ),
+        ),
+      );
+      when(() => balance.state).thenReturn(const BalanceState());
+    },
+  ),
+  const _Scenario('profile', ProfilePage.new),
+  const _Scenario('plans', PlansPage.new),
+  const _Scenario('placeholder(dictation)', DictationPage.new),
+  _Scenario('sheet(sources)', () => const Scaffold(body: SourceSheet())),
+  _Scenario(
+    'sheet(workspaces)',
+    () => Scaffold(
+      body: BlocProvider<WorkspaceListCubit>.value(
+        value: workspaceList,
+        child: const WorkspaceSwitcherSheet(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'sheet(delete,409)',
+    () => Scaffold(
+      body: BlocProvider<DeleteAccountCubit>.value(
+        value: deleteAccount,
+        child: const DeleteAccountSheet(user: _user),
+      ),
+    ),
   ),
   _Scenario(
     'login(google+error)',
@@ -566,11 +725,7 @@ Widget _app(_Scenario s, double scale) {
     );
   } else {
     final router = GoRouter(
-      initialLocation: switch (s.shell) {
-        _Shell.files => '/files',
-        _Shell.profile => '/profile',
-        _ => '/',
-      },
+      initialLocation: s.shell == _Shell.files ? '/files' : '/',
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, shell) => AppShell(shell: shell),
@@ -581,14 +736,6 @@ Widget _app(_Scenario s, double scale) {
             StatefulShellBranch(
               routes: [
                 GoRoute(path: '/files', builder: (_, _) => const FilesPage()),
-              ],
-            ),
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: '/profile',
-                  builder: (_, _) => const ProfilePage(),
-                ),
               ],
             ),
           ],
@@ -604,19 +751,32 @@ Widget _app(_Scenario s, double scale) {
       routerConfig: router,
     );
   }
-  return BlocProvider<AccountCubit>.value(value: account, child: app);
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<AccountCubit>.value(value: account),
+      BlocProvider<PushCubit>.value(value: push),
+    ],
+    child: app,
+  );
 }
 
 Future<void> _loadRealFont() async {
   // The test font draws every glyph 1 em wide, which overflows far sooner
-  // than any real face. The app has no fontFamily, so Android draws it
-  // in Roboto; Noto Sans (bundled for the PDF export) has close metrics.
-  final loader = FontLoader('Roboto');
-  for (final f in ['NotoSans-Regular.ttf', 'NotoSans-Bold.ttf']) {
-    final bytes = File('assets/fonts/$f').readAsBytesSync();
-    loader.addFont(Future.value(ByteData.sublistView(bytes)));
+  // than any real face. The app's own faces are bundled, so they are
+  // loaded under their family names; Roboto (Noto Sans metrics) covers
+  // anything that asks for the platform default.
+  Future<void> load(String family, List<String> files) async {
+    final loader = FontLoader(family);
+    for (final f in files) {
+      final bytes = File('assets/fonts/$f').readAsBytesSync();
+      loader.addFont(Future.value(ByteData.sublistView(bytes)));
+    }
+    await loader.load();
   }
-  await loader.load();
+
+  await load('Roboto', ['NotoSans-Regular.ttf', 'NotoSans-Bold.ttf']);
+  await load('GolosText', ['GolosText-Variable.ttf']);
+  await load('Unbounded', ['Unbounded-Variable.ttf']);
 }
 
 void main() {

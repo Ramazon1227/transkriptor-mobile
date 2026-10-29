@@ -31,7 +31,7 @@ class EmptyLibraryView extends StatelessWidget {
             const SizedBox(height: 28),
             FilledButton(
               onPressed: () => context.push(Routes.record),
-              child: Text(l10n.homeRecordTitle),
+              child: Text(l10n.homeCardRecord),
             ),
           ],
         ),

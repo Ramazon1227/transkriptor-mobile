@@ -6,11 +6,17 @@ import 'package:transkriptor_uz/features/auth/presentation/pages/forgot_password
 import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
+import 'package:transkriptor_uz/features/billing/presentation/pages/plans_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/dictation_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/meeting_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/screen_record_page.dart';
+import 'package:transkriptor_uz/features/capture/presentation/pages/url_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
+import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
@@ -74,13 +80,19 @@ class AppRouter {
               ),
             ],
           ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.profile,
-                builder: (context, state) => const ProfilePage(),
-              ),
-            ],
+        ],
+      ),
+      GoRoute(
+        path: Routes.settings,
+        builder: (context, state) => const SettingsPage(),
+        routes: [
+          GoRoute(
+            path: 'profile',
+            builder: (context, state) => const ProfilePage(),
+          ),
+          GoRoute(
+            path: 'plans',
+            builder: (context, state) => const PlansPage(),
           ),
         ],
       ),
@@ -97,6 +109,19 @@ class AppRouter {
             SendPage(file: state.extra! as PendingFile),
       ),
       GoRoute(path: Routes.link, builder: (context, state) => const LinkPage()),
+      GoRoute(
+        path: Routes.dictation,
+        builder: (context, state) => const DictationPage(),
+      ),
+      GoRoute(
+        path: Routes.screenRecord,
+        builder: (context, state) => const ScreenRecordPage(),
+      ),
+      GoRoute(
+        path: Routes.meeting,
+        builder: (context, state) => const MeetingPage(),
+      ),
+      GoRoute(path: Routes.url, builder: (context, state) => const UrlPage()),
       GoRoute(
         path: Routes.job,
         builder: (context, state) =>
