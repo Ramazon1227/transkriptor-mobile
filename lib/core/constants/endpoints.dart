@@ -47,6 +47,10 @@ abstract final class Endpoints {
   static String transcriptSpeaker(String id, String speakerId) =>
       '/api/v1/transcript/$id/speakers/$speakerId';
 
+  // Notes (author-only).
+  static const String notes = '/api/v1/notes';
+  static String note(String id) => '/api/v1/notes/$id';
+
   // Share links.
   static String transcriptShares(String id) => '/api/v1/transcript/$id/share';
   static String share(String id) => '/api/v1/share/$id';

@@ -29,6 +29,21 @@ final class LibraryFolderSelected extends LibraryLoadEvent {
   final String? folderId;
 }
 
+/// Show one source tab's files. Like a folder, it is another list.
+final class LibrarySourceSelected extends LibraryLoadEvent {
+  const LibrarySourceSelected(this.source);
+
+  final FilesSource source;
+}
+
+/// The search field: narrows the loaded rows by name. Nothing is fetched,
+/// `/library` has no search.
+final class LibraryQueryChanged extends LibraryEvent {
+  const LibraryQueryChanged(this.query);
+
+  final String query;
+}
+
 /// Narrow the rows on screen to one tag; null clears it. Nothing is
 /// fetched: like the web, the tag filter works on the open folder's rows.
 final class LibraryTagSelected extends LibraryEvent {

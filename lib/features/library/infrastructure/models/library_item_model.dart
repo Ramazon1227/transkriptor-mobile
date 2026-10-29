@@ -27,6 +27,9 @@ abstract class LibraryItemModel with _$LibraryItemModel {
     @JsonKey(name: 'transcript_id') String? transcriptId,
     @JsonKey(name: 'folder_id') String? folderId,
     @JsonKey(name: 'tags') @Default(<String>[]) List<String> tags,
+
+    /// Empty string when the file did not come from a meeting.
+    @JsonKey(name: 'meeting_title') String? meetingTitle,
   }) = _LibraryItemModel;
 
   const LibraryItemModel._();
@@ -49,6 +52,7 @@ abstract class LibraryItemModel with _$LibraryItemModel {
     transcriptId: _blankToNull(transcriptId),
     folderId: _blankToNull(folderId),
     tags: tags,
+    meetingTitle: _blankToNull(meetingTitle?.trim()),
   );
 }
 

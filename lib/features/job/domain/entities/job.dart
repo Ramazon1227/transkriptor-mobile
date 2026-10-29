@@ -34,5 +34,8 @@ abstract class Job with _$Job {
     /// A clean sentence for the person; the raw error stays on the server.
     String? errorMessage,
     String? transcriptId,
+
+    /// The speaker count chosen at upload; null lets the server decide.
+    int? numSpeakers,
   }) = _Job;
 }

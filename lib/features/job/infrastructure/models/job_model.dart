@@ -16,6 +16,7 @@ abstract class JobModel with _$JobModel {
     @JsonKey(name: 'progress') @Default(0) int progress,
     @JsonKey(name: 'error_message') String? errorMessage,
     @JsonKey(name: 'transcript_id') String? transcriptId,
+    @JsonKey(name: 'num_speakers') int? numSpeakers,
   }) = _JobModel;
 
   const JobModel._();
@@ -30,5 +31,6 @@ abstract class JobModel with _$JobModel {
     progress: progress.clamp(0, 100),
     errorMessage: (errorMessage?.isEmpty ?? true) ? null : errorMessage,
     transcriptId: (transcriptId?.isEmpty ?? true) ? null : transcriptId,
+    numSpeakers: numSpeakers,
   );
 }

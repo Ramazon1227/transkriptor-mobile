@@ -17,7 +17,8 @@ T _$identity<T>(T value) => value;
 mixin _$LibraryItemModel {
 
 @JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'name') String get name;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) MediaKind get kind;@JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) MediaSource get source;@JsonKey(name: 'link_provider') String? get linkProvider;@JsonKey(name: 'job_id') String? get jobId;/// Empty string when there is no job; read as null.
-@JsonKey(name: 'job_status') String? get jobStatus;@JsonKey(name: 'transcript_id') String? get transcriptId;@JsonKey(name: 'folder_id') String? get folderId;@JsonKey(name: 'tags') List<String> get tags;
+@JsonKey(name: 'job_status') String? get jobStatus;@JsonKey(name: 'transcript_id') String? get transcriptId;@JsonKey(name: 'folder_id') String? get folderId;@JsonKey(name: 'tags') List<String> get tags;/// Empty string when the file did not come from a meeting.
+@JsonKey(name: 'meeting_title') String? get meetingTitle;
 /// Create a copy of LibraryItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,20 +32,20 @@ $LibraryItemModelCopyWith<LibraryItemModel> get copyWith => _$LibraryItemModelCo
 @override
 bool operator ==(Object other) {
   final _this = this as LibraryItemModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LibraryItemModel&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.linkProvider, _this.linkProvider) || other.linkProvider == _this.linkProvider)&&(identical(other.jobId, _this.jobId) || other.jobId == _this.jobId)&&(identical(other.jobStatus, _this.jobStatus) || other.jobStatus == _this.jobStatus)&&(identical(other.transcriptId, _this.transcriptId) || other.transcriptId == _this.transcriptId)&&(identical(other.folderId, _this.folderId) || other.folderId == _this.folderId)&&const DeepCollectionEquality().equals(other.tags, _this.tags));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LibraryItemModel&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.linkProvider, _this.linkProvider) || other.linkProvider == _this.linkProvider)&&(identical(other.jobId, _this.jobId) || other.jobId == _this.jobId)&&(identical(other.jobStatus, _this.jobStatus) || other.jobStatus == _this.jobStatus)&&(identical(other.transcriptId, _this.transcriptId) || other.transcriptId == _this.transcriptId)&&(identical(other.folderId, _this.folderId) || other.folderId == _this.folderId)&&const DeepCollectionEquality().equals(other.tags, _this.tags)&&(identical(other.meetingTitle, _this.meetingTitle) || other.meetingTitle == _this.meetingTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as LibraryItemModel;
-  return Object.hash(runtimeType,_this.mediaId,_this.name,_this.createdAt,_this.durationMs,_this.kind,_this.source,_this.linkProvider,_this.jobId,_this.jobStatus,_this.transcriptId,_this.folderId,const DeepCollectionEquality().hash(_this.tags));
+  return Object.hash(runtimeType,_this.mediaId,_this.name,_this.createdAt,_this.durationMs,_this.kind,_this.source,_this.linkProvider,_this.jobId,_this.jobStatus,_this.transcriptId,_this.folderId,const DeepCollectionEquality().hash(_this.tags),_this.meetingTitle);
 }
 
 @override
 String toString() {
   final _this = this as LibraryItemModel;
-  return 'LibraryItemModel(mediaId: ${_this.mediaId}, name: ${_this.name}, createdAt: ${_this.createdAt}, durationMs: ${_this.durationMs}, kind: ${_this.kind}, source: ${_this.source}, linkProvider: ${_this.linkProvider}, jobId: ${_this.jobId}, jobStatus: ${_this.jobStatus}, transcriptId: ${_this.transcriptId}, folderId: ${_this.folderId}, tags: ${_this.tags})';
+  return 'LibraryItemModel(mediaId: ${_this.mediaId}, name: ${_this.name}, createdAt: ${_this.createdAt}, durationMs: ${_this.durationMs}, kind: ${_this.kind}, source: ${_this.source}, linkProvider: ${_this.linkProvider}, jobId: ${_this.jobId}, jobStatus: ${_this.jobStatus}, transcriptId: ${_this.transcriptId}, folderId: ${_this.folderId}, tags: ${_this.tags}, meetingTitle: ${_this.meetingTitle})';
 }
 
 
@@ -55,7 +56,7 @@ abstract mixin class $LibraryItemModelCopyWith<$Res>  {
   factory $LibraryItemModelCopyWith(LibraryItemModel value, $Res Function(LibraryItemModel) _then) = _$LibraryItemModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'name') String name,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) MediaKind kind,@JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) MediaSource source,@JsonKey(name: 'link_provider') String? linkProvider,@JsonKey(name: 'job_id') String? jobId,@JsonKey(name: 'job_status') String? jobStatus,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'folder_id') String? folderId,@JsonKey(name: 'tags') List<String> tags
+@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'name') String name,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) MediaKind kind,@JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) MediaSource source,@JsonKey(name: 'link_provider') String? linkProvider,@JsonKey(name: 'job_id') String? jobId,@JsonKey(name: 'job_status') String? jobStatus,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'folder_id') String? folderId,@JsonKey(name: 'tags') List<String> tags,@JsonKey(name: 'meeting_title') String? meetingTitle
 });
 
 
@@ -72,7 +73,7 @@ class _$LibraryItemModelCopyWithImpl<$Res>
 
 /// Create a copy of LibraryItemModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mediaId = null,Object? name = null,Object? createdAt = freezed,Object? durationMs = freezed,Object? kind = null,Object? source = null,Object? linkProvider = freezed,Object? jobId = freezed,Object? jobStatus = freezed,Object? transcriptId = freezed,Object? folderId = freezed,Object? tags = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mediaId = null,Object? name = null,Object? createdAt = freezed,Object? durationMs = freezed,Object? kind = null,Object? source = null,Object? linkProvider = freezed,Object? jobId = freezed,Object? jobStatus = freezed,Object? transcriptId = freezed,Object? folderId = freezed,Object? tags = null,Object? meetingTitle = freezed,}) {
   return _then(LibraryItemModel(
 mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -86,7 +87,8 @@ as String?,jobStatus: freezed == jobStatus ? _self.jobStatus : jobStatus // igno
 as String?,transcriptId: freezed == transcriptId ? _self.transcriptId : transcriptId // ignore: cast_nullable_to_non_nullable
 as String?,folderId: freezed == folderId ? _self.folderId : folderId // ignore: cast_nullable_to_non_nullable
 as String?,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,meetingTitle: freezed == meetingTitle ? _self.meetingTitle : meetingTitle // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -171,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags, @JsonKey(name: 'meeting_title')  String? meetingTitle)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LibraryItemModel() when $default != null:
-return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags);case _:
+return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags,_that.meetingTitle);case _:
   return orElse();
 
 }
@@ -192,10 +194,10 @@ return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags, @JsonKey(name: 'meeting_title')  String? meetingTitle)  $default,) {final _that = this;
 switch (_that) {
 case _LibraryItemModel():
-return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags);case _:
+return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags,_that.meetingTitle);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +214,10 @@ return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'name')  String name, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown)  MediaKind kind, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown)  MediaSource source, @JsonKey(name: 'link_provider')  String? linkProvider, @JsonKey(name: 'job_id')  String? jobId, @JsonKey(name: 'job_status')  String? jobStatus, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'folder_id')  String? folderId, @JsonKey(name: 'tags')  List<String> tags, @JsonKey(name: 'meeting_title')  String? meetingTitle)?  $default,) {final _that = this;
 switch (_that) {
 case _LibraryItemModel() when $default != null:
-return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags);case _:
+return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.kind,_that.source,_that.linkProvider,_that.jobId,_that.jobStatus,_that.transcriptId,_that.folderId,_that.tags,_that.meetingTitle);case _:
   return null;
 
 }
@@ -227,7 +229,7 @@ return $default(_that.mediaId,_that.name,_that.createdAt,_that.durationMs,_that.
 @JsonSerializable()
 
 class _LibraryItemModel extends LibraryItemModel {
-  const _LibraryItemModel({@JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) this.kind = MediaKind.unknown, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) this.source = MediaSource.unknown, @JsonKey(name: 'link_provider') this.linkProvider, @JsonKey(name: 'job_id') this.jobId, @JsonKey(name: 'job_status') this.jobStatus, @JsonKey(name: 'transcript_id') this.transcriptId, @JsonKey(name: 'folder_id') this.folderId, @JsonKey(name: 'tags')  List<String> tags = const <String>[]}): _tags = tags,super._();
+  const _LibraryItemModel({@JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) this.kind = MediaKind.unknown, @JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) this.source = MediaSource.unknown, @JsonKey(name: 'link_provider') this.linkProvider, @JsonKey(name: 'job_id') this.jobId, @JsonKey(name: 'job_status') this.jobStatus, @JsonKey(name: 'transcript_id') this.transcriptId, @JsonKey(name: 'folder_id') this.folderId, @JsonKey(name: 'tags')  List<String> tags = const <String>[], @JsonKey(name: 'meeting_title') this.meetingTitle}): _tags = tags,super._();
   factory _LibraryItemModel.fromJson(Map<String, dynamic> json) => _$LibraryItemModelFromJson(json);
 
 @override@JsonKey(name: 'media_id') final  String mediaId;
@@ -249,6 +251,8 @@ class _LibraryItemModel extends LibraryItemModel {
   return EqualUnmodifiableListView(_tags);
 }
 
+/// Empty string when the file did not come from a meeting.
+@override@JsonKey(name: 'meeting_title') final  String? meetingTitle;
 
 /// Create a copy of LibraryItemModel
 /// with the given fields replaced by the non-null parameter values.
@@ -263,18 +267,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LibraryItemModel&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.source, source) || other.source == source)&&(identical(other.linkProvider, linkProvider) || other.linkProvider == linkProvider)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.jobStatus, jobStatus) || other.jobStatus == jobStatus)&&(identical(other.transcriptId, transcriptId) || other.transcriptId == transcriptId)&&(identical(other.folderId, folderId) || other.folderId == folderId)&&const DeepCollectionEquality().equals(other.tags, _tags));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LibraryItemModel&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.source, source) || other.source == source)&&(identical(other.linkProvider, linkProvider) || other.linkProvider == linkProvider)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.jobStatus, jobStatus) || other.jobStatus == jobStatus)&&(identical(other.transcriptId, transcriptId) || other.transcriptId == transcriptId)&&(identical(other.folderId, folderId) || other.folderId == folderId)&&const DeepCollectionEquality().equals(other.tags, _tags)&&(identical(other.meetingTitle, meetingTitle) || other.meetingTitle == meetingTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,mediaId,name,createdAt,durationMs,kind,source,linkProvider,jobId,jobStatus,transcriptId,folderId,const DeepCollectionEquality().hash(_tags));
+    return Object.hash(runtimeType,mediaId,name,createdAt,durationMs,kind,source,linkProvider,jobId,jobStatus,transcriptId,folderId,const DeepCollectionEquality().hash(_tags),meetingTitle);
 }
 
 @override
 String toString() {
-    return 'LibraryItemModel(mediaId: $mediaId, name: $name, createdAt: $createdAt, durationMs: $durationMs, kind: $kind, source: $source, linkProvider: $linkProvider, jobId: $jobId, jobStatus: $jobStatus, transcriptId: $transcriptId, folderId: $folderId, tags: $tags)';
+    return 'LibraryItemModel(mediaId: $mediaId, name: $name, createdAt: $createdAt, durationMs: $durationMs, kind: $kind, source: $source, linkProvider: $linkProvider, jobId: $jobId, jobStatus: $jobStatus, transcriptId: $transcriptId, folderId: $folderId, tags: $tags, meetingTitle: $meetingTitle)';
 }
 
 
@@ -285,7 +289,7 @@ abstract mixin class _$LibraryItemModelCopyWith<$Res> implements $LibraryItemMod
   factory _$LibraryItemModelCopyWith(_LibraryItemModel value, $Res Function(_LibraryItemModel) _then) = __$LibraryItemModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'name') String name,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) MediaKind kind,@JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) MediaSource source,@JsonKey(name: 'link_provider') String? linkProvider,@JsonKey(name: 'job_id') String? jobId,@JsonKey(name: 'job_status') String? jobStatus,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'folder_id') String? folderId,@JsonKey(name: 'tags') List<String> tags
+@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'name') String name,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'kind', unknownEnumValue: MediaKind.unknown) MediaKind kind,@JsonKey(name: 'source', unknownEnumValue: MediaSource.unknown) MediaSource source,@JsonKey(name: 'link_provider') String? linkProvider,@JsonKey(name: 'job_id') String? jobId,@JsonKey(name: 'job_status') String? jobStatus,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'folder_id') String? folderId,@JsonKey(name: 'tags') List<String> tags,@JsonKey(name: 'meeting_title') String? meetingTitle
 });
 
 
@@ -302,7 +306,7 @@ class __$LibraryItemModelCopyWithImpl<$Res>
 
 /// Create a copy of LibraryItemModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mediaId = null,Object? name = null,Object? createdAt = freezed,Object? durationMs = freezed,Object? kind = null,Object? source = null,Object? linkProvider = freezed,Object? jobId = freezed,Object? jobStatus = freezed,Object? transcriptId = freezed,Object? folderId = freezed,Object? tags = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mediaId = null,Object? name = null,Object? createdAt = freezed,Object? durationMs = freezed,Object? kind = null,Object? source = null,Object? linkProvider = freezed,Object? jobId = freezed,Object? jobStatus = freezed,Object? transcriptId = freezed,Object? folderId = freezed,Object? tags = null,Object? meetingTitle = freezed,}) {
   return _then(_LibraryItemModel(
 mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -316,7 +320,8 @@ as String?,jobStatus: freezed == jobStatus ? _self.jobStatus : jobStatus // igno
 as String?,transcriptId: freezed == transcriptId ? _self.transcriptId : transcriptId // ignore: cast_nullable_to_non_nullable
 as String?,folderId: freezed == folderId ? _self.folderId : folderId // ignore: cast_nullable_to_non_nullable
 as String?,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,meetingTitle: freezed == meetingTitle ? _self.meetingTitle : meetingTitle // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

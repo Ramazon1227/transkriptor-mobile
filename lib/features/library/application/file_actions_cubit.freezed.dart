@@ -15,8 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FileActionsState {
 
- FileActionStatus get status;/// The row as the server returned it after the change.
- LibraryItem? get item; Failure? get failure;
+ FileActionStatus get status;/// The row as the server returned it after the change; null after a
+/// delete or a retranscription.
+ LibraryItem? get item;/// The new job after «Qayta transkripsiya»; the sheet opens its page.
+ String? get jobId; Failure? get failure;
 /// Create a copy of FileActionsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +30,20 @@ $FileActionsStateCopyWith<FileActionsState> get copyWith => _$FileActionsStateCo
 @override
 bool operator ==(Object other) {
   final _this = this as FileActionsState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FileActionsState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.item, _this.item) || other.item == _this.item)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FileActionsState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.item, _this.item) || other.item == _this.item)&&(identical(other.jobId, _this.jobId) || other.jobId == _this.jobId)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FileActionsState;
-  return Object.hash(runtimeType,_this.status,_this.item,_this.failure);
+  return Object.hash(runtimeType,_this.status,_this.item,_this.jobId,_this.failure);
 }
 
 @override
 String toString() {
   final _this = this as FileActionsState;
-  return 'FileActionsState(status: ${_this.status}, item: ${_this.item}, failure: ${_this.failure})';
+  return 'FileActionsState(status: ${_this.status}, item: ${_this.item}, jobId: ${_this.jobId}, failure: ${_this.failure})';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $FileActionsStateCopyWith<$Res>  {
   factory $FileActionsStateCopyWith(FileActionsState value, $Res Function(FileActionsState) _then) = _$FileActionsStateCopyWithImpl;
 @useResult
 $Res call({
- FileActionStatus status, LibraryItem? item, Failure? failure
+ FileActionStatus status, LibraryItem? item, String? jobId, Failure? failure
 });
 
 
@@ -69,11 +71,12 @@ class _$FileActionsStateCopyWithImpl<$Res>
 
 /// Create a copy of FileActionsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? item = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? item = freezed,Object? jobId = freezed,Object? failure = freezed,}) {
   return _then(FileActionsState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FileActionStatus,item: freezed == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
-as LibraryItem?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LibraryItem?,jobId: freezed == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
+as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -183,10 +186,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( FileActionStatus status,  LibraryItem? item,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( FileActionStatus status,  LibraryItem? item,  String? jobId,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FileActionsState() when $default != null:
-return $default(_that.status,_that.item,_that.failure);case _:
+return $default(_that.status,_that.item,_that.jobId,_that.failure);case _:
   return orElse();
 
 }
@@ -204,10 +207,10 @@ return $default(_that.status,_that.item,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( FileActionStatus status,  LibraryItem? item,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( FileActionStatus status,  LibraryItem? item,  String? jobId,  Failure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _FileActionsState():
-return $default(_that.status,_that.item,_that.failure);case _:
+return $default(_that.status,_that.item,_that.jobId,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +227,10 @@ return $default(_that.status,_that.item,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( FileActionStatus status,  LibraryItem? item,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( FileActionStatus status,  LibraryItem? item,  String? jobId,  Failure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _FileActionsState() when $default != null:
-return $default(_that.status,_that.item,_that.failure);case _:
+return $default(_that.status,_that.item,_that.jobId,_that.failure);case _:
   return null;
 
 }
@@ -239,12 +242,15 @@ return $default(_that.status,_that.item,_that.failure);case _:
 
 
 class _FileActionsState implements FileActionsState {
-  const _FileActionsState({this.status = FileActionStatus.idle, this.item, this.failure});
+  const _FileActionsState({this.status = FileActionStatus.idle, this.item, this.jobId, this.failure});
   
 
 @override@JsonKey() final  FileActionStatus status;
-/// The row as the server returned it after the change.
+/// The row as the server returned it after the change; null after a
+/// delete or a retranscription.
 @override final  LibraryItem? item;
+/// The new job after «Qayta transkripsiya»; the sheet opens its page.
+@override final  String? jobId;
 @override final  Failure? failure;
 
 /// Create a copy of FileActionsState
@@ -257,18 +263,18 @@ _$FileActionsStateCopyWith<_FileActionsState> get copyWith => __$FileActionsStat
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FileActionsState&&(identical(other.status, status) || other.status == status)&&(identical(other.item, item) || other.item == item)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FileActionsState&&(identical(other.status, status) || other.status == status)&&(identical(other.item, item) || other.item == item)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,item,failure);
+    return Object.hash(runtimeType,status,item,jobId,failure);
 }
 
 @override
 String toString() {
-    return 'FileActionsState(status: $status, item: $item, failure: $failure)';
+    return 'FileActionsState(status: $status, item: $item, jobId: $jobId, failure: $failure)';
 }
 
 
@@ -279,7 +285,7 @@ abstract mixin class _$FileActionsStateCopyWith<$Res> implements $FileActionsSta
   factory _$FileActionsStateCopyWith(_FileActionsState value, $Res Function(_FileActionsState) _then) = __$FileActionsStateCopyWithImpl;
 @override @useResult
 $Res call({
- FileActionStatus status, LibraryItem? item, Failure? failure
+ FileActionStatus status, LibraryItem? item, String? jobId, Failure? failure
 });
 
 
@@ -296,11 +302,12 @@ class __$FileActionsStateCopyWithImpl<$Res>
 
 /// Create a copy of FileActionsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? item = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? item = freezed,Object? jobId = freezed,Object? failure = freezed,}) {
   return _then(_FileActionsState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FileActionStatus,item: freezed == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
-as LibraryItem?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LibraryItem?,jobId: freezed == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
+as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }

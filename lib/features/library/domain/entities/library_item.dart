@@ -46,5 +46,9 @@ abstract class LibraryItem with _$LibraryItem {
     /// Null when the file sits outside every folder.
     String? folderId,
     @Default(<String>[]) List<String> tags,
+
+    /// The calendar meeting a recording was made from (T10.6) or the Meet
+    /// bot joined; null for every other file.
+    String? meetingTitle,
   }) = _LibraryItem;
 }

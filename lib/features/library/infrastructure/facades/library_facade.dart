@@ -16,10 +16,18 @@ class LibraryFacade implements ILibraryFacade {
   Future<Either<Failure, List<LibraryItem>>> getItems({
     required String workspaceId,
     String? folderId,
+    MediaSource? source,
   }) async {
     final result = await _repository.getItems(
       workspaceId: workspaceId,
       folderId: folderId,
+      source: switch (source) {
+        null || MediaSource.unknown => null,
+        MediaSource.upload => 'UPLOAD',
+        MediaSource.recording => 'RECORDING',
+        MediaSource.url => 'URL',
+        MediaSource.api => 'API',
+      },
     );
     return result.map((models) => models.map((m) => m.toEntity()).toList());
   }
@@ -75,6 +83,22 @@ class LibraryFacade implements ILibraryFacade {
     );
     return result.map((m) => m.toEntity());
   }
+
+  @override
+  Future<Either<Failure, LibraryItem>> rename({
+    required String mediaId,
+    required String name,
+  }) async {
+    final result = await _repository.updateMedia(
+      mediaId: mediaId,
+      patch: {'display_name': name},
+    );
+    return result.map((m) => m.toEntity());
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteMedia(String mediaId) =>
+      _repository.deleteMedia(mediaId);
 
   @override
   Future<Either<Failure, LibraryItem>> setTags({
