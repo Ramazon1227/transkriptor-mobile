@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PlayerState {
 
- PlayerStatus get status; MediaSource? get source; Duration get position; Duration get duration; bool get playing; bool get buffering; bool get hasVideo; double get aspectRatio; double get speed;/// The video surface is folded away. Playback does not notice.
+ PlayerStatus get status; PlayableMedia? get source; Duration get position; Duration get duration; bool get playing; bool get buffering; bool get hasVideo; double get aspectRatio; double get speed;/// The video surface is folded away. Playback does not notice.
  bool get videoFolded; Failure? get failure;
 /// Create a copy of PlayerState
 /// with the given fields replaced by the non-null parameter values.
@@ -52,11 +52,11 @@ abstract mixin class $PlayerStateCopyWith<$Res>  {
   factory $PlayerStateCopyWith(PlayerState value, $Res Function(PlayerState) _then) = _$PlayerStateCopyWithImpl;
 @useResult
 $Res call({
- PlayerStatus status, MediaSource? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, bool videoFolded, Failure? failure
+ PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, bool videoFolded, Failure? failure
 });
 
 
-$MediaSourceCopyWith<$Res>? get source;$FailureCopyWith<$Res>? get failure;
+$PlayableMediaCopyWith<$Res>? get source;$FailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -73,7 +73,7 @@ class _$PlayerStateCopyWithImpl<$Res>
   return _then(PlayerState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PlayerStatus,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
-as MediaSource?,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
+as PlayableMedia?,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Duration,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,playing: null == playing ? _self.playing : playing // ignore: cast_nullable_to_non_nullable
 as bool,buffering: null == buffering ? _self.buffering : buffering // ignore: cast_nullable_to_non_nullable
@@ -89,12 +89,12 @@ as Failure?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$MediaSourceCopyWith<$Res>? get source {
+$PlayableMediaCopyWith<$Res>? get source {
     if (_self.source == null) {
     return null;
   }
 
-  return $MediaSourceCopyWith<$Res>(_self.source!, (value) {
+  return $PlayableMediaCopyWith<$Res>(_self.source!, (value) {
     return _then(_self.copyWith(source: value));
   });
 }/// Create a copy of PlayerState
@@ -191,7 +191,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PlayerStatus status,  MediaSource? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PlayerState() when $default != null:
 return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.videoFolded,_that.failure);case _:
@@ -212,7 +212,7 @@ return $default(_that.status,_that.source,_that.position,_that.duration,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PlayerStatus status,  MediaSource? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _PlayerState():
 return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.videoFolded,_that.failure);case _:
@@ -232,7 +232,7 @@ return $default(_that.status,_that.source,_that.position,_that.duration,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PlayerStatus status,  MediaSource? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  bool videoFolded,  Failure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _PlayerState() when $default != null:
 return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.videoFolded,_that.failure);case _:
@@ -251,7 +251,7 @@ class _PlayerState extends PlayerState {
   
 
 @override@JsonKey() final  PlayerStatus status;
-@override final  MediaSource? source;
+@override final  PlayableMedia? source;
 @override@JsonKey() final  Duration position;
 @override@JsonKey() final  Duration duration;
 @override@JsonKey() final  bool playing;
@@ -295,11 +295,11 @@ abstract mixin class _$PlayerStateCopyWith<$Res> implements $PlayerStateCopyWith
   factory _$PlayerStateCopyWith(_PlayerState value, $Res Function(_PlayerState) _then) = __$PlayerStateCopyWithImpl;
 @override @useResult
 $Res call({
- PlayerStatus status, MediaSource? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, bool videoFolded, Failure? failure
+ PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, bool videoFolded, Failure? failure
 });
 
 
-@override $MediaSourceCopyWith<$Res>? get source;@override $FailureCopyWith<$Res>? get failure;
+@override $PlayableMediaCopyWith<$Res>? get source;@override $FailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -316,7 +316,7 @@ class __$PlayerStateCopyWithImpl<$Res>
   return _then(_PlayerState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PlayerStatus,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
-as MediaSource?,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
+as PlayableMedia?,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Duration,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,playing: null == playing ? _self.playing : playing // ignore: cast_nullable_to_non_nullable
 as bool,buffering: null == buffering ? _self.buffering : buffering // ignore: cast_nullable_to_non_nullable
@@ -333,12 +333,12 @@ as Failure?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$MediaSourceCopyWith<$Res>? get source {
+$PlayableMediaCopyWith<$Res>? get source {
     if (_self.source == null) {
     return null;
   }
 
-  return $MediaSourceCopyWith<$Res>(_self.source!, (value) {
+  return $PlayableMediaCopyWith<$Res>(_self.source!, (value) {
     return _then(_self.copyWith(source: value));
   });
 }/// Create a copy of PlayerState

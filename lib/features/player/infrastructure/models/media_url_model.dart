@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:transkriptor_uz/features/player/domain/entities/media_source.dart';
+import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 
 part 'media_url_model.freezed.dart';
 part 'media_url_model.g.dart';
@@ -18,7 +18,7 @@ abstract class MediaUrlModel with _$MediaUrlModel {
   factory MediaUrlModel.fromJson(Map<String, dynamic> json) =>
       _$MediaUrlModelFromJson(json);
 
-  MediaSource toEntity() => MediaSource(
+  PlayableMedia toEntity() => PlayableMedia(
     url: url,
     mime: mime,
     youtubeId: (youtubeId?.isEmpty ?? true) ? null : youtubeId,

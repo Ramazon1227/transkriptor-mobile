@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart' show Either, Left, Right, Unit, unit;
 import 'package:injectable/injectable.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
-import 'package:transkriptor_uz/features/player/domain/entities/media_source.dart';
+import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart';
 import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart';
 
@@ -14,7 +14,7 @@ class PlayerFacade implements IPlayerFacade {
   final SharePlus _share;
 
   @override
-  Future<Either<Failure, MediaSource>> mediaSource(String mediaId) async {
+  Future<Either<Failure, PlayableMedia>> mediaSource(String mediaId) async {
     final result = await _repository.mediaUrl(mediaId);
     return result.map((m) => m.toEntity());
   }

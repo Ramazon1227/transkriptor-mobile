@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
-import 'package:transkriptor_uz/features/player/domain/entities/media_source.dart';
+import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart';
 import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
 
@@ -37,7 +37,7 @@ const List<double> playbackSpeeds = [0.75, 1, 1.25, 1.5, 2];
 abstract class PlayerState with _$PlayerState {
   const factory PlayerState({
     @Default(PlayerStatus.initial) PlayerStatus status,
-    MediaSource? source,
+    PlayableMedia? source,
     @Default(Duration.zero) Duration position,
     @Default(Duration.zero) Duration duration,
     @Default(false) bool playing,
@@ -124,7 +124,7 @@ class PlayerCubit extends Cubit<PlayerState> {
 
   Future<void> _start(
     int generation,
-    MediaSource source,
+    PlayableMedia source,
     Duration resumeAt,
   ) async {
     final engine = _engines.create();

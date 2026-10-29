@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'media_source.freezed.dart';
+part 'playable_media.freezed.dart';
 
 /// Where the player reads a file from: `GET /media/:id/url`.
 @freezed
-abstract class MediaSource with _$MediaSource {
-  const factory MediaSource({
+abstract class PlayableMedia with _$PlayableMedia {
+  const factory PlayableMedia({
     /// A signed read link for an upload, the canonical download link for
     /// a Drive/Dropbox file, the watch URL for YouTube.
     required String url,
@@ -14,9 +14,9 @@ abstract class MediaSource with _$MediaSource {
     /// Set for YouTube media only: no bytes on our side, and no package
     /// here plays YouTube, so there is no in-app playback.
     String? youtubeId,
-  }) = _MediaSource;
+  }) = _PlayableMedia;
 
-  const MediaSource._();
+  const PlayableMedia._();
 
   bool get isYoutube => (youtubeId ?? '').isNotEmpty;
 }

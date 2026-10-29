@@ -107,13 +107,6 @@ class _TranscriptTabState extends State<TranscriptTab> {
               filterOpen: _filterOpen || state.speakerFilter != null,
               onFilter: () => setState(() => _filterOpen = !_filterOpen),
             ),
-            if (_filterOpen || state.speakerFilter != null)
-              SpeakerFilterBar(
-                speakers: transcript.speakers,
-                selected: state.speakerFilter,
-                onChanged: context.read<TranscriptCubit>().filterSpeaker,
-              ),
-            if (state.editMode) const _EditHint(),
             Expanded(
               child: BlocListener<PlayerCubit, PlayerState>(
                 listenWhen: (p, n) =>
@@ -132,6 +125,19 @@ class _TranscriptTabState extends State<TranscriptTab> {
                         state: state,
                         controller: _scroll,
                         keyOf: _keyOf,
+                        // In the list, not above it: on a short screen
+                        // they scroll away instead of squeezing the text.
+                        header: [
+                          if (_filterOpen || state.speakerFilter != null)
+                            SpeakerFilterBar(
+                              speakers: transcript.speakers,
+                              selected: state.speakerFilter,
+                              onChanged: context
+                                  .read<TranscriptCubit>()
+                                  .filterSpeaker,
+                            ),
+                          if (state.editMode) const _EditHint(),
+                        ],
                       ),
                     ),
                     if (!_follow)
@@ -169,8 +175,11 @@ class _Segments extends StatelessWidget {
     required this.state,
     required this.controller,
     required this.keyOf,
+    required this.header,
   });
 
+  /// Filter bar and edit hint, first in the list.
+  final List<Widget> header;
   final TranscriptState state;
   final ScrollController controller;
   final GlobalKey Function(String) keyOf;
@@ -194,9 +203,15 @@ class _Segments extends StatelessWidget {
           key: const Key('transcript_segments'),
           controller: controller,
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 72),
-          itemCount: segments.length,
-          itemBuilder: (context, i) {
-            final segment = segments[i];
+          itemCount: segments.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: header,
+              );
+            }
+            final segment = segments[index - 1];
             return SegmentTile(
               key: keyOf(segment.id),
               segment: segment,
@@ -305,7 +320,7 @@ class _EditHint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       key: const Key('edit_hint'),
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: const BoxDecoration(
         color: AppColors.accentSoft,
