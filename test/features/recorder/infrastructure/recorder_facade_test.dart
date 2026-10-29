@@ -3,10 +3,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart' show Left;
+import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:record/record.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/core/utils/device_platform.dart';
 import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/facades/recorder_facade.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_capture_channel.dart';
@@ -19,6 +21,8 @@ class _MockRecorder extends Mock implements AudioRecorder;
 
 class _MockNative extends Mock implements NativeCaptureChannel;
 
+class _Platform extends Mock implements DevicePlatform;
+
 void main() {
   late Directory dir;
   late _MockRecorder recorder;
@@ -26,6 +30,7 @@ void main() {
   late RecordingsStore store;
   late RecorderFacade facade;
   late StreamController<Uint8List> chunks;
+  late _Platform platform;
 
   setUpAll(() => registerFallbackValue(const RecordConfig()));
 
@@ -34,7 +39,9 @@ void main() {
     recorder = _MockRecorder();
     native = _MockNative();
     store = RecordingsStore.at(dir, native);
-    facade = RecorderFacade(recorder, store, native);
+    platform = _Platform();
+    when(() => platform.isIOS).thenReturn(false);
+    facade = RecorderFacade(recorder, store, native, platform);
     chunks = StreamController<Uint8List>();
 
     when(() => recorder.hasPermission()).thenAnswer((_) async => true);
@@ -185,6 +192,89 @@ void main() {
         dst: any(named: 'dst'),
       ),
     );
+  });
+
+  group('iOS: record writes the .m4a, no native channel', () {
+    setUp(() {
+      when(() => platform.isIOS).thenReturn(true);
+      when(() => recorder.start(any(), path: any(named: 'path')))
+          .thenAnswer((invocation) async {
+            final path = invocation.namedArguments[#path] as String;
+            File(path).writeAsBytesSync([1, 2, 3, 4]);
+          });
+      when(() => recorder.stop()).thenAnswer((_) async => null);
+    });
+
+    void noChannel() {
+      verifyNever(() => native.requestNotifications());
+      verifyNever(() => native.startMicService());
+      verifyNever(() => native.stopMicService());
+      verifyNever(() => native.activeScreenPath());
+      verifyNever(
+        () => native.finalize(
+          src: any(named: 'src'),
+          dst: any(named: 'dst'),
+        ),
+      );
+    }
+
+    test('start writes a .part.m4a through record.start', () async {
+      expect((await facade.start()).isRight(), isTrue);
+      final captured = verify(
+        () => recorder.start(captureAny(), path: captureAny(named: 'path')),
+      ).captured;
+      final config = captured[0] as RecordConfig;
+      expect(config.encoder, AudioEncoder.aacLc);
+      expect(config.sampleRate, 16000);
+      expect(config.bitRate, 32000);
+      expect(captured[1] as String, endsWith('.part.m4a'));
+      verifyNever(() => recorder.startStream(any()));
+      noChannel();
+    });
+
+    test('stop gives the .m4a its final name', () async {
+      await facade.start();
+      final result = await facade.stop(duration: const Duration(seconds: 5));
+      final recording = result.getOrElse(() => throw StateError('none'));
+      expect(recording.path, matches(RegExp(r'/mic_\d+\.m4a$')));
+      expect(recording.sizeBytes, 4);
+      expect(recording.duration, const Duration(seconds: 5));
+      expect(files().map((f) => f.path), [recording.path]);
+      noChannel();
+    });
+
+    test(
+      'a recording in progress is not offered; a killed one is gone',
+      () async {
+        File('${dir.path}/mic_7.part.m4a').writeAsBytesSync([9, 9]);
+        await facade.start();
+        expect((await facade.recoverable()).getOrElse(() => [_dummy]), isEmpty);
+        // The stale one had no index: deleted. The live one stays.
+        expect(File('${dir.path}/mic_7.part.m4a').existsSync(), isFalse);
+        expect(files(), hasLength(1));
+        noChannel();
+      },
+    );
+
+    test('a finished, unsent one is still offered and sent as is', () async {
+      File('${dir.path}/mic_8.m4a').writeAsBytesSync([1, 2]);
+      when(() => native.durationOf(any())).thenThrow(MissingPluginException());
+      final item = (await facade.recoverable()).getOrElse(() => []).single;
+      expect(item.state, RecordingCompletion.finished);
+      final file = (await facade.recover(
+        item,
+        title: 'Yozuv',
+      )).getOrElse(() => throw StateError('none'));
+      expect(file.path, '${dir.path}/mic_8.m4a');
+    });
+
+    test('discard deletes the file', () async {
+      when(() => recorder.cancel()).thenAnswer((_) async {});
+      await facade.start();
+      await facade.discard();
+      expect(files(), isEmpty);
+      noChannel();
+    });
   });
 
   test('discarding a leftover deletes it', () async {

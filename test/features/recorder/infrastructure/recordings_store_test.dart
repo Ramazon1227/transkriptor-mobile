@@ -38,6 +38,26 @@ void main() {
     expect(s, '${dir.path}/screen_1000.aac');
   });
 
+  test('iOS partial paths are .part.m4a and complete to .m4a', () async {
+    final at = DateTime.fromMillisecondsSinceEpoch(2000);
+    put('mic_2000.m4a', [1]); // taken: the next free millisecond is used
+    final p = await store.newPartialPath(RecordingKind.microphone, now: at);
+    expect(p, '${dir.path}/mic_2001.part.m4a');
+    File(p).writeAsBytesSync([1, 2]);
+    expect(await store.list(), hasLength(1)); // held: only mic_2000
+
+    final done = await store.complete(p);
+    expect(done, '${dir.path}/mic_2001.m4a');
+    expect(File(p).existsSync(), isFalse);
+    expect(store.isActive(p), isFalse);
+  });
+
+  test('a .part.m4a nobody holds had no index: deleted, not offered', () async {
+    put('mic_9.part.m4a', [1, 2, 3]);
+    expect(await store.list(), isEmpty);
+    expect(File('${dir.path}/mic_9.part.m4a').existsSync(), isFalse);
+  });
+
   test('lists interrupted and finished recordings, newest first', () async {
     put('mic_1000.aac', adtsFrames(250));
     put('screen_3000.m4a', List.filled(100, 1));

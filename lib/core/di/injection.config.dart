@@ -346,6 +346,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i257.PlaybackEngineFactory>(
       () => _i451.VideoPlayerEngineFactory(),
     );
+    gh.lazySingleton<_i605.GoogleIdTokenSource>(
+      () => _i605.GoogleIdTokenSource(
+        gh<_i116.GoogleSignIn>(),
+        gh<_i422.DevicePlatform>(),
+      ),
+    );
     gh.lazySingleton<_i933.TokenStorage>(
       () => _i933.SecureTokenStorage(gh<_i558.FlutterSecureStorage>()),
     );
@@ -364,6 +370,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1039.AudioRecorder>(),
         gh<_i1005.RecordingsStore>(),
         gh<_i597.NativeCaptureChannel>(),
+        gh<_i422.DevicePlatform>(),
       ),
     );
     gh.lazySingleton<_i938.IExportFacade>(
@@ -376,9 +383,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i597.NativeCaptureChannel>(),
         gh<_i1005.RecordingsStore>(),
       ),
-    );
-    gh.lazySingleton<_i605.GoogleIdTokenSource>(
-      () => _i605.GoogleIdTokenSource(gh<_i116.GoogleSignIn>()),
     );
     gh.factory<_i586.LearnCubit>(
       () => _i586.LearnCubit(gh<_i522.ILearnFacade>()),

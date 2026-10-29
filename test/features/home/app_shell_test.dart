@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -114,6 +116,27 @@ void main() {
       await t.ensureVisible(f);
       expect(f, findsOneWidget);
     }
+  });
+
+  test('iOS leaves screen recording out, nothing else', () {
+    expect(SourceSheet.sourcesFor(TargetPlatform.iOS), [
+      for (final s in SourceSheet.order)
+        if (s != CaptureSource.screen) s,
+    ]);
+    expect(SourceSheet.sourcesFor(TargetPlatform.android), SourceSheet.order);
+  });
+
+  testWidgets('on an iPhone the sheet has no screen row', (t) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    await t.pumpWidget(_app(_router()));
+    await t.pumpAndSettle();
+
+    await t.tap(find.bySemanticsLabel(_l10n.navNew));
+    await t.pumpAndSettle();
+    expect(find.text(_l10n.sourceUploadTitle), findsOneWidget);
+    expect(find.text(_l10n.sourceScreenTitle), findsNothing);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('a placeholder source opens its page', (t) async {

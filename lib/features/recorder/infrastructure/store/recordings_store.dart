@@ -16,6 +16,10 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/store/adts_scan
 /// - `.aac` = raw AAC in ADTS frames, written while recording. A file
 ///   still `.aac` when no session holds it was interrupted.
 /// - `.m4a` = finished; it waits for upload. The upload deletes it.
+/// - `.part.m4a` = iOS only, written while recording (`record` writes the
+///   .m4a itself there; the ADTS remux is Android code). An .m4a whose
+///   muxer never finished has no index and cannot be played, so one left
+///   behind by a killed app holds nothing to recover and is deleted.
 ///
 /// So "unsent" needs no sidecar: anything in the folder that no live
 /// session is writing is recoverable.
@@ -33,6 +37,7 @@ class RecordingsStore {
   final Set<String> _active = {};
 
   static final RegExp _name = RegExp(r'^(mic|screen|rec)_(\d+)\.(aac|m4a)$');
+  static final RegExp _partial = RegExp(r'^(mic|screen|rec)_(\d+)\.part\.m4a$');
 
   Future<Directory> directory() async {
     final dir =
@@ -45,16 +50,31 @@ class RecordingsStore {
   }
 
   /// A fresh `.aac` path for a new session, held until [release].
-  Future<String> newPath(RecordingKind kind, {DateTime? now}) async {
+  Future<String> newPath(RecordingKind kind, {DateTime? now}) =>
+      _newPath(kind, '.aac', now: now);
+
+  /// iOS: a fresh `.part.m4a` path for a session `record` writes as .m4a
+  /// itself; [complete] gives it its final name.
+  Future<String> newPartialPath(RecordingKind kind, {DateTime? now}) =>
+      _newPath(kind, '.part.m4a', now: now);
+
+  Future<String> _newPath(
+    RecordingKind kind,
+    String ext, {
+    DateTime? now,
+  }) async {
     final dir = await directory();
     final prefix = kind == RecordingKind.screen ? 'screen' : 'mic';
     var ms = (now ?? DateTime.now()).millisecondsSinceEpoch;
-    var path = '${dir.path}/${prefix}_$ms.aac';
+    bool taken(int ms) => ['.aac', '.m4a', '.part.m4a'].any((e) {
+      final p = '${dir.path}/${prefix}_$ms$e';
+      return _active.contains(p) || File(p).existsSync();
+    });
     // Two sessions in one millisecond would share a name.
-    while (_active.contains(path) || File(path).existsSync()) {
+    while (taken(ms)) {
       ms++;
-      path = '${dir.path}/${prefix}_$ms.aac';
     }
+    final path = '${dir.path}/${prefix}_$ms$ext';
     _active.add(path);
     return path;
   }
@@ -67,6 +87,20 @@ class RecordingsStore {
   static String finishedPath(String aacPath) => aacPath.endsWith('.aac')
       ? '${aacPath.substring(0, aacPath.length - 4)}.m4a'
       : '$aacPath.m4a';
+
+  /// `x.part.m4a` → `x.m4a`.
+  static String completedPath(String partialPath) =>
+      partialPath.endsWith('.part.m4a')
+      ? '${partialPath.substring(0, partialPath.length - 9)}.m4a'
+      : partialPath;
+
+  /// iOS: a `.part.m4a` that `record` closed becomes a finished `.m4a`.
+  Future<String> complete(String partialPath) async {
+    final dst = completedPath(partialPath);
+    await File(partialPath).rename(dst);
+    _active.remove(partialPath);
+    return dst;
+  }
 
   /// Turns an `.aac` into its `.m4a` and deletes the `.aac`. Returns the
   /// new path and its length. Throws when nothing in it is playable; the
@@ -96,6 +130,11 @@ class RecordingsStore {
     final found = <RecoverableRecording>[];
     for (final file in files) {
       final name = _basename(file.path);
+      if (_partial.hasMatch(name)) {
+        // iOS, killed mid-recording: an .m4a without its index.
+        if (!skip.contains(file.path)) await _deleteQuietly(file.path);
+        continue;
+      }
       final match = _name.firstMatch(name);
       if (match == null || skip.contains(file.path)) continue;
       final interrupted = match.group(3) == 'aac';

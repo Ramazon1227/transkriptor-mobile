@@ -42,8 +42,11 @@ class AuthFacade implements IAuthFacade {
   }
 
   @override
-  Future<Either<Failure, String?>> googleClientId() =>
-      _repository.googleClientId();
+  Future<Either<Failure, String?>> googleClientId() async {
+    // iOS without its client id: no button, whatever the backend says.
+    if (!_google.isAvailable) return const Right(null);
+    return await _repository.googleClientId();
+  }
 
   @override
   Future<Either<Failure, Account>> signInWithGoogle({

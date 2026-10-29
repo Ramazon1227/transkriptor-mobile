@@ -19,7 +19,8 @@ abstract interface class IAuthFacade {
   });
 
   /// The backend's Google web client id, or null when Google sign-in is
-  /// off there.
+  /// off there — or on an iPhone build without its iOS client id
+  /// (`GOOGLE_IOS_CLIENT_ID`), which is not asked about at all.
   Future<Either<Failure, String?>> googleClientId();
 
   /// Google's account picker, then sign-in with its ID token, like

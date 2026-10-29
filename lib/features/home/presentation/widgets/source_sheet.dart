@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
@@ -25,6 +27,17 @@ class SourceSheet extends StatelessWidget {
     CaptureSource.url,
   ];
 
+  /// What this phone can start. iOS has no screen-audio capture (no app
+  /// may record other apps' sound there, and the native side is Android
+  /// code), so the row is left out rather than leading to a dead end.
+  static List<CaptureSource> sourcesFor(TargetPlatform platform) =>
+      platform == TargetPlatform.iOS
+      ? [
+          for (final s in order)
+            if (s != CaptureSource.screen) s,
+        ]
+      : order;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -32,7 +45,7 @@ class SourceSheet extends StatelessWidget {
       title: l10n.sourceSheetTitle,
       child: Column(
         children: [
-          for (final source in order) ...[
+          for (final source in sourcesFor(defaultTargetPlatform)) ...[
             _SourceRow(
               source: source,
               title: _title(l10n, source),

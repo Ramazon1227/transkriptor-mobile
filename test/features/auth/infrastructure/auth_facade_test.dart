@@ -36,6 +36,7 @@ void main() {
     session = SessionManager()..expire();
     google = _MockGoogle();
     when(() => google.signOut()).thenAnswer((_) async {});
+    when(() => google.isAvailable).thenReturn(true);
     facade = AuthFacade(repository, storage, session, google);
     when(
       () => storage.save(
@@ -44,6 +45,26 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(() => storage.clear()).thenAnswer((_) async {});
+  });
+
+  group('googleClientId', () {
+    test('asks the backend where the SDK can run', () async {
+      when(() => repository.googleClientId())
+          .thenAnswer((_) async => const Right('web-id'));
+      expect(
+        await facade.googleClientId(),
+        const Right<Failure, String?>('web-id'),
+      );
+    });
+
+    test('iOS without its client id: no button, nothing asked', () async {
+      when(() => google.isAvailable).thenReturn(false);
+      expect(
+        await facade.googleClientId(),
+        const Right<Failure, String?>(null),
+      );
+      verifyNever(() => repository.googleClientId());
+    });
   });
 
   group('signInWithGoogle', () {
