@@ -50,6 +50,7 @@ class JobStatusChip extends StatelessWidget {
               color: color,
               fontSize: 12,
               fontWeight: FontWeight.w500,
+              fontVariations: const [FontVariation('wght', 500)],
             ),
           ),
         ],

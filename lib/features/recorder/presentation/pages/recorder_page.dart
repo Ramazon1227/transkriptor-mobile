@@ -142,6 +142,9 @@ class _RecorderView extends StatelessWidget {
                                   fontSize: 52,
                                   color: AppColors.cotton,
                                   fontWeight: FontWeight.w500,
+                                  fontVariations: const [
+                                    FontVariation('wght', 500),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 8),

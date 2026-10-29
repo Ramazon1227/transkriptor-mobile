@@ -67,6 +67,7 @@ class SegmentTile extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
+                            fontVariations: [FontVariation('wght', 500)],
                           ),
                         ),
                       ),

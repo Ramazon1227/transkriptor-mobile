@@ -169,7 +169,10 @@ class _Source extends StatelessWidget {
             width: 110,
             child: Text(
               name,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontVariations: [FontVariation('wght', 500)],
+              ),
             ),
           ),
           Expanded(child: Text(body, style: AppText.muted)),

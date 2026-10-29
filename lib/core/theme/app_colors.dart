@@ -23,6 +23,12 @@ abstract final class AppColors {
   static const Color warn = Color(0xFFFF8A5C);
   static const Color mint = Color(0xFF5FD9BE);
 
+  // Error red. tokens.css has no red yet; these are the web app's
+  // `.flash--bad` pair (tr-frontend `styles/app.css`), so both clients
+  // say "failed" in the same colour. Only for errors — never decoration.
+  static const Color bad = Color(0xFFFF7A8F);
+  static const Color badSoft = Color(0xFF3D1119);
+
   // Diarization colours. Neighbouring speakers never get close hues, so
   // the sequence jumps on purpose.
   static const List<Color> speakers = [

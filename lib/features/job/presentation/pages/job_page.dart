@@ -95,6 +95,7 @@ class _JobBody extends StatelessWidget {
               fontSize: 48,
               color: AppColors.accent,
               fontWeight: FontWeight.w500,
+              fontVariations: const [FontVariation('wght', 500)],
             ),
           ),
           const SizedBox(height: 12),
@@ -127,7 +128,11 @@ class _JobBody extends StatelessWidget {
               children: [
                 Text(
                   l10n.jobFailedTitle,
-                  style: TextStyle(color: error, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: error,
+                    fontWeight: FontWeight.w600,
+                    fontVariations: const [FontVariation('wght', 600)],
+                  ),
                 ),
                 if (job.errorMessage != null) ...[
                   const SizedBox(height: 8),

@@ -247,6 +247,7 @@ class _FileCard extends StatelessWidget {
                     fontSize: duration != null ? 18 : 14,
                     color: AppColors.cotton,
                     fontWeight: FontWeight.w500,
+                    fontVariations: const [FontVariation('wght', 500)],
                   ),
                 ),
                 const SizedBox(height: 2),
