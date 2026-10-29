@@ -196,29 +196,11 @@ abstract class AppLocalizations {
   /// **'Juda koʻp urinish. Bir daqiqadan keyin qayta urining.'**
   String get errorTooManyRequests;
 
-  /// No description provided for @navHome.
-  ///
-  /// In uz, this message translates to:
-  /// **'Asosiy'**
-  String get navHome;
-
   /// No description provided for @navFiles.
   ///
   /// In uz, this message translates to:
   /// **'Fayllar'**
   String get navFiles;
-
-  /// No description provided for @navRecord.
-  ///
-  /// In uz, this message translates to:
-  /// **'Yozib olish'**
-  String get navRecord;
-
-  /// No description provided for @navProfile.
-  ///
-  /// In uz, this message translates to:
-  /// **'Profil'**
-  String get navProfile;
 
   /// No description provided for @loginTitle.
   ///
@@ -418,64 +400,10 @@ abstract class AppLocalizations {
   /// **'Parolni tiklash hozircha ishlamaydi — pochta xizmati ulanmagan.'**
   String get forgotUnavailable;
 
-  /// No description provided for @homeGreeting.
-  ///
-  /// In uz, this message translates to:
-  /// **'Salom, {name}'**
-  String homeGreeting(String name);
-
-  /// No description provided for @homeGreetingNoName.
-  ///
-  /// In uz, this message translates to:
-  /// **'Salom'**
-  String get homeGreetingNoName;
-
-  /// No description provided for @homeSubtitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Bugun nimani matnga aylantiramiz?'**
-  String get homeSubtitle;
-
-  /// No description provided for @homeRecordTitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Yozib olish'**
-  String get homeRecordTitle;
-
-  /// No description provided for @homeRecordSubtitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Suhbat, majlis, maʼruza — telefon mikrofonidan'**
-  String get homeRecordSubtitle;
-
-  /// No description provided for @homeUploadTitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Fayl yuklash'**
-  String get homeUploadTitle;
-
-  /// No description provided for @homeUploadSubtitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'mp3, m4a, wav, mp4, webm'**
-  String get homeUploadSubtitle;
-
-  /// No description provided for @homeLinkTitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'Havola'**
-  String get homeLinkTitle;
-
-  /// No description provided for @homeLinkSubtitle.
-  ///
-  /// In uz, this message translates to:
-  /// **'YouTube, Drive, Dropbox'**
-  String get homeLinkSubtitle;
-
   /// No description provided for @homeRecent.
   ///
   /// In uz, this message translates to:
-  /// **'Oxirgi fayllar'**
+  /// **'Soʻnggi fayllar'**
   String get homeRecent;
 
   /// No description provided for @homeSeeAll.
@@ -1408,18 +1336,6 @@ abstract class AppLocalizations {
   /// **'Profil'**
   String get profileTitle;
 
-  /// No description provided for @profileMinutesLeft.
-  ///
-  /// In uz, this message translates to:
-  /// **'daqiqa qoldi'**
-  String get profileMinutesLeft;
-
-  /// No description provided for @profileWorkspace.
-  ///
-  /// In uz, this message translates to:
-  /// **'Ish maydoni'**
-  String get profileWorkspace;
-
   /// No description provided for @profileLogout.
   ///
   /// In uz, this message translates to:
@@ -1431,6 +1347,522 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Hisobdan chiqasizmi?'**
   String get profileLogoutTitle;
+
+  /// No description provided for @navStudio.
+  ///
+  /// In uz, this message translates to:
+  /// **'Studio'**
+  String get navStudio;
+
+  /// No description provided for @navNew.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi transkripsiya'**
+  String get navNew;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tez orada'**
+  String get comingSoon;
+
+  /// No description provided for @comingSoonBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu imkoniyat ustida ishlayapmiz. Hozircha boshqa usullardan foydalaning.'**
+  String get comingSoonBody;
+
+  /// No description provided for @demoBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — server hali tayyor emas'**
+  String get demoBanner;
+
+  /// No description provided for @sourceSheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshlash'**
+  String get sourceSheetTitle;
+
+  /// No description provided for @sourceUploadTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl yuklash'**
+  String get sourceUploadTitle;
+
+  /// No description provided for @sourceUploadBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefondagi audio yoki videoni matnga aylantiring'**
+  String get sourceUploadBody;
+
+  /// No description provided for @sourceYoutubeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'YouTubeʼdan'**
+  String get sourceYoutubeTitle;
+
+  /// No description provided for @sourceYoutubeBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Video havolasini qoʻying — server oʻzi yuklab oladi'**
+  String get sourceYoutubeBody;
+
+  /// No description provided for @sourceRecordTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Audio yozib olish'**
+  String get sourceRecordTitle;
+
+  /// No description provided for @sourceRecordBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbat, majlis, maʼruza — telefon mikrofonidan'**
+  String get sourceRecordBody;
+
+  /// No description provided for @sourceDictationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Jonli diktovka'**
+  String get sourceDictationTitle;
+
+  /// No description provided for @sourceDictationBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gapiring — matn shu zahoti paydo boʻladi'**
+  String get sourceDictationBody;
+
+  /// No description provided for @sourceRealtimeBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'Real vaqt'**
+  String get sourceRealtimeBadge;
+
+  /// No description provided for @sourceScreenTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekranni yozish'**
+  String get sourceScreenTitle;
+
+  /// No description provided for @sourceScreenBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekrandagi video va ovozni yozib, matnga aylantiring'**
+  String get sourceScreenBody;
+
+  /// No description provided for @sourceCloudTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bulutdan'**
+  String get sourceCloudTitle;
+
+  /// No description provided for @sourceCloudBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Drive yoki Dropbox havolasi'**
+  String get sourceCloudBody;
+
+  /// No description provided for @sourceMeetingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Onlayn uchrashuv'**
+  String get sourceMeetingTitle;
+
+  /// No description provided for @sourceMeetingBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Meet uchrashuvini yozib olish'**
+  String get sourceMeetingBody;
+
+  /// No description provided for @sourceUrlTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola orqali'**
+  String get sourceUrlTitle;
+
+  /// No description provided for @sourceUrlBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Internetdagi audio yoki video faylning havolasi'**
+  String get sourceUrlBody;
+
+  /// No description provided for @homeWelcome.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xush kelibsiz, {name}'**
+  String homeWelcome(String name);
+
+  /// No description provided for @homeWelcomeNoName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xush kelibsiz'**
+  String get homeWelcomeNoName;
+
+  /// No description provided for @homeCardRecord.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozib olish'**
+  String get homeCardRecord;
+
+  /// No description provided for @homeCalendar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kalendar'**
+  String get homeCalendar;
+
+  /// No description provided for @calendarNotConnected.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Kalendar veb-ilovada ulanadi. Ulangach, yaqin uchrashuvlar shu yerda koʻrinadi.'**
+  String get calendarNotConnected;
+
+  /// No description provided for @calendarEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaqin kunlarda uchrashuv yoʻq.'**
+  String get calendarEmpty;
+
+  /// No description provided for @calendarToday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugun, {time}'**
+  String calendarToday(String time);
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sozlamalar'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisob'**
+  String get settingsAccount;
+
+  /// No description provided for @settingsBalance.
+  ///
+  /// In uz, this message translates to:
+  /// **'Balans'**
+  String get settingsBalance;
+
+  /// No description provided for @settingsPlan.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tarif'**
+  String get settingsPlan;
+
+  /// No description provided for @settingsPlans.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tariflar'**
+  String get settingsPlans;
+
+  /// No description provided for @settingsProfile.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profil'**
+  String get settingsProfile;
+
+  /// No description provided for @settingsWorkspace.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ish maydoni'**
+  String get settingsWorkspace;
+
+  /// No description provided for @settingsApp.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ilova'**
+  String get settingsApp;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Til'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageUzbek.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻzbekcha'**
+  String get settingsLanguageUzbek;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bildirishnomalar'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsNotificationsOn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoqilgan'**
+  String get settingsNotificationsOn;
+
+  /// No description provided for @settingsNotificationsOff.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu versiyada sozlanmagan'**
+  String get settingsNotificationsOff;
+
+  /// No description provided for @settingsHelp.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yordam'**
+  String get settingsHelp;
+
+  /// No description provided for @settingsHelpCenter.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yordam markazi'**
+  String get settingsHelpCenter;
+
+  /// No description provided for @settingsReportBug.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xato haqida xabar berish'**
+  String get settingsReportBug;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maxfiylik siyosati'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsTerms.
+  ///
+  /// In uz, this message translates to:
+  /// **'Foydalanish shartlari'**
+  String get settingsTerms;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In uz, this message translates to:
+  /// **'Versiya'**
+  String get settingsVersion;
+
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobni oʻchirish'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsLinkBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sahifani brauzerda oching:'**
+  String get settingsLinkBody;
+
+  /// No description provided for @planStatusActive.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faol'**
+  String get planStatusActive;
+
+  /// No description provided for @planStatusPastDue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻlov kutilmoqda'**
+  String get planStatusPastDue;
+
+  /// No description provided for @planStatusCancelled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bekor qilingan'**
+  String get planStatusCancelled;
+
+  /// No description provided for @planStatusExpired.
+  ///
+  /// In uz, this message translates to:
+  /// **'Muddati tugagan'**
+  String get planStatusExpired;
+
+  /// No description provided for @planRenews.
+  ///
+  /// In uz, this message translates to:
+  /// **'{date} da yangilanadi'**
+  String planRenews(String date);
+
+  /// No description provided for @planEnds.
+  ///
+  /// In uz, this message translates to:
+  /// **'{date} da tugaydi'**
+  String planEnds(String date);
+
+  /// No description provided for @planMinutesPerMonth.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oyiga {minutes} daqiqa'**
+  String planMinutesPerMonth(int minutes);
+
+  /// No description provided for @planMembers.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} kishigacha'**
+  String planMembers(int count);
+
+  /// No description provided for @planPrice.
+  ///
+  /// In uz, this message translates to:
+  /// **'{price} soʻm / oy'**
+  String planPrice(String price);
+
+  /// No description provided for @plansTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tariflar'**
+  String get plansTitle;
+
+  /// No description provided for @planFree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bepul'**
+  String get planFree;
+
+  /// No description provided for @planCurrent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joriy tarif'**
+  String get planCurrent;
+
+  /// No description provided for @plansPaymentSoon.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ilova ichida toʻlov hali yoʻq — tez orada qoʻshiladi.'**
+  String get plansPaymentSoon;
+
+  /// No description provided for @plansEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tariflar hali eʼlon qilinmagan.'**
+  String get plansEmpty;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Egasi'**
+  String get roleOwner;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In uz, this message translates to:
+  /// **'Administrator'**
+  String get roleAdmin;
+
+  /// No description provided for @roleMember.
+  ///
+  /// In uz, this message translates to:
+  /// **'Aʼzo'**
+  String get roleMember;
+
+  /// No description provided for @roleViewer.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kuzatuvchi'**
+  String get roleViewer;
+
+  /// No description provided for @workspacePersonal.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shaxsiy'**
+  String get workspacePersonal;
+
+  /// No description provided for @workspaceSwitchTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ish maydoni'**
+  String get workspaceSwitchTitle;
+
+  /// No description provided for @profileName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism'**
+  String get profileName;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// No description provided for @profileSignIn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kirish usuli'**
+  String get profileSignIn;
+
+  /// No description provided for @profileSignInGoogle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google'**
+  String get profileSignInGoogle;
+
+  /// No description provided for @profileSignInPassword.
+  ///
+  /// In uz, this message translates to:
+  /// **'Email va parol'**
+  String get profileSignInPassword;
+
+  /// No description provided for @deleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobni oʻchirish'**
+  String get deleteTitle;
+
+  /// No description provided for @deleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shaxsiy ish maydoningiz va faqat siz aʼzo boʻlgan ish maydonlari barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.'**
+  String get deleteBody;
+
+  /// No description provided for @deletePasswordLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tasdiqlash uchun parolingiz'**
+  String get deletePasswordLabel;
+
+  /// No description provided for @deleteEmailLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tasdiqlash uchun emailingizni yozing'**
+  String get deleteEmailLabel;
+
+  /// No description provided for @deleteEmailHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'{email}'**
+  String deleteEmailHint(String email);
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobni butunlay oʻchirish'**
+  String get deleteConfirm;
+
+  /// No description provided for @deleteRequired.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maydonni toʻldiring'**
+  String get deleteRequired;
+
+  /// No description provided for @deleteWrong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parol yoki email mos kelmadi.'**
+  String get deleteWrong;
+
+  /// No description provided for @deleteSoleOwner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.'**
+  String get deleteSoleOwner;
+
+  /// No description provided for @logoutBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.'**
+  String get logoutBody;
 }
 
 class _AppLocalizationsDelegate

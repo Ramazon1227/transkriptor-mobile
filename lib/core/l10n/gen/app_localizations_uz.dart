@@ -64,16 +64,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Juda koʻp urinish. Bir daqiqadan keyin qayta urining.';
 
   @override
-  String get navHome => 'Asosiy';
-
-  @override
   String get navFiles => 'Fayllar';
-
-  @override
-  String get navRecord => 'Yozib olish';
-
-  @override
-  String get navProfile => 'Profil';
 
   @override
   String get loginTitle => 'Ovozni matnga';
@@ -186,37 +177,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Parolni tiklash hozircha ishlamaydi — pochta xizmati ulanmagan.';
 
   @override
-  String homeGreeting(String name) {
-    return 'Salom, $name';
-  }
-
-  @override
-  String get homeGreetingNoName => 'Salom';
-
-  @override
-  String get homeSubtitle => 'Bugun nimani matnga aylantiramiz?';
-
-  @override
-  String get homeRecordTitle => 'Yozib olish';
-
-  @override
-  String get homeRecordSubtitle =>
-      'Suhbat, majlis, maʼruza — telefon mikrofonidan';
-
-  @override
-  String get homeUploadTitle => 'Fayl yuklash';
-
-  @override
-  String get homeUploadSubtitle => 'mp3, m4a, wav, mp4, webm';
-
-  @override
-  String get homeLinkTitle => 'Havola';
-
-  @override
-  String get homeLinkSubtitle => 'YouTube, Drive, Dropbox';
-
-  @override
-  String get homeRecent => 'Oxirgi fayllar';
+  String get homeRecent => 'Soʻnggi fayllar';
 
   @override
   String get homeSeeAll => 'Hammasi';
@@ -736,14 +697,292 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileTitle => 'Profil';
 
   @override
-  String get profileMinutesLeft => 'daqiqa qoldi';
-
-  @override
-  String get profileWorkspace => 'Ish maydoni';
-
-  @override
   String get profileLogout => 'Chiqish';
 
   @override
   String get profileLogoutTitle => 'Hisobdan chiqasizmi?';
+
+  @override
+  String get navStudio => 'Studio';
+
+  @override
+  String get navNew => 'Yangi transkripsiya';
+
+  @override
+  String get comingSoon => 'Tez orada';
+
+  @override
+  String get comingSoonBody =>
+      'Bu imkoniyat ustida ishlayapmiz. Hozircha boshqa usullardan foydalaning.';
+
+  @override
+  String get demoBanner => 'Namuna — server hali tayyor emas';
+
+  @override
+  String get sourceSheetTitle => 'Boshlash';
+
+  @override
+  String get sourceUploadTitle => 'Fayl yuklash';
+
+  @override
+  String get sourceUploadBody =>
+      'Telefondagi audio yoki videoni matnga aylantiring';
+
+  @override
+  String get sourceYoutubeTitle => 'YouTubeʼdan';
+
+  @override
+  String get sourceYoutubeBody =>
+      'Video havolasini qoʻying — server oʻzi yuklab oladi';
+
+  @override
+  String get sourceRecordTitle => 'Audio yozib olish';
+
+  @override
+  String get sourceRecordBody =>
+      'Suhbat, majlis, maʼruza — telefon mikrofonidan';
+
+  @override
+  String get sourceDictationTitle => 'Jonli diktovka';
+
+  @override
+  String get sourceDictationBody => 'Gapiring — matn shu zahoti paydo boʻladi';
+
+  @override
+  String get sourceRealtimeBadge => 'Real vaqt';
+
+  @override
+  String get sourceScreenTitle => 'Ekranni yozish';
+
+  @override
+  String get sourceScreenBody =>
+      'Ekrandagi video va ovozni yozib, matnga aylantiring';
+
+  @override
+  String get sourceCloudTitle => 'Bulutdan';
+
+  @override
+  String get sourceCloudBody => 'Google Drive yoki Dropbox havolasi';
+
+  @override
+  String get sourceMeetingTitle => 'Onlayn uchrashuv';
+
+  @override
+  String get sourceMeetingBody => 'Google Meet uchrashuvini yozib olish';
+
+  @override
+  String get sourceUrlTitle => 'Havola orqali';
+
+  @override
+  String get sourceUrlBody => 'Internetdagi audio yoki video faylning havolasi';
+
+  @override
+  String homeWelcome(String name) {
+    return 'Xush kelibsiz, $name';
+  }
+
+  @override
+  String get homeWelcomeNoName => 'Xush kelibsiz';
+
+  @override
+  String get homeCardRecord => 'Yozib olish';
+
+  @override
+  String get homeCalendar => 'Kalendar';
+
+  @override
+  String get calendarNotConnected =>
+      'Google Kalendar veb-ilovada ulanadi. Ulangach, yaqin uchrashuvlar shu yerda koʻrinadi.';
+
+  @override
+  String get calendarEmpty => 'Yaqin kunlarda uchrashuv yoʻq.';
+
+  @override
+  String calendarToday(String time) {
+    return 'Bugun, $time';
+  }
+
+  @override
+  String get settingsTitle => 'Sozlamalar';
+
+  @override
+  String get settingsAccount => 'Hisob';
+
+  @override
+  String get settingsBalance => 'Balans';
+
+  @override
+  String get settingsPlan => 'Tarif';
+
+  @override
+  String get settingsPlans => 'Tariflar';
+
+  @override
+  String get settingsProfile => 'Profil';
+
+  @override
+  String get settingsWorkspace => 'Ish maydoni';
+
+  @override
+  String get settingsApp => 'Ilova';
+
+  @override
+  String get settingsLanguage => 'Til';
+
+  @override
+  String get settingsLanguageUzbek => 'Oʻzbekcha';
+
+  @override
+  String get settingsNotifications => 'Bildirishnomalar';
+
+  @override
+  String get settingsNotificationsOn => 'Yoqilgan';
+
+  @override
+  String get settingsNotificationsOff => 'Bu versiyada sozlanmagan';
+
+  @override
+  String get settingsHelp => 'Yordam';
+
+  @override
+  String get settingsHelpCenter => 'Yordam markazi';
+
+  @override
+  String get settingsReportBug => 'Xato haqida xabar berish';
+
+  @override
+  String get settingsPrivacy => 'Maxfiylik siyosati';
+
+  @override
+  String get settingsTerms => 'Foydalanish shartlari';
+
+  @override
+  String get settingsVersion => 'Versiya';
+
+  @override
+  String get settingsDeleteAccount => 'Hisobni oʻchirish';
+
+  @override
+  String get settingsLinkBody => 'Sahifani brauzerda oching:';
+
+  @override
+  String get planStatusActive => 'Faol';
+
+  @override
+  String get planStatusPastDue => 'Toʻlov kutilmoqda';
+
+  @override
+  String get planStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String get planStatusExpired => 'Muddati tugagan';
+
+  @override
+  String planRenews(String date) {
+    return '$date da yangilanadi';
+  }
+
+  @override
+  String planEnds(String date) {
+    return '$date da tugaydi';
+  }
+
+  @override
+  String planMinutesPerMonth(int minutes) {
+    return 'Oyiga $minutes daqiqa';
+  }
+
+  @override
+  String planMembers(int count) {
+    return '$count kishigacha';
+  }
+
+  @override
+  String planPrice(String price) {
+    return '$price soʻm / oy';
+  }
+
+  @override
+  String get plansTitle => 'Tariflar';
+
+  @override
+  String get planFree => 'Bepul';
+
+  @override
+  String get planCurrent => 'Joriy tarif';
+
+  @override
+  String get plansPaymentSoon =>
+      'Ilova ichida toʻlov hali yoʻq — tez orada qoʻshiladi.';
+
+  @override
+  String get plansEmpty => 'Tariflar hali eʼlon qilinmagan.';
+
+  @override
+  String get roleOwner => 'Egasi';
+
+  @override
+  String get roleAdmin => 'Administrator';
+
+  @override
+  String get roleMember => 'Aʼzo';
+
+  @override
+  String get roleViewer => 'Kuzatuvchi';
+
+  @override
+  String get workspacePersonal => 'Shaxsiy';
+
+  @override
+  String get workspaceSwitchTitle => 'Ish maydoni';
+
+  @override
+  String get profileName => 'Ism';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileSignIn => 'Kirish usuli';
+
+  @override
+  String get profileSignInGoogle => 'Google';
+
+  @override
+  String get profileSignInPassword => 'Email va parol';
+
+  @override
+  String get deleteTitle => 'Hisobni oʻchirish';
+
+  @override
+  String get deleteBody =>
+      'Shaxsiy ish maydoningiz va faqat siz aʼzo boʻlgan ish maydonlari barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.';
+
+  @override
+  String get deletePasswordLabel => 'Tasdiqlash uchun parolingiz';
+
+  @override
+  String get deleteEmailLabel => 'Tasdiqlash uchun emailingizni yozing';
+
+  @override
+  String deleteEmailHint(String email) {
+    return '$email';
+  }
+
+  @override
+  String get deleteConfirm => 'Hisobni butunlay oʻchirish';
+
+  @override
+  String get deleteRequired => 'Maydonni toʻldiring';
+
+  @override
+  String get deleteWrong => 'Parol yoki email mos kelmadi.';
+
+  @override
+  String get deleteSoleOwner =>
+      'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.';
+
+  @override
+  String get logoutBody =>
+      'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.';
 }
