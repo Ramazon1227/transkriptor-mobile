@@ -26,6 +26,9 @@ import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/widgets/illustrated_card.dart';
+import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
+import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/ai_chat_tab.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/delete_account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.dart';
@@ -55,6 +58,14 @@ import 'package:transkriptor_uz/features/home/presentation/widgets/source_sheet.
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
+import 'package:transkriptor_uz/features/learn/application/flashcards_cubit.dart';
+import 'package:transkriptor_uz/features/learn/application/learn_cubit.dart';
+import 'package:transkriptor_uz/features/learn/application/quiz_cubit.dart';
+import 'package:transkriptor_uz/features/learn/domain/entities/learn.dart';
+import 'package:transkriptor_uz/features/learn/presentation/pages/flashcards_page.dart';
+import 'package:transkriptor_uz/features/learn/presentation/pages/quiz_page.dart';
+import 'package:transkriptor_uz/features/learn/presentation/widgets/learn_create_sheet.dart';
+import 'package:transkriptor_uz/features/learn/presentation/widgets/learn_tab.dart';
 import 'package:transkriptor_uz/features/library/application/folders_cubit.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/folder.dart';
@@ -80,6 +91,11 @@ import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_met
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/recovery_widgets.dart';
 import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
+import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
+import 'package:transkriptor_uz/features/summary/domain/entities/summary.dart';
+import 'package:transkriptor_uz/features/summary/domain/entities/summary_template.dart';
+import 'package:transkriptor_uz/features/summary/presentation/widgets/summary_tab.dart';
+import 'package:transkriptor_uz/features/summary/presentation/widgets/template_picker_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
@@ -146,6 +162,15 @@ class _Meeting extends MockCubit<MeetingBotState> implements MeetingBotCubit;
 class _UrlImport extends MockCubit<UrlImportState> implements UrlImportCubit;
 
 class _Dictation extends MockCubit<DictationState> implements DictationCubit;
+class _AiChat extends MockCubit<AiChatState> implements AiChatCubit;
+
+class _Summary extends MockCubit<SummaryState> implements SummaryCubit;
+
+class _Learn extends MockCubit<LearnState> implements LearnCubit;
+
+class _Flashcards extends MockCubit<FlashcardsState> implements FlashcardsCubit;
+
+class _Quiz extends MockCubit<QuizState> implements QuizCubit;
 
 // ---------------------------------------------------------- stress data
 
@@ -387,6 +412,152 @@ final List<MeetingBot> _bots = [
       createdAt: DateTime(2026, 10, 29, 9, 30),
     ),
 ];
+// ------------------------------------------------- editor AI tabs data
+
+const _longAnswer =
+    'Yigʻilishda uchta asosiy mavzu koʻrildi [00:01:23]: byudjet, '
+    'raqamlashtirish va kadrlar. Toshkent shahar hokimining birinchi '
+    'oʻrinbosari [1:02:03] muddatlarni belgiladi; Докладчик 2 предложил '
+    'закупку оборудования [59:59]. Supercalifragilisticexpialidociousword.';
+
+final List<AiMessage> _chat = [
+  for (var i = 0; i < 6; i++) ...[
+    AiMessage(
+      id: 'q$i',
+      role: AiRole.user,
+      status: AiMessageStatus.done,
+      content: i.isEven ? _longName : _cyrName,
+    ),
+    AiMessage(
+      id: 'a$i',
+      role: AiRole.assistant,
+      status: i == 4 ? AiMessageStatus.failed : AiMessageStatus.done,
+      content: _longAnswer,
+      error: i == 4 ? _longError : null,
+    ),
+  ],
+  const AiMessage(
+    id: 'q9',
+    role: AiRole.user,
+    status: AiMessageStatus.done,
+    content: _longName,
+  ),
+  const AiMessage(
+    id: 'a9',
+    role: AiRole.assistant,
+    status: AiMessageStatus.pending,
+  ),
+];
+
+const _templateName =
+    'Yigʻilish bayonnomasi — qarorlar, masʼullar va muddatlar '
+    'boʻyicha batafsil';
+
+final _templates = SummaryTemplateLibrary(
+  categories: [
+    for (var c = 0; c < 3; c++)
+      SummaryTemplateCategory(id: 'c$c', name: '$_cyrName $c', position: c),
+  ],
+  templates: [
+    for (var i = 0; i < 12; i++)
+      SummaryTemplate(
+        id: 'tp$i',
+        name: i.isEven ? '$_templateName $i' : '$_cyrName $i',
+        owner: i > 9 ? SummaryTemplateOwner.user : SummaryTemplateOwner.system,
+        categoryId: i > 9 ? null : 'c${i % 3}',
+        favorite: i % 4 == 0,
+      ),
+  ],
+);
+
+final _summaryState = SummaryState(
+  templatesStatus: TemplatesStatus.success,
+  library: _templates,
+  template: _templates.templates.first,
+  status: SummaryStatus.success,
+  summary: Summary(
+    templateName: _templateName,
+    sections: [
+      const SummarySection(
+        kind: SummarySectionKind.overview,
+        paragraph: _longAnswer,
+      ),
+      const SummarySection(
+        kind: SummarySectionKind.keyPoints,
+        bullets: [_longName, _cyrName, _longAnswer],
+      ),
+      SummarySection(
+        kind: SummarySectionKind.speakers,
+        bullets: [for (final s in _speakers) '${s.label}: $_longName'],
+      ),
+      const SummarySection(
+        kind: SummarySectionKind.custom,
+        title: _cyrName,
+        bullets: [_longError],
+      ),
+    ],
+  ),
+);
+
+final _flashSet = FlashcardSet(
+  id: 'f1',
+  difficulty: LearnDifficulty.medium,
+  createdAt: DateTime(2026, 10, 29, 12, 30),
+  cards: [
+    for (var i = 0; i < 20; i++)
+      const Flashcard(
+        front: '$_longName _____ $_cyrName',
+        back: 'Supercalifragilisticexpialidociousword',
+        source: _longAnswer,
+      ),
+  ],
+);
+
+final _quizSet = QuizSet(
+  id: 'q1',
+  difficulty: LearnDifficulty.hard,
+  createdAt: DateTime(2026, 10, 29, 12, 45),
+  types: QuizQuestionType.values,
+  questions: [
+    for (var i = 0; i < 20; i++)
+      QuizQuestion(
+        type: i.isEven
+            ? QuizQuestionType.multipleChoice
+            : QuizQuestionType.trueFalse,
+        prompt: '$_longName _____ $_cyrName',
+        options: i.isEven
+            ? const [
+                'Supercalifragilisticexpialidociousword',
+                'раскрепощённость',
+                'oʻzbekistonliklarimizdanmisiz',
+                'qonunchilik',
+              ]
+            : const [],
+        correctIndex: 1,
+        source: _longAnswer,
+      ),
+  ],
+);
+
+final _learnSets = LearnSets(
+  flashcards: [
+    _flashSet,
+    _flashSet.copyWith(id: 'f2'),
+  ],
+  quizzes: [_quizSet],
+);
+
+/// The editor's tab area: a player above, the tab in what is left.
+Widget _tabHost(Widget tab) => Scaffold(
+  body: SafeArea(
+    child: Column(
+      children: [
+        const SizedBox(height: 180, child: ColoredBox(color: Colors.black)),
+        Expanded(child: tab),
+      ],
+    ),
+  ),
+);
 
 // ------------------------------------------------------------ registry
 
@@ -414,6 +585,11 @@ late _Screen screen;
 late _Meeting meeting;
 late _UrlImport urlImport;
 late _Dictation dictation;
+late _AiChat aiChat;
+late _Summary summary;
+late _Learn learn;
+late _Flashcards flashcards;
+late _Quiz quiz;
 
 void _makeMocks() {
   account = _Account();
@@ -456,6 +632,50 @@ void _makeMocks() {
   when(() => meeting.load(any())).thenAnswer((_) async {});
   when(() => urlImport.state).thenReturn(const UrlImportState());
   when(() => dictation.state).thenReturn(const DictationState());
+  aiChat = _AiChat();
+  summary = _Summary();
+  learn = _Learn();
+  flashcards = _Flashcards();
+  quiz = _Quiz();
+
+  when(() => aiChat.state).thenReturn(
+    AiChatState(
+      status: AiChatStatus.success,
+      items: _chat,
+      actionFailure: const Failure.server(statusCode: 409),
+    ),
+  );
+  when(() => aiChat.load(any())).thenAnswer((_) async {});
+  when(() => summary.state).thenReturn(_summaryState);
+  when(() => summary.start(any())).thenAnswer((_) async {});
+  when(() => learn.state).thenReturn(
+    LearnState(
+      status: LearnStatus.ready,
+      sets: _learnSets,
+      createStatus: LearnCreateStatus.empty,
+    ),
+  );
+  when(() => learn.start(any())).thenAnswer((_) async {});
+  when(() => flashcards.state).thenReturn(
+    FlashcardsState(
+      cards: _flashSet.cards,
+      index: 18,
+      known: {for (var i = 0; i < 9; i++) i},
+      repeat: {for (var i = 9; i < 18; i++) i},
+    ),
+  );
+  when(() => flashcards.start(any())).thenReturn(null);
+  when(() => quiz.state).thenReturn(
+    QuizState(
+      questions: _quizSet.questions,
+      index: 18,
+      answers: [
+        for (var i = 0; i < 20; i++)
+          if (i == 18) 2 else if (i < 19) i % 4 else null,
+      ],
+    ),
+  );
+  when(() => quiz.start(any())).thenReturn(null);
 
   when(() => account.state).thenReturn(_account);
   when(() => account.load()).thenAnswer((_) async {});
@@ -533,7 +753,12 @@ void _makeMocks() {
     ..registerFactory<ScreenCaptureCubit>(() => screen)
     ..registerFactory<MeetingBotCubit>(() => meeting)
     ..registerFactory<UrlImportCubit>(() => urlImport)
-    ..registerFactory<DictationCubit>(() => dictation);
+    ..registerFactory<DictationCubit>(() => dictation)
+    ..registerFactory<AiChatCubit>(() => aiChat)
+    ..registerFactory<SummaryCubit>(() => summary)
+    ..registerFactory<LearnCubit>(() => learn)
+    ..registerFactory<FlashcardsCubit>(() => flashcards)
+    ..registerFactory<QuizCubit>(() => quiz);
 }
 
 // ----------------------------------------------------------- scenarios
@@ -1007,7 +1232,96 @@ final _scenarios = <_Scenario>[
     ),
     measure: {'SegmentTile': () => find.byType(SegmentTile)},
   ),
+  _Scenario(
+    'tab(ai chat)',
+    () => _tabHost(AiChatTab(transcriptId: 't1', onSeek: (_) {})),
+  ),
+  _Scenario(
+    'tab(ai chat,empty)',
+    () => _tabHost(const AiChatTab(transcriptId: 't1')),
+    arrange: () =>
+        when(() => aiChat.state)
+            .thenReturn(const AiChatState(status: AiChatStatus.success)),
+  ),
+  _Scenario(
+    'tab(summary)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+  ),
+  _Scenario(
+    'tab(summary,empty)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () => when(() => summary.state).thenReturn(
+      _summaryState.copyWith(status: SummaryStatus.idle, summary: null),
+    ),
+  ),
+  _Scenario(
+    'tab(summary,generating)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () => when(() => summary.state)
+        .thenReturn(_summaryState.copyWith(status: SummaryStatus.generating)),
+  ),
+  _Scenario(
+    'tab(summary,short)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () =>
+        when(() => summary.state)
+            .thenReturn(const SummaryState(status: SummaryStatus.tooShort)),
+  ),
+  _Scenario(
+    'sheet(summary templates)',
+    () => Scaffold(
+      body: BlocProvider<SummaryCubit>.value(
+        value: summary,
+        child: const TemplatePickerSheet(),
+      ),
+    ),
+  ),
+  _Scenario('tab(learn)', () => _tabHost(LearnTab(transcript: _transcript))),
+  _Scenario(
+    'tab(learn,short)',
+    () => _tabHost(LearnTab(transcript: _transcript)),
+    arrange: () =>
+        when(() => learn.state)
+            .thenReturn(const LearnState(status: LearnStatus.tooShort)),
+  ),
+  const _Scenario('sheet(learn quiz create)', _learnCreateQuiz),
+  _Scenario('flashcards', () => FlashcardsPage(set: _flashSet)),
+  _Scenario(
+    'flashcards(flipped)',
+    () => FlashcardsPage(set: _flashSet),
+    arrange: () => when(() => flashcards.state).thenReturn(
+      FlashcardsState(cards: _flashSet.cards, index: 3, flipped: true),
+    ),
+  ),
+  _Scenario(
+    'flashcards(done)',
+    () => FlashcardsPage(set: _flashSet),
+    arrange: () => when(() => flashcards.state).thenReturn(
+      FlashcardsState(
+        cards: _flashSet.cards,
+        index: 19,
+        finished: true,
+        known: {1, 2},
+        repeat: {3},
+      ),
+    ),
+  ),
+  _Scenario('quiz(answered)', () => QuizPage(set: _quizSet)),
+  _Scenario(
+    'quiz(result)',
+    () => QuizPage(set: _quizSet),
+    arrange: () => when(() => quiz.state).thenReturn(
+      QuizState(
+        questions: _quizSet.questions,
+        index: 19,
+        finished: true,
+        answers: [for (var i = 0; i < 20; i++) i % 3],
+      ),
+    ),
+  ),
 ];
+
+Widget _learnCreateQuiz() => const Scaffold(body: LearnCreateSheet(quiz: true));
 
 // ---------------------------------------------------------- conditions
 
@@ -1131,6 +1445,9 @@ Future<void> _loadRealFont() async {
 void main() {
   setUpAll(() async {
     registerFallbackValue('');
+    registerFallbackValue(_transcript);
+    registerFallbackValue(_flashSet);
+    registerFallbackValue(_quizSet);
     await _loadRealFont();
   });
 

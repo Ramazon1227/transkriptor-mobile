@@ -24,6 +24,16 @@ import 'package:transkriptor_uz/core/network/session_manager.dart' as _i754;
 import 'package:transkriptor_uz/core/network/token_interceptor.dart' as _i60;
 import 'package:transkriptor_uz/core/router/app_router.dart' as _i1008;
 import 'package:transkriptor_uz/core/storage/token_storage.dart' as _i933;
+import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart'
+    as _i748;
+import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_poll_policy.dart'
+    as _i106;
+import 'package:transkriptor_uz/features/ai_chat/domain/i_ai_chat_facade.dart'
+    as _i543;
+import 'package:transkriptor_uz/features/ai_chat/infrastructure/facades/ai_chat_facade.dart'
+    as _i598;
+import 'package:transkriptor_uz/features/ai_chat/infrastructure/repositories/ai_chat_repository.dart'
+    as _i104;
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart'
     as _i322;
 import 'package:transkriptor_uz/features/auth/application/delete_account_cubit.dart'
@@ -105,6 +115,18 @@ import 'package:transkriptor_uz/features/job/infrastructure/facades/job_facade.d
     as _i367;
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart'
     as _i730;
+import 'package:transkriptor_uz/features/learn/application/flashcards_cubit.dart'
+    as _i640;
+import 'package:transkriptor_uz/features/learn/application/learn_cubit.dart'
+    as _i586;
+import 'package:transkriptor_uz/features/learn/application/quiz_cubit.dart'
+    as _i50;
+import 'package:transkriptor_uz/features/learn/domain/i_learn_facade.dart'
+    as _i522;
+import 'package:transkriptor_uz/features/learn/infrastructure/demo/demo_learn_repository.dart'
+    as _i79;
+import 'package:transkriptor_uz/features/learn/infrastructure/facades/learn_facade.dart'
+    as _i773;
 import 'package:transkriptor_uz/features/library/application/file_actions_cubit.dart'
     as _i900;
 import 'package:transkriptor_uz/features/library/application/folders_cubit.dart'
@@ -167,6 +189,18 @@ import 'package:transkriptor_uz/features/share/infrastructure/facades/share_faca
     as _i68;
 import 'package:transkriptor_uz/features/share/infrastructure/repositories/share_repository.dart'
     as _i438;
+import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart'
+    as _i371;
+import 'package:transkriptor_uz/features/summary/domain/i_summary_facade.dart'
+    as _i1050;
+import 'package:transkriptor_uz/features/summary/infrastructure/demo/demo_summary_repository.dart'
+    as _i431;
+import 'package:transkriptor_uz/features/summary/infrastructure/facades/summary_facade.dart'
+    as _i471;
+import 'package:transkriptor_uz/features/summary/infrastructure/repositories/note_repository.dart'
+    as _i381;
+import 'package:transkriptor_uz/features/summary/infrastructure/repositories/summary_template_repository.dart'
+    as _i467;
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart'
     as _i86;
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart'
@@ -209,6 +243,8 @@ extension GetItInjectableX on _i174.GetIt {
     final googleModule = _$GoogleModule();
     final shareModule = _$ShareModule();
     final recorderModule = _$RecorderModule();
+    gh.factory<_i640.FlashcardsCubit>(() => _i640.FlashcardsCubit());
+    gh.factory<_i50.QuizCubit>(() => _i50.QuizCubit());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => networkModule.secureStorage,
     );
@@ -217,6 +253,7 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
+    gh.lazySingleton<_i106.AiChatPollPolicy>(() => _i106.AiChatPollPolicy());
     gh.lazySingleton<_i116.GoogleSignIn>(() => googleModule.googleSignIn);
     gh.lazySingleton<_i802.DemoDictationRepository>(
       () => _i802.DemoDictationRepository(),
@@ -228,10 +265,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
     gh.lazySingleton<_i281.AssetBundle>(() => shareModule.assetBundle);
     gh.lazySingleton<_i669.JobPollPolicy>(() => _i669.JobPollPolicy());
+    gh.lazySingleton<_i79.DemoLearnRepository>(
+      () => _i79.DemoLearnRepository(),
+    );
     gh.lazySingleton<_i597.NativeCaptureChannel>(
       () => _i597.NativeCaptureChannel(),
     );
     gh.lazySingleton<_i1039.AudioRecorder>(() => recorderModule.audioRecorder);
+    gh.lazySingleton<_i431.DemoSummaryRepository>(
+      () => _i431.DemoSummaryRepository(),
+    );
     gh.lazySingleton<_i155.MediaPicker>(() => _i155.MediaPicker());
     gh.lazySingleton<_i1008.AppRouter>(
       () => _i1008.AppRouter(gh<_i754.SessionManager>()),
@@ -245,6 +288,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1005.RecordingsStore>(
       () => _i1005.RecordingsStore(gh<_i597.NativeCaptureChannel>()),
+    );
+    gh.lazySingleton<_i522.ILearnFacade>(
+      () => _i773.LearnFacade(gh<_i79.DemoLearnRepository>()),
     );
     gh.lazySingleton<_i464.WorkspaceSelectionStorage>(
       () => _i464.WorkspaceSelectionStorage(gh<_i558.FlutterSecureStorage>()),
@@ -290,11 +336,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i605.GoogleIdTokenSource>(
       () => _i605.GoogleIdTokenSource(gh<_i116.GoogleSignIn>()),
     );
+    gh.factory<_i586.LearnCubit>(
+      () => _i586.LearnCubit(gh<_i522.ILearnFacade>()),
+    );
     gh.factory<_i88.ScreenCaptureCubit>(
       () => _i88.ScreenCaptureCubit(gh<_i266.IScreenCaptureFacade>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.dio(gh<_i60.TokenInterceptor>()),
+    );
+    gh.lazySingleton<_i104.AiChatRepository>(
+      () => _i104.AiChatRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i838.AuthRepository>(
       () => _i838.AuthRepository(gh<_i361.Dio>()),
@@ -325,6 +377,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i438.ShareRepository>(
       () => _i438.ShareRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i381.NoteRepository>(
+      () => _i381.NoteRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i467.SummaryTemplateRepository>(
+      () => _i467.SummaryTemplateRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i78.TranscriptRepository>(
       () => _i78.TranscriptRepository(gh<_i361.Dio>()),
@@ -382,11 +440,24 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i171.IBillingFacade>(
       () => _i375.BillingFacade(gh<_i354.BillingRepository>()),
     );
+    gh.lazySingleton<_i1050.ISummaryFacade>(
+      () => _i471.SummaryFacade(
+        gh<_i467.SummaryTemplateRepository>(),
+        gh<_i381.NoteRepository>(),
+        gh<_i431.DemoSummaryRepository>(),
+      ),
+    );
+    gh.factory<_i371.SummaryCubit>(
+      () => _i371.SummaryCubit(gh<_i1050.ISummaryFacade>()),
+    );
     gh.factory<_i224.LibraryBloc>(
       () => _i224.LibraryBloc(
         gh<_i118.ILibraryFacade>(),
         gh<_i252.LibraryChanges>(),
       ),
+    );
+    gh.lazySingleton<_i543.IAiChatFacade>(
+      () => _i598.AiChatFacade(gh<_i104.AiChatRepository>()),
     );
     gh.factory<_i339.DictationCubit>(
       () => _i339.DictationCubit(gh<_i703.IDictationFacade>()),
@@ -467,6 +538,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i86.TranscriptCubit>(
       () => _i86.TranscriptCubit(gh<_i899.ITranscriptFacade>()),
+    );
+    gh.factory<_i748.AiChatCubit>(
+      () => _i748.AiChatCubit(
+        gh<_i543.IAiChatFacade>(),
+        gh<_i106.AiChatPollPolicy>(),
+      ),
     );
     gh.factory<_i331.JobCubit>(
       () => _i331.JobCubit(

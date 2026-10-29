@@ -60,4 +60,10 @@ abstract final class Endpoints {
   // A direct file URL has no endpoint yet (planned `POST /media/url`).
   static const String meetingBots = '/api/v1/meeting-bots';
   static String meetingBot(String id) => '/api/v1/meeting-bots/$id';
+  // Editor AI tabs (M-R5): the per-transcript chat, the summary template
+  // library (the summary's «save as note» uses [notes]).
+  static String transcriptChat(String id) => '/api/v1/transcript/$id/chat';
+  static const String summaryTemplates = '/api/v1/summary-templates';
+  static String summaryTemplateFavorite(String id) =>
+      '/api/v1/summary-templates/$id/favorite';
 }

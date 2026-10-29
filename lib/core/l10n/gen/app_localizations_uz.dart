@@ -1519,4 +1519,342 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get dictationSample4 =>
       'Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.';
+
+  @override
+  String get aiMarker => 'AI';
+
+  @override
+  String get aiChatIntroTitle => 'Shu yozuv boʻyicha soʻrang';
+
+  @override
+  String get aiChatIntro =>
+      'Javob faqat shu transkriptga tayanadi va vaqtga havola beradi — havolani bossangiz, pleyer oʻsha joyga oʻtadi.';
+
+  @override
+  String get aiChatSuggestionTopics => 'Asosiy mavzular qanday?';
+
+  @override
+  String get aiChatSuggestionWho => 'Kim nima dedi?';
+
+  @override
+  String get aiChatSuggestionDecisions => 'Qanday qarorlar qabul qilindi?';
+
+  @override
+  String get aiChatHint => 'Shu yozuv boʻyicha soʻrang';
+
+  @override
+  String get aiChatHintPending => 'Javob kutilmoqda…';
+
+  @override
+  String get aiChatSend => 'Yuborish';
+
+  @override
+  String get aiChatThinking =>
+      'Transkriptni oʻqiyapti… Uzun yozuvda javob bir daqiqagacha olishi mumkin.';
+
+  @override
+  String get aiChatAnswerFailed => 'Javob olinmadi.';
+
+  @override
+  String get aiChatResend => 'Qayta yuborish';
+
+  @override
+  String get aiChatPrivate => 'Suhbatni faqat siz koʻrasiz.';
+
+  @override
+  String get aiChatClear => 'Suhbatni tozalash';
+
+  @override
+  String get aiChatClearTitle => 'Suhbat tozalansinmi?';
+
+  @override
+  String get aiChatClearBody =>
+      'Bu transkript boʻyicha savol va javoblaringiz oʻchadi. Buni qaytarib boʻlmaydi.';
+
+  @override
+  String get aiChatClearConfirm => 'Tozalash';
+
+  @override
+  String get aiChatBusy => 'Oldingi savolga javob hali kelmadi — kuting.';
+
+  @override
+  String get aiChatUnavailable =>
+      'AI hozir band yoki oʻchiq. Birozdan keyin qayta yuboring.';
+
+  @override
+  String get aiChatPollFailed =>
+      'Javob holatini olib boʻlmadi — tarmoqni tekshiring.';
+
+  @override
+  String aiChatSeekTo(String time) {
+    return '$time ga oʻtish';
+  }
+
+  @override
+  String get summaryDemoBanner =>
+      'Namuna — xulosa hozircha transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.';
+
+  @override
+  String get summaryTooShort =>
+      'Xulosa uchun transkript juda qisqa. Kamida uch qatorli yozuv kerak.';
+
+  @override
+  String get summaryTemplateLabel => 'Shablon';
+
+  @override
+  String get summaryTemplateDefault => 'Asosiy xulosa';
+
+  @override
+  String get summaryTemplatesTitle => 'Xulosa shabloni';
+
+  @override
+  String get summaryTemplatesFavorites => 'Sevimlilar';
+
+  @override
+  String get summaryTemplatesMine => 'Mening shablonlarim';
+
+  @override
+  String get summaryTemplatesEmpty =>
+      'Shablonlar hali yoʻq — asosiy xulosa ishlatiladi.';
+
+  @override
+  String get summaryStar => 'Sevimlilarga qoʻshish';
+
+  @override
+  String get summaryUnstar => 'Sevimlilardan olib tashlash';
+
+  @override
+  String get summaryFavoriteFailed => 'Sevimlini saqlab boʻlmadi.';
+
+  @override
+  String get summaryEmptyTitle => 'Xulosa hali yoʻq';
+
+  @override
+  String get summaryEmptyBody => 'Shablonni tanlang va xulosa yarating.';
+
+  @override
+  String get summaryCreate => 'Xulosa yaratish';
+
+  @override
+  String get summaryGenerating => 'Xulosa yozilmoqda…';
+
+  @override
+  String get summaryCopy => 'Nusxalash';
+
+  @override
+  String get summaryRegenerate => 'Qayta yaratish';
+
+  @override
+  String get summaryDelete => 'Oʻchirish';
+
+  @override
+  String get summaryDeleteTitle => 'Xulosa oʻchirilsinmi?';
+
+  @override
+  String get summaryDeleteBody =>
+      'Xulosa matni oʻchadi. Transkriptning oʻzi oʻzgarmaydi.';
+
+  @override
+  String get summarySaveNote => 'Eslatma sifatida saqlash';
+
+  @override
+  String get summaryNoteSaved => 'Eslatmalarga saqlandi';
+
+  @override
+  String summaryNoteTitle(String title) {
+    return '$title — xulosa';
+  }
+
+  @override
+  String get summarySectionOverview => 'Qisqacha';
+
+  @override
+  String get summarySectionKeyPoints => 'Asosiy fikrlar';
+
+  @override
+  String get summarySectionSpeakers => 'Maʼruzachilar';
+
+  @override
+  String get summarySectionNextSteps => 'Keyingi qadamlar';
+
+  @override
+  String get learnDemoBanner =>
+      'Namuna — savollar transkript gaplaridan oddiy qoidalar bilan tuziladi, ularni AI yozmaydi.';
+
+  @override
+  String get learnTooShort =>
+      'Oʻrganish uchun transkript juda qisqa. Kamida uch qatorli yozuv kerak.';
+
+  @override
+  String get learnIntro => 'Shu transkript mazmunini oʻrganing:';
+
+  @override
+  String get learnFlashcardsTitle => 'Kartochkalar';
+
+  @override
+  String get learnFlashcardsBody =>
+      'Asosiy fikrlarni kartochkalar bilan yodlang.';
+
+  @override
+  String get learnQuizTitle => 'Test';
+
+  @override
+  String get learnQuizBody =>
+      'Transkript boʻyicha savollar bilan oʻzingizni sinang.';
+
+  @override
+  String get learnCreateFlashcards => 'Kartochkalar yaratish';
+
+  @override
+  String get learnCreateQuiz => 'Test yaratish';
+
+  @override
+  String get learnCount => 'Savollar soni';
+
+  @override
+  String get learnDifficulty => 'Qiyinlik';
+
+  @override
+  String get learnEasy => 'Oson';
+
+  @override
+  String get learnMedium => 'Oʻrta';
+
+  @override
+  String get learnHard => 'Qiyin';
+
+  @override
+  String get learnQuestionType => 'Savol turi';
+
+  @override
+  String get learnMultipleChoice => 'Koʻp tanlovli';
+
+  @override
+  String get learnMultipleChoiceBody =>
+      'Bir nechta variantdan toʻgʻrisini tanlang.';
+
+  @override
+  String get learnTrueFalse => 'Toʻgʻri / notoʻgʻri';
+
+  @override
+  String get learnTrueFalseBody =>
+      'Gap transkriptdagidek toʻgʻrimi yoki yoʻqmi — aniqlang.';
+
+  @override
+  String get learnTypeRequired => 'Kamida bitta savol turini tanlang.';
+
+  @override
+  String get learnCreate => 'Yaratish';
+
+  @override
+  String get learnCreating => 'Tayyorlanmoqda…';
+
+  @override
+  String get learnEmptyResult =>
+      'Bu matndan savol tuzib boʻlmadi — gaplar juda qisqa.';
+
+  @override
+  String get learnPrevious => 'Oldingi toʻplamlar';
+
+  @override
+  String learnFlashcardSetTitle(int count) {
+    return 'Kartochkalar · $count ta';
+  }
+
+  @override
+  String learnQuizSetTitle(int count) {
+    return 'Test · $count ta savol';
+  }
+
+  @override
+  String learnSetSubtitle(String difficulty, String time) {
+    return '$difficulty · $time';
+  }
+
+  @override
+  String learnProgress(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get learnCardFront => 'Boʻsh joyga qaysi soʻz tushadi?';
+
+  @override
+  String get learnCardBack => 'Javob';
+
+  @override
+  String get learnTapToFlip => 'Javobni koʻrish uchun kartochkani bosing';
+
+  @override
+  String get learnKnow => 'Bilaman';
+
+  @override
+  String get learnRepeat => 'Takrorlash';
+
+  @override
+  String learnKnownCount(int count) {
+    return 'Bilaman: $count';
+  }
+
+  @override
+  String learnRepeatCount(int count) {
+    return 'Takrorlash: $count';
+  }
+
+  @override
+  String get learnPreviousCard => 'Oldingi';
+
+  @override
+  String get learnNextCard => 'Keyingi';
+
+  @override
+  String get learnFlashcardsDone => 'Toʻplam tugadi';
+
+  @override
+  String get learnRestart => 'Boshidan';
+
+  @override
+  String get learnRestartRepeat => 'Faqat takrorlanadiganlar';
+
+  @override
+  String get learnTrue => 'Toʻgʻri';
+
+  @override
+  String get learnFalse => 'Notoʻgʻri';
+
+  @override
+  String get learnQuizTrueFalsePrompt => 'Gap transkriptdagidek toʻgʻrimi?';
+
+  @override
+  String get learnQuizChoosePrompt => 'Boʻsh joyni toʻldiring';
+
+  @override
+  String get learnCorrect => 'Toʻgʻri javob!';
+
+  @override
+  String get learnWrong => 'Notoʻgʻri javob';
+
+  @override
+  String learnSource(String sentence) {
+    return 'Transkriptda: «$sentence»';
+  }
+
+  @override
+  String get learnFinish => 'Natija';
+
+  @override
+  String get learnScoreTitle => 'Natijangiz';
+
+  @override
+  String get learnReview => 'Javoblar';
+
+  @override
+  String learnYourAnswer(String answer) {
+    return 'Sizning javobingiz: $answer';
+  }
+
+  @override
+  String learnRightAnswer(String answer) {
+    return 'Toʻgʻri javob: $answer';
+  }
 }
