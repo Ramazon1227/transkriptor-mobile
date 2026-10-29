@@ -42,6 +42,14 @@ import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_r
     as _i838;
 import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart'
     as _i605;
+import 'package:transkriptor_uz/features/capture/application/screen_capture_cubit.dart'
+    as _i88;
+import 'package:transkriptor_uz/features/capture/domain/i_screen_capture_facade.dart'
+    as _i266;
+import 'package:transkriptor_uz/features/capture/infrastructure/facades/screen_capture_facade.dart'
+    as _i760;
+import 'package:transkriptor_uz/features/capture/infrastructure/sources/screen_audio_source.dart'
+    as _i76;
 import 'package:transkriptor_uz/features/export/application/export_cubit.dart'
     as _i644;
 import 'package:transkriptor_uz/features/export/domain/i_export_facade.dart'
@@ -83,12 +91,18 @@ import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_r
     as _i765;
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart'
     as _i206;
+import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart'
+    as _i764;
 import 'package:transkriptor_uz/features/recorder/domain/i_recorder_facade.dart'
     as _i239;
 import 'package:transkriptor_uz/features/recorder/infrastructure/facades/recorder_facade.dart'
     as _i293;
+import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_capture_channel.dart'
+    as _i597;
 import 'package:transkriptor_uz/features/recorder/infrastructure/recorder_module.dart'
     as _i540;
+import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart'
+    as _i1005;
 import 'package:transkriptor_uz/features/share/application/share_cubit.dart'
     as _i966;
 import 'package:transkriptor_uz/features/share/domain/i_share_facade.dart'
@@ -138,9 +152,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
     gh.lazySingleton<_i116.GoogleSignIn>(() => googleModule.googleSignIn);
+    gh.lazySingleton<_i76.ScreenAudioSource>(() => _i76.ScreenAudioSource());
     gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
     gh.lazySingleton<_i281.AssetBundle>(() => shareModule.assetBundle);
     gh.lazySingleton<_i669.JobPollPolicy>(() => _i669.JobPollPolicy());
+    gh.lazySingleton<_i597.NativeCaptureChannel>(
+      () => _i597.NativeCaptureChannel(),
+    );
     gh.lazySingleton<_i1039.AudioRecorder>(() => recorderModule.audioRecorder);
     gh.lazySingleton<_i155.MediaPicker>(() => _i155.MediaPicker());
     gh.lazySingleton<_i1008.AppRouter>(
@@ -152,6 +170,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.retryDio(),
       instanceName: 'retryDio',
+    );
+    gh.lazySingleton<_i1005.RecordingsStore>(
+      () => _i1005.RecordingsStore(gh<_i597.NativeCaptureChannel>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.uploadDio(),
@@ -167,14 +188,29 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
     );
+    gh.lazySingleton<_i239.IRecorderFacade>(
+      () => _i293.RecorderFacade(
+        gh<_i1039.AudioRecorder>(),
+        gh<_i1005.RecordingsStore>(),
+        gh<_i597.NativeCaptureChannel>(),
+      ),
+    );
     gh.lazySingleton<_i938.IExportFacade>(
       () => _i469.ExportFacade(gh<_i998.SharePlus>(), gh<_i281.AssetBundle>()),
     );
-    gh.lazySingleton<_i239.IRecorderFacade>(
-      () => _i293.RecorderFacade(gh<_i1039.AudioRecorder>()),
+    gh.lazySingleton<_i266.IScreenCaptureFacade>(
+      () => _i760.ScreenCaptureFacade(
+        gh<_i76.ScreenAudioSource>(),
+        gh<_i1039.AudioRecorder>(),
+        gh<_i597.NativeCaptureChannel>(),
+        gh<_i1005.RecordingsStore>(),
+      ),
     );
     gh.lazySingleton<_i605.GoogleIdTokenSource>(
       () => _i605.GoogleIdTokenSource(gh<_i116.GoogleSignIn>()),
+    );
+    gh.factory<_i88.ScreenCaptureCubit>(
+      () => _i88.ScreenCaptureCubit(gh<_i266.IScreenCaptureFacade>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.dio(gh<_i60.TokenInterceptor>()),
@@ -222,6 +258,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i206.RecorderCubit>(
       () => _i206.RecorderCubit(gh<_i239.IRecorderFacade>()),
+    );
+    gh.factory<_i764.RecoveryCubit>(
+      () => _i764.RecoveryCubit(gh<_i239.IRecorderFacade>()),
     );
     gh.lazySingleton<_i198.UploadRepository>(
       () => _i198.UploadRepository(
