@@ -22,6 +22,13 @@ extension FailureMessage on Failure {
     ParsingFailure() => l10n.errorParsing,
     PermissionDeniedFailure() => l10n.errorMicPermission,
     StorageFailure() => l10n.errorStorage,
+    CaptureFailure(reason: CaptureError.unsupported) =>
+      l10n.errorCaptureUnsupported,
+    CaptureFailure(reason: CaptureError.consentDenied) =>
+      l10n.errorCaptureConsent,
+    CaptureFailure(reason: CaptureError.busy) => l10n.errorCaptureBusy,
+    CaptureFailure(reason: CaptureError.captureFailed) =>
+      l10n.errorCaptureFailed,
     CancelledFailure() || UnknownFailure() => l10n.errorUnknown,
   };
 }

@@ -54,6 +54,20 @@ class AppLocalizationsUz extends AppLocalizations {
   String get errorStorage => 'Faylni saqlab yoki oʻqib boʻlmadi.';
 
   @override
+  String get errorCaptureUnsupported =>
+      'Ekran ovozini yozish Android 10 va undan yangi versiyalarda ishlaydi.';
+
+  @override
+  String get errorCaptureConsent => 'Ekranni yozishga ruxsat berilmadi.';
+
+  @override
+  String get errorCaptureBusy => 'Yozib olish allaqachon ketmoqda.';
+
+  @override
+  String get errorCaptureFailed =>
+      'Ekran ovozini yozib boʻlmadi. Baʼzi ilovalar (koʻpincha qoʻngʻiroq ilovalari) oʻz ovozini yozishga ruxsat bermaydi.';
+
+  @override
   String get errorNoBalance => 'Balansda daqiqa qolmagan.';
 
   @override

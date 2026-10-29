@@ -178,6 +178,30 @@ abstract class AppLocalizations {
   /// **'Faylni saqlab yoki oʻqib boʻlmadi.'**
   String get errorStorage;
 
+  /// No description provided for @errorCaptureUnsupported.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran ovozini yozish Android 10 va undan yangi versiyalarda ishlaydi.'**
+  String get errorCaptureUnsupported;
+
+  /// No description provided for @errorCaptureConsent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekranni yozishga ruxsat berilmadi.'**
+  String get errorCaptureConsent;
+
+  /// No description provided for @errorCaptureBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozib olish allaqachon ketmoqda.'**
+  String get errorCaptureBusy;
+
+  /// No description provided for @errorCaptureFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran ovozini yozib boʻlmadi. Baʼzi ilovalar (koʻpincha qoʻngʻiroq ilovalari) oʻz ovozini yozishga ruxsat bermaydi.'**
+  String get errorCaptureFailed;
+
   /// No description provided for @errorNoBalance.
   ///
   /// In uz, this message translates to:
