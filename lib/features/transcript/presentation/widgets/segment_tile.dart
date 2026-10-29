@@ -2,22 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
+import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
-/// One segment: speaker, timecode, text. The speaker dot is the machine's
-/// marker; the text is shown in the reading colour, never mint.
+/// One segment: speaker chip, timecode, text. The chip's colour is the
+/// machine's marker; the text is in the reading colour, never mint. The
+/// segment under the playhead gets a saffron left edge.
 ///
-/// Tapping the segment edits its text, tapping the speaker's name renames
-/// the speaker, a long press opens the segment's menu. The text is not
-/// selectable for that reason; the editor field is where it can be copied.
+/// The chip opens the speaker menu, the timecode seeks the player there.
+/// A double tap edits the text (only given in edit mode), a long press
+/// opens the segment's menu.
 class SegmentTile extends StatelessWidget {
   const SegmentTile({
     required this.segment,
-    required this.onTap,
     required this.onSpeakerTap,
     required this.onLongPress,
     this.speaker,
+    this.showSpeaker = true,
+    this.active = false,
+    this.onDoubleTap,
+    this.onTimeTap,
     super.key,
   });
 
@@ -25,70 +30,147 @@ class SegmentTile extends StatelessWidget {
 
   /// Null without diarization.
   final Speaker? speaker;
-  final VoidCallback onTap;
-  final ValueChanged<Speaker> onSpeakerTap;
+  final bool showSpeaker;
+
+  /// Under the playhead.
+  final bool active;
+  final VoidCallback onSpeakerTap;
   final VoidCallback onLongPress;
+
+  /// Edit mode only.
+  final VoidCallback? onDoubleTap;
+
+  /// Null when there is nothing to play.
+  final VoidCallback? onTimeTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final who = speaker;
-    return InkWell(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    final time = Text(
+      Formatters.timecode(segment.start),
+      style: AppText.mono.copyWith(
+        color: onTimeTap == null ? AppColors.mutedDark : AppColors.accent,
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: Material(
+        color: active ? AppColors.sf1 : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadii.segment),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onDoubleTap: onDoubleTap,
+          onLongPress: onLongPress,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color: active ? AppColors.accent : Colors.transparent,
+                  width: 3,
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(9, 8, 12, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (who != null) ...[
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: AppColors.speaker(who.ordinal),
-                      shape: BoxShape.circle,
+                Row(
+                  children: [
+                    Expanded(
+                      child: showSpeaker && who != null
+                          ? Align(
+                              alignment: Alignment.centerLeft,
+                              child: _SpeakerChip(
+                                speaker: who,
+                                onTap: onSpeakerTap,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: InkWell(
-                      onTap: () => onSpeakerTap(who),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          who.label.isEmpty
-                              ? l10n.transcriptNoSpeaker
-                              : who.label,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            fontVariations: [FontVariation('wght', 500)],
+                    if (segment.edited) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.transcriptEdited,
+                        style: AppText.muted.copyWith(fontSize: 11),
+                      ),
+                    ],
+                    const SizedBox(width: 8),
+                    if (onTimeTap == null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: time,
+                      )
+                    else
+                      InkWell(
+                        key: Key('seek_${segment.id}'),
+                        onTap: onTimeTap,
+                        borderRadius: BorderRadius.circular(AppRadii.button),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 6,
                           ),
+                          child: time,
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                Text(Formatters.timecode(segment.start), style: AppText.mono),
-                if (segment.edited) ...[
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.transcriptEdited,
-                    style: AppText.muted.copyWith(fontSize: 11),
-                  ),
-                ],
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  segment.text,
+                  style: AppText.body.copyWith(fontSize: 15, height: 1.55),
+                ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              segment.text,
-              style: const TextStyle(fontSize: 15, height: 1.55),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpeakerChip extends StatelessWidget {
+  const _SpeakerChip({required this.speaker, required this.onTap});
+
+  final Speaker speaker;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final color = AppColors.speaker(speaker.ordinal);
+    return InkWell(
+      key: Key('speaker_chip_${speaker.id}'),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadii.button),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                speaker.label.isEmpty
+                    ? l10n.transcriptNoSpeaker
+                    : speaker.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppText.caption
+                    .copyWith(color: AppColors.cotton)
+                    .weighted(FontWeight.w500),
+              ),
+            ),
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: AppColors.mutedDark,
             ),
           ],
         ),

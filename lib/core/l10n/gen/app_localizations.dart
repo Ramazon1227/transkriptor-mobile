@@ -1887,6 +1887,354 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.'**
   String get logoutBody;
+
+  /// No description provided for @editorTabTranscript.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript'**
+  String get editorTabTranscript;
+
+  /// No description provided for @editorTabAiChat.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI suhbat'**
+  String get editorTabAiChat;
+
+  /// No description provided for @editorTabSummary.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa'**
+  String get editorTabSummary;
+
+  /// No description provided for @editorTabLearn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻrganish'**
+  String get editorTabLearn;
+
+  /// No description provided for @editorTabSoon.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu boʻlim tez orada shu yerda boʻladi.'**
+  String get editorTabSoon;
+
+  /// No description provided for @editorMore.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl amallari'**
+  String get editorMore;
+
+  /// No description provided for @editorRenameTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript nomi'**
+  String get editorRenameTitle;
+
+  /// No description provided for @editorShowSpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilarni koʻrsatish'**
+  String get editorShowSpeakers;
+
+  /// No description provided for @editorFilterSpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi boʻyicha saralash'**
+  String get editorFilterSpeakers;
+
+  /// No description provided for @editorPlaybackSpeed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ijro tezligi'**
+  String get editorPlaybackSpeed;
+
+  /// No description provided for @editorEdit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahrirlash'**
+  String get editorEdit;
+
+  /// No description provided for @editorComments.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izohlar'**
+  String get editorComments;
+
+  /// No description provided for @editorRating.
+  ///
+  /// In uz, this message translates to:
+  /// **'Baho'**
+  String get editorRating;
+
+  /// No description provided for @editorRetranscribe.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta transkripsiya'**
+  String get editorRetranscribe;
+
+  /// No description provided for @editorEditHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Satrni tahrirlash uchun ikki marta bosing'**
+  String get editorEditHint;
+
+  /// No description provided for @editorFollow.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joriy joyga'**
+  String get editorFollow;
+
+  /// No description provided for @editorSpeakerMenu.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachini tanlash'**
+  String get editorSpeakerMenu;
+
+  /// No description provided for @playerPlay.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ijro etish'**
+  String get playerPlay;
+
+  /// No description provided for @playerPause.
+  ///
+  /// In uz, this message translates to:
+  /// **'Pauza'**
+  String get playerPause;
+
+  /// No description provided for @playerBack.
+  ///
+  /// In uz, this message translates to:
+  /// **'5 soniya orqaga'**
+  String get playerBack;
+
+  /// No description provided for @playerForward.
+  ///
+  /// In uz, this message translates to:
+  /// **'5 soniya oldinga'**
+  String get playerForward;
+
+  /// No description provided for @playerFold.
+  ///
+  /// In uz, this message translates to:
+  /// **'Videoni yigʻish'**
+  String get playerFold;
+
+  /// No description provided for @playerUnfold.
+  ///
+  /// In uz, this message translates to:
+  /// **'Videoni ochish'**
+  String get playerUnfold;
+
+  /// No description provided for @playerGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Audio saqlash muddati tugagani uchun oʻchirilgan. Matn joyida.'**
+  String get playerGone;
+
+  /// No description provided for @playerUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu yozuvning audiosi mavjud emas. Matn bilan ishlashingiz mumkin.'**
+  String get playerUnavailable;
+
+  /// No description provided for @playerFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Audioni ochib boʻlmadi.'**
+  String get playerFailed;
+
+  /// No description provided for @playerYoutubeBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.'**
+  String get playerYoutubeBody;
+
+  /// No description provided for @playerYoutubeOpen.
+  ///
+  /// In uz, this message translates to:
+  /// **'YouTubeʼda ochish'**
+  String get playerYoutubeOpen;
+
+  /// No description provided for @playerYoutubeCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havoladan nusxa olish'**
+  String get playerYoutubeCopy;
+
+  /// No description provided for @segmentEditText.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matnni tahrirlash'**
+  String get segmentEditText;
+
+  /// No description provided for @segmentAddComment.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izoh qoʻshish'**
+  String get segmentAddComment;
+
+  /// No description provided for @segmentDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Segmentni oʻchirish'**
+  String get segmentDelete;
+
+  /// No description provided for @segmentDeleteConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Segment matni bilan oʻchadi. Rostdan oʻchirilsinmi?'**
+  String get segmentDeleteConfirm;
+
+  /// No description provided for @segmentDeleteYes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ha, oʻchirish'**
+  String get segmentDeleteYes;
+
+  /// No description provided for @speakerRename.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomini oʻzgartirish'**
+  String get speakerRename;
+
+  /// No description provided for @commentsEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izohlar yoʻq. Segmentni bosib turing va «Izoh qoʻshish»ni tanlang.'**
+  String get commentsEmpty;
+
+  /// No description provided for @commentsReply.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob yozish'**
+  String get commentsReply;
+
+  /// No description provided for @commentsHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izoh yozing'**
+  String get commentsHint;
+
+  /// No description provided for @commentsSend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborish'**
+  String get commentsSend;
+
+  /// No description provided for @commentsDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get commentsDelete;
+
+  /// No description provided for @commentsDeleteConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izoh oʻchirilsinmi?'**
+  String get commentsDeleteConfirm;
+
+  /// No description provided for @commentsTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Izoh juda uzun.'**
+  String get commentsTooLong;
+
+  /// No description provided for @commentsSegmentGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirilgan segment'**
+  String get commentsSegmentGone;
+
+  /// No description provided for @commentsYou.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz'**
+  String get commentsYou;
+
+  /// No description provided for @ratingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript sifati'**
+  String get ratingTitle;
+
+  /// No description provided for @ratingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bahoyingizni faqat siz koʻrasiz. U sifatni yaxshilashga yordam beradi.'**
+  String get ratingHint;
+
+  /// No description provided for @ratingStar.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} yulduz'**
+  String ratingStar(int count);
+
+  /// No description provided for @ratingSaved.
+  ///
+  /// In uz, this message translates to:
+  /// **'Baho saqlandi.'**
+  String get ratingSaved;
+
+  /// No description provided for @retranscribeBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl qaytadan transkripsiya qilinadi va balansdan daqiqa yechiladi.'**
+  String get retranscribeBody;
+
+  /// No description provided for @retranscribeMinutes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Taxminan {minutes} daqiqa sarflanadi.'**
+  String retranscribeMinutes(int minutes);
+
+  /// No description provided for @retranscribeConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshlash'**
+  String get retranscribeConfirm;
+
+  /// No description provided for @retranscribeActive.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu fayl allaqachon transkripsiya qilinmoqda.'**
+  String get retranscribeActive;
+
+  /// No description provided for @retranscribeGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Audio oʻchirilgan — qayta transkripsiya qilib boʻlmaydi.'**
+  String get retranscribeGone;
+
+  /// No description provided for @exportStepStyle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uslub'**
+  String get exportStepStyle;
+
+  /// No description provided for @exportStepFormat.
+  ///
+  /// In uz, this message translates to:
+  /// **'Format'**
+  String get exportStepFormat;
+
+  /// No description provided for @exportNext.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi'**
+  String get exportNext;
+
+  /// No description provided for @exportTimedOnly.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqt boʻyicha boʻlinadi — uslub qoʻllanmaydi.'**
+  String get exportTimedOnly;
+
+  /// No description provided for @exportTableHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Jadval: vaqt, maʼruzachi va matn ustunlari.'**
+  String get exportTableHint;
 }
 
 class _AppLocalizationsDelegate

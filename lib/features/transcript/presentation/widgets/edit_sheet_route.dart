@@ -5,12 +5,12 @@ import 'package:transkriptor_uz/features/transcript/application/transcript_cubit
 /// Opens an editing sheet over [context], which must see the page's
 /// [TranscriptCubit]. The save state is reset on open and on close, so a
 /// late answer never lands on the next sheet; nothing opens while a save
-/// runs.
-Future<void> showEditSheet(BuildContext context, Widget sheet) async {
+/// runs. Gives back what the sheet popped with, if anything.
+Future<T?> showEditSheet<T>(BuildContext context, Widget sheet) async {
   final cubit = context.read<TranscriptCubit>();
-  if (cubit.state.editStatus == EditStatus.saving) return;
+  if (cubit.state.editStatus == EditStatus.saving) return null;
   cubit.editOpened();
-  await showModalBottomSheet<void>(
+  final result = await showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -20,4 +20,5 @@ Future<void> showEditSheet(BuildContext context, Widget sheet) async {
     builder: (_) => BlocProvider.value(value: cubit, child: sheet),
   );
   if (!cubit.isClosed) cubit.editClosed();
+  return result;
 }

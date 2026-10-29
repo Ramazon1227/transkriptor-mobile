@@ -999,4 +999,191 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get logoutBody =>
       'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.';
+
+  @override
+  String get editorTabTranscript => 'Transkript';
+
+  @override
+  String get editorTabAiChat => 'AI suhbat';
+
+  @override
+  String get editorTabSummary => 'Xulosa';
+
+  @override
+  String get editorTabLearn => 'Oʻrganish';
+
+  @override
+  String get editorTabSoon => 'Bu boʻlim tez orada shu yerda boʻladi.';
+
+  @override
+  String get editorMore => 'Fayl amallari';
+
+  @override
+  String get editorRenameTitle => 'Transkript nomi';
+
+  @override
+  String get editorShowSpeakers => 'Maʼruzachilarni koʻrsatish';
+
+  @override
+  String get editorFilterSpeakers => 'Maʼruzachi boʻyicha saralash';
+
+  @override
+  String get editorPlaybackSpeed => 'Ijro tezligi';
+
+  @override
+  String get editorEdit => 'Tahrirlash';
+
+  @override
+  String get editorComments => 'Izohlar';
+
+  @override
+  String get editorRating => 'Baho';
+
+  @override
+  String get editorRetranscribe => 'Qayta transkripsiya';
+
+  @override
+  String get editorEditHint => 'Satrni tahrirlash uchun ikki marta bosing';
+
+  @override
+  String get editorFollow => 'Joriy joyga';
+
+  @override
+  String get editorSpeakerMenu => 'Maʼruzachini tanlash';
+
+  @override
+  String get playerPlay => 'Ijro etish';
+
+  @override
+  String get playerPause => 'Pauza';
+
+  @override
+  String get playerBack => '5 soniya orqaga';
+
+  @override
+  String get playerForward => '5 soniya oldinga';
+
+  @override
+  String get playerFold => 'Videoni yigʻish';
+
+  @override
+  String get playerUnfold => 'Videoni ochish';
+
+  @override
+  String get playerGone =>
+      'Audio saqlash muddati tugagani uchun oʻchirilgan. Matn joyida.';
+
+  @override
+  String get playerUnavailable =>
+      'Bu yozuvning audiosi mavjud emas. Matn bilan ishlashingiz mumkin.';
+
+  @override
+  String get playerFailed => 'Audioni ochib boʻlmadi.';
+
+  @override
+  String get playerYoutubeBody =>
+      'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.';
+
+  @override
+  String get playerYoutubeOpen => 'YouTubeʼda ochish';
+
+  @override
+  String get playerYoutubeCopy => 'Havoladan nusxa olish';
+
+  @override
+  String get segmentEditText => 'Matnni tahrirlash';
+
+  @override
+  String get segmentAddComment => 'Izoh qoʻshish';
+
+  @override
+  String get segmentDelete => 'Segmentni oʻchirish';
+
+  @override
+  String get segmentDeleteConfirm =>
+      'Segment matni bilan oʻchadi. Rostdan oʻchirilsinmi?';
+
+  @override
+  String get segmentDeleteYes => 'Ha, oʻchirish';
+
+  @override
+  String get speakerRename => 'Nomini oʻzgartirish';
+
+  @override
+  String get commentsEmpty =>
+      'Izohlar yoʻq. Segmentni bosib turing va «Izoh qoʻshish»ni tanlang.';
+
+  @override
+  String get commentsReply => 'Javob yozish';
+
+  @override
+  String get commentsHint => 'Izoh yozing';
+
+  @override
+  String get commentsSend => 'Yuborish';
+
+  @override
+  String get commentsDelete => 'Oʻchirish';
+
+  @override
+  String get commentsDeleteConfirm => 'Izoh oʻchirilsinmi?';
+
+  @override
+  String get commentsTooLong => 'Izoh juda uzun.';
+
+  @override
+  String get commentsSegmentGone => 'Oʻchirilgan segment';
+
+  @override
+  String get commentsYou => 'Siz';
+
+  @override
+  String get ratingTitle => 'Transkript sifati';
+
+  @override
+  String get ratingHint =>
+      'Bahoyingizni faqat siz koʻrasiz. U sifatni yaxshilashga yordam beradi.';
+
+  @override
+  String ratingStar(int count) {
+    return '$count yulduz';
+  }
+
+  @override
+  String get ratingSaved => 'Baho saqlandi.';
+
+  @override
+  String get retranscribeBody =>
+      'Fayl qaytadan transkripsiya qilinadi va balansdan daqiqa yechiladi.';
+
+  @override
+  String retranscribeMinutes(int minutes) {
+    return 'Taxminan $minutes daqiqa sarflanadi.';
+  }
+
+  @override
+  String get retranscribeConfirm => 'Boshlash';
+
+  @override
+  String get retranscribeActive =>
+      'Bu fayl allaqachon transkripsiya qilinmoqda.';
+
+  @override
+  String get retranscribeGone =>
+      'Audio oʻchirilgan — qayta transkripsiya qilib boʻlmaydi.';
+
+  @override
+  String get exportStepStyle => 'Uslub';
+
+  @override
+  String get exportStepFormat => 'Format';
+
+  @override
+  String get exportNext => 'Keyingi';
+
+  @override
+  String get exportTimedOnly => 'Vaqt boʻyicha boʻlinadi — uslub qoʻllanmaydi.';
+
+  @override
+  String get exportTableHint => 'Jadval: vaqt, maʼruzachi va matn ustunlari.';
 }
