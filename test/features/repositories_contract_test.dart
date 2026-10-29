@@ -167,6 +167,36 @@ void main() {
       final result = await AuthRepository(fakeDio(http)).me();
       expect(result.fold((f) => f, (_) => null), const Failure.parsing());
     });
+
+    test('updateName is PATCH /me {full_name} and reads data.user', () async {
+      final http = FakeHttpAdapter({
+        'PATCH /api/v1/me': (
+          200,
+          ok({
+            'user': {
+              'id': 'u1',
+              'email': 'e@misol.uz',
+              'full_name': 'Ali Valiyev',
+              'email_verified': true,
+              'locale': 'uz',
+              'has_password': false,
+            },
+          }),
+        ),
+      });
+      final user = (await AuthRepository(
+        fakeDio(http),
+      ).updateName('Ali Valiyev')).getOrElse(() => throw StateError('left'));
+      expect(user.toEntity().fullName, 'Ali Valiyev');
+      expect(user.hasPassword, isFalse);
+      expect(http.sent.single.body, {'full_name': 'Ali Valiyev'});
+    });
+
+    test('updateName without data.user is a parsing failure', () async {
+      final http = FakeHttpAdapter({'PATCH /api/v1/me': (200, ok({}))});
+      final result = await AuthRepository(fakeDio(http)).updateName('A');
+      expect(result.fold((f) => f, (_) => null), const Failure.parsing());
+    });
   });
 
   test('LibraryRepository sends workspace_id and reads items', () async {

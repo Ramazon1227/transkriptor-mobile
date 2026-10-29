@@ -82,6 +82,22 @@ class AuthRepository {
     });
   }
 
+  /// `PATCH /me` (backend `api/handler/me.go`, `UpdateMeRequest`): only
+  /// the fields sent change. `data` is `{user}`.
+  Future<Either<Failure, UserModel>> updateName(String fullName) {
+    return runRequest(() async {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        Endpoints.me,
+        data: {'full_name': fullName},
+      );
+      final user = envelopeData(response.data)['user'];
+      if (user is! Map<String, dynamic>) {
+        throw const FormatException('no user');
+      }
+      return UserModel.fromJson(user);
+    });
+  }
+
   Future<Either<Failure, Unit>> logout({required String refreshToken}) {
     return runRequest(() async {
       await _dio.post<Map<String, dynamic>>(

@@ -37,13 +37,16 @@ import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/delete_account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.dart';
 import 'package:transkriptor_uz/features/auth/application/login_bloc.dart';
+import 'package:transkriptor_uz/features/auth/application/profile_name_cubit.dart';
 import 'package:transkriptor_uz/features/auth/application/register_bloc.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
+import 'package:transkriptor_uz/features/auth/domain/name_rules.dart';
 import 'package:transkriptor_uz/features/auth/domain/password_rules.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/login_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.dart';
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
+import 'package:transkriptor_uz/features/auth/presentation/widgets/profile_name_sheet.dart';
 import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart';
 import 'package:transkriptor_uz/features/billing/application/plans_cubit.dart';
 import 'package:transkriptor_uz/features/billing/domain/entities/billing.dart';
@@ -178,6 +181,9 @@ class _Dictation extends MockCubit<DictationState> implements DictationCubit;
 class _AiChat extends MockCubit<AiChatState> implements AiChatCubit;
 
 class _Summary extends MockCubit<SummaryState> implements SummaryCubit;
+
+class _ProfileName extends MockCubit<ProfileNameState>
+    implements ProfileNameCubit;
 
 class _Learn extends MockCubit<LearnState> implements LearnCubit;
 
@@ -540,6 +546,12 @@ final _summaryState = SummaryState(
     ],
   ),
 );
+
+_ProfileName _profileName(ProfileNameState state) {
+  final cubit = _ProfileName();
+  when(() => cubit.state).thenReturn(state);
+  return cubit;
+}
 
 final SummaryState _serverSummaryState = _summaryState.copyWith(
   sample: false,
@@ -959,6 +971,27 @@ final _scenarios = <_Scenario>[
     },
   ),
   const _Scenario('profile', ProfilePage.new),
+  _Scenario(
+    'sheet(profile name, error)',
+    () => Scaffold(
+      body: BlocProvider<ProfileNameCubit>.value(
+        value: _profileName(const ProfileNameState(invalid: NameError.tooLong)),
+        child: const ProfileNameSheet(initial: _longName),
+      ),
+    ),
+    measure: {'TextField': _field, 'FilledButton': _filled},
+  ),
+  _Scenario(
+    'sheet(profile name, saving)',
+    () => Scaffold(
+      body: BlocProvider<ProfileNameCubit>.value(
+        value: _profileName(
+          const ProfileNameState(status: ProfileNameStatus.saving),
+        ),
+        child: const ProfileNameSheet(initial: _cyrName),
+      ),
+    ),
+  ),
   const _Scenario('plans', PlansPage.new),
   _Scenario(
     'home(recovery banner)',

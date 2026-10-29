@@ -31,6 +31,10 @@ abstract interface class IAuthFacade {
   /// The current account (`GET /me`).
   Future<Either<Failure, Account>> loadAccount();
 
+  /// `PATCH /me` with `full_name` ([fullName] already passed
+  /// `NameRules`). Returns the user as stored.
+  Future<Either<Failure, AppUser>> updateName(String fullName);
+
   /// Revokes the refresh token on the server when it can, and always
   /// forgets the local tokens.
   Future<Either<Failure, Unit>> logout();

@@ -43,6 +43,8 @@ import 'package:transkriptor_uz/features/auth/application/forgot_password_bloc.d
     as _i595;
 import 'package:transkriptor_uz/features/auth/application/login_bloc.dart'
     as _i441;
+import 'package:transkriptor_uz/features/auth/application/profile_name_cubit.dart'
+    as _i395;
 import 'package:transkriptor_uz/features/auth/application/register_bloc.dart'
     as _i7;
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart'
@@ -539,6 +541,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i595.ForgotPasswordBloc(gh<_i865.IAuthFacade>()),
     );
     gh.factory<_i441.LoginBloc>(() => _i441.LoginBloc(gh<_i865.IAuthFacade>()));
+    gh.factory<_i395.ProfileNameCubit>(
+      () => _i395.ProfileNameCubit(gh<_i865.IAuthFacade>()),
+    );
     gh.factory<_i7.RegisterBloc>(
       () => _i7.RegisterBloc(gh<_i865.IAuthFacade>()),
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
@@ -6,9 +8,10 @@ import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/core/widgets/initials_avatar.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
+import 'package:transkriptor_uz/features/auth/presentation/widgets/profile_name_sheet.dart';
 
-/// Settings › Profil: who is signed in and how. Read-only for now — name
-/// and password are changed on the web.
+/// Settings › Profil: who is signed in and how. The name is edited here
+/// (tap the row); the password is still changed on the web.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -36,12 +39,19 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 24),
                   ActionGroup(
                     children: [
-                      if (user.fullName.trim().isNotEmpty)
-                        ActionRow(
-                          icon: Icons.badge_outlined,
-                          label: l10n.profileName,
-                          value: user.fullName.trim(),
+                      ActionRow(
+                        key: const Key('profile_name_row'),
+                        icon: Icons.badge_outlined,
+                        label: user.fullName.trim().isEmpty
+                            ? l10n.profileNameAdd
+                            : l10n.profileName,
+                        value: user.fullName.trim().isEmpty
+                            ? null
+                            : user.fullName.trim(),
+                        onTap: () => unawaited(
+                          showProfileNameSheet(context, user.fullName.trim()),
                         ),
+                      ),
                       ActionRow(
                         icon: Icons.mail_outline_rounded,
                         label: l10n.profileEmail,

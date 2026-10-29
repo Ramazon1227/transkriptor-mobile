@@ -109,6 +109,12 @@ class AuthFacade implements IAuthFacade {
   }
 
   @override
+  Future<Either<Failure, AppUser>> updateName(String fullName) async {
+    final result = await _repository.updateName(fullName);
+    return result.map((model) => model.toEntity());
+  }
+
+  @override
   Future<Either<Failure, Unit>> logout() async {
     String? refreshToken;
     try {

@@ -107,6 +107,14 @@ class AccountCubit extends Cubit<AccountState> {
     if (!current.workspaces.any((w) => w.id == workspaceId)) await load();
   }
 
+  /// The profile changed on the server (name): the greeting and the
+  /// settings header follow without another `GET /me`.
+  void userUpdated(AppUser user) {
+    final current = state.account;
+    if (current == null || current.user.id != user.id) return;
+    emit(state.copyWith(account: current.copyWith(user: user)));
+  }
+
   /// Login already fetched the account; no second request.
   void signedIn(Account account) {
     _generation++;

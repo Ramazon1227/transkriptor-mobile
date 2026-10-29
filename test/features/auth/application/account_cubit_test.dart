@@ -51,6 +51,20 @@ void main() {
   tearDown(() => changes.dispose());
 
   group('AccountCubit', () {
+    test('userUpdated replaces the user and keeps the workspaces', () async {
+      final cubit = AccountCubit(facade, changes, session, push, workspaces)
+        ..signedIn(before)
+        ..userUpdated(
+          const AppUser(id: 'u1', email: 'e', fullName: 'Yangi Ism'),
+        );
+      expect(cubit.state.account?.user.fullName, 'Yangi Ism');
+      expect(cubit.state.account?.workspaces, before.workspaces);
+      // Someone else's user (a stale answer after a switch) is ignored.
+      cubit.userUpdated(const AppUser(id: 'u2', email: 'x', fullName: 'X'));
+      expect(cubit.state.account?.user.id, 'u1');
+      await cubit.close();
+    });
+
     blocTest<AccountCubit, AccountState>(
       'loads the account',
       setUp: () =>
