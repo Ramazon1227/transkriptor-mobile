@@ -999,4 +999,152 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get logoutBody =>
       'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.';
+
+  @override
+  String get filesTabUploads => 'Yuklangan';
+
+  @override
+  String get filesTabMeetings => 'Uchrashuvlar';
+
+  @override
+  String get filesTabRecordings => 'Yozuvlar';
+
+  @override
+  String get filesTabLinks => 'Havolalar';
+
+  @override
+  String get filesTabNotes => 'Eslatmalar';
+
+  @override
+  String get filesMenuCreateFolder => 'Papka yaratish';
+
+  @override
+  String get filesMenuWorkspaces => 'Ish maydonlari';
+
+  @override
+  String get filesSearch => 'Qidirish';
+
+  @override
+  String get filesSearchHint => 'Nomi boʻyicha qidirish';
+
+  @override
+  String get filesSearchClose => 'Qidiruvni yopish';
+
+  @override
+  String get filesSearchEmpty => 'Hech narsa topilmadi.';
+
+  @override
+  String get filesMore => 'Amallar';
+
+  @override
+  String get filesFailed => 'Bajarilmadi';
+
+  @override
+  String get filesEmptyUploads => 'Yuklangan fayl hali yoʻq.';
+
+  @override
+  String get filesEmptyMeetings => 'Uchrashuv yozuvlari hali yoʻq.';
+
+  @override
+  String get filesEmptyRecordings => 'Yozib olingan audio hali yoʻq.';
+
+  @override
+  String get filesEmptyLinks => 'Havoladan olingan fayl hali yoʻq.';
+
+  @override
+  String get filesEmptyNotes =>
+      'Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.';
+
+  @override
+  String get fileRenameTitle => 'Faylni qayta nomlash';
+
+  @override
+  String get fileNameHint => 'Fayl nomi';
+
+  @override
+  String fileNameInvalid(int max) {
+    return 'Nom boʻsh boʻlmasin va $max belgidan oshmasin.';
+  }
+
+  @override
+  String get fileRetranscribe => 'Qayta transkripsiya';
+
+  @override
+  String get fileRetranscribeBody =>
+      'Fayl qaytadan matnga aylantiriladi, uning davomiyligi balansdan yechiladi.';
+
+  @override
+  String fileRetranscribeCost(int minutes) {
+    return 'Balansdan $minutes daqiqa yechiladi.';
+  }
+
+  @override
+  String get fileRetranscribeConfirm => 'Boshlash';
+
+  @override
+  String get fileRetranscribeConflict =>
+      'Bu fayl uchun transkripsiya allaqachon ketyapti.';
+
+  @override
+  String get fileRetranscribeNotReady =>
+      'Fayl hali toʻliq yuklanmagan — uni qayta transkripsiya qilib boʻlmaydi.';
+
+  @override
+  String get fileDeleteTitle => 'Faylni oʻchirish';
+
+  @override
+  String fileDeleteBody(String name) {
+    return '«$name» va uning transkripti oʻchadi, ulashilgan havolalar ishlamay qoladi. Buni qaytarib boʻlmaydi.';
+  }
+
+  @override
+  String get fileDeleteRunning =>
+      'Davom etayotgan transkripsiya bekor qilinadi, band qilingan daqiqalar qaytariladi.';
+
+  @override
+  String get noteUntitled => 'Nomsiz eslatma';
+
+  @override
+  String get noteCopy => 'Matndan nusxa olish';
+
+  @override
+  String get noteCopied => 'Matn nusxalandi';
+
+  @override
+  String get noteRenameTitle => 'Eslatmani qayta nomlash';
+
+  @override
+  String get noteTitleHint => 'Sarlavha';
+
+  @override
+  String noteTitleInvalid(int max) {
+    return 'Sarlavha $max belgidan oshmasin.';
+  }
+
+  @override
+  String get noteDeleteTitle => 'Eslatmani oʻchirish';
+
+  @override
+  String noteDeleteBody(String name) {
+    return '«$name» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.';
+  }
+
+  @override
+  String noteFromTranscript(String title) {
+    return 'Transkriptdan: $title';
+  }
+
+  @override
+  String get noteSourceGone => 'Asl fayl oʻchirilgan';
+
+  @override
+  String noteUpdated(String date) {
+    return 'Oʻzgartirilgan: $date';
+  }
+
+  @override
+  String get noteEmpty => 'Eslatma boʻsh.';
+
+  @override
+  String get noteStale => 'Eslatma boshqa oynada oʻzgargan. Uni qayta oching.';
 }

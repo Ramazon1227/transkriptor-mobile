@@ -15,6 +15,7 @@ import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart'
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
+import 'package:transkriptor_uz/features/notes/presentation/pages/note_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
 import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
@@ -131,6 +132,11 @@ class AppRouter {
         path: Routes.transcript,
         builder: (context, state) =>
             TranscriptPage(transcriptId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: Routes.note,
+        builder: (context, state) =>
+            NotePage(noteId: state.pathParameters['id']!),
       ),
     ],
   );

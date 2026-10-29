@@ -10,6 +10,7 @@ import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/job/presentation/widgets/job_status_chip.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
+import 'package:transkriptor_uz/features/library/presentation/widgets/library_item_source.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
 
 /// How many files the home screen previews.
@@ -67,18 +68,6 @@ class _RecentCard extends StatelessWidget {
 
   final LibraryItem item;
 
-  static CaptureSource sourceOf(LibraryItem item) => switch (item.source) {
-    MediaSource.recording => CaptureSource.recording,
-    MediaSource.url => switch (item.linkProvider) {
-      'YOUTUBE' => CaptureSource.youtube,
-      'GDRIVE' || 'DROPBOX' => CaptureSource.cloud,
-      _ => CaptureSource.url,
-    },
-    MediaSource.upload ||
-    MediaSource.api ||
-    MediaSource.unknown => CaptureSource.upload,
-  };
-
   @override
   Widget build(BuildContext context) {
     final target = LibraryTile.targetOf(item);
@@ -97,7 +86,7 @@ class _RecentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SourceIcon(source: sourceOf(item), size: 32),
+                SourceIcon(source: item.captureSource, size: 32),
                 const SizedBox(height: 10),
                 Text(
                   item.name,

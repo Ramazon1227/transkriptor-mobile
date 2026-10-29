@@ -5,23 +5,27 @@ import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
-import 'package:transkriptor_uz/features/job/presentation/widgets/job_status_chip.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
+import 'package:transkriptor_uz/features/library/presentation/widgets/library_item_source.dart';
 
+/// One file: where it came from, its name (two lines at most), date and
+/// length, and a marker while it is in progress or when it failed. A
+/// finished file carries no marker — finished is the normal state.
 class LibraryTile extends StatelessWidget {
   const LibraryTile({
     required this.item,
     this.showTags = true,
-    this.onLongPress,
+    this.onMore,
     super.key,
   });
 
   final LibraryItem item;
   final bool showTags;
 
-  /// The files screen's move / tags menu; null elsewhere.
-  final VoidCallback? onLongPress;
+  /// The row's «…» menu; null hides the button (nothing the caller may do).
+  final VoidCallback? onMore;
 
   /// Where tapping [item] leads: a finished transcript opens, anything
   /// with a job shows its progress, a file without a job goes nowhere.
@@ -37,39 +41,38 @@ class LibraryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final target = targetOf(item);
+    final more = onMore;
     return InkWell(
       onTap: target == null ? null : () => context.push(target),
-      onLongPress: onLongPress,
+      onLongPress: more,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _KindIcon(kind: item.kind),
+            SourceIcon(source: item.captureSource),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontVariations: [FontVariation('wght', 500)],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      JobStatusChip(status: item.jobStatus),
-                    ],
+                  Text(
+                    item.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.bodyMedium,
                   ),
                   const SizedBox(height: 4),
-                  Text(_meta(context.l10n), style: AppText.mono),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      if (_meta().isNotEmpty)
+                        Text(_meta(), style: AppText.mono),
+                      ?_StatusMarker.of(item.jobStatus),
+                    ],
+                  ),
                   if (showTags && item.tags.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Wrap(
@@ -81,59 +84,83 @@ class LibraryTile extends StatelessWidget {
                 ],
               ),
             ),
+            if (more != null)
+              IconButton(
+                key: Key('file_more_${item.mediaId}'),
+                tooltip: context.l10n.filesMore,
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(
+                  Icons.more_horiz_rounded,
+                  color: AppColors.mutedDark,
+                ),
+                onPressed: more,
+              ),
           ],
         ),
       ),
     );
   }
 
-  String _meta(AppLocalizations l10n) {
+  String _meta() {
     final created = item.createdAt;
     final duration = item.duration;
     return [
       if (created != null) Formatters.date(created),
       if (duration != null) Formatters.timecode(duration),
-      _source(l10n),
     ].join(' · ');
   }
-
-  String _source(AppLocalizations l10n) => switch (item.source) {
-    MediaSource.recording => l10n.sourceRecording,
-    MediaSource.url => switch (item.linkProvider) {
-      'YOUTUBE' => l10n.sourceYoutube,
-      'GDRIVE' => l10n.sourceDrive,
-      'DROPBOX' => l10n.sourceDropbox,
-      _ => l10n.sourceLink,
-    },
-    MediaSource.api => l10n.sourceApi,
-    MediaSource.upload || MediaSource.unknown => l10n.sourceUpload,
-  };
 }
 
-class _KindIcon extends StatelessWidget {
-  const _KindIcon({required this.kind});
+/// Coral spinner while queued or running, red «Bajarilmadi» on failure,
+/// a muted word when cancelled.
+class _StatusMarker extends StatelessWidget {
+  const _StatusMarker(this.status);
 
-  final MediaKind kind;
+  final JobStatus status;
+
+  static Widget? of(JobStatus? status) => switch (status) {
+    JobStatus.queued ||
+    JobStatus.running ||
+    JobStatus.failed ||
+    JobStatus.cancelled => _StatusMarker(status!),
+    JobStatus.succeeded || JobStatus.unknown || null => null,
+  };
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final video = kind == MediaKind.video;
-    return Semantics(
-      label: video ? l10n.kindVideo : l10n.kindAudio,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: AppColors.sf1,
-          borderRadius: BorderRadius.circular(8),
+    final (Widget glyph, Color color, String text) = switch (status) {
+      JobStatus.queued || JobStatus.running => (
+        const SizedBox.square(
+          dimension: 10,
+          child: CircularProgressIndicator(
+            strokeWidth: 1.5,
+            color: AppColors.warn,
+          ),
         ),
-        child: Icon(
-          video ? Icons.play_arrow_rounded : Icons.graphic_eq_rounded,
-          size: 18,
-          color: AppColors.mutedDark,
-        ),
+        AppColors.warn,
+        status == JobStatus.queued ? l10n.statusQueued : l10n.statusRunning,
       ),
+      JobStatus.failed => (
+        const Icon(Icons.error_outline_rounded, size: 14, color: AppColors.bad),
+        AppColors.bad,
+        l10n.filesFailed,
+      ),
+      _ => (
+        const Icon(Icons.block_rounded, size: 13, color: AppColors.mutedDark),
+        AppColors.mutedDark,
+        l10n.statusCancelled,
+      ),
+    };
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        glyph,
+        const SizedBox(width: 5),
+        Flexible(
+          child: Text(text, style: AppText.caption.copyWith(color: color)),
+        ),
+      ],
     );
   }
 }
@@ -153,7 +180,7 @@ class _Tag extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 11, color: AppColors.mutedDark),
+        style: AppText.caption.copyWith(fontSize: 11),
       ),
     );
   }

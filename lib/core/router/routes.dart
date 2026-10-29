@@ -28,6 +28,9 @@ abstract final class Routes {
   static const String job = '/job/:id';
   static const String transcript = '/transcript/:id';
 
+  /// One note, read-only. Pops `true` when it was renamed or deleted.
+  static const String note = '/notes/:id';
+
   // Capture sources that are placeholders today; each is replaced by its
   // real page in a later phase.
   static const String dictation = '/dictation';
@@ -37,4 +40,5 @@ abstract final class Routes {
 
   static String jobOf(String id) => '/job/$id';
   static String transcriptOf(String id) => '/transcript/$id';
+  static String noteOf(String id) => '/notes/$id';
 }
