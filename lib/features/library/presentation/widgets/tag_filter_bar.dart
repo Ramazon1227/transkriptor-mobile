@@ -25,10 +25,10 @@ class TagFilterBar extends StatelessWidget {
     if (tags.isEmpty) return const SizedBox.shrink();
     final bloc = context.read<LibraryBloc>();
     return SizedBox(
-      height: 40,
+      height: 44,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 13),
         children: [
           FilterTab(
             key: const Key('tag_all'),

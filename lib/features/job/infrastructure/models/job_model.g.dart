@@ -19,6 +19,7 @@ _JobModel _$JobModelFromJson(Map<String, dynamic> json) => _JobModel(
   progress: (json['progress'] as num?)?.toInt() ?? 0,
   errorMessage: json['error_message'] as String?,
   transcriptId: json['transcript_id'] as String?,
+  numSpeakers: (json['num_speakers'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$JobModelToJson(_JobModel instance) => <String, dynamic>{
@@ -28,6 +29,7 @@ Map<String, dynamic> _$JobModelToJson(_JobModel instance) => <String, dynamic>{
   'progress': instance.progress,
   'error_message': instance.errorMessage,
   'transcript_id': instance.transcriptId,
+  'num_speakers': instance.numSpeakers,
 };
 
 const _$JobStatusEnumMap = {

@@ -4,12 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
+import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/library/application/file_actions_cubit.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/domain/i_library_facade.dart';
 import 'package:transkriptor_uz/features/library/domain/tag_rules.dart';
 
 class _MockLibraryFacade extends Mock implements ILibraryFacade;
+
+class _MockJobFacade extends Mock implements IJobFacade;
 
 void main() {
   late _MockLibraryFacade facade;
@@ -30,7 +33,7 @@ void main() {
         .thenAnswer(
           (_) async => const Right(LibraryItem(mediaId: 'm1', name: 'A')),
         ),
-    build: () => FileActionsCubit(facade, changes),
+    build: () => FileActionsCubit(facade, _MockJobFacade(), changes),
     act: (cubit) async {
       final notified = changes.stream.first;
       await cubit.move(item, null);
@@ -47,7 +50,7 @@ void main() {
 
   blocTest<FileActionsCubit, FileActionsState>(
     'a move to the folder it is already in sends nothing',
-    build: () => FileActionsCubit(facade, changes),
+    build: () => FileActionsCubit(facade, _MockJobFacade(), changes),
     act: (cubit) => cubit.move(item, 'f1'),
     expect: () => const [
       FileActionsState(status: FileActionStatus.done, item: item),
@@ -64,7 +67,7 @@ void main() {
     'a failed tag save stays on the sheet',
     setUp: () => when(() => facade.setTags(mediaId: 'm1', tags: ['sud']))
         .thenAnswer((_) async => const Left(Failure.server(statusCode: 403))),
-    build: () => FileActionsCubit(facade, changes),
+    build: () => FileActionsCubit(facade, _MockJobFacade(), changes),
     act: (cubit) => cubit.setTags(item, ['sud']),
     expect: () => const [
       FileActionsState(status: FileActionStatus.busy),

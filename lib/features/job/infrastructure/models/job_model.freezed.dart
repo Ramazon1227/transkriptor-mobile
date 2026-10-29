@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$JobModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus get status;@JsonKey(name: 'progress') int get progress;@JsonKey(name: 'error_message') String? get errorMessage;@JsonKey(name: 'transcript_id') String? get transcriptId;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus get status;@JsonKey(name: 'progress') int get progress;@JsonKey(name: 'error_message') String? get errorMessage;@JsonKey(name: 'transcript_id') String? get transcriptId;@JsonKey(name: 'num_speakers') int? get numSpeakers;
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $JobModelCopyWith<JobModel> get copyWith => _$JobModelCopyWithImpl<JobModel>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as JobModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage)&&(identical(other.transcriptId, _this.transcriptId) || other.transcriptId == _this.transcriptId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage)&&(identical(other.transcriptId, _this.transcriptId) || other.transcriptId == _this.transcriptId)&&(identical(other.numSpeakers, _this.numSpeakers) || other.numSpeakers == _this.numSpeakers));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as JobModel;
-  return Object.hash(runtimeType,_this.id,_this.mediaId,_this.status,_this.progress,_this.errorMessage,_this.transcriptId);
+  return Object.hash(runtimeType,_this.id,_this.mediaId,_this.status,_this.progress,_this.errorMessage,_this.transcriptId,_this.numSpeakers);
 }
 
 @override
 String toString() {
   final _this = this as JobModel;
-  return 'JobModel(id: ${_this.id}, mediaId: ${_this.mediaId}, status: ${_this.status}, progress: ${_this.progress}, errorMessage: ${_this.errorMessage}, transcriptId: ${_this.transcriptId})';
+  return 'JobModel(id: ${_this.id}, mediaId: ${_this.mediaId}, status: ${_this.status}, progress: ${_this.progress}, errorMessage: ${_this.errorMessage}, transcriptId: ${_this.transcriptId}, numSpeakers: ${_this.numSpeakers})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $JobModelCopyWith<$Res>  {
   factory $JobModelCopyWith(JobModel value, $Res Function(JobModel) _then) = _$JobModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'error_message') String? errorMessage,@JsonKey(name: 'transcript_id') String? transcriptId
+@JsonKey(name: 'id') String id,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'error_message') String? errorMessage,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'num_speakers') int? numSpeakers
 });
 
 
@@ -71,7 +71,7 @@ class _$JobModelCopyWithImpl<$Res>
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? mediaId = null,Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? transcriptId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? mediaId = null,Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? transcriptId = freezed,Object? numSpeakers = freezed,}) {
   return _then(JobModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
@@ -79,7 +79,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as JobStatus,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
 as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,transcriptId: freezed == transcriptId ? _self.transcriptId : transcriptId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,numSpeakers: freezed == numSpeakers ? _self.numSpeakers : numSpeakers // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -164,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'num_speakers')  int? numSpeakers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JobModel() when $default != null:
-return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId);case _:
+return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId,_that.numSpeakers);case _:
   return orElse();
 
 }
@@ -185,10 +186,10 @@ return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'num_speakers')  int? numSpeakers)  $default,) {final _that = this;
 switch (_that) {
 case _JobModel():
-return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId);case _:
+return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId,_that.numSpeakers);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +206,10 @@ return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown)  JobStatus status, @JsonKey(name: 'progress')  int progress, @JsonKey(name: 'error_message')  String? errorMessage, @JsonKey(name: 'transcript_id')  String? transcriptId, @JsonKey(name: 'num_speakers')  int? numSpeakers)?  $default,) {final _that = this;
 switch (_that) {
 case _JobModel() when $default != null:
-return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId);case _:
+return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMessage,_that.transcriptId,_that.numSpeakers);case _:
   return null;
 
 }
@@ -220,7 +221,7 @@ return $default(_that.id,_that.mediaId,_that.status,_that.progress,_that.errorMe
 @JsonSerializable()
 
 class _JobModel extends JobModel {
-  const _JobModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) this.status = JobStatus.unknown, @JsonKey(name: 'progress') this.progress = 0, @JsonKey(name: 'error_message') this.errorMessage, @JsonKey(name: 'transcript_id') this.transcriptId}): super._();
+  const _JobModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) this.status = JobStatus.unknown, @JsonKey(name: 'progress') this.progress = 0, @JsonKey(name: 'error_message') this.errorMessage, @JsonKey(name: 'transcript_id') this.transcriptId, @JsonKey(name: 'num_speakers') this.numSpeakers}): super._();
   factory _JobModel.fromJson(Map<String, dynamic> json) => _$JobModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -229,6 +230,7 @@ class _JobModel extends JobModel {
 @override@JsonKey(name: 'progress') final  int progress;
 @override@JsonKey(name: 'error_message') final  String? errorMessage;
 @override@JsonKey(name: 'transcript_id') final  String? transcriptId;
+@override@JsonKey(name: 'num_speakers') final  int? numSpeakers;
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.transcriptId, transcriptId) || other.transcriptId == transcriptId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.transcriptId, transcriptId) || other.transcriptId == transcriptId)&&(identical(other.numSpeakers, numSpeakers) || other.numSpeakers == numSpeakers));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,mediaId,status,progress,errorMessage,transcriptId);
+    return Object.hash(runtimeType,id,mediaId,status,progress,errorMessage,transcriptId,numSpeakers);
 }
 
 @override
 String toString() {
-    return 'JobModel(id: $id, mediaId: $mediaId, status: $status, progress: $progress, errorMessage: $errorMessage, transcriptId: $transcriptId)';
+    return 'JobModel(id: $id, mediaId: $mediaId, status: $status, progress: $progress, errorMessage: $errorMessage, transcriptId: $transcriptId, numSpeakers: $numSpeakers)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$JobModelCopyWith<$Res> implements $JobModelCopyWith<$Res>
   factory _$JobModelCopyWith(_JobModel value, $Res Function(_JobModel) _then) = __$JobModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'error_message') String? errorMessage,@JsonKey(name: 'transcript_id') String? transcriptId
+@JsonKey(name: 'id') String id,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'status', unknownEnumValue: JobStatus.unknown) JobStatus status,@JsonKey(name: 'progress') int progress,@JsonKey(name: 'error_message') String? errorMessage,@JsonKey(name: 'transcript_id') String? transcriptId,@JsonKey(name: 'num_speakers') int? numSpeakers
 });
 
 
@@ -282,7 +284,7 @@ class __$JobModelCopyWithImpl<$Res>
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? mediaId = null,Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? transcriptId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? mediaId = null,Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? transcriptId = freezed,Object? numSpeakers = freezed,}) {
   return _then(_JobModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
@@ -290,7 +292,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as JobStatus,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
 as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,transcriptId: freezed == transcriptId ? _self.transcriptId : transcriptId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,numSpeakers: freezed == numSpeakers ? _self.numSpeakers : numSpeakers // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

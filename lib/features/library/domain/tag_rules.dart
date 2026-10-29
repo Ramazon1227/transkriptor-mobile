@@ -25,3 +25,14 @@ abstract final class FolderRules {
     return name.isEmpty || name.runes.length > maxName ? null : name;
   }
 }
+
+/// `models.MaxMediaName` with `TrimName`: a file name is trimmed and 1–200
+/// characters.
+abstract final class FileRules {
+  static const int maxName = 200;
+
+  static String? normalize(String raw) {
+    final name = raw.trim();
+    return name.isEmpty || name.runes.length > maxName ? null : name;
+  }
+}

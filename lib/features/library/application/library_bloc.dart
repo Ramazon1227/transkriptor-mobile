@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
+import 'package:transkriptor_uz/features/library/domain/files_source.dart';
 import 'package:transkriptor_uz/features/library/domain/i_library_facade.dart';
 
 part 'library_bloc.freezed.dart';
@@ -24,6 +25,9 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<LibraryLoadEvent>(_onLoad, transformer: restartable());
     on<LibraryTagSelected>(
       (event, emit) => emit(state.copyWith(tag: event.tag)),
+    );
+    on<LibraryQueryChanged>(
+      (event, emit) => emit(state.copyWith(query: event.query)),
     );
     _changes = changes.stream.listen((_) => add(const LibraryRefreshed()));
   }
@@ -61,19 +65,28 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   ) async {
     final workspaceId = switch (event) {
       LibraryStarted(:final workspaceId) => workspaceId,
-      LibraryRefreshed() || LibraryFolderSelected() => state.workspaceId,
+      LibraryRefreshed() ||
+      LibraryFolderSelected() ||
+      LibrarySourceSelected() => state.workspaceId,
     };
     if (workspaceId == null) return;
 
-    // Another folder is another list: its first load blanks the rows and
-    // drops the tag. A refresh keeps the rows on screen.
-    if (event case LibraryFolderSelected(:final folderId)) {
+    // Another folder or source tab is another list: its first load blanks
+    // the rows and drops the tag. A refresh keeps the rows on screen.
+    if (event is LibraryFolderSelected || event is LibrarySourceSelected) {
       _inFlight?.cancel();
       emit(
         state.copyWith(
           status: LibraryStatus.loading,
           items: const [],
-          folderId: folderId,
+          folderId: switch (event) {
+            LibraryFolderSelected(:final folderId) => folderId,
+            _ => state.folderId,
+          },
+          source: switch (event) {
+            LibrarySourceSelected(:final source) => source,
+            _ => state.source,
+          },
           tag: null,
           refreshing: false,
           failure: null,
@@ -81,6 +94,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       );
     }
     final folderId = state.folderId;
+    final source = state.source;
 
     final hasItems = state.items.isNotEmpty;
     emit(
@@ -95,6 +109,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     final result = await _facade.getItems(
       workspaceId: workspaceId,
       folderId: folderId,
+      source: source.serverSource,
     );
 
     result.fold(
@@ -106,7 +121,11 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
           failure: failure,
         ),
       ),
-      (items) {
+      (all) {
+        final items = [
+          for (final i in all)
+            if (source.matches(i)) i,
+        ];
         emit(
           state.copyWith(
             status: items.isEmpty ? LibraryStatus.empty : LibraryStatus.success,
@@ -118,7 +137,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
                 : null,
           ),
         );
-        _scheduleWhileInFlight(items);
+        _scheduleWhileInFlight(all);
       },
     );
   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
+import 'package:transkriptor_uz/core/theme/app_text.dart';
+import 'package:transkriptor_uz/core/theme/app_theme.dart';
 
-/// One tab of a horizontal filter bar; the active one is underlined, as
-/// in the transcript's speaker bar.
+/// One chip of the folder or tag row under the source tabs. Active is
+/// saffron on its soft ground with a saffron edge — never a filled pill;
+/// the underline belongs to the source tabs above.
 class FilterTab extends StatelessWidget {
   const FilterTab({
     required this.label,
@@ -23,43 +26,56 @@ class FilterTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.cotton : AppColors.mutedDark;
+    final color = selected ? AppColors.accent : AppColors.mutedDark;
     final glyph = icon;
     final n = count;
-    return Semantics(
-      selected: selected,
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected ? AppColors.accent : Colors.transparent,
-                width: 2,
-              ),
+    final radius = BorderRadius.circular(AppRadii.button);
+    // The row's height is fixed; large text must not push the label out.
+    final scaler = MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+      child: Semantics(
+        selected: selected,
+        button: true,
+        child: Material(
+          color: selected ? AppColors.accentSoft : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: BorderSide(
+              color: selected ? AppColors.accent : AppColors.sf3,
             ),
           ),
-          child: Row(
-            children: [
-              if (glyph != null) ...[
-                Icon(glyph, size: 16, color: color),
-                const SizedBox(width: 6),
-              ],
-              Text(label, style: TextStyle(fontSize: 13, color: color)),
-              if (n != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  '$n',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.mutedDark,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: onTap,
+            onLongPress: onLongPress,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (glyph != null) ...[
+                    Icon(glyph, size: 15, color: color),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    label,
+                    textScaler: scaler,
+                    style: AppText.caption.copyWith(
+                      color: selected ? AppColors.accent : AppColors.cotton,
+                    ),
                   ),
-                ),
-              ],
-            ],
+                  if (n != null) ...[
+                    const SizedBox(width: 6),
+                    Text(
+                      '$n',
+                      textScaler: scaler,
+                      style: AppText.mono.copyWith(fontSize: 11),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       ),

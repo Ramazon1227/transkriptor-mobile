@@ -14,15 +14,21 @@ class LibraryRepository {
 
   final Dio _dio;
 
-  /// [folderId] null lists every file, folders included.
+  /// [folderId] null lists every file, folders included. [source] is the
+  /// backend's `media_source` (UPLOAD, URL, RECORDING, API); null is all.
   Future<Either<Failure, List<LibraryItemModel>>> getItems({
     required String workspaceId,
     String? folderId,
+    String? source,
   }) {
     return runRequest(() async {
       final response = await _dio.get<Map<String, dynamic>>(
         Endpoints.library,
-        queryParameters: {'workspace_id': workspaceId, 'folder_id': ?folderId},
+        queryParameters: {
+          'workspace_id': workspaceId,
+          'folder_id': ?folderId,
+          'source': ?source,
+        },
       );
       final items = envelopeData(response.data)['items'];
       return ((items as List<dynamic>?) ?? const [])
@@ -101,6 +107,15 @@ class LibraryRepository {
       return LibraryItemModel.fromJson(
         envelopeData(response.data)['item'] as Map<String, dynamic>,
       );
+    });
+  }
+
+  /// `DELETE /media/:id`: the file and its transcript go, a running job
+  /// is cancelled and its minutes refunded.
+  Future<Either<Failure, Unit>> deleteMedia(String mediaId) {
+    return runRequest(() async {
+      await _dio.delete<Map<String, dynamic>>(Endpoints.mediaById(mediaId));
+      return unit;
     });
   }
 

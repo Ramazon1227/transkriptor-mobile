@@ -55,7 +55,14 @@ import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/folder.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
+import 'package:transkriptor_uz/features/library/presentation/widgets/file_actions_sheet.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
+import 'package:transkriptor_uz/features/notes/application/note_cubit.dart';
+import 'package:transkriptor_uz/features/notes/application/notes_cubit.dart';
+import 'package:transkriptor_uz/features/notes/domain/entities/note.dart';
+import 'package:transkriptor_uz/features/notes/domain/note_document.dart';
+import 'package:transkriptor_uz/features/notes/presentation/pages/note_page.dart';
+import 'package:transkriptor_uz/features/notes/presentation/widgets/notes_list.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
@@ -114,6 +121,10 @@ class _WorkspaceList extends MockCubit<WorkspaceListState>
 
 class _Delete extends MockCubit<DeleteAccountState>
     implements DeleteAccountCubit;
+
+class _Notes extends MockCubit<NotesState> implements NotesCubit;
+
+class _Note extends MockCubit<NoteState> implements NoteCubit;
 
 // ---------------------------------------------------------- stress data
 
@@ -175,6 +186,7 @@ final List<LibraryItem> _items = [
       jobId: 'j$i',
       jobStatus: JobStatus.values[i % JobStatus.values.length],
       transcriptId: 't$i',
+      meetingTitle: i % 4 == 1 ? _longName : null,
       tags: const [
         'sud ishlari',
         'yalpi majlis',
@@ -295,6 +307,41 @@ const _longError =
     'Iltimos, havolani tekshirib, qaytadan urinib koʻring. '
     'Файл не удалось загрузить: ссылка закрыта или файл удалён.';
 
+final List<NoteSummary> _notes = [
+  for (var i = 0; i < 20; i++)
+    NoteSummary(
+      id: 'n$i',
+      title: i.isEven ? _longName : '',
+      excerpt: _cyrName * 2,
+      updatedAt: DateTime(2026, 10, 28, 9, 5),
+    ),
+];
+
+final Note _note = Note(
+  id: 'n1',
+  title: _longName,
+  revision: 3,
+  updatedAt: DateTime(2026, 10, 28, 9, 5),
+  origin: const NoteOrigin(
+    transcriptId: 't1',
+    title: _cyrName,
+    available: true,
+  ),
+  blocks: [
+    for (var i = 0; i < 12; i++) ...[
+      NoteBlock(kind: NoteBlockKind.heading, text: _longName, level: i % 3 + 1),
+      const NoteBlock(kind: NoteBlockKind.paragraph, text: _cyrName),
+      NoteBlock(
+        kind: NoteBlockKind.listItem,
+        text: _longName,
+        marker: '${100 + i}.',
+        depth: i % 4,
+      ),
+      const NoteBlock(kind: NoteBlockKind.code, text: _cyrName, quoted: true),
+    ],
+  ],
+);
+
 // ------------------------------------------------------------ registry
 
 late _Account account;
@@ -314,6 +361,8 @@ late _Plans plans;
 late _Push push;
 late _WorkspaceList workspaceList;
 late _Delete deleteAccount;
+late _Notes notes;
+late _Note note;
 
 void _makeMocks() {
   account = _Account();
@@ -333,6 +382,15 @@ void _makeMocks() {
   push = _Push();
   workspaceList = _WorkspaceList();
   deleteAccount = _Delete();
+  notes = _Notes();
+  note = _Note();
+  when(() => notes.state)
+      .thenReturn(NotesState(status: NotesStatus.success, items: _notes));
+  when(() => notes.load(any())).thenAnswer((_) async {});
+  when(() => note.state).thenReturn(
+    NoteState(status: NoteStatus.success, noteId: 'n1', note: _note),
+  );
+  when(() => note.load(any())).thenAnswer((_) async {});
 
   when(() => account.state).thenReturn(_account);
   when(() => account.load()).thenAnswer((_) async {});
@@ -403,7 +461,9 @@ void _makeMocks() {
     ..registerFactory<BalanceCubit>(() => balance)
     ..registerFactory<PlansCubit>(() => plans)
     ..registerFactory<WorkspaceListCubit>(() => workspaceList)
-    ..registerFactory<DeleteAccountCubit>(() => deleteAccount);
+    ..registerFactory<DeleteAccountCubit>(() => deleteAccount)
+    ..registerFactory<NotesCubit>(() => notes)
+    ..registerFactory<NoteCubit>(() => note);
 }
 
 // ----------------------------------------------------------- scenarios
@@ -445,6 +505,70 @@ final _scenarios = <_Scenario>[
     shell: _Shell.files,
     measure: {'LibraryTile': () => find.byType(LibraryTile)},
   ),
+  _Scenario(
+    'files(empty)',
+    FilesPage.new,
+    shell: _Shell.files,
+    arrange: () {
+      when(() => library.state).thenReturn(
+        const LibraryState(status: LibraryStatus.empty, workspaceId: 'w1'),
+      );
+      when(() => folders.state).thenReturn(const FoldersState());
+    },
+  ),
+  _Scenario(
+    'files(viewer)',
+    FilesPage.new,
+    shell: _Shell.files,
+    arrange: () => when(() => account.state).thenReturn(
+      const AccountState(
+        status: AccountStatus.success,
+        account: Account(
+          user: _user,
+          workspaces: _workspaces,
+          selectedWorkspaceId: 'w3',
+        ),
+      ),
+    ),
+  ),
+  _Scenario(
+    'files(failure)',
+    FilesPage.new,
+    shell: _Shell.files,
+    arrange: () => when(() => library.state).thenReturn(
+      const LibraryState(
+        status: LibraryStatus.failure,
+        workspaceId: 'w1',
+        failure: Failure.network(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'files(notes list)',
+    () => Scaffold(
+      body: BlocProvider<NotesCubit>.value(
+        value: notes,
+        child: const NotesList(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'files(notes empty)',
+    () => Scaffold(
+      body: BlocProvider<NotesCubit>.value(
+        value: notes,
+        child: const NotesList(),
+      ),
+    ),
+    arrange: () =>
+        when(() => notes.state)
+            .thenReturn(const NotesState(status: NotesStatus.empty)),
+  ),
+  _Scenario(
+    'sheet(file menu)',
+    () => Scaffold(body: FileMenuSheet(item: _items[2])),
+  ),
+  _Scenario('note', () => const NotePage(noteId: 'n1')),
   _Scenario(
     'home(calendar off)',
     HomePage.new,

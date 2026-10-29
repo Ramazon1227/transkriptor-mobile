@@ -34,6 +34,7 @@ _LibraryItemModel _$LibraryItemModelFromJson(Map<String, dynamic> json) =>
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const <String>[],
+      meetingTitle: json['meeting_title'] as String?,
     );
 
 Map<String, dynamic> _$LibraryItemModelToJson(_LibraryItemModel instance) =>
@@ -50,6 +51,7 @@ Map<String, dynamic> _$LibraryItemModelToJson(_LibraryItemModel instance) =>
       'transcript_id': instance.transcriptId,
       'folder_id': instance.folderId,
       'tags': instance.tags,
+      'meeting_title': instance.meetingTitle,
     };
 
 const _$MediaKindEnumMap = {

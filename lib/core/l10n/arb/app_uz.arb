@@ -383,5 +383,69 @@
   "deleteRequired": "Maydonni toʻldiring",
   "deleteWrong": "Parol yoki email mos kelmadi.",
   "deleteSoleOwner": "Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.",
-  "logoutBody": "Bu telefondan chiqasiz. Fayllaringiz joyida qoladi."
+  "logoutBody": "Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.",
+  "filesTabUploads": "Yuklangan",
+  "filesTabMeetings": "Uchrashuvlar",
+  "filesTabRecordings": "Yozuvlar",
+  "filesTabLinks": "Havolalar",
+  "filesTabNotes": "Eslatmalar",
+  "filesMenuCreateFolder": "Papka yaratish",
+  "filesMenuWorkspaces": "Ish maydonlari",
+  "filesSearch": "Qidirish",
+  "filesSearchHint": "Nomi boʻyicha qidirish",
+  "filesSearchClose": "Qidiruvni yopish",
+  "filesSearchEmpty": "Hech narsa topilmadi.",
+  "filesMore": "Amallar",
+  "filesFailed": "Bajarilmadi",
+  "filesEmptyUploads": "Yuklangan fayl hali yoʻq.",
+  "filesEmptyMeetings": "Uchrashuv yozuvlari hali yoʻq.",
+  "filesEmptyRecordings": "Yozib olingan audio hali yoʻq.",
+  "filesEmptyLinks": "Havoladan olingan fayl hali yoʻq.",
+  "filesEmptyNotes": "Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.",
+  "fileRenameTitle": "Faylni qayta nomlash",
+  "fileNameHint": "Fayl nomi",
+  "fileNameInvalid": "Nom boʻsh boʻlmasin va {max} belgidan oshmasin.",
+  "@fileNameInvalid": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "fileRetranscribe": "Qayta transkripsiya",
+  "fileRetranscribeBody": "Fayl qaytadan matnga aylantiriladi, uning davomiyligi balansdan yechiladi.",
+  "fileRetranscribeCost": "Balansdan {minutes} daqiqa yechiladi.",
+  "@fileRetranscribeCost": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "fileRetranscribeConfirm": "Boshlash",
+  "fileRetranscribeConflict": "Bu fayl uchun transkripsiya allaqachon ketyapti.",
+  "fileRetranscribeNotReady": "Fayl hali toʻliq yuklanmagan — uni qayta transkripsiya qilib boʻlmaydi.",
+  "fileDeleteTitle": "Faylni oʻchirish",
+  "fileDeleteBody": "«{name}» va uning transkripti oʻchadi, ulashilgan havolalar ishlamay qoladi. Buni qaytarib boʻlmaydi.",
+  "@fileDeleteBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "fileDeleteRunning": "Davom etayotgan transkripsiya bekor qilinadi, band qilingan daqiqalar qaytariladi.",
+  "noteUntitled": "Nomsiz eslatma",
+  "noteCopy": "Matndan nusxa olish",
+  "noteCopied": "Matn nusxalandi",
+  "noteRenameTitle": "Eslatmani qayta nomlash",
+  "noteTitleHint": "Sarlavha",
+  "noteTitleInvalid": "Sarlavha {max} belgidan oshmasin.",
+  "@noteTitleInvalid": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "noteDeleteTitle": "Eslatmani oʻchirish",
+  "noteDeleteBody": "«{name}» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.",
+  "@noteDeleteBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "noteFromTranscript": "Transkriptdan: {title}",
+  "@noteFromTranscript": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "noteSourceGone": "Asl fayl oʻchirilgan",
+  "noteUpdated": "Oʻzgartirilgan: {date}",
+  "@noteUpdated": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "noteEmpty": "Eslatma boʻsh.",
+  "noteStale": "Eslatma boshqa oynada oʻzgargan. Uni qayta oching."
 }

@@ -1887,6 +1887,264 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.'**
   String get logoutBody;
+
+  /// No description provided for @filesTabUploads.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklangan'**
+  String get filesTabUploads;
+
+  /// No description provided for @filesTabMeetings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuvlar'**
+  String get filesTabMeetings;
+
+  /// No description provided for @filesTabRecordings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuvlar'**
+  String get filesTabRecordings;
+
+  /// No description provided for @filesTabLinks.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havolalar'**
+  String get filesTabLinks;
+
+  /// No description provided for @filesTabNotes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatmalar'**
+  String get filesTabNotes;
+
+  /// No description provided for @filesMenuCreateFolder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka yaratish'**
+  String get filesMenuCreateFolder;
+
+  /// No description provided for @filesMenuWorkspaces.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ish maydonlari'**
+  String get filesMenuWorkspaces;
+
+  /// No description provided for @filesSearch.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qidirish'**
+  String get filesSearch;
+
+  /// No description provided for @filesSearchHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomi boʻyicha qidirish'**
+  String get filesSearchHint;
+
+  /// No description provided for @filesSearchClose.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qidiruvni yopish'**
+  String get filesSearchClose;
+
+  /// No description provided for @filesSearchEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hech narsa topilmadi.'**
+  String get filesSearchEmpty;
+
+  /// No description provided for @filesMore.
+  ///
+  /// In uz, this message translates to:
+  /// **'Amallar'**
+  String get filesMore;
+
+  /// No description provided for @filesFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bajarilmadi'**
+  String get filesFailed;
+
+  /// No description provided for @filesEmptyUploads.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklangan fayl hali yoʻq.'**
+  String get filesEmptyUploads;
+
+  /// No description provided for @filesEmptyMeetings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuv yozuvlari hali yoʻq.'**
+  String get filesEmptyMeetings;
+
+  /// No description provided for @filesEmptyRecordings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozib olingan audio hali yoʻq.'**
+  String get filesEmptyRecordings;
+
+  /// No description provided for @filesEmptyLinks.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havoladan olingan fayl hali yoʻq.'**
+  String get filesEmptyLinks;
+
+  /// No description provided for @filesEmptyNotes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.'**
+  String get filesEmptyNotes;
+
+  /// No description provided for @fileRenameTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni qayta nomlash'**
+  String get fileRenameTitle;
+
+  /// No description provided for @fileNameHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl nomi'**
+  String get fileNameHint;
+
+  /// No description provided for @fileNameInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nom boʻsh boʻlmasin va {max} belgidan oshmasin.'**
+  String fileNameInvalid(int max);
+
+  /// No description provided for @fileRetranscribe.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta transkripsiya'**
+  String get fileRetranscribe;
+
+  /// No description provided for @fileRetranscribeBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl qaytadan matnga aylantiriladi, uning davomiyligi balansdan yechiladi.'**
+  String get fileRetranscribeBody;
+
+  /// No description provided for @fileRetranscribeCost.
+  ///
+  /// In uz, this message translates to:
+  /// **'Balansdan {minutes} daqiqa yechiladi.'**
+  String fileRetranscribeCost(int minutes);
+
+  /// No description provided for @fileRetranscribeConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshlash'**
+  String get fileRetranscribeConfirm;
+
+  /// No description provided for @fileRetranscribeConflict.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu fayl uchun transkripsiya allaqachon ketyapti.'**
+  String get fileRetranscribeConflict;
+
+  /// No description provided for @fileRetranscribeNotReady.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl hali toʻliq yuklanmagan — uni qayta transkripsiya qilib boʻlmaydi.'**
+  String get fileRetranscribeNotReady;
+
+  /// No description provided for @fileDeleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni oʻchirish'**
+  String get fileDeleteTitle;
+
+  /// No description provided for @fileDeleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{name}» va uning transkripti oʻchadi, ulashilgan havolalar ishlamay qoladi. Buni qaytarib boʻlmaydi.'**
+  String fileDeleteBody(String name);
+
+  /// No description provided for @fileDeleteRunning.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom etayotgan transkripsiya bekor qilinadi, band qilingan daqiqalar qaytariladi.'**
+  String get fileDeleteRunning;
+
+  /// No description provided for @noteUntitled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomsiz eslatma'**
+  String get noteUntitled;
+
+  /// No description provided for @noteCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matndan nusxa olish'**
+  String get noteCopy;
+
+  /// No description provided for @noteCopied.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn nusxalandi'**
+  String get noteCopied;
+
+  /// No description provided for @noteRenameTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatmani qayta nomlash'**
+  String get noteRenameTitle;
+
+  /// No description provided for @noteTitleHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sarlavha'**
+  String get noteTitleHint;
+
+  /// No description provided for @noteTitleInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sarlavha {max} belgidan oshmasin.'**
+  String noteTitleInvalid(int max);
+
+  /// No description provided for @noteDeleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatmani oʻchirish'**
+  String get noteDeleteTitle;
+
+  /// No description provided for @noteDeleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{name}» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.'**
+  String noteDeleteBody(String name);
+
+  /// No description provided for @noteFromTranscript.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkriptdan: {title}'**
+  String noteFromTranscript(String title);
+
+  /// No description provided for @noteSourceGone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asl fayl oʻchirilgan'**
+  String get noteSourceGone;
+
+  /// No description provided for @noteUpdated.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻzgartirilgan: {date}'**
+  String noteUpdated(String date);
+
+  /// No description provided for @noteEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatma boʻsh.'**
+  String get noteEmpty;
+
+  /// No description provided for @noteStale.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatma boshqa oynada oʻzgargan. Uni qayta oching.'**
+  String get noteStale;
 }
 
 class _AppLocalizationsDelegate

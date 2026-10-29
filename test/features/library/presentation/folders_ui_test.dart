@@ -8,6 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
+import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/library/application/file_actions_cubit.dart';
 import 'package:transkriptor_uz/features/library/application/folders_cubit.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
@@ -18,6 +19,8 @@ import 'package:transkriptor_uz/features/library/presentation/widgets/file_actio
 import 'package:transkriptor_uz/features/library/presentation/widgets/folder_bar.dart';
 
 class _MockLibraryFacade extends Mock implements ILibraryFacade;
+
+class _MockJobFacade extends Mock implements IJobFacade;
 
 const _sud = Folder(id: 'f1', name: 'Sud', fileCount: 2);
 const _item = LibraryItem(mediaId: 'm1', name: 'Majlis', tags: ['eski']);
@@ -37,7 +40,9 @@ void main() {
         folderId: any(named: 'folderId'),
       ),
     ).thenAnswer((_) async => const Right([_item]));
-    getIt.registerFactory(() => FileActionsCubit(facade, changes));
+    getIt.registerFactory(
+      () => FileActionsCubit(facade, _MockJobFacade(), changes),
+    );
   });
 
   tearDown(() async {
@@ -74,7 +79,7 @@ void main() {
   testWidgets('a folder tab opens that folder; «+ Papka» asks for a name', (
     tester,
   ) async {
-    await pump(tester, const FolderBar());
+    await pump(tester, const FolderBar(canWrite: true));
     expect(find.text('Hammasi'), findsOneWidget);
     expect(find.text('Sud'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);

@@ -88,7 +88,7 @@ import 'package:transkriptor_uz/features/job/infrastructure/facades/job_facade.d
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart'
     as _i730;
 import 'package:transkriptor_uz/features/library/application/file_actions_cubit.dart'
-    as _i899;
+    as _i900;
 import 'package:transkriptor_uz/features/library/application/folders_cubit.dart'
     as _i568;
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart'
@@ -99,6 +99,16 @@ import 'package:transkriptor_uz/features/library/infrastructure/facades/library_
     as _i985;
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart'
     as _i203;
+import 'package:transkriptor_uz/features/notes/application/note_cubit.dart'
+    as _i323;
+import 'package:transkriptor_uz/features/notes/application/notes_cubit.dart'
+    as _i147;
+import 'package:transkriptor_uz/features/notes/domain/i_notes_facade.dart'
+    as _i439;
+import 'package:transkriptor_uz/features/notes/infrastructure/facades/notes_facade.dart'
+    as _i2;
+import 'package:transkriptor_uz/features/notes/infrastructure/repositories/notes_repository.dart'
+    as _i988;
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart'
     as _i752;
 import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart'
@@ -134,7 +144,7 @@ import 'package:transkriptor_uz/features/share/infrastructure/repositories/share
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart'
     as _i86;
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart'
-    as _i900;
+    as _i899;
 import 'package:transkriptor_uz/features/transcript/infrastructure/facades/transcript_facade.dart'
     as _i39;
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart'
@@ -263,6 +273,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i203.LibraryRepository>(
       () => _i203.LibraryRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i988.NotesRepository>(
+      () => _i988.NotesRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i765.PushRepository>(
       () => _i765.PushRepository(gh<_i361.Dio>()),
     );
@@ -284,12 +297,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i933.TokenStorage>(),
         gh<_i754.SessionManager>(),
         gh<_i605.GoogleIdTokenSource>(),
-      ),
-    );
-    gh.factory<_i899.FileActionsCubit>(
-      () => _i899.FileActionsCubit(
-        gh<_i118.ILibraryFacade>(),
-        gh<_i252.LibraryChanges>(),
       ),
     );
     gh.factory<_i568.FoldersCubit>(
@@ -319,6 +326,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i464.WorkspaceSelectionStorage>(),
       ),
     );
+    gh.lazySingleton<_i439.INotesFacade>(
+      () => _i2.NotesFacade(gh<_i988.NotesRepository>()),
+    );
     gh.lazySingleton<_i171.IBillingFacade>(
       () => _i375.BillingFacade(gh<_i354.BillingRepository>()),
     );
@@ -347,7 +357,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i765.PushRepository>(),
       ),
     );
-    gh.lazySingleton<_i900.ITranscriptFacade>(
+    gh.lazySingleton<_i899.ITranscriptFacade>(
       () => _i39.TranscriptFacade(gh<_i77.TranscriptRepository>()),
     );
     gh.lazySingleton<_i763.ICalendarFacade>(
@@ -368,8 +378,21 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
+    gh.factory<_i323.NoteCubit>(
+      () => _i323.NoteCubit(gh<_i439.INotesFacade>()),
+    );
+    gh.factory<_i147.NotesCubit>(
+      () => _i147.NotesCubit(gh<_i439.INotesFacade>()),
+    );
     gh.factory<_i698.CalendarCubit>(
       () => _i698.CalendarCubit(gh<_i763.ICalendarFacade>()),
+    );
+    gh.factory<_i900.FileActionsCubit>(
+      () => _i900.FileActionsCubit(
+        gh<_i118.ILibraryFacade>(),
+        gh<_i727.IJobFacade>(),
+        gh<_i252.LibraryChanges>(),
+      ),
     );
     gh.lazySingleton<_i122.IUploadFacade>(
       () => _i612.UploadFacade(
@@ -387,7 +410,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i720.WorkspaceListCubit(gh<_i537.IWorkspaceFacade>()),
     );
     gh.factory<_i86.TranscriptCubit>(
-      () => _i86.TranscriptCubit(gh<_i900.ITranscriptFacade>()),
+      () => _i86.TranscriptCubit(gh<_i899.ITranscriptFacade>()),
     );
     gh.factory<_i331.JobCubit>(
       () => _i331.JobCubit(
