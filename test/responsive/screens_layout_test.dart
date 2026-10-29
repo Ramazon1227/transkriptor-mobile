@@ -7,15 +7,19 @@
 // Any layout error fails its case (since 2026-10-28, when all were fixed).
 // RESPONSIVE_REPORT_ONLY=1 turns that off to just collect the summary,
 // which goes to build/responsive_report.txt.
+// RESPONSIVE_SHOTS=<dir> also writes a PNG of every page at 393x852 into
+// <dir>, for looking at the design without a device.
 //
 // The mock holders are top-level `late` variables of private types, shared
 // by setUp and the scenarios; nothing outside this file sees them.
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1561,6 +1565,33 @@ Future<void> _loadRealFont() async {
   await load('Roboto', ['NotoSans-Regular.ttf', 'NotoSans-Bold.ttf']);
   await load('GolosText', ['GolosText-Variable.ttf']);
   await load('Unbounded', ['Unbounded-Variable.ttf']);
+  // Icons draw as boxes in tests unless their font is loaded too; only the
+  // screenshots need it.
+  final icons = File(
+    '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter'}'
+    '/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+  );
+  if (icons.existsSync()) {
+    final loader = FontLoader('MaterialIcons')
+      ..addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
+    await loader.load();
+  }
+}
+
+final String? _shotsDir = Platform.environment['RESPONSIVE_SHOTS'];
+const _shotKey = Key('responsive_shot');
+
+Future<void> _shot(WidgetTester tester, String name) async {
+  final boundary =
+      tester.renderObject(find.byKey(_shotKey)) as RenderRepaintBoundary;
+  await tester.runAsync(() async {
+    final image = await boundary.toImage(pixelRatio: 2);
+    final data = await image.toByteData(format: ui.ImageByteFormat.png);
+    final safe = name.replaceAll(RegExp('[^A-Za-z0-9_-]+'), '_');
+    File('$_shotsDir/$safe.png')
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(data!.buffer.asUint8List());
+  });
 }
 
 void main() {
@@ -1589,10 +1620,15 @@ void main() {
         final previous = FlutterError.onError;
         FlutterError.onError = (d) => caught.add(_describe(d));
         try {
-          await tester.pumpWidget(_app(s, c.scale));
+          await tester.pumpWidget(
+            RepaintBoundary(key: _shotKey, child: _app(s, c.scale)),
+          );
           // Spinners never settle; a few frames are enough for layout.
           for (var i = 0; i < 4; i++) {
             await tester.pump(const Duration(milliseconds: 100));
+          }
+          if (_shotsDir != null && c.name == '393x852') {
+            await _shot(tester, s.name);
           }
           for (final entry in s.measure.entries) {
             final f = entry.value();

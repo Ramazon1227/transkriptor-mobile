@@ -45,7 +45,9 @@ class ProfilePage extends StatelessWidget {
                       ActionRow(
                         icon: Icons.mail_outline_rounded,
                         label: l10n.profileEmail,
-                        value: user.email,
+                        // An address is too long for the value column and
+                        // would break mid-word; it goes under the label.
+                        subtitle: user.email,
                       ),
                       ActionRow(
                         icon: Icons.key_outlined,
