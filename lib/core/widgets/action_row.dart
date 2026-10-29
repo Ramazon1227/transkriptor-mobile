@@ -107,14 +107,19 @@ class ActionRow extends StatelessWidget {
               ),
               if (value != null) ...[
                 const SizedBox(width: 12),
+                // Align fills the flexible share so the value sits at the
+                // row's end instead of where the share happens to start.
                 Flexible(
                   flex: 2,
-                  child: Text(
-                    value,
-                    textAlign: TextAlign.end,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppText.body.copyWith(color: AppColors.mutedDark),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Text(
+                      value,
+                      textAlign: TextAlign.end,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.body.copyWith(color: AppColors.mutedDark),
+                    ),
                   ),
                 ),
               ],

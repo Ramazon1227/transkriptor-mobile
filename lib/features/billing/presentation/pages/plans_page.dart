@@ -111,13 +111,17 @@ class _PlanCard extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            plan.isFree
-                ? l10n.planFree
-                : l10n.planPrice(Formatters.money(plan.priceUzs)),
-            style: AppText.heading,
-          ),
+          // A free plan is usually named «Bepul» already; the price line
+          // would only repeat it.
+          if (!plan.isFree || plan.name.trim() != l10n.planFree) ...[
+            const SizedBox(height: 6),
+            Text(
+              plan.isFree
+                  ? l10n.planFree
+                  : l10n.planPrice(Formatters.money(plan.priceUzs)),
+              style: AppText.heading,
+            ),
+          ],
           const SizedBox(height: 10),
           Text(
             l10n.planMinutesPerMonth(
