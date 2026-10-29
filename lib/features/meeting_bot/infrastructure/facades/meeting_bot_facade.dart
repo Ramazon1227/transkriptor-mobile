@@ -25,12 +25,18 @@ class MeetingBotFacade implements IMeetingBotFacade {
     required String meetUrl,
     required bool keepVideo,
     int? numSpeakers,
+    bool summarize = false,
+    String? summaryTemplateId,
+    bool shareInternal = false,
   }) async {
     final result = await _repository.create(
       workspaceId: workspaceId,
       meetUrl: meetUrl,
       keepVideo: keepVideo,
       numSpeakers: numSpeakers,
+      summarize: summarize,
+      summaryTemplateId: summaryTemplateId,
+      shareInternal: shareInternal,
     );
     return result.map((m) => m.toEntity());
   }

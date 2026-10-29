@@ -25,11 +25,18 @@ class MeetingBotRepository {
     });
   }
 
+  /// `CreateMeetingBotRequest` (backend `api/handler/meeting_bot.go`).
+  /// The summary fields go only with `summarize: true`: the server
+  /// answers 400 for a template or `share_internal` without it, and 403
+  /// for `share_internal` from an unverified email.
   Future<Either<Failure, MeetingBotModel>> create({
     required String workspaceId,
     required String meetUrl,
     required bool keepVideo,
     int? numSpeakers,
+    bool summarize = false,
+    String? summaryTemplateId,
+    bool shareInternal = false,
   }) {
     return runRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -39,6 +46,11 @@ class MeetingBotRepository {
           'workspace_id': workspaceId,
           'keep_video': keepVideo,
           'num_speakers': ?numSpeakers,
+          if (summarize) ...{
+            'summarize': true,
+            'summary_template_id': ?summaryTemplateId,
+            'share_internal': shareInternal,
+          },
         },
       );
       return MeetingBotModel.fromJson(envelopeData(response.data));

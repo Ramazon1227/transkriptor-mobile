@@ -11,11 +11,19 @@ abstract interface class IMeetingBotFacade {
   /// [meetUrl] is already canonical (`canonicalMeetUrl`). [numSpeakers]
   /// null means the server decides. No language field: the workspace
   /// setting is the source (decided 2026-10-29).
+  ///
+  /// [summarize]: a summary is written after the meeting (T14.1, backend
+  /// `feat/meeting-ai`), with [summaryTemplateId] (null: the default) and
+  /// mailed to internal participants too when [shareInternal]. Those two
+  /// are sent only with [summarize]; an older server ignores all three.
   Future<Either<Failure, MeetingBot>> create({
     required String workspaceId,
     required String meetUrl,
     required bool keepVideo,
     int? numSpeakers,
+    bool summarize = false,
+    String? summaryTemplateId,
+    bool shareInternal = false,
   });
 
   Future<Either<Failure, MeetingBot>> get(String id);

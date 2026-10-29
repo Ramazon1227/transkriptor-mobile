@@ -646,6 +646,7 @@
   "meetSummaryTemplate": "Xulosa shabloni",
   "meetShareInternal": "Xulosani ichki ishtirokchilarga ham yuborish",
   "meetShareInternalBody": "Faqat emailingiz domenidagi ishtirokchilarga; buning uchun emailingiz tasdiqlangan boʻlishi kerak.",
+  "meetForbidden": "Bot yuborilmadi: ruxsat yoʻq. Kuzatuvchi bot yubora olmaydi, xulosani ishtirokchilarga yuborish uchun esa emailingiz tasdiqlangan boʻlishi kerak.",
   "profileNameEdit": "Ismni oʻzgartirish",
   "profileNameAdd": "Ism qoʻshish",
   "profileNameSave": "Saqlash",

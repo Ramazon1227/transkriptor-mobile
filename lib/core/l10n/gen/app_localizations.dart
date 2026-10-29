@@ -3154,6 +3154,12 @@ abstract class AppLocalizations {
   /// **'Faqat emailingiz domenidagi ishtirokchilarga; buning uchun emailingiz tasdiqlangan boʻlishi kerak.'**
   String get meetShareInternalBody;
 
+  /// No description provided for @meetForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot yuborilmadi: ruxsat yoʻq. Kuzatuvchi bot yubora olmaydi, xulosani ishtirokchilarga yuborish uchun esa emailingiz tasdiqlangan boʻlishi kerak.'**
+  String get meetForbidden;
+
   /// No description provided for @profileNameEdit.
   ///
   /// In uz, this message translates to:

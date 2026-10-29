@@ -68,6 +68,9 @@ void main() {
         meetUrl: any(named: 'meetUrl'),
         keepVideo: any(named: 'keepVideo'),
         numSpeakers: any(named: 'numSpeakers'),
+        summarize: any(named: 'summarize'),
+        summaryTemplateId: any(named: 'summaryTemplateId'),
+        shareInternal: any(named: 'shareInternal'),
       ),
     ).thenAnswer((_) async => const Left(Failure.server(statusCode: 404))),
     build: build,
@@ -92,6 +95,9 @@ void main() {
         meetUrl: any(named: 'meetUrl'),
         keepVideo: any(named: 'keepVideo'),
         numSpeakers: any(named: 'numSpeakers'),
+        summarize: any(named: 'summarize'),
+        summaryTemplateId: any(named: 'summaryTemplateId'),
+        shareInternal: any(named: 'shareInternal'),
       ),
     ),
   );
@@ -105,6 +111,9 @@ void main() {
           meetUrl: any(named: 'meetUrl'),
           keepVideo: any(named: 'keepVideo'),
           numSpeakers: any(named: 'numSpeakers'),
+          summarize: any(named: 'summarize'),
+          summaryTemplateId: any(named: 'summaryTemplateId'),
+          shareInternal: any(named: 'shareInternal'),
         ),
       ).thenAnswer((_) async => Right(_bot(MeetingBotStatus.joining)));
       answer([
@@ -133,6 +142,59 @@ void main() {
           meetUrl: 'https://meet.google.com/abc-defg-hij',
           keepVideo: true,
           numSpeakers: 2,
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest<MeetingBotCubit, MeetingBotState>(
+    'summary options go only with summarize',
+    setUp: () {
+      when(
+        () => facade.create(
+          workspaceId: any(named: 'workspaceId'),
+          meetUrl: any(named: 'meetUrl'),
+          keepVideo: any(named: 'keepVideo'),
+          numSpeakers: any(named: 'numSpeakers'),
+          summarize: any(named: 'summarize'),
+          summaryTemplateId: any(named: 'summaryTemplateId'),
+          shareInternal: any(named: 'shareInternal'),
+        ),
+      ).thenAnswer((_) async => Right(_bot(MeetingBotStatus.done)));
+    },
+    build: build,
+    seed: () => const MeetingBotState(workspaceId: 'w1'),
+    act: (c) async {
+      await c.submit(
+        url: 'https://meet.google.com/abc-defg-hij',
+        keepVideo: false,
+        summaryTemplateId: 'tp',
+        shareInternal: true,
+      );
+      await c.submit(
+        url: 'https://meet.google.com/abc-defg-hij',
+        keepVideo: false,
+        summarize: true,
+        summaryTemplateId: 'tp',
+        shareInternal: true,
+      );
+    },
+    verify: (_) {
+      verify(
+        () => facade.create(
+          workspaceId: 'w1',
+          meetUrl: 'https://meet.google.com/abc-defg-hij',
+          keepVideo: false,
+        ),
+      ).called(1);
+      verify(
+        () => facade.create(
+          workspaceId: 'w1',
+          meetUrl: 'https://meet.google.com/abc-defg-hij',
+          keepVideo: false,
+          summarize: true,
+          summaryTemplateId: 'tp',
+          shareInternal: true,
         ),
       ).called(1);
     },

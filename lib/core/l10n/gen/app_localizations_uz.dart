@@ -1726,6 +1726,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Faqat emailingiz domenidagi ishtirokchilarga; buning uchun emailingiz tasdiqlangan boʻlishi kerak.';
 
   @override
+  String get meetForbidden =>
+      'Bot yuborilmadi: ruxsat yoʻq. Kuzatuvchi bot yubora olmaydi, xulosani ishtirokchilarga yuborish uchun esa emailingiz tasdiqlangan boʻlishi kerak.';
+
+  @override
   String get profileNameEdit => 'Ismni oʻzgartirish';
 
   @override

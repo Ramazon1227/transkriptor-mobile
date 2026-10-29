@@ -71,6 +71,60 @@ void main() {
       expect(body.containsKey('language'), isFalse);
     });
 
+    test('summarize off: no summary keys at all', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/meeting-bots': (202, ok(_bot())),
+      });
+      await MeetingBotRepository(fakeDio(http)).create(
+        workspaceId: 'w1',
+        meetUrl: 'https://meet.google.com/abc-defg-hij',
+        keepVideo: false,
+        summaryTemplateId: 'tp',
+        shareInternal: true,
+      );
+      final body = http.sent.single.body! as Map<String, Object?>;
+      expect(body.containsKey('summarize'), isFalse);
+      expect(body.containsKey('summary_template_id'), isFalse);
+      expect(body.containsKey('share_internal'), isFalse);
+    });
+
+    test('summarize on: the CreateMeetingBotRequest keys', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/meeting-bots': (202, ok(_bot())),
+      });
+      final repo = MeetingBotRepository(fakeDio(http));
+      await repo.create(
+        workspaceId: 'w1',
+        meetUrl: 'https://meet.google.com/abc-defg-hij',
+        keepVideo: false,
+        summarize: true,
+        summaryTemplateId: '7d0c2b1e-0000-4000-8000-000000000001',
+        shareInternal: true,
+      );
+      await repo.create(
+        workspaceId: 'w1',
+        meetUrl: 'https://meet.google.com/abc-defg-hij',
+        keepVideo: false,
+        summarize: true,
+      );
+      expect(http.sent.first.body, {
+        'meet_url': 'https://meet.google.com/abc-defg-hij',
+        'workspace_id': 'w1',
+        'keep_video': false,
+        'summarize': true,
+        'summary_template_id': '7d0c2b1e-0000-4000-8000-000000000001',
+        'share_internal': true,
+      });
+      // No template: the server's default; share defaults to false.
+      expect(http.sent.last.body, {
+        'meet_url': 'https://meet.google.com/abc-defg-hij',
+        'workspace_id': 'w1',
+        'keep_video': false,
+        'summarize': true,
+        'share_internal': false,
+      });
+    });
+
     test('list reads available, the default name and the items', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/meeting-bots': (

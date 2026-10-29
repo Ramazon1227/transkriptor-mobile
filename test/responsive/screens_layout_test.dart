@@ -81,6 +81,7 @@ import 'package:transkriptor_uz/features/links/application/links_cubit.dart';
 import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart';
 import 'package:transkriptor_uz/features/meeting_bot/domain/entities/meeting_bot.dart';
 import 'package:transkriptor_uz/features/meeting_bot/presentation/pages/meeting_page.dart';
+import 'package:transkriptor_uz/features/meeting_bot/presentation/widgets/meeting_summary_options.dart';
 import 'package:transkriptor_uz/features/notes/application/note_cubit.dart';
 import 'package:transkriptor_uz/features/notes/application/notes_cubit.dart';
 import 'package:transkriptor_uz/features/notes/domain/entities/note.dart';
@@ -1049,6 +1050,31 @@ final _scenarios = <_Scenario>[
       ),
     ),
     measure: {'TextField': _field, 'FilledButton': _filled},
+  ),
+  _Scenario(
+    'meeting(summary options)',
+    () => Scaffold(
+      body: BlocProvider<SummaryCubit>.value(
+        value: summary,
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            MeetingSummaryOptions(
+              summarize: true,
+              shareInternal: true,
+              onSummarize: (_) {},
+              onShareInternal: (_) {},
+            ),
+          ],
+        ),
+      ),
+    ),
+    arrange: () => when(() => summary.state).thenReturn(
+      _summaryState.copyWith(
+        templatesStatus: TemplatesStatus.loading,
+        template: _templates.templates.first.copyWith(name: _longName),
+      ),
+    ),
   ),
   _Scenario(
     'meeting(recording)',

@@ -112,10 +112,14 @@ class MeetingBotCubit extends Cubit<MeetingBotState> {
     if (state.urlInvalid) emit(state.copyWith(urlInvalid: false));
   }
 
+  /// [summarize] and its options: see `IMeetingBotFacade.create`.
   Future<void> submit({
     required String url,
     required bool keepVideo,
     int? numSpeakers,
+    bool summarize = false,
+    String? summaryTemplateId,
+    bool shareInternal = false,
   }) async {
     final workspaceId = state.workspaceId;
     if (workspaceId == null || state.submitting) return;
@@ -132,6 +136,9 @@ class MeetingBotCubit extends Cubit<MeetingBotState> {
       meetUrl: meetUrl,
       keepVideo: keepVideo,
       numSpeakers: numSpeakers,
+      summarize: summarize,
+      summaryTemplateId: summarize ? summaryTemplateId : null,
+      shareInternal: summarize && shareInternal,
     );
     if (isClosed) return;
     result.fold(

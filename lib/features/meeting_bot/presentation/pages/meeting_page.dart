@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
@@ -16,6 +17,8 @@ import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gat
 import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart';
 import 'package:transkriptor_uz/features/meeting_bot/domain/entities/meeting_bot.dart';
 import 'package:transkriptor_uz/features/meeting_bot/presentation/widgets/meeting_bot_status_view.dart';
+import 'package:transkriptor_uz/features/meeting_bot/presentation/widgets/meeting_summary_options.dart';
+import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 /// «Onlayn uchrashuv»: send the Google Meet bot, follow it, and see the
@@ -30,13 +33,20 @@ class MeetingPage extends StatelessWidget {
       appBar: AppBar(title: Text(context.l10n.sourceMeetingTitle)),
       body: ContentWidth(
         child: WorkspaceGate(
-          builder: (context, workspaceId) => BlocProvider(
+          builder: (context, workspaceId) => MultiBlocProvider(
             key: ValueKey(workspaceId),
-            create: (_) {
-              final cubit = getIt<MeetingBotCubit>();
-              unawaited(cubit.load(workspaceId));
-              return cubit;
-            },
+            providers: [
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<MeetingBotCubit>();
+                  unawaited(cubit.load(workspaceId));
+                  return cubit;
+                },
+              ),
+              // Only the template library: loaded when the person turns
+              // the summary on.
+              BlocProvider(create: (_) => getIt<SummaryCubit>()),
+            ],
             child: const _MeetingBody(),
           ),
         ),
@@ -115,6 +125,8 @@ class _FormAndListState extends State<_FormAndList> {
   final _url = TextEditingController();
   bool _keepVideo = false;
   int? _speakers;
+  bool _summarize = false;
+  bool _shareInternal = false;
 
   @override
   void dispose() {
@@ -138,8 +150,22 @@ class _FormAndListState extends State<_FormAndList> {
         url: _url.text,
         keepVideo: _keepVideo,
         numSpeakers: _speakers,
+        summarize: _summarize,
+        summaryTemplateId: context.read<SummaryCubit>().state.template?.id,
+        shareInternal: _shareInternal,
       ),
     );
+  }
+
+  void _setSummarize(bool on) {
+    setState(() => _summarize = on);
+    final summary = context.read<SummaryCubit>();
+    final status = summary.state.templatesStatus;
+    if (on &&
+        (status == TemplatesStatus.initial ||
+            status == TemplatesStatus.failure)) {
+      unawaited(summary.loadTemplates());
+    }
   }
 
   @override
@@ -213,6 +239,14 @@ class _FormAndListState extends State<_FormAndList> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              MeetingSummaryOptions(
+                summarize: _summarize,
+                shareInternal: _shareInternal,
+                enabled: !busy,
+                onSummarize: _setSummarize,
+                onShareInternal: (v) => setState(() => _shareInternal = v),
+              ),
               const SizedBox(height: 20),
               SpeakerCountPicker(
                 value: _speakers,
@@ -231,7 +265,11 @@ class _FormAndListState extends State<_FormAndList> {
               const SizedBox(height: 20),
               if (failure != null) ...[
                 Text(
-                  failure.message(l10n),
+                  // 403: a VIEWER, or «share with participants» from an
+                  // email that is not verified (the server checks both).
+                  failure is ServerFailure && failure.statusCode == 403
+                      ? l10n.meetForbidden
+                      : failure.message(l10n),
                   style: const TextStyle(color: AppColors.bad),
                 ),
                 const SizedBox(height: 12),
