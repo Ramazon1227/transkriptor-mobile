@@ -188,8 +188,9 @@ String fileActionFailureText(
     l10n.fileRetranscribeConflict,
   (FileAction.retranscribe, ServerFailure(statusCode: 422)) =>
     l10n.fileRetranscribeNotReady,
-  (FileAction.rename, ServerFailure(statusCode: 400)) =>
-    l10n.fileNameInvalid(FileRules.maxName),
+  (FileAction.rename, ServerFailure(statusCode: 400)) => l10n.fileNameInvalid(
+    FileRules.maxName,
+  ),
   _ => libraryFailureText(l10n, failure),
 };
 
@@ -357,9 +358,7 @@ class _ConfirmSheet extends StatelessWidget {
               if (!delete && duration != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  l10n.fileRetranscribeCost(
-                    Formatters.minutesNeeded(duration),
-                  ),
+                  l10n.fileRetranscribeCost(Formatters.minutesNeeded(duration)),
                   style: AppText.caption,
                 ),
               ],

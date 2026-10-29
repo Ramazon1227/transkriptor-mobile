@@ -25,11 +25,7 @@ class FilesEmptyView extends StatelessWidget {
       children: [
         Center(child: SourceIcon(source: tab.icon, size: 56)),
         const SizedBox(height: 16),
-        Text(
-          _message(l10n),
-          textAlign: TextAlign.center,
-          style: AppText.body,
-        ),
+        Text(_message(l10n), textAlign: TextAlign.center, style: AppText.body),
         if (action != null) ...[
           const SizedBox(height: 20),
           Center(

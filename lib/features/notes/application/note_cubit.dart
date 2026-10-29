@@ -96,9 +96,8 @@ class NoteCubit extends Cubit<NoteState> {
         ),
       ),
       (value) => emit(
-        onDone(
-          value,
-        ).copyWith(actionStatus: NoteActionStatus.done, changed: true),
+        onDone(value)
+            .copyWith(actionStatus: NoteActionStatus.done, changed: true),
       ),
     );
   }

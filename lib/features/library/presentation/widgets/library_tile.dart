@@ -178,10 +178,7 @@ class _Tag extends StatelessWidget {
         color: AppColors.sf2,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Text(
-        text,
-        style: AppText.caption.copyWith(fontSize: 11),
-      ),
+      child: Text(text, style: AppText.caption.copyWith(fontSize: 11)),
     );
   }
 }

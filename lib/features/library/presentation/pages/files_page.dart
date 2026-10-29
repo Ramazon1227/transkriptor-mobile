@@ -165,10 +165,7 @@ class _FilesBodyState extends State<_FilesBody> {
             onMenu: () => _menu(canWrite),
           ),
           SourceTabs(selected: _tab, onSelected: _select),
-          if (!notes) ...[
-            _FolderRow(canWrite: canWrite),
-            const TagFilterBar(),
-          ],
+          if (!notes) ...[_FolderRow(canWrite: canWrite), const TagFilterBar()],
           Expanded(
             child: notes
                 ? const NotesList()

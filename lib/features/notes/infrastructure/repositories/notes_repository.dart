@@ -28,9 +28,7 @@ class NotesRepository {
 
   Future<Either<Failure, NoteModel>> get(String id) {
     return runRequest(() async {
-      final response = await _dio.get<Map<String, dynamic>>(
-        Endpoints.note(id),
-      );
+      final response = await _dio.get<Map<String, dynamic>>(Endpoints.note(id));
       return _note(response.data);
     });
   }

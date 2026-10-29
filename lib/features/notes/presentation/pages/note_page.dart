@@ -86,8 +86,8 @@ class _NoteView extends StatelessWidget {
             body: ContentWidth(
               maxWidth: ContentWidth.list,
               child: switch (state.status) {
-                NoteStatus.initial || NoteStatus.loading =>
-                  const AppLoadingView(),
+                NoteStatus.initial ||
+                NoteStatus.loading => const AppLoadingView(),
                 NoteStatus.failure => AppErrorView(
                   failure: state.failure ?? const Failure.unknown(),
                   onRetry: () =>
