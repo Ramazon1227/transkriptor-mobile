@@ -1887,6 +1887,648 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.'**
   String get logoutBody;
+
+  /// No description provided for @recorderTapToStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash uchun tugmani bosing'**
+  String get recorderTapToStart;
+
+  /// No description provided for @recorderRecord.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozish'**
+  String get recorderRecord;
+
+  /// No description provided for @recorderDiscard.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get recorderDiscard;
+
+  /// No description provided for @recorderScreenOff.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.'**
+  String get recorderScreenOff;
+
+  /// No description provided for @recorderMicDeniedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mikrofonga ruxsat yoʻq'**
+  String get recorderMicDeniedTitle;
+
+  /// No description provided for @recorderMicDeniedBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.'**
+  String get recorderMicDeniedBody;
+
+  /// No description provided for @recoveryBannerOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborilmagan yozuv bor — {duration}, {when}'**
+  String recoveryBannerOne(String duration, String when);
+
+  /// No description provided for @recoveryBannerMany.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborilmagan yozuvlar: {count} ta'**
+  String recoveryBannerMany(int count);
+
+  /// No description provided for @recoveryCardTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborilmagan yozuvlar'**
+  String get recoveryCardTitle;
+
+  /// No description provided for @recoveryCardBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oldingi yozuvlar telefonda saqlanib qolgan. Ularni hozir yuborish yoki oʻchirish mumkin.'**
+  String get recoveryCardBody;
+
+  /// No description provided for @recoverySheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborilmagan yozuvlar'**
+  String get recoverySheetTitle;
+
+  /// No description provided for @recoveryOpen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Koʻrish va yuborish'**
+  String get recoveryOpen;
+
+  /// No description provided for @recoverySend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborish'**
+  String get recoverySend;
+
+  /// No description provided for @recoveryDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get recoveryDelete;
+
+  /// No description provided for @recoveryDeleteAsk.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu yozuv butunlay oʻchirilsinmi?'**
+  String get recoveryDeleteAsk;
+
+  /// No description provided for @recoveryDeleteYes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ha, oʻchirish'**
+  String get recoveryDeleteYes;
+
+  /// No description provided for @recoveryDeleteNo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoʻq'**
+  String get recoveryDeleteNo;
+
+  /// No description provided for @recoveryInterrupted.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uzilgan'**
+  String get recoveryInterrupted;
+
+  /// No description provided for @recoveryInterruptedHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ilova yopilib qolgan — oxirgi soniyalargacha tiklanadi'**
+  String get recoveryInterruptedHint;
+
+  /// No description provided for @recoveryKindMic.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mikrofon'**
+  String get recoveryKindMic;
+
+  /// No description provided for @recoveryKindScreen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran ovozi'**
+  String get recoveryKindScreen;
+
+  /// No description provided for @recoveryUnknownLength.
+  ///
+  /// In uz, this message translates to:
+  /// **'uzunligi nomaʼlum'**
+  String get recoveryUnknownLength;
+
+  /// No description provided for @recoveryToday.
+  ///
+  /// In uz, this message translates to:
+  /// **'bugun {time}'**
+  String recoveryToday(String time);
+
+  /// No description provided for @recoveryYesterday.
+  ///
+  /// In uz, this message translates to:
+  /// **'kecha {time}'**
+  String recoveryYesterday(String time);
+
+  /// No description provided for @recoveryOn.
+  ///
+  /// In uz, this message translates to:
+  /// **'{date} {time}'**
+  String recoveryOn(String date, String time);
+
+  /// No description provided for @screenRecordingName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran yozuvi {date}'**
+  String screenRecordingName(String date);
+
+  /// No description provided for @screenIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefonda ijro etilayotgan ovozni yozib oladi va matnga aylantiradi.'**
+  String get screenIntro;
+
+  /// No description provided for @screenWhatYes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoziladi: videolar, brauzer, ilovalardagi ovoz — telefon oʻzi nimani ijro etsa.'**
+  String get screenWhatYes;
+
+  /// No description provided for @screenWhatNoCalls.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon qoʻngʻiroqlari va messenjer qoʻngʻiroqlari yozilmaydi — Android ularni yozishga ruxsat bermaydi.'**
+  String get screenWhatNoCalls;
+
+  /// No description provided for @screenWhatBlocked.
+  ///
+  /// In uz, this message translates to:
+  /// **'Baʼzi ilovalar oʻz ovozini yozishni taqiqlaydi. Unda ularning oʻrnida jimlik yoziladi.'**
+  String get screenWhatBlocked;
+
+  /// No description provided for @screenWhatNoVideo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tasvir yozilmaydi — faqat ovoz.'**
+  String get screenWhatNoVideo;
+
+  /// No description provided for @screenWithMic.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mikrofonni ham yozish'**
+  String get screenWithMic;
+
+  /// No description provided for @screenWithMicBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻzingizning ovozingiz ham qoʻshiladi'**
+  String get screenWithMicBody;
+
+  /// No description provided for @screenStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash'**
+  String get screenStart;
+
+  /// No description provided for @screenConsentNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Android ruxsat soʻraydi: oynada «Boshlash»ni bosing.'**
+  String get screenConsentNote;
+
+  /// No description provided for @screenStarting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ruxsat kutilmoqda…'**
+  String get screenStarting;
+
+  /// No description provided for @screenStopping.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuv saqlanmoqda…'**
+  String get screenStopping;
+
+  /// No description provided for @screenRecordingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefondan odatdagidek foydalaning — yozuv fonda davom etadi. Toʻxtatish bildirishnomada ham bor.'**
+  String get screenRecordingHint;
+
+  /// No description provided for @screenSilentTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovoz kelmayapti'**
+  String get screenSilentTitle;
+
+  /// No description provided for @screenSilentBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozir hech narsa ijro etilmayapti yoki ijro etayotgan ilova yozishga ruxsat bermaydi (qoʻngʻiroq ilovalari shunday).'**
+  String get screenSilentBody;
+
+  /// No description provided for @screenWithMicOn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mikrofon ham yozilmoqda'**
+  String get screenWithMicOn;
+
+  /// No description provided for @screenCancelTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ekran yozuvi bekor qilinsinmi?'**
+  String get screenCancelTitle;
+
+  /// No description provided for @screenCancelBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozib olingan ovoz saqlanmaydi.'**
+  String get screenCancelBody;
+
+  /// No description provided for @screenUnsupportedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu telefonda ishlamaydi'**
+  String get screenUnsupportedTitle;
+
+  /// No description provided for @screenUnsupportedBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefondagi ovozni yozish Android 10 va undan yangi versiyalarda bor. iPhone bunday yozishga ruxsat bermaydi. Oʻrniga «Audio yozib olish» yoki «Fayl yuklash»dan foydalaning.'**
+  String get screenUnsupportedBody;
+
+  /// No description provided for @screenHintConsent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tizim oynasida «Boshlash»ni bosmasangiz, yozish boshlanmaydi.'**
+  String get screenHintConsent;
+
+  /// No description provided for @screenHintMic.
+  ///
+  /// In uz, this message translates to:
+  /// **'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → Transkriptor → Ruxsatlar → Mikrofon.'**
+  String get screenHintMic;
+
+  /// No description provided for @screenHintBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval boshqa yozuvni toʻxtating (bildirishnomaga qarang).'**
+  String get screenHintBusy;
+
+  /// No description provided for @screenHintFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta urinib koʻring. Takrorlansa, telefonni qayta ishga tushiring.'**
+  String get screenHintFailed;
+
+  /// No description provided for @screenKeptPartial.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozish toʻxtab qoldi, lekin shu paytgacha yozilgani saqlandi.'**
+  String get screenKeptPartial;
+
+  /// No description provided for @meetHeadline.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Meet uchrashuvini yozib olish'**
+  String get meetHeadline;
+
+  /// No description provided for @meetIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot uchrashuvga mehmon sifatida kiradi, ovozni yozadi, uchrashuv tugagach matnga aylantiradi.'**
+  String get meetIntro;
+
+  /// No description provided for @meetUrlLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Meet havolasi'**
+  String get meetUrlLabel;
+
+  /// No description provided for @meetUrlInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faqat Google Meet havolasi: https://meet.google.com/abc-defg-hij'**
+  String get meetUrlInvalid;
+
+  /// No description provided for @meetKeepVideo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Videoni ham saqlash'**
+  String get meetKeepVideo;
+
+  /// No description provided for @meetKeepVideoBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ishtirokchilar kameralari yoziladi, fayl kattaroq boʻladi. Meet oynasining oʻzi yozilmaydi.'**
+  String get meetKeepVideoBody;
+
+  /// No description provided for @meetHostNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Google Meet tashqi botlarni kutish zaliga qoʻyadi. Uchrashuv egasi botni «Qabul qilish» bilan kiritmaguncha hech narsa yozilmaydi.'**
+  String get meetHostNote;
+
+  /// No description provided for @meetBotName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuvda bot «{name}» nomi bilan koʻrinadi.'**
+  String meetBotName(String name);
+
+  /// No description provided for @meetJoin.
+  ///
+  /// In uz, this message translates to:
+  /// **'Botni yuborish'**
+  String get meetJoin;
+
+  /// No description provided for @meetRecent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oxirgi uchrashuvlar'**
+  String get meetRecent;
+
+  /// No description provided for @meetRecentEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hali bot yuborilmagan.'**
+  String get meetRecentEmpty;
+
+  /// No description provided for @meetUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuv boti bu serverda hozir oʻchiq.'**
+  String get meetUnavailable;
+
+  /// No description provided for @meetRouteMissingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu server versiyasida hali yoʻq'**
+  String get meetRouteMissingTitle;
+
+  /// No description provided for @meetRouteMissingBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuv boti serverning keyingi versiyasi bilan keladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.'**
+  String get meetRouteMissingBody;
+
+  /// No description provided for @meetStatusScheduled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Navbatda'**
+  String get meetStatusScheduled;
+
+  /// No description provided for @meetStatusJoining.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuvga kirmoqda'**
+  String get meetStatusJoining;
+
+  /// No description provided for @meetStatusWaiting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kutish zalida'**
+  String get meetStatusWaiting;
+
+  /// No description provided for @meetStatusRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozilmoqda'**
+  String get meetStatusRecording;
+
+  /// No description provided for @meetStatusUploading.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta ishlanmoqda'**
+  String get meetStatusUploading;
+
+  /// No description provided for @meetStatusDone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tayyor'**
+  String get meetStatusDone;
+
+  /// No description provided for @meetStatusFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xato'**
+  String get meetStatusFailed;
+
+  /// No description provided for @meetStatusDenied.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kiritilmadi'**
+  String get meetStatusDenied;
+
+  /// No description provided for @meetStatusCancelled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bekor qilingan'**
+  String get meetStatusCancelled;
+
+  /// No description provided for @meetStepWaitingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuv egasi botni qabul qilishi kerak.'**
+  String get meetStepWaitingHint;
+
+  /// No description provided for @meetStepUploadingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuv yuklanmoqda, keyin transkripsiya boshlanadi.'**
+  String get meetStepUploadingHint;
+
+  /// No description provided for @meetDeniedDefault.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuv egasi botni kiritmadi.'**
+  String get meetDeniedDefault;
+
+  /// No description provided for @meetFailedDefault.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot ishini yakunlay olmadi.'**
+  String get meetFailedDefault;
+
+  /// No description provided for @meetCancelledBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot chaqirib olindi.'**
+  String get meetCancelledBody;
+
+  /// No description provided for @meetOpenResult.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkriptni ochish'**
+  String get meetOpenResult;
+
+  /// No description provided for @meetCancel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Botni chaqirib olish'**
+  String get meetCancel;
+
+  /// No description provided for @meetCancelRecordingNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot uchrashuvdan chiqadi. Shu paytgacha yozilgani baribir matnga aylantiriladi.'**
+  String get meetCancelRecordingNote;
+
+  /// No description provided for @meetLeaving.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bot uchrashuvdan chiqmoqda…'**
+  String get meetLeaving;
+
+  /// No description provided for @meetNew.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi uchrashuv'**
+  String get meetNew;
+
+  /// No description provided for @meetPollFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Holatni yangilab boʻlmadi — qayta urinilmoqda.'**
+  String get meetPollFailed;
+
+  /// No description provided for @urlIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Internetdagi audio yoki video faylning toʻgʻridan-toʻgʻri havolasi (.mp3, .mp4, .m4a…).'**
+  String get urlIntro;
+
+  /// No description provided for @urlLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl havolasi'**
+  String get urlLabel;
+
+  /// No description provided for @urlInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havola http:// yoki https:// bilan boshlanishi va manzilga ega boʻlishi kerak.'**
+  String get urlInvalid;
+
+  /// No description provided for @urlPlatformsNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'YouTube, Google Drive va Dropbox havolalari shu yerdan ham ishlaydi — ular alohida yoʻl bilan yuboriladi.'**
+  String get urlPlatformsNote;
+
+  /// No description provided for @urlSubmit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom etish'**
+  String get urlSubmit;
+
+  /// No description provided for @urlNotReady.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻgʻridan-toʻgʻri havoladan yuklash serverda hali yoʻq. Hozircha faylni telefonga yuklab olib, «Fayl yuklash» orqali yuboring.'**
+  String get urlNotReady;
+
+  /// No description provided for @urlBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — havoladan yuklash serverda hali yoʻq'**
+  String get urlBanner;
+
+  /// No description provided for @dictationBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — jonli diktovka uchun server hali tayyor emas, matn namunaviy'**
+  String get dictationBanner;
+
+  /// No description provided for @dictationIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gapiring — matn shu zahoti paydo boʻladi. Toʻxtatgach, uni qayd sifatida saqlash yoki nusxa olish mumkin.'**
+  String get dictationIntro;
+
+  /// No description provided for @dictationStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gapirishni boshlash'**
+  String get dictationStart;
+
+  /// No description provided for @dictationStop.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish'**
+  String get dictationStop;
+
+  /// No description provided for @dictationListening.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tinglanmoqda…'**
+  String get dictationListening;
+
+  /// No description provided for @dictationEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn shu yerda paydo boʻladi.'**
+  String get dictationEmpty;
+
+  /// No description provided for @dictationSaveNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatma sifatida saqlash'**
+  String get dictationSaveNote;
+
+  /// No description provided for @dictationCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxa olish'**
+  String get dictationCopy;
+
+  /// No description provided for @dictationCopied.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn nusxalandi'**
+  String get dictationCopied;
+
+  /// No description provided for @dictationDiscard.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tashlab yuborish'**
+  String get dictationDiscard;
+
+  /// No description provided for @dictationSaved.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatma saqlandi'**
+  String get dictationSaved;
+
+  /// No description provided for @dictationNoteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Diktovka {date}'**
+  String dictationNoteTitle(String date);
+
+  /// No description provided for @dictationSample1.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu namuna matn: jonli diktovka hali serverga ulanmagan.'**
+  String get dictationSample1;
+
+  /// No description provided for @dictationSample2.
+  ///
+  /// In uz, this message translates to:
+  /// **'Server oqimli endpoint olganda shu yerda sizning soʻzlaringiz chiqadi.'**
+  String get dictationSample2;
+
+  /// No description provided for @dictationSample3.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha ekranning qanday ishlashini koʻrish mumkin: avval xira matn, keyin tasdiqlangan gap.'**
+  String get dictationSample3;
+
+  /// No description provided for @dictationSample4.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.'**
+  String get dictationSample4;
 }
 
 class _AppLocalizationsDelegate

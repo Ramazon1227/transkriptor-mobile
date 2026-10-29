@@ -50,4 +50,11 @@ abstract final class Endpoints {
   // Share links.
   static String transcriptShares(String id) => '/api/v1/transcript/$id/share';
   static String share(String id) => '/api/v1/share/$id';
+
+  // Capture sources (M-R6). Meeting bot: backend `feat/meet-bot`, answers
+  // 404 until that branch is deployed. Notes: dictation saves into them.
+  // A direct file URL has no endpoint yet (planned `POST /media/url`).
+  static const String meetingBots = '/api/v1/meeting-bots';
+  static String meetingBot(String id) => '/api/v1/meeting-bots/$id';
+  static const String notes = '/api/v1/notes';
 }
