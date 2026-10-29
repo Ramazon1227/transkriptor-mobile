@@ -1984,12 +1984,6 @@ abstract class AppLocalizations {
   /// **'Joriy joyga'**
   String get editorFollow;
 
-  /// No description provided for @editorSpeakerMenu.
-  ///
-  /// In uz, this message translates to:
-  /// **'Maʼruzachini tanlash'**
-  String get editorSpeakerMenu;
-
   /// No description provided for @playerPlay.
   ///
   /// In uz, this message translates to:

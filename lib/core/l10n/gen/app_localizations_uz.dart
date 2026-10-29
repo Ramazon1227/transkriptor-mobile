@@ -1049,9 +1049,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get editorFollow => 'Joriy joyga';
 
   @override
-  String get editorSpeakerMenu => 'Maʼruzachini tanlash';
-
-  @override
   String get playerPlay => 'Ijro etish';
 
   @override
