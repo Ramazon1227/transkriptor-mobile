@@ -2,6 +2,15 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Recording speech is the product's main way in. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- Recording continues with the screen off or the app in the
+         background: a foreground service with an ongoing notification
+         (capture/MicRecordingService, capture/ScreenAudioService). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <!-- Android 13+: without it the recording notification is hidden
+         (the service still runs). Asked for when a recording starts. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="Transkriptor"
         android:name="${applicationName}"
@@ -28,6 +37,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service
+            android:name=".capture.MicRecordingService"
+            android:exported="false"
+            android:foregroundServiceType="microphone"/>
+        <service
+            android:name=".capture.ScreenAudioService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection|microphone"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

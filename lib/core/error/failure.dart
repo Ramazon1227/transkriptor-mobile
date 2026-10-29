@@ -2,6 +2,21 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'failure.freezed.dart';
 
+/// Why a screen-audio capture could not run (`Failure.capture`).
+enum CaptureError {
+  /// Playback capture needs Android 10 (API 29); iOS has none.
+  unsupported,
+
+  /// The person did not allow screen capture in the system dialog.
+  consentDenied,
+
+  /// The system refused to start the capture or it broke midway.
+  captureFailed,
+
+  /// A capture is already running.
+  busy,
+}
+
 /// Every error that leaves the data layer. Facades return
 /// `Either<Failure, T>`; exceptions never reach a bloc.
 @freezed
@@ -31,6 +46,9 @@ sealed class Failure with _$Failure {
 
   /// Reading or writing a local file failed.
   const factory Failure.storage() = StorageFailure;
+
+  /// Screen-audio capture did not start or broke; see [CaptureError].
+  const factory Failure.capture(CaptureError reason) = CaptureFailure;
 
   const factory Failure.unknown() = UnknownFailure;
 }

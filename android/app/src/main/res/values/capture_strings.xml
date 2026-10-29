@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification texts of the recording foreground services. The app UI
+     is Uzbek only; these follow it. -->
+<resources>
+    <string name="capture_channel_name">Yozib olish</string>
+    <string name="capture_mic_title">Yozib olinmoqda…</string>
+    <string name="capture_screen_title">Ekran ovozi yozib olinmoqda…</string>
+    <string name="capture_stop">Toʻxtatish</string>
+</resources>
