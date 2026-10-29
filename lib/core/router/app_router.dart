@@ -8,13 +8,13 @@ import 'package:transkriptor_uz/features/auth/presentation/pages/profile_page.da
 import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.dart';
 import 'package:transkriptor_uz/features/billing/presentation/pages/plans_page.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/dictation_page.dart';
-import 'package:transkriptor_uz/features/capture/presentation/pages/meeting_page.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/screen_record_page.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/url_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
+import 'package:transkriptor_uz/features/meeting_bot/presentation/pages/meeting_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
 import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
@@ -108,7 +108,12 @@ class AppRouter {
         builder: (context, state) =>
             SendPage(file: state.extra! as PendingFile),
       ),
-      GoRoute(path: Routes.link, builder: (context, state) => const LinkPage()),
+      GoRoute(
+        path: Routes.link,
+        builder: (context, state) => LinkPage(
+          initialUrl: state.extra is String ? state.extra! as String : null,
+        ),
+      ),
       GoRoute(
         path: Routes.dictation,
         builder: (context, state) => const DictationPage(),

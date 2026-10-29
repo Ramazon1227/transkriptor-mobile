@@ -13,7 +13,11 @@ import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class LinkPage extends StatelessWidget {
-  const LinkPage({super.key});
+  const LinkPage({this.initialUrl, super.key});
+
+  /// Prefilled when «Havola orqali» recognised a YouTube/Drive/Dropbox
+  /// link; nothing is sent until the person presses the button.
+  final String? initialUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,7 @@ class LinkPage extends StatelessWidget {
         body: ContentWidth(
           child: WorkspaceGate(
             builder: (context, workspaceId) =>
-                _LinkForm(workspaceId: workspaceId),
+                _LinkForm(workspaceId: workspaceId, initialUrl: initialUrl),
           ),
         ),
       ),
@@ -33,16 +37,17 @@ class LinkPage extends StatelessWidget {
 }
 
 class _LinkForm extends StatefulWidget {
-  const _LinkForm({required this.workspaceId});
+  const _LinkForm({required this.workspaceId, this.initialUrl});
 
   final String workspaceId;
+  final String? initialUrl;
 
   @override
   State<_LinkForm> createState() => _LinkFormState();
 }
 
 class _LinkFormState extends State<_LinkForm> {
-  final _url = TextEditingController();
+  late final _url = TextEditingController(text: widget.initialUrl);
   int? _speakers;
 
   @override
