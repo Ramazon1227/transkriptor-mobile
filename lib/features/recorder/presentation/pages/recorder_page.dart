@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
+import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
+import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
+import 'package:transkriptor_uz/features/recorder/presentation/widgets/recovery_widgets.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 
 class RecorderPage extends StatelessWidget {
@@ -19,13 +23,19 @@ class RecorderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // Recording starts on open: the person tapped "record" to get here.
-      create: (_) {
-        final cubit = getIt<RecorderCubit>();
-        unawaited(cubit.start());
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        // Opens idle: unsent recordings are offered first, and the big
+        // button starts.
+        BlocProvider(create: (_) => getIt<RecorderCubit>()),
+        BlocProvider(
+          create: (_) {
+            final cubit = getIt<RecoveryCubit>();
+            unawaited(cubit.load());
+            return cubit;
+          },
+        ),
+      ],
       child: const _RecorderView(),
     );
   }
@@ -37,7 +47,7 @@ class _RecorderView extends StatelessWidget {
   bool _active(RecorderStatus s) =>
       s == RecorderStatus.recording || s == RecorderStatus.paused;
 
-  Future<void> _confirmDiscard(BuildContext context) async {
+  static Future<void> confirmDiscard(BuildContext context) async {
     final l10n = context.l10n;
     final cubit = context.read<RecorderCubit>();
     final discard = await showDialog<bool>(
@@ -108,7 +118,7 @@ class _RecorderView extends StatelessWidget {
         return PopScope(
           canPop: !active && !settling,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop && active) unawaited(_confirmDiscard(context));
+            if (!didPop && active) unawaited(confirmDiscard(context));
           },
           child: Scaffold(
             appBar: AppBar(
@@ -117,7 +127,7 @@ class _RecorderView extends StatelessWidget {
                 icon: const Icon(Icons.close_rounded),
                 onPressed: settling
                     ? null
-                    : () => active ? _confirmDiscard(context) : context.pop(),
+                    : () => active ? confirmDiscard(context) : context.pop(),
               ),
               title: _StatusTitle(status: state.status),
               centerTitle: true,
@@ -135,46 +145,50 @@ class _RecorderView extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
                           child: Column(
                             children: [
+                              if (state.status == RecorderStatus.idle)
+                                RecoveryCard(
+                                  onRecovered: (file) =>
+                                      context.pushReplacement(
+                                        Routes.send,
+                                        extra: file,
+                                      ),
+                                ),
                               const Spacer(),
                               Text(
                                 Formatters.timecode(state.elapsed),
-                                style: AppText.mono.copyWith(
-                                  fontSize: 52,
-                                  color: AppColors.cotton,
-                                  fontWeight: FontWeight.w500,
-                                  fontVariations: const [
-                                    FontVariation('wght', 500),
-                                  ],
-                                ),
+                                style: AppText.mono
+                                    .copyWith(
+                                      fontSize: 52,
+                                      color: AppColors.cotton,
+                                    )
+                                    .weighted(FontWeight.w500),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                l10n.recorderFormat.toUpperCase(),
-                                style: AppText.label,
+                                state.status == RecorderStatus.idle
+                                    ? l10n.recorderTapToStart
+                                    : l10n.recorderFormat.toUpperCase(),
+                                textAlign: TextAlign.center,
+                                style: state.status == RecorderStatus.idle
+                                    ? AppText.caption
+                                    : AppText.label,
                               ),
-                              const SizedBox(height: 48),
+                              const SizedBox(height: 40),
                               SizedBox(
                                 height: 120,
                                 child: LevelMeter(levels: state.levels),
                               ),
-                              if (state.status == RecorderStatus.failure) ...[
-                                const SizedBox(height: 24),
-                                Text(
-                                  state.failure!.message(l10n),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                OutlinedButton(
-                                  onPressed: () =>
-                                      context.read<RecorderCubit>().start(),
-                                  child: Text(l10n.retry),
-                                ),
-                              ],
+                              if (state.status == RecorderStatus.failure)
+                                _FailurePanel(failure: state.failure!),
                               const Spacer(),
+                              const SizedBox(height: 24),
                               _Controls(state: state),
+                              const SizedBox(height: 20),
+                              Text(
+                                l10n.recorderScreenOff,
+                                textAlign: TextAlign.center,
+                                style: AppText.caption,
+                              ),
                             ],
                           ),
                         ),
@@ -222,6 +236,68 @@ class _StatusTitle extends StatelessWidget {
   }
 }
 
+/// The microphone was refused: say exactly where to allow it. No package
+/// opens the settings screen, so the path is spelled out.
+class _FailurePanel extends StatelessWidget {
+  const _FailurePanel({required this.failure});
+
+  final Failure failure;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final denied = failure is PermissionDeniedFailure;
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.sf1,
+          borderRadius: BorderRadius.circular(AppRadii.card),
+          border: const Border(
+            left: BorderSide(color: AppColors.bad, width: 3),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  denied ? Icons.mic_off_rounded : Icons.error_outline_rounded,
+                  color: AppColors.bad,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    denied
+                        ? l10n.recorderMicDeniedTitle
+                        : failure.message(l10n),
+                    style: AppText.bodyStrong,
+                  ),
+                ),
+              ],
+            ),
+            if (denied) ...[
+              const SizedBox(height: 8),
+              Text(l10n.recorderMicDeniedBody, style: AppText.caption),
+            ],
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton(
+                onPressed: () => context.read<RecorderCubit>().start(),
+                child: Text(l10n.retry),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Discard · the big saffron record/stop · pause/resume.
 class _Controls extends StatelessWidget {
   const _Controls({required this.state});
 
@@ -236,28 +312,51 @@ class _Controls extends StatelessWidget {
         state.status == RecorderStatus.paused;
     final paused = state.status == RecorderStatus.paused;
     final stopping = state.status == RecorderStatus.stopping;
+    final starting = state.status == RecorderStatus.starting;
+    final canStart =
+        state.status == RecorderStatus.idle ||
+        state.status == RecorderStatus.failure;
+
+    final Widget bigIcon;
+    if (stopping || starting) {
+      bigIcon = const SizedBox.square(
+        dimension: 24,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: AppColors.accentText,
+        ),
+      );
+    } else if (active) {
+      bigIcon = const Icon(Icons.stop_rounded, size: 40);
+    } else {
+      bigIcon = const Icon(Icons.fiber_manual_record_rounded, size: 40);
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Keeps the stop button centred.
-        const SizedBox(width: 72),
         _RoundButton(
-          size: 80,
-          label: l10n.recorderStop,
+          size: 60,
+          label: l10n.recorderDiscard,
+          background: AppColors.sf2,
+          foreground: AppColors.cotton,
+          onPressed: active && !stopping
+              ? () => _RecorderView.confirmDiscard(context)
+              : null,
+          child: const Icon(Icons.delete_outline_rounded),
+        ),
+        _RoundButton(
+          size: 88,
+          label: active || stopping ? l10n.recorderStop : l10n.recorderRecord,
           background: AppColors.accent,
           foreground: AppColors.accentText,
-          onPressed: active && !stopping ? cubit.stop : null,
-          child: stopping
-              ? const SizedBox.square(
-                  dimension: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.accentText,
-                  ),
-                )
-              : const Icon(Icons.stop_rounded, size: 36),
+          onPressed: canStart
+              ? cubit.start
+              : active && !stopping
+              ? cubit.stop
+              : null,
+          child: bigIcon,
         ),
         _RoundButton(
           size: 60,

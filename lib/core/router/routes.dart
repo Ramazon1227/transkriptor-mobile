@@ -23,7 +23,8 @@ abstract final class Routes {
   /// Takes a `PendingFile` as `extra`.
   static const String send = '/send';
 
-  /// YouTube, Google Drive and Dropbox links.
+  /// YouTube, Google Drive and Dropbox links. An optional `String` extra
+  /// prefills the field.
   static const String link = '/link';
   static const String job = '/job/:id';
   static const String transcript = '/transcript/:id';
@@ -31,8 +32,8 @@ abstract final class Routes {
   /// One note, read-only. Pops `true` when it was renamed or deleted.
   static const String note = '/notes/:id';
 
-  // Capture sources that are placeholders today; each is replaced by its
-  // real page in a later phase.
+  // The other capture sources. «Havola orqali» and «Jonli diktovka» run
+  // on demo sources until the server has their endpoints.
   static const String dictation = '/dictation';
   static const String screenRecord = '/screen-record';
   static const String meeting = '/meeting';

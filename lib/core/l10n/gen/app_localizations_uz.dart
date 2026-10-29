@@ -1147,4 +1147,376 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noteStale => 'Eslatma boshqa oynada oʻzgargan. Uni qayta oching.';
+
+  @override
+  String get recorderTapToStart => 'Yozishni boshlash uchun tugmani bosing';
+
+  @override
+  String get recorderRecord => 'Yozish';
+
+  @override
+  String get recorderDiscard => 'Oʻchirish';
+
+  @override
+  String get recorderScreenOff =>
+      'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.';
+
+  @override
+  String get recorderMicDeniedTitle => 'Mikrofonga ruxsat yoʻq';
+
+  @override
+  String get recorderMicDeniedBody =>
+      'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.';
+
+  @override
+  String recoveryBannerOne(String duration, String when) {
+    return 'Yuborilmagan yozuv bor — $duration, $when';
+  }
+
+  @override
+  String recoveryBannerMany(int count) {
+    return 'Yuborilmagan yozuvlar: $count ta';
+  }
+
+  @override
+  String get recoveryCardTitle => 'Yuborilmagan yozuvlar';
+
+  @override
+  String get recoveryCardBody =>
+      'Oldingi yozuvlar telefonda saqlanib qolgan. Ularni hozir yuborish yoki oʻchirish mumkin.';
+
+  @override
+  String get recoverySheetTitle => 'Yuborilmagan yozuvlar';
+
+  @override
+  String get recoveryOpen => 'Koʻrish va yuborish';
+
+  @override
+  String get recoverySend => 'Yuborish';
+
+  @override
+  String get recoveryDelete => 'Oʻchirish';
+
+  @override
+  String get recoveryDeleteAsk => 'Bu yozuv butunlay oʻchirilsinmi?';
+
+  @override
+  String get recoveryDeleteYes => 'Ha, oʻchirish';
+
+  @override
+  String get recoveryDeleteNo => 'Yoʻq';
+
+  @override
+  String get recoveryInterrupted => 'Uzilgan';
+
+  @override
+  String get recoveryInterruptedHint =>
+      'Ilova yopilib qolgan — oxirgi soniyalargacha tiklanadi';
+
+  @override
+  String get recoveryKindMic => 'Mikrofon';
+
+  @override
+  String get recoveryKindScreen => 'Ekran ovozi';
+
+  @override
+  String get recoveryUnknownLength => 'uzunligi nomaʼlum';
+
+  @override
+  String recoveryToday(String time) {
+    return 'bugun $time';
+  }
+
+  @override
+  String recoveryYesterday(String time) {
+    return 'kecha $time';
+  }
+
+  @override
+  String recoveryOn(String date, String time) {
+    return '$date $time';
+  }
+
+  @override
+  String screenRecordingName(String date) {
+    return 'Ekran yozuvi $date';
+  }
+
+  @override
+  String get screenIntro =>
+      'Telefonda ijro etilayotgan ovozni yozib oladi va matnga aylantiradi.';
+
+  @override
+  String get screenWhatYes =>
+      'Yoziladi: videolar, brauzer, ilovalardagi ovoz — telefon oʻzi nimani ijro etsa.';
+
+  @override
+  String get screenWhatNoCalls =>
+      'Telefon qoʻngʻiroqlari va messenjer qoʻngʻiroqlari yozilmaydi — Android ularni yozishga ruxsat bermaydi.';
+
+  @override
+  String get screenWhatBlocked =>
+      'Baʼzi ilovalar oʻz ovozini yozishni taqiqlaydi. Unda ularning oʻrnida jimlik yoziladi.';
+
+  @override
+  String get screenWhatNoVideo => 'Tasvir yozilmaydi — faqat ovoz.';
+
+  @override
+  String get screenWithMic => 'Mikrofonni ham yozish';
+
+  @override
+  String get screenWithMicBody => 'Oʻzingizning ovozingiz ham qoʻshiladi';
+
+  @override
+  String get screenStart => 'Yozishni boshlash';
+
+  @override
+  String get screenConsentNote =>
+      'Android ruxsat soʻraydi: oynada «Boshlash»ni bosing.';
+
+  @override
+  String get screenStarting => 'Ruxsat kutilmoqda…';
+
+  @override
+  String get screenStopping => 'Yozuv saqlanmoqda…';
+
+  @override
+  String get screenRecordingHint =>
+      'Telefondan odatdagidek foydalaning — yozuv fonda davom etadi. Toʻxtatish bildirishnomada ham bor.';
+
+  @override
+  String get screenSilentTitle => 'Ovoz kelmayapti';
+
+  @override
+  String get screenSilentBody =>
+      'Hozir hech narsa ijro etilmayapti yoki ijro etayotgan ilova yozishga ruxsat bermaydi (qoʻngʻiroq ilovalari shunday).';
+
+  @override
+  String get screenWithMicOn => 'Mikrofon ham yozilmoqda';
+
+  @override
+  String get screenCancelTitle => 'Ekran yozuvi bekor qilinsinmi?';
+
+  @override
+  String get screenCancelBody => 'Yozib olingan ovoz saqlanmaydi.';
+
+  @override
+  String get screenUnsupportedTitle => 'Bu telefonda ishlamaydi';
+
+  @override
+  String get screenUnsupportedBody =>
+      'Telefondagi ovozni yozish Android 10 va undan yangi versiyalarda bor. iPhone bunday yozishga ruxsat bermaydi. Oʻrniga «Audio yozib olish» yoki «Fayl yuklash»dan foydalaning.';
+
+  @override
+  String get screenHintConsent =>
+      'Tizim oynasida «Boshlash»ni bosmasangiz, yozish boshlanmaydi.';
+
+  @override
+  String get screenHintMic =>
+      'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → Transkriptor → Ruxsatlar → Mikrofon.';
+
+  @override
+  String get screenHintBusy =>
+      'Avval boshqa yozuvni toʻxtating (bildirishnomaga qarang).';
+
+  @override
+  String get screenHintFailed =>
+      'Qayta urinib koʻring. Takrorlansa, telefonni qayta ishga tushiring.';
+
+  @override
+  String get screenKeptPartial =>
+      'Yozish toʻxtab qoldi, lekin shu paytgacha yozilgani saqlandi.';
+
+  @override
+  String get meetHeadline => 'Google Meet uchrashuvini yozib olish';
+
+  @override
+  String get meetIntro =>
+      'Bot uchrashuvga mehmon sifatida kiradi, ovozni yozadi, uchrashuv tugagach matnga aylantiradi.';
+
+  @override
+  String get meetUrlLabel => 'Google Meet havolasi';
+
+  @override
+  String get meetUrlInvalid =>
+      'Faqat Google Meet havolasi: https://meet.google.com/abc-defg-hij';
+
+  @override
+  String get meetKeepVideo => 'Videoni ham saqlash';
+
+  @override
+  String get meetKeepVideoBody =>
+      'Ishtirokchilar kameralari yoziladi, fayl kattaroq boʻladi. Meet oynasining oʻzi yozilmaydi.';
+
+  @override
+  String get meetHostNote =>
+      'Google Meet tashqi botlarni kutish zaliga qoʻyadi. Uchrashuv egasi botni «Qabul qilish» bilan kiritmaguncha hech narsa yozilmaydi.';
+
+  @override
+  String meetBotName(String name) {
+    return 'Uchrashuvda bot «$name» nomi bilan koʻrinadi.';
+  }
+
+  @override
+  String get meetJoin => 'Botni yuborish';
+
+  @override
+  String get meetRecent => 'Oxirgi uchrashuvlar';
+
+  @override
+  String get meetRecentEmpty => 'Hali bot yuborilmagan.';
+
+  @override
+  String get meetUnavailable => 'Uchrashuv boti bu serverda hozir oʻchiq.';
+
+  @override
+  String get meetRouteMissingTitle => 'Bu server versiyasida hali yoʻq';
+
+  @override
+  String get meetRouteMissingBody =>
+      'Uchrashuv boti serverning keyingi versiyasi bilan keladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.';
+
+  @override
+  String get meetStatusScheduled => 'Navbatda';
+
+  @override
+  String get meetStatusJoining => 'Uchrashuvga kirmoqda';
+
+  @override
+  String get meetStatusWaiting => 'Kutish zalida';
+
+  @override
+  String get meetStatusRecording => 'Yozilmoqda';
+
+  @override
+  String get meetStatusUploading => 'Qayta ishlanmoqda';
+
+  @override
+  String get meetStatusDone => 'Tayyor';
+
+  @override
+  String get meetStatusFailed => 'Xato';
+
+  @override
+  String get meetStatusDenied => 'Kiritilmadi';
+
+  @override
+  String get meetStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String get meetStepWaitingHint =>
+      'Uchrashuv egasi botni qabul qilishi kerak.';
+
+  @override
+  String get meetStepUploadingHint =>
+      'Yozuv yuklanmoqda, keyin transkripsiya boshlanadi.';
+
+  @override
+  String get meetDeniedDefault => 'Uchrashuv egasi botni kiritmadi.';
+
+  @override
+  String get meetFailedDefault => 'Bot ishini yakunlay olmadi.';
+
+  @override
+  String get meetCancelledBody => 'Bot chaqirib olindi.';
+
+  @override
+  String get meetOpenResult => 'Transkriptni ochish';
+
+  @override
+  String get meetCancel => 'Botni chaqirib olish';
+
+  @override
+  String get meetCancelRecordingNote =>
+      'Bot uchrashuvdan chiqadi. Shu paytgacha yozilgani baribir matnga aylantiriladi.';
+
+  @override
+  String get meetLeaving => 'Bot uchrashuvdan chiqmoqda…';
+
+  @override
+  String get meetNew => 'Yangi uchrashuv';
+
+  @override
+  String get meetPollFailed => 'Holatni yangilab boʻlmadi — qayta urinilmoqda.';
+
+  @override
+  String get urlIntro =>
+      'Internetdagi audio yoki video faylning toʻgʻridan-toʻgʻri havolasi (.mp3, .mp4, .m4a…).';
+
+  @override
+  String get urlLabel => 'Fayl havolasi';
+
+  @override
+  String get urlInvalid =>
+      'Havola http:// yoki https:// bilan boshlanishi va manzilga ega boʻlishi kerak.';
+
+  @override
+  String get urlPlatformsNote =>
+      'YouTube, Google Drive va Dropbox havolalari shu yerdan ham ishlaydi — ular alohida yoʻl bilan yuboriladi.';
+
+  @override
+  String get urlSubmit => 'Davom etish';
+
+  @override
+  String get urlNotReady =>
+      'Toʻgʻridan-toʻgʻri havoladan yuklash serverda hali yoʻq. Hozircha faylni telefonga yuklab olib, «Fayl yuklash» orqali yuboring.';
+
+  @override
+  String get urlBanner => 'Namuna — havoladan yuklash serverda hali yoʻq';
+
+  @override
+  String get dictationBanner =>
+      'Namuna — jonli diktovka uchun server hali tayyor emas, matn namunaviy';
+
+  @override
+  String get dictationIntro =>
+      'Gapiring — matn shu zahoti paydo boʻladi. Toʻxtatgach, uni qayd sifatida saqlash yoki nusxa olish mumkin.';
+
+  @override
+  String get dictationStart => 'Gapirishni boshlash';
+
+  @override
+  String get dictationStop => 'Toʻxtatish';
+
+  @override
+  String get dictationListening => 'Tinglanmoqda…';
+
+  @override
+  String get dictationEmpty => 'Matn shu yerda paydo boʻladi.';
+
+  @override
+  String get dictationSaveNote => 'Eslatma sifatida saqlash';
+
+  @override
+  String get dictationCopy => 'Nusxa olish';
+
+  @override
+  String get dictationCopied => 'Matn nusxalandi';
+
+  @override
+  String get dictationDiscard => 'Tashlab yuborish';
+
+  @override
+  String get dictationSaved => 'Eslatma saqlandi';
+
+  @override
+  String dictationNoteTitle(String date) {
+    return 'Diktovka $date';
+  }
+
+  @override
+  String get dictationSample1 =>
+      'Bu namuna matn: jonli diktovka hali serverga ulanmagan.';
+
+  @override
+  String get dictationSample2 =>
+      'Server oqimli endpoint olganda shu yerda sizning soʻzlaringiz chiqadi.';
+
+  @override
+  String get dictationSample3 =>
+      'Hozircha ekranning qanday ishlashini koʻrish mumkin: avval xira matn, keyin tasdiqlangan gap.';
+
+  @override
+  String get dictationSample4 =>
+      'Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.';
 }

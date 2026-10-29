@@ -20,6 +20,8 @@ import 'package:transkriptor_uz/features/calendar/presentation/widgets/calendar_
 import 'package:transkriptor_uz/features/home/presentation/widgets/capture_actions.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/recent_files.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
+import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart';
+import 'package:transkriptor_uz/features/recorder/presentation/widgets/recovery_widgets.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_chip.dart';
 
@@ -29,14 +31,26 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // The calendar belongs to the person, not the workspace: it is not
-      // rebuilt when the workspace changes.
-      create: (_) {
-        final cubit = getIt<CalendarCubit>();
-        unawaited(cubit.load());
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        // The calendar belongs to the person, not the workspace: it is not
+        // rebuilt when the workspace changes.
+        BlocProvider(
+          create: (_) {
+            final cubit = getIt<CalendarCubit>();
+            unawaited(cubit.load());
+            return cubit;
+          },
+        ),
+        // Unsent recordings live on this phone, not in a workspace.
+        BlocProvider(
+          create: (_) {
+            final cubit = getIt<RecoveryCubit>();
+            unawaited(cubit.load());
+            return cubit;
+          },
+        ),
+      ],
       child: Scaffold(
         body: ContentWidth(
           maxWidth: ContentWidth.list,
@@ -64,6 +78,7 @@ class _HomeBody extends StatelessWidget {
     await Future.wait([
       context.read<AccountCubit>().load(),
       context.read<CalendarCubit>().load(),
+      context.read<RecoveryCubit>().load(),
       library.stream.firstWhere((s) => !s.refreshing),
     ]);
   }
@@ -103,6 +118,14 @@ class _HomeBody extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Align(alignment: Alignment.centerLeft, child: BalancePill()),
+          RecoveryBanner(
+            onRecovered: (file) async {
+              final recovery = context.read<RecoveryCubit>();
+              await context.push(Routes.send, extra: file);
+              // Back from the send page: the list may have changed.
+              await recovery.load();
+            },
+          ),
           const SizedBox(height: 24),
           SectionHeader(title: l10n.sourceSheetTitle),
           const SizedBox(height: 8),

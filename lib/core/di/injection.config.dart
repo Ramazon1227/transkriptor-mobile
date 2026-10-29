@@ -62,12 +62,30 @@ import 'package:transkriptor_uz/features/calendar/infrastructure/facades/calenda
     as _i65;
 import 'package:transkriptor_uz/features/calendar/infrastructure/repositories/calendar_repository.dart'
     as _i602;
+import 'package:transkriptor_uz/features/capture/application/dictation_cubit.dart'
+    as _i339;
 import 'package:transkriptor_uz/features/capture/application/screen_capture_cubit.dart'
     as _i88;
+import 'package:transkriptor_uz/features/capture/application/url_import_cubit.dart'
+    as _i951;
+import 'package:transkriptor_uz/features/capture/domain/i_dictation_facade.dart'
+    as _i703;
 import 'package:transkriptor_uz/features/capture/domain/i_screen_capture_facade.dart'
     as _i266;
+import 'package:transkriptor_uz/features/capture/domain/i_url_import_facade.dart'
+    as _i77;
+import 'package:transkriptor_uz/features/capture/infrastructure/demo/demo_dictation_repository.dart'
+    as _i802;
+import 'package:transkriptor_uz/features/capture/infrastructure/demo/demo_url_import_repository.dart'
+    as _i919;
+import 'package:transkriptor_uz/features/capture/infrastructure/facades/dictation_facade.dart'
+    as _i262;
 import 'package:transkriptor_uz/features/capture/infrastructure/facades/screen_capture_facade.dart'
     as _i760;
+import 'package:transkriptor_uz/features/capture/infrastructure/facades/url_import_facade.dart'
+    as _i980;
+import 'package:transkriptor_uz/features/capture/infrastructure/repositories/note_repository.dart'
+    as _i4;
 import 'package:transkriptor_uz/features/capture/infrastructure/sources/screen_audio_source.dart'
     as _i76;
 import 'package:transkriptor_uz/features/export/application/export_cubit.dart'
@@ -99,6 +117,14 @@ import 'package:transkriptor_uz/features/library/infrastructure/facades/library_
     as _i985;
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart'
     as _i203;
+import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart'
+    as _i684;
+import 'package:transkriptor_uz/features/meeting_bot/domain/i_meeting_bot_facade.dart'
+    as _i454;
+import 'package:transkriptor_uz/features/meeting_bot/infrastructure/facades/meeting_bot_facade.dart'
+    as _i842;
+import 'package:transkriptor_uz/features/meeting_bot/infrastructure/repositories/meeting_bot_repository.dart'
+    as _i714;
 import 'package:transkriptor_uz/features/notes/application/note_cubit.dart'
     as _i323;
 import 'package:transkriptor_uz/features/notes/application/notes_cubit.dart'
@@ -148,7 +174,7 @@ import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.d
 import 'package:transkriptor_uz/features/transcript/infrastructure/facades/transcript_facade.dart'
     as _i39;
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart'
-    as _i77;
+    as _i78;
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart'
     as _i741;
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart'
@@ -192,6 +218,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
     gh.lazySingleton<_i116.GoogleSignIn>(() => googleModule.googleSignIn);
+    gh.lazySingleton<_i802.DemoDictationRepository>(
+      () => _i802.DemoDictationRepository(),
+    );
+    gh.lazySingleton<_i919.DemoUrlImportRepository>(
+      () => _i919.DemoUrlImportRepository(),
+    );
     gh.lazySingleton<_i76.ScreenAudioSource>(() => _i76.ScreenAudioSource());
     gh.lazySingleton<_i998.SharePlus>(() => shareModule.sharePlus);
     gh.lazySingleton<_i281.AssetBundle>(() => shareModule.assetBundle);
@@ -217,6 +249,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i464.WorkspaceSelectionStorage>(
       () => _i464.WorkspaceSelectionStorage(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.lazySingleton<_i77.IUrlImportFacade>(
+      () => _i980.UrlImportFacade(gh<_i919.DemoUrlImportRepository>()),
+    );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.uploadDio(),
       instanceName: 'uploadDio',
@@ -230,6 +265,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i754.SessionManager>(),
         gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
+    );
+    gh.factory<_i951.UrlImportCubit>(
+      () => _i951.UrlImportCubit(gh<_i77.IUrlImportFacade>()),
     );
     gh.lazySingleton<_i239.IRecorderFacade>(
       () => _i293.RecorderFacade(
@@ -267,11 +305,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i602.CalendarRepository>(
       () => _i602.CalendarRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i4.NoteRepository>(
+      () => _i4.NoteRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i730.JobRepository>(
       () => _i730.JobRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i203.LibraryRepository>(
       () => _i203.LibraryRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i714.MeetingBotRepository>(
+      () => _i714.MeetingBotRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i988.NotesRepository>(
       () => _i988.NotesRepository(gh<_i361.Dio>()),
@@ -282,8 +326,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i438.ShareRepository>(
       () => _i438.ShareRepository(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i77.TranscriptRepository>(
-      () => _i77.TranscriptRepository(gh<_i361.Dio>()),
+    gh.lazySingleton<_i78.TranscriptRepository>(
+      () => _i78.TranscriptRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i385.WorkspaceRepository>(
       () => _i385.WorkspaceRepository(gh<_i361.Dio>()),
@@ -317,6 +361,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'uploadDio'),
       ),
     );
+    gh.lazySingleton<_i703.IDictationFacade>(
+      () => _i262.DictationFacade(
+        gh<_i802.DemoDictationRepository>(),
+        gh<_i4.NoteRepository>(),
+      ),
+    );
     gh.factory<_i644.ExportCubit>(
       () => _i644.ExportCubit(gh<_i938.IExportFacade>()),
     );
@@ -338,6 +388,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
+    gh.factory<_i339.DictationCubit>(
+      () => _i339.DictationCubit(gh<_i703.IDictationFacade>()),
+    );
     gh.factory<_i506.DeleteAccountCubit>(
       () => _i506.DeleteAccountCubit(gh<_i865.IAuthFacade>()),
     );
@@ -358,7 +411,10 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i899.ITranscriptFacade>(
-      () => _i39.TranscriptFacade(gh<_i77.TranscriptRepository>()),
+      () => _i39.TranscriptFacade(gh<_i78.TranscriptRepository>()),
+    );
+    gh.lazySingleton<_i454.IMeetingBotFacade>(
+      () => _i842.MeetingBotFacade(gh<_i714.MeetingBotRepository>()),
     );
     gh.lazySingleton<_i763.ICalendarFacade>(
       () => _i65.CalendarFacade(gh<_i602.CalendarRepository>()),
@@ -426,6 +482,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i754.SessionManager>(),
         gh<_i201.IPushFacade>(),
         gh<_i537.IWorkspaceFacade>(),
+      ),
+    );
+    gh.factory<_i684.MeetingBotCubit>(
+      () => _i684.MeetingBotCubit(
+        gh<_i454.IMeetingBotFacade>(),
+        gh<_i669.JobPollPolicy>(),
+        gh<_i252.LibraryChanges>(),
       ),
     );
     gh.factory<_i741.PickFileCubit>(
