@@ -56,6 +56,8 @@ import 'package:transkriptor_uz/features/library/domain/entities/folder.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
+import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
+import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
@@ -65,6 +67,7 @@ import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_ac
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/file_actions_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
@@ -100,6 +103,8 @@ class _Job extends MockCubit<JobState> implements JobCubit;
 class _Recorder extends MockCubit<RecorderState> implements RecorderCubit;
 
 class _Transcript extends MockCubit<TranscriptState> implements TranscriptCubit;
+
+class _Player extends MockCubit<PlayerState> implements PlayerCubit;
 
 class _Calendar extends MockCubit<CalendarState> implements CalendarCubit;
 
@@ -234,6 +239,33 @@ final _transcript = Transcript(
   ],
 );
 
+const _audioPlayer = PlayerState(
+  status: PlayerStatus.ready,
+  source: PlayableMedia(url: 'https://s3.test/a.m4a', mime: 'audio/mp4'),
+  position: Duration(hours: 1, minutes: 23, seconds: 45),
+  duration: Duration(hours: 2, minutes: 59, seconds: 59),
+  playing: true,
+  speed: 1.25,
+);
+
+const _videoPlayer = PlayerState(
+  status: PlayerStatus.ready,
+  source: PlayableMedia(url: 'https://s3.test/v.mp4', mime: 'video/mp4'),
+  position: Duration(minutes: 7),
+  duration: Duration(hours: 2, minutes: 59, seconds: 59),
+  hasVideo: true,
+  speed: 0.75,
+);
+
+TranscriptState _loaded({bool edit = false}) => TranscriptState(
+  status: TranscriptStatus.success,
+  transcript: _transcript,
+  editMode: edit,
+  speakerFilter: edit ? 's2' : null,
+);
+
+Widget _editor() => const TranscriptPage(transcriptId: 't1');
+
 const _pendingFile = PendingFile(
   path: '/tmp/x.m4a',
   fileName: '$_longName — $_cyrName.m4a',
@@ -308,6 +340,7 @@ late _Upload upload;
 late _Job job;
 late _Recorder recorder;
 late _Transcript transcript;
+late _Player player;
 late _Calendar calendar;
 late _Balance balance;
 late _Plans plans;
@@ -327,6 +360,7 @@ void _makeMocks() {
   job = _Job();
   recorder = _Recorder();
   transcript = _Transcript();
+  player = _Player();
   calendar = _Calendar();
   balance = _Balance();
   plans = _Plans();
@@ -358,6 +392,9 @@ void _makeMocks() {
   when(() => recorder.start()).thenAnswer((_) async {});
   when(() => transcript.state).thenReturn(const TranscriptState());
   when(() => transcript.load(any())).thenAnswer((_) async {});
+  when(() => player.state).thenReturn(_audioPlayer);
+  when(() => player.open(any())).thenAnswer((_) async {});
+  when(() => player.pause()).thenAnswer((_) async {});
   when(
     () => calendar.state,
   ).thenReturn(CalendarState(status: CalendarStatus.success, events: _events));
@@ -399,6 +436,7 @@ void _makeMocks() {
     ..registerFactory<JobCubit>(() => job)
     ..registerFactory<RecorderCubit>(() => recorder)
     ..registerFactory<TranscriptCubit>(() => transcript)
+    ..registerFactory<PlayerCubit>(() => player)
     ..registerFactory<CalendarCubit>(() => calendar)
     ..registerFactory<BalanceCubit>(() => balance)
     ..registerFactory<PlansCubit>(() => plans)
@@ -648,15 +686,98 @@ final _scenarios = <_Scenario>[
     ),
   ),
   _Scenario(
-    'transcript(200 segs)',
-    () => const TranscriptPage(transcriptId: 't1'),
+    'editor(audio, 200 segs)',
+    _editor,
+    arrange: () => when(() => transcript.state).thenReturn(_loaded()),
+    measure: {'SegmentTile': () => find.byType(SegmentTile)},
+  ),
+  _Scenario(
+    'editor(video, edit mode, filter)',
+    _editor,
+    arrange: () {
+      when(() => transcript.state).thenReturn(_loaded(edit: true));
+      when(() => player.state).thenReturn(_videoPlayer);
+    },
+  ),
+  _Scenario(
+    'editor(video folded)',
+    _editor,
+    arrange: () {
+      when(() => transcript.state).thenReturn(_loaded());
+      when(() => player.state)
+          .thenReturn(_videoPlayer.copyWith(videoFolded: true));
+    },
+  ),
+  _Scenario(
+    'editor(youtube)',
+    _editor,
+    arrange: () {
+      when(() => transcript.state).thenReturn(_loaded());
+      when(() => player.state).thenReturn(
+        const PlayerState(
+          status: PlayerStatus.youtube,
+          source: PlayableMedia(
+            url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+            youtubeId: 'jNQXAC9IVRw',
+          ),
+        ),
+      );
+    },
+  ),
+  _Scenario(
+    'editor(audio gone)',
+    _editor,
+    arrange: () {
+      when(() => transcript.state).thenReturn(_loaded());
+      when(() => player.state).thenReturn(
+        const PlayerState(
+          status: PlayerStatus.unavailable,
+          failure: Failure.server(statusCode: 410),
+        ),
+      );
+    },
+  ),
+  _Scenario(
+    'editor(player failed)',
+    _editor,
+    arrange: () {
+      when(() => transcript.state).thenReturn(_loaded());
+      when(() => player.state).thenReturn(
+        const PlayerState(
+          status: PlayerStatus.failure,
+          failure: Failure.network(),
+        ),
+      );
+    },
+  ),
+  _Scenario(
+    'editor(loading)',
+    _editor,
+    arrange: () => when(() => transcript.state)
+        .thenReturn(const TranscriptState(status: TranscriptStatus.loading)),
+  ),
+  _Scenario(
+    'editor(error)',
+    _editor,
     arrange: () => when(() => transcript.state).thenReturn(
-      TranscriptState(
-        status: TranscriptStatus.success,
-        transcript: _transcript,
+      const TranscriptState(
+        status: TranscriptStatus.failure,
+        failure: Failure.server(statusCode: 500),
       ),
     ),
-    measure: {'SegmentTile': () => find.byType(SegmentTile)},
+  ),
+  _Scenario(
+    'sheet(file actions)',
+    () => Scaffold(
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<TranscriptCubit>.value(value: transcript),
+          BlocProvider<PlayerCubit>.value(value: player),
+        ],
+        child: const FileActionsSheet(),
+      ),
+    ),
+    arrange: () => when(() => transcript.state).thenReturn(_loaded()),
   ),
 ];
 

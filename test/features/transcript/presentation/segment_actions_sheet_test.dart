@@ -10,6 +10,8 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
 
+import '../../../helpers/editor_fakes.dart';
+
 class _MockTranscriptFacade extends Mock implements ITranscriptFacade;
 
 const _segment = Segment(
@@ -39,6 +41,7 @@ void main() {
     when(() => facade.getTranscript('t1'))
         .thenAnswer((_) async => const Right(_transcript));
     getIt.registerFactory(() => TranscriptCubit(facade));
+    registerEditorFakes();
   });
   tearDown(getIt.reset);
 
@@ -77,8 +80,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('assign_s2')), findsNothing);
-    // The row now names Sardor; the filter bar has both chips.
-    expect(find.text('Sardor'), findsNWidgets(2));
+    // The row's chip now names Sardor.
+    expect(find.text('Sardor'), findsOneWidget);
+    expect(find.text('Dilnoza'), findsNothing);
   });
 
   testWidgets('a new speaker appears under its server name', (tester) async {
@@ -107,7 +111,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('assign_new')), findsNothing);
-    expect(find.text('Maʼruzachi 3'), findsNWidgets(2));
+    expect(find.text('Maʼruzachi 3'), findsOneWidget);
   });
 
   testWidgets('a 409 keeps the menu open and says so', (tester) async {

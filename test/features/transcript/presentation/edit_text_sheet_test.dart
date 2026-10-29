@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart' show Either, Left, Right;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -11,6 +12,8 @@ import 'package:transkriptor_uz/features/transcript/application/transcript_cubit
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
+
+import '../../../helpers/editor_fakes.dart';
 
 class _MockTranscriptFacade extends Mock implements ITranscriptFacade;
 
@@ -40,7 +43,10 @@ void main() {
   });
 
   // The page takes its cubit from DI, as in the app.
-  setUp(() => getIt.registerFactory(() => TranscriptCubit(facade)));
+  setUp(() {
+    getIt.registerFactory(() => TranscriptCubit(facade));
+    registerEditorFakes();
+  });
   tearDown(getIt.reset);
 
   Future<void> pumpPage(WidgetTester tester) async {
@@ -52,6 +58,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await enterEditMode(tester);
   }
 
   testWidgets('a saved text closes the sheet and shows the stored text', (
@@ -81,8 +88,7 @@ void main() {
     );
     await pumpPage(tester);
 
-    await tester.tap(find.text('eski matn'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('eski matn'));
     await tester.enterText(find.byType(TextField), 'yangi matn');
     await tester.tap(find.text('Saqlash'));
     await tester.pumpAndSettle();
@@ -105,8 +111,7 @@ void main() {
     ).thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
     await pumpPage(tester);
 
-    await tester.tap(find.text('eski matn'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('eski matn'));
     await tester.enterText(find.byType(TextField), 'mening tahririm');
     await tester.tap(find.text('Saqlash'));
     await tester.pumpAndSettle();
@@ -133,8 +138,7 @@ void main() {
     ).thenAnswer((_) => answer.future);
     await pumpPage(tester);
 
-    await tester.tap(find.text('eski matn'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('eski matn'));
     await tester.enterText(find.byType(TextField), 'yangi matn');
     await tester.tap(find.text('Saqlash'));
     await tester.pump();
@@ -155,17 +159,14 @@ void main() {
   ) async {
     await pumpPage(tester);
     for (var i = 0; i < 2; i++) {
-      await tester.tap(find.text('eski matn'));
-      await tester.pumpAndSettle();
+      await doubleTap(tester, find.text('eski matn'));
       await tester.tap(find.text('Saqlash'));
       await tester.pumpAndSettle();
       expect(find.byType(TextField), findsNothing);
     }
   });
 
-  testWidgets('tapping the speaker name opens the rename sheet', (
-    tester,
-  ) async {
+  testWidgets('the speaker menu opens the rename sheet', (tester) async {
     when(
       () => facade.renameSpeaker(
         transcriptId: 't1',
@@ -177,7 +178,11 @@ void main() {
     );
     await pumpPage(tester);
 
-    await tester.tap(find.text('Maʼruzachi 1'));
+    await tester.tap(find.byKey(const Key('speaker_chip_s1')));
+    // Edit mode: the row also waits for a second tap.
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('rename_s1')));
     await tester.pumpAndSettle();
     expect(find.text('Maʼruzachi nomi'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Dilnoza');

@@ -9,6 +9,8 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
 
+import '../../../helpers/editor_fakes.dart';
+
 class _MockTranscriptFacade extends Mock implements ITranscriptFacade;
 
 const _a = Segment(
@@ -42,6 +44,7 @@ void main() {
     when(() => facade.getTranscript('t1'))
         .thenAnswer((_) async => const Right(_transcript));
     getIt.registerFactory(() => TranscriptCubit(facade));
+    registerEditorFakes();
   });
   tearDown(getIt.reset);
 
@@ -54,6 +57,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await enterEditMode(tester);
   }
 
   ButtonStyleButton button(WidgetTester tester, String key) =>
@@ -79,8 +83,7 @@ void main() {
       ),
     );
     await pumpPage(tester);
-    await tester.tap(find.text('Salom dunyo'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('Salom dunyo'));
 
     final field = tester.widget<TextField>(find.byType(TextField));
     // At the end there is nothing to split off.
@@ -103,8 +106,7 @@ void main() {
     tester,
   ) async {
     await pumpPage(tester);
-    await tester.tap(find.text('Xayr'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('Xayr'));
     expect(find.byKey(const Key('segment_split')), findsOneWidget);
     expect(find.byKey(const Key('segment_merge_next')), findsNothing);
     await tester.tap(find.text('Bekor qilish'));
@@ -169,8 +171,7 @@ void main() {
       ),
     );
     await pumpPage(tester);
-    await tester.tap(find.text('Salom dunyo'));
-    await tester.pumpAndSettle();
+    await doubleTap(tester, find.text('Salom dunyo'));
     await tester.enterText(find.byType(TextField), 'Salom olam');
     await tester.tap(find.byKey(const Key('segment_merge_next')));
     await tester.pumpAndSettle();
