@@ -296,8 +296,15 @@ as List<String>,
 /// @nodoc
 mixin _$Summary {
 
-/// Null: the default template.
- String? get templateId; String? get templateName; List<SummarySection> get sections; DateTime? get createdAt;
+/// Null for the demo sample.
+ String? get id;/// Null: the default template.
+ String? get templateId; String? get templateName; SummaryProgress get progress;/// The server's ready-made sentence for a failed summary.
+ String? get error;/// Optimistic lock for edits (`transcript_summary.revision`).
+ int get revision;/// Tiptap JSON as stored; null for the sample.
+ Map<String, dynamic>? get body;/// [body] as read-only blocks.
+ List<NoteBlock> get blocks; List<SummarySection> get sections;/// Built on the phone from the transcript's own sentences: no model
+/// wrote it.
+ bool get sample; DateTime? get createdAt;
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -309,20 +316,20 @@ $SummaryCopyWith<Summary> get copyWith => _$SummaryCopyWithImpl<Summary>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Summary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Summary&&(identical(other.templateId, _this.templateId) || other.templateId == _this.templateId)&&(identical(other.templateName, _this.templateName) || other.templateName == _this.templateName)&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Summary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.templateId, _this.templateId) || other.templateId == _this.templateId)&&(identical(other.templateName, _this.templateName) || other.templateName == _this.templateName)&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&const DeepCollectionEquality().equals(other.body, _this.body)&&const DeepCollectionEquality().equals(other.blocks, _this.blocks)&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&(identical(other.sample, _this.sample) || other.sample == _this.sample)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Summary;
-  return Object.hash(runtimeType,_this.templateId,_this.templateName,const DeepCollectionEquality().hash(_this.sections),_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.templateId,_this.templateName,_this.progress,_this.error,_this.revision,const DeepCollectionEquality().hash(_this.body),const DeepCollectionEquality().hash(_this.blocks),const DeepCollectionEquality().hash(_this.sections),_this.sample,_this.createdAt);
 }
 
 @override
 String toString() {
   final _this = this as Summary;
-  return 'Summary(templateId: ${_this.templateId}, templateName: ${_this.templateName}, sections: ${_this.sections}, createdAt: ${_this.createdAt})';
+  return 'Summary(id: ${_this.id}, templateId: ${_this.templateId}, templateName: ${_this.templateName}, progress: ${_this.progress}, error: ${_this.error}, revision: ${_this.revision}, body: ${_this.body}, blocks: ${_this.blocks}, sections: ${_this.sections}, sample: ${_this.sample}, createdAt: ${_this.createdAt})';
 }
 
 
@@ -333,7 +340,7 @@ abstract mixin class $SummaryCopyWith<$Res>  {
   factory $SummaryCopyWith(Summary value, $Res Function(Summary) _then) = _$SummaryCopyWithImpl;
 @useResult
 $Res call({
- String? templateId, String? templateName, List<SummarySection> sections, DateTime? createdAt
+ String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt
 });
 
 
@@ -350,12 +357,19 @@ class _$SummaryCopyWithImpl<$Res>
 
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? templateId = freezed,Object? templateName = freezed,Object? sections = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,}) {
   return _then(Summary(
-templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
 as String?,templateName: freezed == templateName ? _self.templateName : templateName // ignore: cast_nullable_to_non_nullable
-as String?,sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
-as List<SummarySection>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
+as SummaryProgress,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,body: freezed == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,blocks: null == blocks ? _self.blocks : blocks // ignore: cast_nullable_to_non_nullable
+as List<NoteBlock>,sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
+as List<SummarySection>,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
+as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -441,10 +455,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? templateId,  String? templateName,  List<SummarySection> sections,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Summary() when $default != null:
-return $default(_that.templateId,_that.templateName,_that.sections,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
   return orElse();
 
 }
@@ -462,10 +476,10 @@ return $default(_that.templateId,_that.templateName,_that.sections,_that.created
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? templateId,  String? templateName,  List<SummarySection> sections,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Summary():
-return $default(_that.templateId,_that.templateName,_that.sections,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -482,10 +496,10 @@ return $default(_that.templateId,_that.templateName,_that.sections,_that.created
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? templateId,  String? templateName,  List<SummarySection> sections,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Summary() when $default != null:
-return $default(_that.templateId,_that.templateName,_that.sections,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
   return null;
 
 }
@@ -497,12 +511,39 @@ return $default(_that.templateId,_that.templateName,_that.sections,_that.created
 
 
 class _Summary implements Summary {
-  const _Summary({this.templateId, this.templateName,  List<SummarySection> sections = const <SummarySection>[], this.createdAt}): _sections = sections;
+  const _Summary({this.id, this.templateId, this.templateName, this.progress = SummaryProgress.done, this.error, this.revision = 0,  Map<String, dynamic>? body,  List<NoteBlock> blocks = const <NoteBlock>[],  List<SummarySection> sections = const <SummarySection>[], this.sample = false, this.createdAt}): _body = body,_blocks = blocks,_sections = sections;
   
 
+/// Null for the demo sample.
+@override final  String? id;
 /// Null: the default template.
 @override final  String? templateId;
 @override final  String? templateName;
+@override@JsonKey() final  SummaryProgress progress;
+/// The server's ready-made sentence for a failed summary.
+@override final  String? error;
+/// Optimistic lock for edits (`transcript_summary.revision`).
+@override@JsonKey() final  int revision;
+/// Tiptap JSON as stored; null for the sample.
+ final  Map<String, dynamic>? _body;
+/// Tiptap JSON as stored; null for the sample.
+@override Map<String, dynamic>? get body {
+  final value = _body;
+  if (value == null) return null;
+  if (_body is EqualUnmodifiableMapView) return _body;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+/// [body] as read-only blocks.
+ final  List<NoteBlock> _blocks;
+/// [body] as read-only blocks.
+@override@JsonKey() List<NoteBlock> get blocks {
+  if (_blocks is EqualUnmodifiableListView) return _blocks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_blocks);
+}
+
  final  List<SummarySection> _sections;
 @override@JsonKey() List<SummarySection> get sections {
   if (_sections is EqualUnmodifiableListView) return _sections;
@@ -510,6 +551,9 @@ class _Summary implements Summary {
   return EqualUnmodifiableListView(_sections);
 }
 
+/// Built on the phone from the transcript's own sentences: no model
+/// wrote it.
+@override@JsonKey() final  bool sample;
 @override final  DateTime? createdAt;
 
 /// Create a copy of Summary
@@ -522,18 +566,18 @@ _$SummaryCopyWith<_Summary> get copyWith => __$SummaryCopyWithImpl<_Summary>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Summary&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.templateName, templateName) || other.templateName == templateName)&&const DeepCollectionEquality().equals(other.sections, _sections)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Summary&&(identical(other.id, id) || other.id == id)&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.templateName, templateName) || other.templateName == templateName)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.error, error) || other.error == error)&&(identical(other.revision, revision) || other.revision == revision)&&const DeepCollectionEquality().equals(other.body, _body)&&const DeepCollectionEquality().equals(other.blocks, _blocks)&&const DeepCollectionEquality().equals(other.sections, _sections)&&(identical(other.sample, sample) || other.sample == sample)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,templateId,templateName,const DeepCollectionEquality().hash(_sections),createdAt);
+    return Object.hash(runtimeType,id,templateId,templateName,progress,error,revision,const DeepCollectionEquality().hash(_body),const DeepCollectionEquality().hash(_blocks),const DeepCollectionEquality().hash(_sections),sample,createdAt);
 }
 
 @override
 String toString() {
-    return 'Summary(templateId: $templateId, templateName: $templateName, sections: $sections, createdAt: $createdAt)';
+    return 'Summary(id: $id, templateId: $templateId, templateName: $templateName, progress: $progress, error: $error, revision: $revision, body: $body, blocks: $blocks, sections: $sections, sample: $sample, createdAt: $createdAt)';
 }
 
 
@@ -544,7 +588,7 @@ abstract mixin class _$SummaryCopyWith<$Res> implements $SummaryCopyWith<$Res> {
   factory _$SummaryCopyWith(_Summary value, $Res Function(_Summary) _then) = __$SummaryCopyWithImpl;
 @override @useResult
 $Res call({
- String? templateId, String? templateName, List<SummarySection> sections, DateTime? createdAt
+ String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt
 });
 
 
@@ -561,12 +605,19 @@ class __$SummaryCopyWithImpl<$Res>
 
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? templateId = freezed,Object? templateName = freezed,Object? sections = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,}) {
   return _then(_Summary(
-templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
 as String?,templateName: freezed == templateName ? _self.templateName : templateName // ignore: cast_nullable_to_non_nullable
-as String?,sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable
-as List<SummarySection>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
+as SummaryProgress,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,body: freezed == body ? _self._body : body // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,blocks: null == blocks ? _self._blocks : blocks // ignore: cast_nullable_to_non_nullable
+as List<NoteBlock>,sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable
+as List<SummarySection>,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
+as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

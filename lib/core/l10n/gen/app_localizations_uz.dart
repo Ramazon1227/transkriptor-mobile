@@ -1604,7 +1604,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summaryDemoBanner =>
-      'Namuna — xulosa hozircha transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.';
+      'Namuna — bu server versiyasida xulosa hali yoʻq: matn transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.';
 
   @override
   String get summaryTooShort =>
@@ -1688,6 +1688,60 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summarySectionNextSteps => 'Keyingi qadamlar';
+
+  @override
+  String get summaryLoading => 'Xulosa tekshirilmoqda…';
+
+  @override
+  String get summaryFailedDefault => 'Xulosa yozilmadi — qayta urinib koʻring.';
+
+  @override
+  String get summaryBusy =>
+      'Xulosa hozir yozilmoqda yoki transkriptda matn yoʻq.';
+
+  @override
+  String get summaryUnavailable =>
+      'Xulosa hozir yoqilmagan yoki navbat toʻla — birozdan keyin urinib koʻring.';
+
+  @override
+  String get summaryForbidden =>
+      'Xulosani faqat tahrirlash huquqi bor aʼzo yarata oladi.';
+
+  @override
+  String get meetSummarize => 'Uchrashuvdan keyin xulosa yozilsin';
+
+  @override
+  String get meetSummarizeBody =>
+      'Transkript tayyor boʻlgach AI xulosa yozadi va uni xatda yuboradi.';
+
+  @override
+  String get meetSummaryTemplate => 'Xulosa shabloni';
+
+  @override
+  String get meetShareInternal =>
+      'Xulosani ichki ishtirokchilarga ham yuborish';
+
+  @override
+  String get meetShareInternalBody =>
+      'Faqat emailingiz domenidagi ishtirokchilarga; buning uchun emailingiz tasdiqlangan boʻlishi kerak.';
+
+  @override
+  String get profileNameEdit => 'Ismni oʻzgartirish';
+
+  @override
+  String get profileNameAdd => 'Ism qoʻshish';
+
+  @override
+  String get profileNameSave => 'Saqlash';
+
+  @override
+  String get profileNameEmpty => 'Ismni kiriting.';
+
+  @override
+  String get profileNameTooLong => 'Ism juda uzun.';
+
+  @override
+  String get profileNameSaved => 'Ism saqlandi';
 
   @override
   String get learnDemoBanner =>

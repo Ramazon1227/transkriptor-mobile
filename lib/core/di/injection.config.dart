@@ -56,7 +56,7 @@ import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_r
 import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart'
     as _i605;
 import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart'
-    as _i207;
+    as _i208;
 import 'package:transkriptor_uz/features/billing/application/plans_cubit.dart'
     as _i992;
 import 'package:transkriptor_uz/features/billing/domain/i_billing_facade.dart'
@@ -205,7 +205,7 @@ import 'package:transkriptor_uz/features/rating/infrastructure/facades/rating_fa
 import 'package:transkriptor_uz/features/rating/infrastructure/repositories/rating_repository.dart'
     as _i282;
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart'
-    as _i206;
+    as _i207;
 import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart'
     as _i764;
 import 'package:transkriptor_uz/features/recorder/domain/i_recorder_facade.dart'
@@ -236,6 +236,8 @@ import 'package:transkriptor_uz/features/summary/infrastructure/facades/summary_
     as _i471;
 import 'package:transkriptor_uz/features/summary/infrastructure/repositories/note_repository.dart'
     as _i381;
+import 'package:transkriptor_uz/features/summary/infrastructure/repositories/summary_repository.dart'
+    as _i206;
 import 'package:transkriptor_uz/features/summary/infrastructure/repositories/summary_template_repository.dart'
     as _i467;
 import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart'
@@ -445,6 +447,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i381.NoteRepository>(
       () => _i381.NoteRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i206.SummaryRepository>(
+      () => _i206.SummaryRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i467.SummaryTemplateRepository>(
       () => _i467.SummaryTemplateRepository(gh<_i361.Dio>()),
     );
@@ -471,8 +476,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
-    gh.factory<_i206.RecorderCubit>(
-      () => _i206.RecorderCubit(gh<_i239.IRecorderFacade>()),
+    gh.factory<_i207.RecorderCubit>(
+      () => _i207.RecorderCubit(gh<_i239.IRecorderFacade>()),
     );
     gh.factory<_i764.RecoveryCubit>(
       () => _i764.RecoveryCubit(gh<_i239.IRecorderFacade>()),
@@ -504,18 +509,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i439.INotesFacade>(
       () => _i2.NotesFacade(gh<_i988.NotesRepository>()),
     );
-    gh.lazySingleton<_i171.IBillingFacade>(
-      () => _i375.BillingFacade(gh<_i354.BillingRepository>()),
-    );
     gh.lazySingleton<_i1050.ISummaryFacade>(
       () => _i471.SummaryFacade(
         gh<_i467.SummaryTemplateRepository>(),
         gh<_i381.NoteRepository>(),
+        gh<_i206.SummaryRepository>(),
         gh<_i431.DemoSummaryRepository>(),
       ),
     );
-    gh.factory<_i371.SummaryCubit>(
-      () => _i371.SummaryCubit(gh<_i1050.ISummaryFacade>()),
+    gh.lazySingleton<_i171.IBillingFacade>(
+      () => _i375.BillingFacade(gh<_i354.BillingRepository>()),
     );
     gh.factory<_i224.LibraryBloc>(
       () => _i224.LibraryBloc(
@@ -563,8 +566,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i966.ShareCubit>(
       () => _i966.ShareCubit(gh<_i1064.IShareFacade>()),
     );
-    gh.factory<_i207.BalanceCubit>(
-      () => _i207.BalanceCubit(gh<_i171.IBillingFacade>()),
+    gh.factory<_i208.BalanceCubit>(
+      () => _i208.BalanceCubit(gh<_i171.IBillingFacade>()),
     );
     gh.factory<_i992.PlansCubit>(
       () => _i992.PlansCubit(gh<_i171.IBillingFacade>()),
@@ -611,6 +614,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i752.PushCubit>(
       () =>
           _i752.PushCubit(gh<_i202.IPushFacade>(), gh<_i252.LibraryChanges>()),
+    );
+    gh.factory<_i371.SummaryCubit>(
+      () => _i371.SummaryCubit(
+        gh<_i1050.ISummaryFacade>(),
+        gh<_i669.JobPollPolicy>(),
+      ),
     );
     gh.factory<_i720.WorkspaceListCubit>(
       () => _i720.WorkspaceListCubit(gh<_i537.IWorkspaceFacade>()),

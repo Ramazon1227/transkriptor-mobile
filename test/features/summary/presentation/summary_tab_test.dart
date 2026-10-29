@@ -1,11 +1,14 @@
-import 'package:dartz/dartz.dart' show Right;
+import 'package:dartz/dartz.dart' show Right, unit;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart';
+import 'package:transkriptor_uz/features/notes/domain/note_document.dart';
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
+import 'package:transkriptor_uz/features/summary/domain/entities/summary.dart';
 import 'package:transkriptor_uz/features/summary/domain/entities/summary_template.dart';
 import 'package:transkriptor_uz/features/summary/domain/i_summary_facade.dart';
 import 'package:transkriptor_uz/features/summary/infrastructure/demo/demo_summary_repository.dart';
@@ -62,13 +65,18 @@ void main() {
     when(() => facade.generate(any(), template: any(named: 'template')))
         .thenAnswer(
           (inv) async => Right(
-            demo.build(
-              inv.positionalArguments.first as Transcript,
-              template: inv.namedArguments[#template] as SummaryTemplate?,
-            ),
+            demo
+                .build(
+                  inv.positionalArguments.first as Transcript,
+                  template: inv.namedArguments[#template] as SummaryTemplate?,
+                )
+                .copyWith(sample: true),
           ),
         );
-    getIt.registerFactory(() => SummaryCubit(facade));
+    when(() => facade.load(any()))
+        .thenAnswer((_) async => const Right((summary: null, sample: true)));
+    when(() => facade.delete(any())).thenAnswer((_) async => const Right(unit));
+    getIt.registerFactory(() => SummaryCubit(facade, JobPollPolicy()));
   });
   tearDown(getIt.reset);
 
@@ -105,5 +113,45 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm_sheet_confirm')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('summary_empty')), findsOneWidget);
+  });
+
+  testWidgets('a server summary: no banner, Tiptap body shown', (tester) async {
+    when(() => facade.load(any())).thenAnswer(
+      (_) async => const Right((
+        summary: Summary(
+          id: 's1',
+          templateName: 'Asosiy xulosa',
+          body: {'type': 'doc'},
+          blocks: [
+            NoteBlock(kind: NoteBlockKind.heading, text: 'Mazmuni', level: 2),
+            NoteBlock(kind: NoteBlockKind.listItem, text: 'Smeta', marker: '•'),
+          ],
+        ),
+        sample: false,
+      )),
+    );
+    await tester.pumpWidget(_host(SummaryTab(transcript: meetingTranscript())));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Namuna'), findsNothing);
+    expect(find.byKey(const Key('summary_result')), findsOneWidget);
+    expect(find.text('Mazmuni'), findsOneWidget);
+    expect(find.text('Smeta'), findsOneWidget);
+  });
+
+  testWidgets('a FAILED server summary shows its own sentence', (tester) async {
+    when(() => facade.load(any())).thenAnswer(
+      (_) async => const Right((
+        summary: Summary(
+          id: 's1',
+          progress: SummaryProgress.failed,
+          error: 'Model hozir javob bermadi.',
+        ),
+        sample: false,
+      )),
+    );
+    await tester.pumpWidget(_host(SummaryTab(transcript: meetingTranscript())));
+    await tester.pumpAndSettle();
+    expect(find.text('Model hozir javob bermadi.'), findsOneWidget);
+    expect(find.byKey(const Key('summary_retry')), findsOneWidget);
   });
 }

@@ -16,7 +16,10 @@ T _$identity<T>(T value) => value;
 mixin _$SummaryState {
 
  TemplatesStatus get templatesStatus; SummaryTemplateLibrary? get library; Failure? get templatesFailure;/// Null: the default template.
- SummaryTemplate? get template; SummaryStatus get status; Summary? get summary; Failure? get failure; NoteSaveStatus get noteStatus; Failure? get noteFailure;/// A star toggle failed and was undone.
+ SummaryTemplate? get template; SummaryStatus get status; Summary? get summary; Failure? get failure;/// The server has no summary API: generation is the demo sample and
+/// the tab says so.
+ bool get sample;/// A delete that did not go through; the summary stays.
+ Failure? get actionFailure; NoteSaveStatus get noteStatus; Failure? get noteFailure;/// A star toggle failed and was undone.
  Failure? get favoriteFailure;
 /// Create a copy of SummaryState
 /// with the given fields replaced by the non-null parameter values.
@@ -29,20 +32,20 @@ $SummaryStateCopyWith<SummaryState> get copyWith => _$SummaryStateCopyWithImpl<S
 @override
 bool operator ==(Object other) {
   final _this = this as SummaryState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SummaryState&&(identical(other.templatesStatus, _this.templatesStatus) || other.templatesStatus == _this.templatesStatus)&&(identical(other.library, _this.library) || other.library == _this.library)&&(identical(other.templatesFailure, _this.templatesFailure) || other.templatesFailure == _this.templatesFailure)&&(identical(other.template, _this.template) || other.template == _this.template)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.summary, _this.summary) || other.summary == _this.summary)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.noteStatus, _this.noteStatus) || other.noteStatus == _this.noteStatus)&&(identical(other.noteFailure, _this.noteFailure) || other.noteFailure == _this.noteFailure)&&(identical(other.favoriteFailure, _this.favoriteFailure) || other.favoriteFailure == _this.favoriteFailure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SummaryState&&(identical(other.templatesStatus, _this.templatesStatus) || other.templatesStatus == _this.templatesStatus)&&(identical(other.library, _this.library) || other.library == _this.library)&&(identical(other.templatesFailure, _this.templatesFailure) || other.templatesFailure == _this.templatesFailure)&&(identical(other.template, _this.template) || other.template == _this.template)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.summary, _this.summary) || other.summary == _this.summary)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.sample, _this.sample) || other.sample == _this.sample)&&(identical(other.actionFailure, _this.actionFailure) || other.actionFailure == _this.actionFailure)&&(identical(other.noteStatus, _this.noteStatus) || other.noteStatus == _this.noteStatus)&&(identical(other.noteFailure, _this.noteFailure) || other.noteFailure == _this.noteFailure)&&(identical(other.favoriteFailure, _this.favoriteFailure) || other.favoriteFailure == _this.favoriteFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SummaryState;
-  return Object.hash(runtimeType,_this.templatesStatus,_this.library,_this.templatesFailure,_this.template,_this.status,_this.summary,_this.failure,_this.noteStatus,_this.noteFailure,_this.favoriteFailure);
+  return Object.hash(runtimeType,_this.templatesStatus,_this.library,_this.templatesFailure,_this.template,_this.status,_this.summary,_this.failure,_this.sample,_this.actionFailure,_this.noteStatus,_this.noteFailure,_this.favoriteFailure);
 }
 
 @override
 String toString() {
   final _this = this as SummaryState;
-  return 'SummaryState(templatesStatus: ${_this.templatesStatus}, library: ${_this.library}, templatesFailure: ${_this.templatesFailure}, template: ${_this.template}, status: ${_this.status}, summary: ${_this.summary}, failure: ${_this.failure}, noteStatus: ${_this.noteStatus}, noteFailure: ${_this.noteFailure}, favoriteFailure: ${_this.favoriteFailure})';
+  return 'SummaryState(templatesStatus: ${_this.templatesStatus}, library: ${_this.library}, templatesFailure: ${_this.templatesFailure}, template: ${_this.template}, status: ${_this.status}, summary: ${_this.summary}, failure: ${_this.failure}, sample: ${_this.sample}, actionFailure: ${_this.actionFailure}, noteStatus: ${_this.noteStatus}, noteFailure: ${_this.noteFailure}, favoriteFailure: ${_this.favoriteFailure})';
 }
 
 
@@ -53,11 +56,11 @@ abstract mixin class $SummaryStateCopyWith<$Res>  {
   factory $SummaryStateCopyWith(SummaryState value, $Res Function(SummaryState) _then) = _$SummaryStateCopyWithImpl;
 @useResult
 $Res call({
- TemplatesStatus templatesStatus, SummaryTemplateLibrary? library, Failure? templatesFailure, SummaryTemplate? template, SummaryStatus status, Summary? summary, Failure? failure, NoteSaveStatus noteStatus, Failure? noteFailure, Failure? favoriteFailure
+ TemplatesStatus templatesStatus, SummaryTemplateLibrary? library, Failure? templatesFailure, SummaryTemplate? template, SummaryStatus status, Summary? summary, Failure? failure, bool sample, Failure? actionFailure, NoteSaveStatus noteStatus, Failure? noteFailure, Failure? favoriteFailure
 });
 
 
-$SummaryTemplateLibraryCopyWith<$Res>? get library;$FailureCopyWith<$Res>? get templatesFailure;$SummaryTemplateCopyWith<$Res>? get template;$SummaryCopyWith<$Res>? get summary;$FailureCopyWith<$Res>? get failure;$FailureCopyWith<$Res>? get noteFailure;$FailureCopyWith<$Res>? get favoriteFailure;
+$SummaryTemplateLibraryCopyWith<$Res>? get library;$FailureCopyWith<$Res>? get templatesFailure;$SummaryTemplateCopyWith<$Res>? get template;$SummaryCopyWith<$Res>? get summary;$FailureCopyWith<$Res>? get failure;$FailureCopyWith<$Res>? get actionFailure;$FailureCopyWith<$Res>? get noteFailure;$FailureCopyWith<$Res>? get favoriteFailure;
 
 }
 /// @nodoc
@@ -70,7 +73,7 @@ class _$SummaryStateCopyWithImpl<$Res>
 
 /// Create a copy of SummaryState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? templatesStatus = null,Object? library = freezed,Object? templatesFailure = freezed,Object? template = freezed,Object? status = null,Object? summary = freezed,Object? failure = freezed,Object? noteStatus = null,Object? noteFailure = freezed,Object? favoriteFailure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? templatesStatus = null,Object? library = freezed,Object? templatesFailure = freezed,Object? template = freezed,Object? status = null,Object? summary = freezed,Object? failure = freezed,Object? sample = null,Object? actionFailure = freezed,Object? noteStatus = null,Object? noteFailure = freezed,Object? favoriteFailure = freezed,}) {
   return _then(SummaryState(
 templatesStatus: null == templatesStatus ? _self.templatesStatus : templatesStatus // ignore: cast_nullable_to_non_nullable
 as TemplatesStatus,library: freezed == library ? _self.library : library // ignore: cast_nullable_to_non_nullable
@@ -79,6 +82,8 @@ as Failure?,template: freezed == template ? _self.template : template // ignore:
 as SummaryTemplate?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SummaryStatus,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as Summary?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
+as bool,actionFailure: freezed == actionFailure ? _self.actionFailure : actionFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,noteStatus: null == noteStatus ? _self.noteStatus : noteStatus // ignore: cast_nullable_to_non_nullable
 as NoteSaveStatus,noteFailure: freezed == noteFailure ? _self.noteFailure : noteFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,favoriteFailure: freezed == favoriteFailure ? _self.favoriteFailure : favoriteFailure // ignore: cast_nullable_to_non_nullable
@@ -144,6 +149,18 @@ $FailureCopyWith<$Res>? get failure {
 
   return $FailureCopyWith<$Res>(_self.failure!, (value) {
     return _then(_self.copyWith(failure: value));
+  });
+}/// Create a copy of SummaryState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get actionFailure {
+    if (_self.actionFailure == null) {
+    return null;
+  }
+
+  return $FailureCopyWith<$Res>(_self.actionFailure!, (value) {
+    return _then(_self.copyWith(actionFailure: value));
   });
 }/// Create a copy of SummaryState
 /// with the given fields replaced by the non-null parameter values.
@@ -251,10 +268,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  bool sample,  Failure? actionFailure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SummaryState() when $default != null:
-return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
+return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.sample,_that.actionFailure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
   return orElse();
 
 }
@@ -272,10 +289,10 @@ return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  bool sample,  Failure? actionFailure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)  $default,) {final _that = this;
 switch (_that) {
 case _SummaryState():
-return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
+return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.sample,_that.actionFailure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -292,10 +309,10 @@ return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TemplatesStatus templatesStatus,  SummaryTemplateLibrary? library,  Failure? templatesFailure,  SummaryTemplate? template,  SummaryStatus status,  Summary? summary,  Failure? failure,  bool sample,  Failure? actionFailure,  NoteSaveStatus noteStatus,  Failure? noteFailure,  Failure? favoriteFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _SummaryState() when $default != null:
-return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
+return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that.template,_that.status,_that.summary,_that.failure,_that.sample,_that.actionFailure,_that.noteStatus,_that.noteFailure,_that.favoriteFailure);case _:
   return null;
 
 }
@@ -307,7 +324,7 @@ return $default(_that.templatesStatus,_that.library,_that.templatesFailure,_that
 
 
 class _SummaryState implements SummaryState {
-  const _SummaryState({this.templatesStatus = TemplatesStatus.initial, this.library, this.templatesFailure, this.template, this.status = SummaryStatus.idle, this.summary, this.failure, this.noteStatus = NoteSaveStatus.idle, this.noteFailure, this.favoriteFailure});
+  const _SummaryState({this.templatesStatus = TemplatesStatus.initial, this.library, this.templatesFailure, this.template, this.status = SummaryStatus.idle, this.summary, this.failure, this.sample = false, this.actionFailure, this.noteStatus = NoteSaveStatus.idle, this.noteFailure, this.favoriteFailure});
   
 
 @override@JsonKey() final  TemplatesStatus templatesStatus;
@@ -318,6 +335,11 @@ class _SummaryState implements SummaryState {
 @override@JsonKey() final  SummaryStatus status;
 @override final  Summary? summary;
 @override final  Failure? failure;
+/// The server has no summary API: generation is the demo sample and
+/// the tab says so.
+@override@JsonKey() final  bool sample;
+/// A delete that did not go through; the summary stays.
+@override final  Failure? actionFailure;
 @override@JsonKey() final  NoteSaveStatus noteStatus;
 @override final  Failure? noteFailure;
 /// A star toggle failed and was undone.
@@ -333,18 +355,18 @@ _$SummaryStateCopyWith<_SummaryState> get copyWith => __$SummaryStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SummaryState&&(identical(other.templatesStatus, templatesStatus) || other.templatesStatus == templatesStatus)&&(identical(other.library, library) || other.library == library)&&(identical(other.templatesFailure, templatesFailure) || other.templatesFailure == templatesFailure)&&(identical(other.template, template) || other.template == template)&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.noteStatus, noteStatus) || other.noteStatus == noteStatus)&&(identical(other.noteFailure, noteFailure) || other.noteFailure == noteFailure)&&(identical(other.favoriteFailure, favoriteFailure) || other.favoriteFailure == favoriteFailure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SummaryState&&(identical(other.templatesStatus, templatesStatus) || other.templatesStatus == templatesStatus)&&(identical(other.library, library) || other.library == library)&&(identical(other.templatesFailure, templatesFailure) || other.templatesFailure == templatesFailure)&&(identical(other.template, template) || other.template == template)&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.sample, sample) || other.sample == sample)&&(identical(other.actionFailure, actionFailure) || other.actionFailure == actionFailure)&&(identical(other.noteStatus, noteStatus) || other.noteStatus == noteStatus)&&(identical(other.noteFailure, noteFailure) || other.noteFailure == noteFailure)&&(identical(other.favoriteFailure, favoriteFailure) || other.favoriteFailure == favoriteFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,templatesStatus,library,templatesFailure,template,status,summary,failure,noteStatus,noteFailure,favoriteFailure);
+    return Object.hash(runtimeType,templatesStatus,library,templatesFailure,template,status,summary,failure,sample,actionFailure,noteStatus,noteFailure,favoriteFailure);
 }
 
 @override
 String toString() {
-    return 'SummaryState(templatesStatus: $templatesStatus, library: $library, templatesFailure: $templatesFailure, template: $template, status: $status, summary: $summary, failure: $failure, noteStatus: $noteStatus, noteFailure: $noteFailure, favoriteFailure: $favoriteFailure)';
+    return 'SummaryState(templatesStatus: $templatesStatus, library: $library, templatesFailure: $templatesFailure, template: $template, status: $status, summary: $summary, failure: $failure, sample: $sample, actionFailure: $actionFailure, noteStatus: $noteStatus, noteFailure: $noteFailure, favoriteFailure: $favoriteFailure)';
 }
 
 
@@ -355,11 +377,11 @@ abstract mixin class _$SummaryStateCopyWith<$Res> implements $SummaryStateCopyWi
   factory _$SummaryStateCopyWith(_SummaryState value, $Res Function(_SummaryState) _then) = __$SummaryStateCopyWithImpl;
 @override @useResult
 $Res call({
- TemplatesStatus templatesStatus, SummaryTemplateLibrary? library, Failure? templatesFailure, SummaryTemplate? template, SummaryStatus status, Summary? summary, Failure? failure, NoteSaveStatus noteStatus, Failure? noteFailure, Failure? favoriteFailure
+ TemplatesStatus templatesStatus, SummaryTemplateLibrary? library, Failure? templatesFailure, SummaryTemplate? template, SummaryStatus status, Summary? summary, Failure? failure, bool sample, Failure? actionFailure, NoteSaveStatus noteStatus, Failure? noteFailure, Failure? favoriteFailure
 });
 
 
-@override $SummaryTemplateLibraryCopyWith<$Res>? get library;@override $FailureCopyWith<$Res>? get templatesFailure;@override $SummaryTemplateCopyWith<$Res>? get template;@override $SummaryCopyWith<$Res>? get summary;@override $FailureCopyWith<$Res>? get failure;@override $FailureCopyWith<$Res>? get noteFailure;@override $FailureCopyWith<$Res>? get favoriteFailure;
+@override $SummaryTemplateLibraryCopyWith<$Res>? get library;@override $FailureCopyWith<$Res>? get templatesFailure;@override $SummaryTemplateCopyWith<$Res>? get template;@override $SummaryCopyWith<$Res>? get summary;@override $FailureCopyWith<$Res>? get failure;@override $FailureCopyWith<$Res>? get actionFailure;@override $FailureCopyWith<$Res>? get noteFailure;@override $FailureCopyWith<$Res>? get favoriteFailure;
 
 }
 /// @nodoc
@@ -372,7 +394,7 @@ class __$SummaryStateCopyWithImpl<$Res>
 
 /// Create a copy of SummaryState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? templatesStatus = null,Object? library = freezed,Object? templatesFailure = freezed,Object? template = freezed,Object? status = null,Object? summary = freezed,Object? failure = freezed,Object? noteStatus = null,Object? noteFailure = freezed,Object? favoriteFailure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? templatesStatus = null,Object? library = freezed,Object? templatesFailure = freezed,Object? template = freezed,Object? status = null,Object? summary = freezed,Object? failure = freezed,Object? sample = null,Object? actionFailure = freezed,Object? noteStatus = null,Object? noteFailure = freezed,Object? favoriteFailure = freezed,}) {
   return _then(_SummaryState(
 templatesStatus: null == templatesStatus ? _self.templatesStatus : templatesStatus // ignore: cast_nullable_to_non_nullable
 as TemplatesStatus,library: freezed == library ? _self.library : library // ignore: cast_nullable_to_non_nullable
@@ -381,6 +403,8 @@ as Failure?,template: freezed == template ? _self.template : template // ignore:
 as SummaryTemplate?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SummaryStatus,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as Summary?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
+as bool,actionFailure: freezed == actionFailure ? _self.actionFailure : actionFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,noteStatus: null == noteStatus ? _self.noteStatus : noteStatus // ignore: cast_nullable_to_non_nullable
 as NoteSaveStatus,noteFailure: freezed == noteFailure ? _self.noteFailure : noteFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,favoriteFailure: freezed == favoriteFailure ? _self.favoriteFailure : favoriteFailure // ignore: cast_nullable_to_non_nullable
@@ -447,6 +471,18 @@ $FailureCopyWith<$Res>? get failure {
 
   return $FailureCopyWith<$Res>(_self.failure!, (value) {
     return _then(_self.copyWith(failure: value));
+  });
+}/// Create a copy of SummaryState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get actionFailure {
+    if (_self.actionFailure == null) {
+    return null;
+  }
+
+  return $FailureCopyWith<$Res>(_self.actionFailure!, (value) {
+    return _then(_self.copyWith(actionFailure: value));
   });
 }/// Create a copy of SummaryState
 /// with the given fields replaced by the non-null parameter values.

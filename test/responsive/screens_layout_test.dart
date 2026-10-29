@@ -514,8 +514,10 @@ final _summaryState = SummaryState(
   library: _templates,
   template: _templates.templates.first,
   status: SummaryStatus.success,
+  sample: true,
   summary: Summary(
     templateName: _templateName,
+    sample: true,
     sections: [
       const SummarySection(
         kind: SummarySectionKind.overview,
@@ -534,6 +536,26 @@ final _summaryState = SummaryState(
         title: _cyrName,
         bullets: [_longError],
       ),
+    ],
+  ),
+);
+
+final SummaryState _serverSummaryState = _summaryState.copyWith(
+  sample: false,
+  summary: Summary(
+    id: 's1',
+    templateName: _longName,
+    body: const {'type': 'doc'},
+    blocks: [
+      const NoteBlock(kind: NoteBlockKind.heading, text: _longName, level: 2),
+      const NoteBlock(kind: NoteBlockKind.paragraph, text: _longAnswer),
+      for (var i = 0; i < 4; i++)
+        NoteBlock(
+          kind: NoteBlockKind.listItem,
+          text: i.isEven ? _cyrName : _longError,
+          marker: '${i + 1}.',
+          depth: i % 2,
+        ),
     ],
   ),
 );
@@ -1390,6 +1412,32 @@ final _scenarios = <_Scenario>[
     () => _tabHost(SummaryTab(transcript: _transcript)),
     arrange: () => when(() => summary.state)
         .thenReturn(_summaryState.copyWith(status: SummaryStatus.generating)),
+  ),
+  _Scenario(
+    'tab(summary,server)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () => when(() => summary.state).thenReturn(_serverSummaryState),
+  ),
+  _Scenario(
+    'tab(summary,loading)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () =>
+        when(() => summary.state)
+            .thenReturn(const SummaryState(status: SummaryStatus.loading)),
+  ),
+  _Scenario(
+    'tab(summary,failed)',
+    () => _tabHost(SummaryTab(transcript: _transcript)),
+    arrange: () => when(() => summary.state).thenReturn(
+      _serverSummaryState.copyWith(
+        status: SummaryStatus.failure,
+        summary: const Summary(
+          id: 's1',
+          progress: SummaryProgress.failed,
+          error: _longError,
+        ),
+      ),
+    ),
   ),
   _Scenario(
     'tab(summary,short)',

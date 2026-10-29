@@ -75,4 +75,8 @@ abstract final class Endpoints {
   static const String summaryTemplates = '/api/v1/summary-templates';
   static String summaryTemplateFavorite(String id) =>
       '/api/v1/summary-templates/$id/favorite';
+  // The summary itself: backend `feat/meeting-ai`; a server without it
+  // answers with its NoRoute 404 (`core/network/route_missing.dart`).
+  static String transcriptSummary(String id) =>
+      '/api/v1/transcript/$id/summary';
 }

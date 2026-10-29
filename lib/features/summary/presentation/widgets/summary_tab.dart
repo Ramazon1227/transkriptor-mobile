@@ -11,15 +11,17 @@ import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/core/widgets/demo_banner.dart';
+import 'package:transkriptor_uz/features/notes/presentation/widgets/note_body.dart';
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
 import 'package:transkriptor_uz/features/summary/domain/entities/summary.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/summary_sections.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/template_picker_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
-/// The editor's «Xulosa» tab. The template library is real; the summary
-/// itself comes from a demo source and says so (`DemoBanner`). Lives in
-/// a tab view under the player: fills a bounded height, scrolls itself.
+/// The editor's «Xulosa» tab. Real on a server with the summary API; on
+/// one without it the summary is the demo sample and says so
+/// (`DemoBanner`). Lives in a tab view under the player: fills a bounded
+/// height, scrolls itself.
 class SummaryTab extends StatelessWidget {
   const SummaryTab({required this.transcript, super.key});
 
@@ -47,14 +49,19 @@ class _SummaryView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return BlocConsumer<SummaryCubit, SummaryState>(
-      listenWhen: (a, b) => a.noteStatus != b.noteStatus,
+      listenWhen: (a, b) =>
+          a.noteStatus != b.noteStatus ||
+          (b.actionFailure != null && a.actionFailure != b.actionFailure),
       listener: (context, state) {
-        final text = switch (state.noteStatus) {
-          NoteSaveStatus.saved => l10n.summaryNoteSaved,
-          NoteSaveStatus.failure =>
-            (state.noteFailure ?? const Failure.unknown()).message(l10n),
-          _ => null,
-        };
+        final action = state.actionFailure;
+        final text = action != null
+            ? summaryFailureText(l10n, action)
+            : switch (state.noteStatus) {
+                NoteSaveStatus.saved => l10n.summaryNoteSaved,
+                NoteSaveStatus.failure =>
+                  (state.noteFailure ?? const Failure.unknown()).message(l10n),
+                _ => null,
+              };
         if (text == null) return;
         ScaffoldMessenger.maybeOf(context)
           ?..hideCurrentSnackBar()
@@ -65,8 +72,10 @@ class _SummaryView extends StatelessWidget {
           key: const Key('summary_list'),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
-            DemoBanner(message: l10n.summaryDemoBanner),
-            const SizedBox(height: 12),
+            if (state.sample) ...[
+              DemoBanner(message: l10n.summaryDemoBanner),
+              const SizedBox(height: 12),
+            ],
             if (state.status == SummaryStatus.tooShort)
               _Notice(
                 key: const Key('summary_too_short'),
@@ -92,6 +101,12 @@ class _SummaryView extends StatelessWidget {
         return const SizedBox.shrink();
       case SummaryStatus.idle:
         return _Empty(onCreate: cubit.generate);
+      case SummaryStatus.loading:
+        return _Notice(
+          key: const Key('summary_loading'),
+          text: l10n.summaryLoading,
+          busy: true,
+        );
       case SummaryStatus.generating:
         return _Notice(
           key: const Key('summary_generating'),
@@ -99,15 +114,22 @@ class _SummaryView extends StatelessWidget {
           busy: true,
         );
       case SummaryStatus.failure:
+        final failure = state.failure;
+        // No request failure: the server could not write it and said why.
+        final text = failure != null
+            ? summaryFailureText(l10n, failure)
+            : state.summary?.error ?? l10n.summaryFailedDefault;
         return Column(
+          key: const Key('summary_failure'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              (state.failure ?? const Failure.unknown()).message(l10n),
-              style: AppText.body.copyWith(color: AppColors.bad),
-            ),
+            Text(text, style: AppText.body.copyWith(color: AppColors.bad)),
             const SizedBox(height: 8),
-            OutlinedButton(onPressed: cubit.generate, child: Text(l10n.retry)),
+            OutlinedButton(
+              key: const Key('summary_retry'),
+              onPressed: cubit.retry,
+              child: Text(l10n.retry),
+            ),
           ],
         );
       case SummaryStatus.success:
@@ -131,7 +153,9 @@ class _TemplateChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final name = state.template?.name ?? l10n.summaryTemplateDefault;
-    final busy = state.status == SummaryStatus.generating;
+    final busy =
+        state.status == SummaryStatus.generating ||
+        state.status == SummaryStatus.loading;
     return Row(
       children: [
         Text(l10n.summaryTemplateLabel, style: AppText.caption),
@@ -213,6 +237,7 @@ class _SummaryCard extends StatelessWidget {
     final cubit = context.read<SummaryCubit>();
     final heading = summary.templateName ?? l10n.summaryTemplateDefault;
     final sections = resolveSectionTitles(l10n, summary.sections);
+    final fromServer = summary.body != null;
     return Column(
       key: const Key('summary_result'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -224,7 +249,13 @@ class _SummaryCard extends StatelessWidget {
             Expanded(child: Text(heading, style: AppText.heading)),
           ],
         ),
-        SummarySections(sections: sections),
+        if (fromServer)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: NoteBody(blocks: summary.blocks),
+          )
+        else
+          SummarySections(sections: sections),
         const SizedBox(height: 20),
         Wrap(
           spacing: 8,
@@ -232,7 +263,12 @@ class _SummaryCard extends StatelessWidget {
           children: [
             OutlinedButton.icon(
               key: const Key('summary_copy'),
-              onPressed: () => _copy(context, heading, sections),
+              onPressed: () => _copy(
+                context,
+                fromServer
+                    ? summaryBlocksPlainText(heading, summary.blocks)
+                    : summaryPlainText(heading, sections),
+              ),
               icon: const Icon(Icons.copy_rounded, size: 18),
               label: Text(l10n.summaryCopy),
             ),
@@ -271,16 +307,10 @@ class _SummaryCard extends StatelessWidget {
     );
   }
 
-  Future<void> _copy(
-    BuildContext context,
-    String heading,
-    List<SummarySection> sections,
-  ) async {
+  Future<void> _copy(BuildContext context, String text) async {
     final messenger = ScaffoldMessenger.maybeOf(context);
     final copied = context.l10n.shareCopied;
-    await Clipboard.setData(
-      ClipboardData(text: summaryPlainText(heading, sections)),
-    );
+    await Clipboard.setData(ClipboardData(text: text));
     messenger
       ?..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(copied)));
@@ -295,7 +325,7 @@ class _SummaryCard extends StatelessWidget {
       message: l10n.summaryDeleteBody,
       confirmLabel: l10n.summaryDelete,
     );
-    if (ok) cubit.delete();
+    if (ok) await cubit.delete();
   }
 }
 
@@ -330,3 +360,12 @@ class _Notice extends StatelessWidget {
     );
   }
 }
+
+/// What a failed summary request means to the person.
+String summaryFailureText(AppLocalizations l10n, Failure failure) =>
+    switch (failure) {
+      ServerFailure(statusCode: 409) => l10n.summaryBusy,
+      ServerFailure(statusCode: 503) => l10n.summaryUnavailable,
+      ServerFailure(statusCode: 403) => l10n.summaryForbidden,
+      _ => failure.message(l10n),
+    };

@@ -1,14 +1,13 @@
-// DEMO SOURCE — replaced when the summary endpoint exists.
+// DEMO SOURCE — used only on a server without the summary API.
 //
-// The backend has no summary API yet (root CLAUDE.md, «The summary panel
-// and template library are in; the summary itself is still a sample»).
-// Like the web's `demoSummarySource` (`tr-frontend/src/lib/mock.ts`),
-// this builds a sample in memory, after a fake delay, and the tab shows
-// «Namuna». Unlike the web it is not one fixed text: it is put together
-// deterministically from the transcript's own sentences, so it reads as
-// being about this recording — but no model wrote it. When the endpoint
-// exists, write a `SummaryRepository` against it and switch
-// `SummaryFacade.generate` to it; the cubit and the tab do not change.
+// The real API is `/transcript/:id/summary` (backend `feat/meeting-ai`,
+// `SummaryRepository`). `SummaryFacade` falls back to this sample when
+// that route answers the backend's NoRoute 404, and the tab shows
+// «Namuna». Like the web's old `demoSummarySource` it builds a sample in
+// memory, after a fake delay. It is put together deterministically from
+// the transcript's own sentences, so it reads as being about this
+// recording — but no model wrote it. Delete it once every server the app
+// talks to has the API.
 
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/utils/sentences.dart';

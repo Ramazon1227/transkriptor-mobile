@@ -2935,7 +2935,7 @@ abstract class AppLocalizations {
   /// No description provided for @summaryDemoBanner.
   ///
   /// In uz, this message translates to:
-  /// **'Namuna — xulosa hozircha transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.'**
+  /// **'Namuna — bu server versiyasida xulosa hali yoʻq: matn transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.'**
   String get summaryDemoBanner;
 
   /// No description provided for @summaryTooShort.
@@ -3093,6 +3093,102 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Keyingi qadamlar'**
   String get summarySectionNextSteps;
+
+  /// No description provided for @summaryLoading.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa tekshirilmoqda…'**
+  String get summaryLoading;
+
+  /// No description provided for @summaryFailedDefault.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa yozilmadi — qayta urinib koʻring.'**
+  String get summaryFailedDefault;
+
+  /// No description provided for @summaryBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa hozir yozilmoqda yoki transkriptda matn yoʻq.'**
+  String get summaryBusy;
+
+  /// No description provided for @summaryUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa hozir yoqilmagan yoki navbat toʻla — birozdan keyin urinib koʻring.'**
+  String get summaryUnavailable;
+
+  /// No description provided for @summaryForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosani faqat tahrirlash huquqi bor aʼzo yarata oladi.'**
+  String get summaryForbidden;
+
+  /// No description provided for @meetSummarize.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uchrashuvdan keyin xulosa yozilsin'**
+  String get meetSummarize;
+
+  /// No description provided for @meetSummarizeBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript tayyor boʻlgach AI xulosa yozadi va uni xatda yuboradi.'**
+  String get meetSummarizeBody;
+
+  /// No description provided for @meetSummaryTemplate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa shabloni'**
+  String get meetSummaryTemplate;
+
+  /// No description provided for @meetShareInternal.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosani ichki ishtirokchilarga ham yuborish'**
+  String get meetShareInternal;
+
+  /// No description provided for @meetShareInternalBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faqat emailingiz domenidagi ishtirokchilarga; buning uchun emailingiz tasdiqlangan boʻlishi kerak.'**
+  String get meetShareInternalBody;
+
+  /// No description provided for @profileNameEdit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismni oʻzgartirish'**
+  String get profileNameEdit;
+
+  /// No description provided for @profileNameAdd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism qoʻshish'**
+  String get profileNameAdd;
+
+  /// No description provided for @profileNameSave.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlash'**
+  String get profileNameSave;
+
+  /// No description provided for @profileNameEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismni kiriting.'**
+  String get profileNameEmpty;
+
+  /// No description provided for @profileNameTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism juda uzun.'**
+  String get profileNameTooLong;
+
+  /// No description provided for @profileNameSaved.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism saqlandi'**
+  String get profileNameSaved;
 
   /// No description provided for @learnDemoBanner.
   ///
