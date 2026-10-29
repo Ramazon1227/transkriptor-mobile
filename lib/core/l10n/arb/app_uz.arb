@@ -330,7 +330,7 @@
   "settingsTerms": "Foydalanish shartlari",
   "settingsVersion": "Versiya",
   "settingsDeleteAccount": "Hisobni oʻchirish",
-  "settingsLinkBody": "Sahifani brauzerda oching:",
+  "linkOpenFailedCopied": "Havolani ochib boʻlmadi — nusxasi olindi. Brauzerga qoʻyib oching.",
   "planStatusActive": "Faol",
   "planStatusPastDue": "Toʻlov kutilmoqda",
   "planStatusCancelled": "Bekor qilingan",
@@ -454,6 +454,9 @@
   "recorderScreenOff": "Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.",
   "recorderMicDeniedTitle": "Mikrofonga ruxsat yoʻq",
   "recorderMicDeniedBody": "Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.",
+  "recorderMicDeniedBodyIos": "Yozish uchun mikrofon kerak. «Sozlamalarni ochish»ni bosing va Mikrofon tugmasini yoqing. Keyin shu yerga qaytib, «Qayta urinish»ni bosing.",
+  "openPhoneSettings": "Sozlamalarni ochish",
+  "openPhoneSettingsFailed": "Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.",
   "recoveryBannerOne": "Yuborilmagan yozuv bor — {duration}, {when}",
   "@recoveryBannerOne": {
     "placeholders": { "duration": { "type": "String" }, "when": { "type": "String" } }

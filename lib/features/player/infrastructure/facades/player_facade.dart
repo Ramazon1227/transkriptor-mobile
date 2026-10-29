@@ -1,17 +1,17 @@
-import 'package:dartz/dartz.dart' show Either, Left, Right, Unit, unit;
+import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:injectable/injectable.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/features/links/domain/i_links_facade.dart';
 import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart';
 import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart';
 
 @LazySingleton(as: IPlayerFacade)
 class PlayerFacade implements IPlayerFacade {
-  PlayerFacade(this._repository, this._share);
+  PlayerFacade(this._repository, this._links);
 
   final PlayerRepository _repository;
-  final SharePlus _share;
+  final ILinksFacade _links;
 
   @override
   Future<Either<Failure, PlayableMedia>> mediaSource(String mediaId) async {
@@ -20,12 +20,5 @@ class PlayerFacade implements IPlayerFacade {
   }
 
   @override
-  Future<Either<Failure, Unit>> shareLink(String url) async {
-    try {
-      await _share.share(ShareParams(text: url));
-      return const Right(unit);
-    } on Object {
-      return const Left(Failure.unknown());
-    }
-  }
+  Future<Either<Failure, Unit>> openLink(String url) => _links.open(url);
 }

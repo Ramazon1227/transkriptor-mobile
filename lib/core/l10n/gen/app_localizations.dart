@@ -1672,11 +1672,11 @@ abstract class AppLocalizations {
   /// **'Hisobni oʻchirish'**
   String get settingsDeleteAccount;
 
-  /// No description provided for @settingsLinkBody.
+  /// No description provided for @linkOpenFailedCopied.
   ///
   /// In uz, this message translates to:
-  /// **'Sahifani brauzerda oching:'**
-  String get settingsLinkBody;
+  /// **'Havolani ochib boʻlmadi — nusxasi olindi. Brauzerga qoʻyib oching.'**
+  String get linkOpenFailedCopied;
 
   /// No description provided for @planStatusActive.
   ///
@@ -2181,6 +2181,24 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.'**
   String get recorderMicDeniedBody;
+
+  /// No description provided for @recorderMicDeniedBodyIos.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozish uchun mikrofon kerak. «Sozlamalarni ochish»ni bosing va Mikrofon tugmasini yoqing. Keyin shu yerga qaytib, «Qayta urinish»ni bosing.'**
+  String get recorderMicDeniedBodyIos;
+
+  /// No description provided for @openPhoneSettings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sozlamalarni ochish'**
+  String get openPhoneSettings;
+
+  /// No description provided for @openPhoneSettingsFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.'**
+  String get openPhoneSettingsFailed;
 
   /// No description provided for @recoveryBannerOne.
   ///

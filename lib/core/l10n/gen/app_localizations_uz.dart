@@ -877,7 +877,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get settingsDeleteAccount => 'Hisobni oʻchirish';
 
   @override
-  String get settingsLinkBody => 'Sahifani brauzerda oching:';
+  String get linkOpenFailedCopied =>
+      'Havolani ochib boʻlmadi — nusxasi olindi. Brauzerga qoʻyib oching.';
 
   @override
   String get planStatusActive => 'Faol';
@@ -1167,6 +1168,17 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get recorderMicDeniedBody =>
       'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.';
+
+  @override
+  String get recorderMicDeniedBodyIos =>
+      'Yozish uchun mikrofon kerak. «Sozlamalarni ochish»ni bosing va Mikrofon tugmasini yoqing. Keyin shu yerga qaytib, «Qayta urinish»ni bosing.';
+
+  @override
+  String get openPhoneSettings => 'Sozlamalarni ochish';
+
+  @override
+  String get openPhoneSettingsFailed =>
+      'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.';
 
   @override
   String recoveryBannerOne(String duration, String when) {

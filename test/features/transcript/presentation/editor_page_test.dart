@@ -1,11 +1,13 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart' show Right;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemChannels;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
+import 'package:transkriptor_uz/core/l10n/gen/app_localizations_uz.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/comments/application/comments_cubit.dart';
@@ -189,7 +191,44 @@ void main() {
 
       await tester.tap(find.byKey(const Key('player_youtube_open')));
       await tester.pumpAndSettle();
-      expect(player.shared, ['https://www.youtube.com/watch?v=x']);
+      expect(player.opened, ['https://www.youtube.com/watch?v=x']);
+    });
+
+    testWidgets('YouTube: nothing opens the link, so it is copied', (
+      tester,
+    ) async {
+      final copied = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied.add((call.arguments as Map)['text'] as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      player
+        ..answer = const Right(
+          PlayableMedia(
+            url: 'https://www.youtube.com/watch?v=x',
+            youtubeId: 'x',
+          ),
+        )
+        ..openSucceeds = false;
+      await pumpPage(tester);
+      await tester.tap(find.byKey(const Key('player_youtube_open')));
+      await tester.pumpAndSettle();
+      expect(copied, ['https://www.youtube.com/watch?v=x']);
+      expect(
+        find.text(AppLocalizationsUz().linkOpenFailedCopied),
+        findsOneWidget,
+      );
     });
   });
 

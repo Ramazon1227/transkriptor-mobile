@@ -24,6 +24,7 @@ import 'package:transkriptor_uz/core/network/session_manager.dart' as _i754;
 import 'package:transkriptor_uz/core/network/token_interceptor.dart' as _i60;
 import 'package:transkriptor_uz/core/router/app_router.dart' as _i1008;
 import 'package:transkriptor_uz/core/storage/token_storage.dart' as _i933;
+import 'package:transkriptor_uz/core/utils/device_platform.dart' as _i422;
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart'
     as _i748;
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_poll_policy.dart'
@@ -79,7 +80,7 @@ import 'package:transkriptor_uz/features/capture/application/screen_capture_cubi
 import 'package:transkriptor_uz/features/capture/application/url_import_cubit.dart'
     as _i951;
 import 'package:transkriptor_uz/features/capture/domain/i_dictation_facade.dart'
-    as _i703;
+    as _i704;
 import 'package:transkriptor_uz/features/capture/domain/i_screen_capture_facade.dart'
     as _i266;
 import 'package:transkriptor_uz/features/capture/domain/i_url_import_facade.dart'
@@ -147,6 +148,14 @@ import 'package:transkriptor_uz/features/library/infrastructure/facades/library_
     as _i985;
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart'
     as _i203;
+import 'package:transkriptor_uz/features/links/application/links_cubit.dart'
+    as _i718;
+import 'package:transkriptor_uz/features/links/domain/i_links_facade.dart'
+    as _i863;
+import 'package:transkriptor_uz/features/links/infrastructure/facades/links_facade.dart'
+    as _i874;
+import 'package:transkriptor_uz/features/links/infrastructure/launcher/url_opener.dart'
+    as _i703;
 import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart'
     as _i684;
 import 'package:transkriptor_uz/features/meeting_bot/domain/i_meeting_bot_facade.dart'
@@ -176,7 +185,7 @@ import 'package:transkriptor_uz/features/player/infrastructure/engine/video_play
 import 'package:transkriptor_uz/features/player/infrastructure/facades/player_facade.dart'
     as _i368;
 import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart'
-    as _i422;
+    as _i423;
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart'
     as _i752;
 import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart'
@@ -283,6 +292,7 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i754.SessionManager>(() => _i754.SessionManager());
+    gh.lazySingleton<_i422.DevicePlatform>(() => _i422.DevicePlatform());
     gh.lazySingleton<_i106.AiChatPollPolicy>(() => _i106.AiChatPollPolicy());
     gh.lazySingleton<_i116.GoogleSignIn>(() => googleModule.googleSignIn);
     gh.lazySingleton<_i802.DemoDictationRepository>(
@@ -325,6 +335,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i464.WorkspaceSelectionStorage>(
       () => _i464.WorkspaceSelectionStorage(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.lazySingleton<_i703.UrlOpener>(() => _i703.LauncherUrlOpener());
     gh.lazySingleton<_i77.IUrlImportFacade>(
       () => _i980.UrlImportFacade(gh<_i919.DemoUrlImportRepository>()),
     );
@@ -372,6 +383,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i586.LearnCubit>(
       () => _i586.LearnCubit(gh<_i522.ILearnFacade>()),
     );
+    gh.lazySingleton<_i863.ILinksFacade>(
+      () =>
+          _i874.LinksFacade(gh<_i703.UrlOpener>(), gh<_i422.DevicePlatform>()),
+    );
+    gh.factory<_i718.LinksCubit>(
+      () => _i718.LinksCubit(gh<_i863.ILinksFacade>()),
+    );
     gh.factory<_i88.ScreenCaptureCubit>(
       () => _i88.ScreenCaptureCubit(gh<_i266.IScreenCaptureFacade>()),
     );
@@ -408,8 +426,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i988.NotesRepository>(
       () => _i988.NotesRepository(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i422.PlayerRepository>(
-      () => _i422.PlayerRepository(gh<_i361.Dio>()),
+    gh.lazySingleton<_i423.PlayerRepository>(
+      () => _i423.PlayerRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i765.PushRepository>(
       () => _i765.PushRepository(gh<_i361.Dio>()),
@@ -461,7 +479,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'uploadDio'),
       ),
     );
-    gh.lazySingleton<_i703.IDictationFacade>(
+    gh.lazySingleton<_i704.IDictationFacade>(
       () => _i262.DictationFacade(
         gh<_i802.DemoDictationRepository>(),
         gh<_i4.NoteRepository>(),
@@ -492,12 +510,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i431.DemoSummaryRepository>(),
       ),
     );
-    gh.lazySingleton<_i36.IPlayerFacade>(
-      () => _i368.PlayerFacade(
-        gh<_i422.PlayerRepository>(),
-        gh<_i998.SharePlus>(),
-      ),
-    );
     gh.factory<_i371.SummaryCubit>(
       () => _i371.SummaryCubit(gh<_i1050.ISummaryFacade>()),
     );
@@ -507,17 +519,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i252.LibraryChanges>(),
       ),
     );
-    gh.factory<_i129.PlayerCubit>(
-      () => _i129.PlayerCubit(
-        gh<_i36.IPlayerFacade>(),
-        gh<_i257.PlaybackEngineFactory>(),
-      ),
-    );
     gh.lazySingleton<_i543.IAiChatFacade>(
       () => _i598.AiChatFacade(gh<_i104.AiChatRepository>()),
     );
     gh.factory<_i339.DictationCubit>(
-      () => _i339.DictationCubit(gh<_i703.IDictationFacade>()),
+      () => _i339.DictationCubit(gh<_i704.IDictationFacade>()),
     );
     gh.factory<_i506.DeleteAccountCubit>(
       () => _i506.DeleteAccountCubit(gh<_i865.IAuthFacade>()),
@@ -558,6 +564,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i992.PlansCubit>(
       () => _i992.PlansCubit(gh<_i171.IBillingFacade>()),
+    );
+    gh.lazySingleton<_i36.IPlayerFacade>(
+      () => _i368.PlayerFacade(
+        gh<_i423.PlayerRepository>(),
+        gh<_i863.ILinksFacade>(),
+      ),
     );
     gh.lazySingleton<_i727.IJobFacade>(
       () => _i367.JobFacade(
@@ -628,6 +640,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i754.SessionManager>(),
         gh<_i202.IPushFacade>(),
         gh<_i537.IWorkspaceFacade>(),
+      ),
+    );
+    gh.factory<_i129.PlayerCubit>(
+      () => _i129.PlayerCubit(
+        gh<_i36.IPlayerFacade>(),
+        gh<_i257.PlaybackEngineFactory>(),
       ),
     );
     gh.factory<_i684.MeetingBotCubit>(

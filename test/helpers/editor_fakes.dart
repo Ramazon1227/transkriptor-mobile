@@ -16,16 +16,19 @@ class FakePlayerFacade implements IPlayerFacade {
   FakePlayerFacade([this.answer = const Left(Failure.server(statusCode: 404))]);
 
   Either<Failure, PlayableMedia> answer;
-  final List<String> shared = [];
+  final List<String> opened = [];
+
+  /// False: the phone had nothing to open the link with.
+  bool openSucceeds = true;
 
   @override
   Future<Either<Failure, PlayableMedia>> mediaSource(String mediaId) async =>
       answer;
 
   @override
-  Future<Either<Failure, Unit>> shareLink(String url) async {
-    shared.add(url);
-    return const Right(unit);
+  Future<Either<Failure, Unit>> openLink(String url) async {
+    opened.add(url);
+    return openSucceeds ? const Right(unit) : const Left(Failure.unknown());
   }
 }
 

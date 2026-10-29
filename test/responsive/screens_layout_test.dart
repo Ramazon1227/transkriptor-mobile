@@ -77,6 +77,7 @@ import 'package:transkriptor_uz/features/library/domain/entities/library_item.da
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/file_actions_sheet.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/library_tile.dart';
+import 'package:transkriptor_uz/features/links/application/links_cubit.dart';
 import 'package:transkriptor_uz/features/meeting_bot/application/meeting_bot_cubit.dart';
 import 'package:transkriptor_uz/features/meeting_bot/domain/entities/meeting_bot.dart';
 import 'package:transkriptor_uz/features/meeting_bot/presentation/pages/meeting_page.dart';
@@ -151,6 +152,8 @@ class _Balance extends MockCubit<BalanceState> implements BalanceCubit;
 class _Plans extends MockCubit<PlansState> implements PlansCubit;
 
 class _Push extends MockCubit<PushState> implements PushCubit;
+
+class _Links extends MockCubit<LinksState> implements LinksCubit;
 
 class _WorkspaceList extends MockCubit<WorkspaceListState>
     implements WorkspaceListCubit;
@@ -613,6 +616,7 @@ late _Calendar calendar;
 late _Balance balance;
 late _Plans plans;
 late _Push push;
+late _Links links;
 late _WorkspaceList workspaceList;
 late _Delete deleteAccount;
 late _Notes notes;
@@ -645,6 +649,7 @@ void _makeMocks() {
   balance = _Balance();
   plans = _Plans();
   push = _Push();
+  links = _Links();
   workspaceList = _WorkspaceList();
   deleteAccount = _Delete();
   notes = _Notes();
@@ -758,6 +763,7 @@ void _makeMocks() {
       .thenReturn(const PlansState(status: PlansStatus.success, plans: _plans));
   when(() => plans.load()).thenAnswer((_) async {});
   when(() => push.state).thenReturn(const PushState());
+  when(() => links.state).thenReturn(const LinksState());
   when(() => workspaceList.state).thenReturn(
     const WorkspaceListState(
       status: WorkspaceListStatus.success,
@@ -1543,6 +1549,7 @@ Widget _app(_Scenario s, double scale) {
     providers: [
       BlocProvider<AccountCubit>.value(value: account),
       BlocProvider<PushCubit>.value(value: push),
+      BlocProvider<LinksCubit>.value(value: links),
     ],
     child: app,
   );

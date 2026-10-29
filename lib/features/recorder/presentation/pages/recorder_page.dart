@@ -12,6 +12,8 @@ import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
+import 'package:transkriptor_uz/features/links/application/links_cubit.dart';
+import 'package:transkriptor_uz/features/links/presentation/open_link.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
@@ -236,8 +238,9 @@ class _StatusTitle extends StatelessWidget {
   }
 }
 
-/// The microphone was refused: say exactly where to allow it. No package
-/// opens the settings screen, so the path is spelled out.
+/// The microphone was refused: say exactly where to allow it. iOS gets a
+/// button to the app's page in Settings; on Android the path is spelled
+/// out (opening app settings there needs a native intent).
 class _FailurePanel extends StatelessWidget {
   const _FailurePanel({required this.failure});
 
@@ -247,6 +250,9 @@ class _FailurePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final denied = failure is PermissionDeniedFailure;
+    final appSettings = context.select<LinksCubit, bool>(
+      (c) => c.state.canOpenAppSettings,
+    );
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: Container(
@@ -280,15 +286,31 @@ class _FailurePanel extends StatelessWidget {
             ),
             if (denied) ...[
               const SizedBox(height: 8),
-              Text(l10n.recorderMicDeniedBody, style: AppText.caption),
+              Text(
+                appSettings
+                    ? l10n.recorderMicDeniedBodyIos
+                    : l10n.recorderMicDeniedBody,
+                style: AppText.caption,
+              ),
             ],
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton(
-                onPressed: () => context.read<RecorderCubit>().start(),
-                child: Text(l10n.retry),
-              ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                // iOS opens the app's page in Settings; Android cannot
+                // without native code, so there the text says the way.
+                if (denied && appSettings)
+                  FilledButton(
+                    key: const Key('recorder_open_settings'),
+                    onPressed: () => openAppSettings(context),
+                    child: Text(l10n.openPhoneSettings),
+                  ),
+                OutlinedButton(
+                  onPressed: () => context.read<RecorderCubit>().start(),
+                  child: Text(l10n.retry),
+                ),
+              ],
             ),
           ],
         ),

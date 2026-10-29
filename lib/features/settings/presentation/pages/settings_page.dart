@@ -20,9 +20,9 @@ import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart';
 import 'package:transkriptor_uz/features/billing/domain/entities/billing.dart';
+import 'package:transkriptor_uz/features/links/presentation/open_link.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
-import 'package:transkriptor_uz/features/settings/presentation/widgets/link_sheet.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/logout_sheet.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_role_label.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_switcher_sheet.dart';
@@ -323,8 +323,17 @@ class _LinkRow extends StatelessWidget {
       icon: icon,
       label: label,
       value: url == null ? context.l10n.comingSoon : null,
-      showChevron: url != null,
-      onTap: () => showLinkOrSoon(context, title: label, url: url),
+      // Leaves the app: the «open outside» mark instead of a chevron.
+      trailing: url == null
+          ? null
+          : const Icon(
+              Icons.open_in_new_rounded,
+              size: 18,
+              color: AppColors.mutedDark,
+            ),
+      showChevron: false,
+      // Opens in the browser; copied with a SnackBar when nothing opens it.
+      onTap: () => openLinkOrCopy(context, url),
     );
   }
 }

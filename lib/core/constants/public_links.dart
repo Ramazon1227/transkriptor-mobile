@@ -1,11 +1,18 @@
 /// Pages of the public web app that the mobile app points people to.
 ///
-/// The host is given at build time like `API_BASE_URL`:
-/// `--dart-define=PUBLIC_APP_URL=https://app.example.uz`. Without it the
-/// links are not offered (the rows say «Tez orada»), so a build never
-/// sends people to a guessed host.
+/// The host can be given at build time like `API_BASE_URL`:
+/// `--dart-define=PUBLIC_APP_URL=https://app.example.uz`. An empty value
+/// (`--dart-define=PUBLIC_APP_URL=`) turns the links off — the rows then
+/// say «Tez orada».
 abstract final class PublicLinks {
-  static const String baseUrl = String.fromEnvironment('PUBLIC_APP_URL');
+  /// Default: the production web app on the **temporary** server (no real
+  /// domain yet, an sslip.io name for its IP). It moves with the domain —
+  /// root `KOCHISH.md` is the move plan; change it here then, or pass the
+  /// new host with the dart-define.
+  static const String baseUrl = String.fromEnvironment(
+    'PUBLIC_APP_URL',
+    defaultValue: 'https://app.108-181-196-187.sslip.io',
+  );
 
   /// `tr-frontend/src/app/(site)/xavfsizlik` — where files are kept, how
   /// long, deletion, sign-in. The closest thing to a privacy policy that
@@ -16,7 +23,11 @@ abstract final class PublicLinks {
   static String? get privacy => _join(_privacyPath);
 
   // No help centre, terms of service or bug-report page exists on the web
-  // yet (checked 2026-10-29). Add the path here when one does.
+  // yet (checked 2026-10-29: `(site)` has the landing, `narxlar`,
+  // `xavfsizlik`, `audio-matnga`, `youtube-matnga`, `subtitr`). Add the
+  // path here when one does. `narxlar` is not linked: the app's own plans
+  // screen shows the same list from `GET /plans`, and buying is not
+  // possible on the web either.
   static String? get help => null;
   static String? get terms => null;
   static String? get bugReport => null;

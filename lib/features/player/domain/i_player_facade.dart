@@ -7,7 +7,7 @@ abstract interface class IPlayerFacade {
   /// 410 — the audio was removed by retention, 422 — not uploaded yet.
   Future<Either<Failure, PlayableMedia>> mediaSource(String mediaId);
 
-  /// Hands a link to the system share sheet (YouTube media: the person
-  /// opens it in the YouTube app from there).
-  Future<Either<Failure, Unit>> shareLink(String url);
+  /// Opens a YouTube media's link outside the app: the YouTube app when it
+  /// is installed, the browser otherwise. Left when nothing opened it.
+  Future<Either<Failure, Unit>> openLink(String url);
 }

@@ -217,12 +217,12 @@ class PlayerCubit extends Cubit<PlayerState> {
     await _engine?.setSpeed(speed);
   }
 
-  /// YouTube media: hands the link to the system share sheet. A failure
-  /// there is the system's to show; nothing changes here.
-  Future<void> shareLink() async {
+  /// YouTube media: opens the link in the YouTube app or the browser.
+  /// False when nothing opened it — the card then copies the link.
+  Future<bool> openLink() async {
     final url = state.source?.url;
-    if (url == null || url.isEmpty) return;
-    await _facade.shareLink(url);
+    if (url == null || url.isEmpty) return false;
+    return (await _facade.openLink(url)).isRight();
   }
 
   void toggleFold() => emit(state.copyWith(videoFolded: !state.videoFolded));

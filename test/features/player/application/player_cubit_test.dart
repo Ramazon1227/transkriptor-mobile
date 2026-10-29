@@ -65,8 +65,11 @@ void main() {
     expect(cubit.state.status, PlayerStatus.youtube);
     expect(engines.made, isEmpty);
 
-    await cubit.shareLink();
-    expect(facade.shared, ['https://www.youtube.com/watch?v=x']);
+    expect(await cubit.openLink(), isTrue);
+    expect(facade.opened, ['https://www.youtube.com/watch?v=x']);
+
+    facade.openSucceeds = false;
+    expect(await cubit.openLink(), isFalse);
   });
 
   for (final code in [404, 410, 422]) {

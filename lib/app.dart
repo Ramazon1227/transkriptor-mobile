@@ -8,6 +8,7 @@ import 'package:transkriptor_uz/core/router/app_router.dart';
 import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
+import 'package:transkriptor_uz/features/links/application/links_cubit.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 
 class App extends StatelessWidget {
@@ -29,6 +30,8 @@ class App extends StatelessWidget {
           },
         ),
         BlocProvider(create: (_) => getIt<PushCubit>()),
+        // Links that leave the app (settings, YouTube, phone settings).
+        BlocProvider(create: (_) => getIt<LinksCubit>()),
       ],
       child: const _PushListener(child: _AppView()),
     );

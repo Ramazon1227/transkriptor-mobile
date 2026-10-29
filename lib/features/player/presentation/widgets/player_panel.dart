@@ -8,6 +8,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/core/widgets/copy_link_fallback.dart';
 import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/presentation/widgets/player_transport.dart';
@@ -124,8 +125,8 @@ class _MutedLine extends StatelessWidget {
   }
 }
 
-/// No in-app playback for YouTube: the link goes to the share sheet,
-/// from where the YouTube app opens it, or to the clipboard.
+/// No in-app playback for YouTube: the link opens in the YouTube app (or
+/// the browser), or goes to the clipboard.
 class _YoutubeCard extends StatelessWidget {
   const _YoutubeCard({required this.url});
 
@@ -160,7 +161,14 @@ class _YoutubeCard extends StatelessWidget {
                     ),
                     onPressed: url.isEmpty
                         ? null
-                        : () => context.read<PlayerCubit>().shareLink(),
+                        : () async {
+                            final opened = await context
+                                .read<PlayerCubit>()
+                                .openLink();
+                            if (!opened && context.mounted) {
+                              await copyLinkInstead(context, url);
+                            }
+                          },
                     icon: const Icon(Icons.open_in_new_rounded, size: 18),
                     label: Text(l10n.playerYoutubeOpen),
                   ),
