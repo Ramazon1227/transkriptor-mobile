@@ -19,6 +19,9 @@ import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
+import 'package:transkriptor_uz/features/sentiment/application/sentiment_cubit.dart';
+import 'package:transkriptor_uz/features/sentiment/application/sentiment_poll_policy.dart';
+import 'package:transkriptor_uz/features/sentiment/presentation/widgets/sentiment_tab.dart';
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/summary_tab.dart';
 import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart';
@@ -29,6 +32,7 @@ import 'package:transkriptor_uz/features/transcript/presentation/pages/transcrip
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_actions_sheet.dart';
 
 import '../../../helpers/editor_fakes.dart';
+import '../../../helpers/sentiment_fakes.dart';
 
 class _MockTranscriptFacade extends Mock implements ITranscriptFacade;
 
@@ -126,11 +130,17 @@ void main() {
   }
 
   group('tabs and player', () {
-    testWidgets('four tabs; another tab opens and the transcript is kept', (
+    testWidgets('five tabs; another tab opens and the transcript is kept', (
       tester,
     ) async {
       await pumpPage(tester);
-      for (final t in ['Transkript', 'AI suhbat', 'Xulosa', 'Oʻrganish']) {
+      for (final t in [
+        'Transkript',
+        'AI suhbat',
+        'Xulosa',
+        'Oʻrganish',
+        'Tahlil',
+      ]) {
         expect(find.text(t), findsOneWidget);
       }
       await tester.tap(find.text('Xulosa'));
@@ -139,6 +149,30 @@ void main() {
       await tester.tap(find.text('Transkript'));
       await tester.pumpAndSettle();
       expect(find.text('birinchi gap'), findsOneWidget);
+    });
+
+    testWidgets('Tahlil loads the analysis and marks the segments', (
+      tester,
+    ) async {
+      final sentiment = FakeSentimentFacade()
+        ..fallback = const Right(doneAnalysis);
+      getIt.registerFactory(
+        () => SentimentCubit(sentiment, SentimentPollPolicy()),
+      );
+      await pumpPage(tester);
+      expect(find.byKey(const Key('sentiment_mark_g1')), findsNothing);
+      expect(sentiment.getCalls, 0, reason: 'nothing before the tab opens');
+      await tester.ensureVisible(find.text('Tahlil'));
+      await tester.tap(find.text('Tahlil'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SentimentTab), findsOneWidget);
+      expect(sentiment.getCalls, 1);
+      expect(sentiment.analyzeCalls, 0, reason: 'started only by a button');
+      await tester.ensureVisible(find.text('Transkript'));
+      await tester.tap(find.text('Transkript'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('sentiment_mark_g1')), findsOneWidget);
+      expect(find.byKey(const Key('sentiment_mark_g2')), findsOneWidget);
     });
 
     testWidgets('a timecode seeks and plays; the active segment is marked', (

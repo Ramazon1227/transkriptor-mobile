@@ -100,6 +100,9 @@ import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_re
 import 'package:transkriptor_uz/features/recorder/presentation/pages/recorder_page.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/level_meter.dart';
 import 'package:transkriptor_uz/features/recorder/presentation/widgets/recovery_widgets.dart';
+import 'package:transkriptor_uz/features/sentiment/application/sentiment_cubit.dart';
+import 'package:transkriptor_uz/features/sentiment/domain/entities/sentiment.dart';
+import 'package:transkriptor_uz/features/sentiment/presentation/widgets/sentiment_tab.dart';
 import 'package:transkriptor_uz/features/settings/presentation/pages/settings_page.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
@@ -112,6 +115,7 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_actions_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/transcript_tab.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
@@ -190,6 +194,8 @@ class _Learn extends MockCubit<LearnState> implements LearnCubit;
 class _Flashcards extends MockCubit<FlashcardsState> implements FlashcardsCubit;
 
 class _Quiz extends MockCubit<QuizState> implements QuizCubit;
+
+class _Sentiment extends MockCubit<SentimentState> implements SentimentCubit;
 
 // ---------------------------------------------------------- stress data
 
@@ -621,6 +627,52 @@ final _learnSets = LearnSets(
   quizzes: [_quizSet],
 );
 
+const _speakerShare = SentimentShare(
+  positive: .333,
+  neutral: .334,
+  negative: .333,
+);
+
+final _sentimentState = SentimentState(
+  status: SentimentViewStatus.success,
+  startFailure: const Failure.server(statusCode: 503, message: _longError),
+  analysis: SentimentAnalysis(
+    status: SentimentStatus.done,
+    note: _longAnswer,
+    outdated: true,
+    unlabeled: 1234,
+    overall: const SentimentShare(
+      positive: .001,
+      neutral: .998,
+      negative: .001,
+      score: -1,
+    ),
+    speakers: [
+      for (final s in _speakers)
+        SpeakerSentiment(
+          speakerId: s.id,
+          label: s.label,
+          talk: const Duration(hours: 2, minutes: 59, seconds: 59),
+          share: _speakerShare,
+        ),
+      const SpeakerSentiment(talk: Duration(minutes: 1)),
+    ],
+    labels: _sentimentLabels,
+  ),
+);
+
+final Map<String, SentimentLabel> _sentimentLabels = {
+  for (var i = 0; i < 200; i++)
+    'seg$i': SentimentLabel.values[i % SentimentLabel.values.length],
+};
+
+Widget _sentimentTab() => _tabHost(
+  BlocProvider<SentimentCubit>.value(
+    value: sentiment,
+    child: SentimentTab(speakers: _speakers),
+  ),
+);
+
 /// The editor's tab area: a player above, the tab in what is left.
 Widget _tabHost(Widget tab) => Scaffold(
   body: SafeArea(
@@ -666,6 +718,7 @@ late _Summary summary;
 late _Learn learn;
 late _Flashcards flashcards;
 late _Quiz quiz;
+late _Sentiment sentiment;
 
 void _makeMocks() {
   account = _Account();
@@ -725,6 +778,9 @@ void _makeMocks() {
   );
   when(() => aiChat.load(any())).thenAnswer((_) async {});
   when(() => summary.state).thenReturn(_summaryState);
+  sentiment = _Sentiment();
+  when(() => sentiment.state).thenReturn(_sentimentState);
+  when(() => sentiment.load(any())).thenAnswer((_) async {});
   when(() => summary.start(any())).thenAnswer((_) async {});
   when(() => learn.state).thenReturn(
     LearnState(
@@ -839,6 +895,7 @@ void _makeMocks() {
     ..registerFactory<DictationCubit>(() => dictation)
     ..registerFactory<AiChatCubit>(() => aiChat)
     ..registerFactory<SummaryCubit>(() => summary)
+    ..registerFactory<SentimentCubit>(() => sentiment)
     ..registerFactory<LearnCubit>(() => learn)
     ..registerFactory<FlashcardsCubit>(() => flashcards)
     ..registerFactory<QuizCubit>(() => quiz);
@@ -1513,6 +1570,55 @@ final _scenarios = <_Scenario>[
         child: const TemplatePickerSheet(),
       ),
     ),
+  ),
+  const _Scenario('tab(sentiment)', _sentimentTab),
+  _Scenario(
+    'tab(sentiment,intro)',
+    _sentimentTab,
+    arrange: () => when(() => sentiment.state).thenReturn(
+      const SentimentState(
+        status: SentimentViewStatus.success,
+        startFailure: Failure.server(statusCode: 403),
+      ),
+    ),
+  ),
+  _Scenario(
+    'tab(sentiment,pending)',
+    _sentimentTab,
+    arrange: () => when(() => sentiment.state).thenReturn(
+      const SentimentState(
+        status: SentimentViewStatus.success,
+        analysis: SentimentAnalysis(status: SentimentStatus.pending),
+        pollFailure: Failure.network(),
+      ),
+    ),
+  ),
+  _Scenario(
+    'tab(sentiment,failed)',
+    _sentimentTab,
+    arrange: () => when(() => sentiment.state).thenReturn(
+      const SentimentState(
+        status: SentimentViewStatus.success,
+        starting: true,
+        analysis: SentimentAnalysis(
+          status: SentimentStatus.failed,
+          error: _longError,
+        ),
+      ),
+    ),
+  ),
+  _Scenario(
+    'tab(transcript,sentiment marks)',
+    () => _tabHost(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<TranscriptCubit>.value(value: transcript),
+          BlocProvider<PlayerCubit>.value(value: player),
+        ],
+        child: TranscriptTab(sentiment: _sentimentLabels),
+      ),
+    ),
+    arrange: () => when(() => transcript.state).thenReturn(_loaded()),
   ),
   _Scenario('tab(learn)', () => _tabHost(LearnTab(transcript: _transcript))),
   _Scenario(

@@ -1941,6 +1941,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get editorTabLearn => 'Oʻrganish';
 
   @override
+  String get editorTabSentiment => 'Tahlil';
+
+  @override
   String get editorTabSoon => 'Bu boʻlim tez orada shu yerda boʻladi.';
 
   @override
@@ -2111,4 +2114,84 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get exportTableHint => 'Jadval: vaqt, maʼruzachi va matn ustunlari.';
+
+  @override
+  String get sentimentIntroTitle => 'Kayfiyat tahlili';
+
+  @override
+  String get sentimentIntroBody =>
+      'AI har bir gapni ijobiy, neytral yoki salbiy deb belgilaydi va natijani maʼruzachilar boʻyicha hisoblaydi. Tahlil ish maydonining barcha aʼzolariga koʻrinadi.';
+
+  @override
+  String get sentimentAnalyze => 'Kayfiyatni tahlil qilish';
+
+  @override
+  String get sentimentRerun => 'Qayta tahlil qilish';
+
+  @override
+  String get sentimentPending => 'Tahlil ketmoqda…';
+
+  @override
+  String get sentimentPendingBody =>
+      'Uzun yozuvda bir necha daqiqa olishi mumkin. Boshqa boʻlimga oʻtsangiz ham tahlil davom etadi.';
+
+  @override
+  String get sentimentFailedTitle => 'Tahlil tugamadi';
+
+  @override
+  String get sentimentFailedGeneric =>
+      'Tahlil tugamadi — qayta urinib koʻring.';
+
+  @override
+  String get sentimentOutdated => 'Matn tahlildan keyin oʻzgargan';
+
+  @override
+  String get sentimentOutdatedBody =>
+      'Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.';
+
+  @override
+  String get sentimentOverall => 'Umumiy kayfiyat';
+
+  @override
+  String get sentimentShareHint => 'Gapirish vaqtidan ulush';
+
+  @override
+  String get sentimentPositive => 'Ijobiy';
+
+  @override
+  String get sentimentNeutral => 'Neytral';
+
+  @override
+  String get sentimentNegative => 'Salbiy';
+
+  @override
+  String sentimentScore(String score) {
+    return 'Ball: $score';
+  }
+
+  @override
+  String get sentimentSpeakers => 'Maʼruzachilar boʻyicha';
+
+  @override
+  String get sentimentNoSpeaker => 'Maʼruzachisiz qismlar';
+
+  @override
+  String sentimentUnlabeled(int count) {
+    return 'Tahlildan keyin paydo boʻlgan $count ta segment hisobga kirmagan.';
+  }
+
+  @override
+  String get sentimentForbidden =>
+      'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlay oladi.';
+
+  @override
+  String get sentimentBusy => 'Tahlil hozir ketmoqda — kuting.';
+
+  @override
+  String get sentimentUnavailable =>
+      'AI hozir band yoki oʻchiq. Birozdan keyin qayta urinib koʻring.';
+
+  @override
+  String get sentimentPollFailed =>
+      'Holatni yangilab boʻlmadi — qayta uriniladi.';
 }

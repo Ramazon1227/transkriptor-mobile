@@ -3532,6 +3532,12 @@ abstract class AppLocalizations {
   /// **'Oʻrganish'**
   String get editorTabLearn;
 
+  /// No description provided for @editorTabSentiment.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlil'**
+  String get editorTabSentiment;
+
   /// No description provided for @editorTabSoon.
   ///
   /// In uz, this message translates to:
@@ -3849,6 +3855,144 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Jadval: vaqt, maʼruzachi va matn ustunlari.'**
   String get exportTableHint;
+
+  /// No description provided for @sentimentIntroTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kayfiyat tahlili'**
+  String get sentimentIntroTitle;
+
+  /// No description provided for @sentimentIntroBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI har bir gapni ijobiy, neytral yoki salbiy deb belgilaydi va natijani maʼruzachilar boʻyicha hisoblaydi. Tahlil ish maydonining barcha aʼzolariga koʻrinadi.'**
+  String get sentimentIntroBody;
+
+  /// No description provided for @sentimentAnalyze.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kayfiyatni tahlil qilish'**
+  String get sentimentAnalyze;
+
+  /// No description provided for @sentimentRerun.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta tahlil qilish'**
+  String get sentimentRerun;
+
+  /// No description provided for @sentimentPending.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlil ketmoqda…'**
+  String get sentimentPending;
+
+  /// No description provided for @sentimentPendingBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uzun yozuvda bir necha daqiqa olishi mumkin. Boshqa boʻlimga oʻtsangiz ham tahlil davom etadi.'**
+  String get sentimentPendingBody;
+
+  /// No description provided for @sentimentFailedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlil tugamadi'**
+  String get sentimentFailedTitle;
+
+  /// No description provided for @sentimentFailedGeneric.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlil tugamadi — qayta urinib koʻring.'**
+  String get sentimentFailedGeneric;
+
+  /// No description provided for @sentimentOutdated.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn tahlildan keyin oʻzgargan'**
+  String get sentimentOutdated;
+
+  /// No description provided for @sentimentOutdatedBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.'**
+  String get sentimentOutdatedBody;
+
+  /// No description provided for @sentimentOverall.
+  ///
+  /// In uz, this message translates to:
+  /// **'Umumiy kayfiyat'**
+  String get sentimentOverall;
+
+  /// No description provided for @sentimentShareHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gapirish vaqtidan ulush'**
+  String get sentimentShareHint;
+
+  /// No description provided for @sentimentPositive.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ijobiy'**
+  String get sentimentPositive;
+
+  /// No description provided for @sentimentNeutral.
+  ///
+  /// In uz, this message translates to:
+  /// **'Neytral'**
+  String get sentimentNeutral;
+
+  /// No description provided for @sentimentNegative.
+  ///
+  /// In uz, this message translates to:
+  /// **'Salbiy'**
+  String get sentimentNegative;
+
+  /// No description provided for @sentimentScore.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ball: {score}'**
+  String sentimentScore(String score);
+
+  /// No description provided for @sentimentSpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilar boʻyicha'**
+  String get sentimentSpeakers;
+
+  /// No description provided for @sentimentNoSpeaker.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachisiz qismlar'**
+  String get sentimentNoSpeaker;
+
+  /// No description provided for @sentimentUnlabeled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlildan keyin paydo boʻlgan {count} ta segment hisobga kirmagan.'**
+  String sentimentUnlabeled(int count);
+
+  /// No description provided for @sentimentForbidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlay oladi.'**
+  String get sentimentForbidden;
+
+  /// No description provided for @sentimentBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlil hozir ketmoqda — kuting.'**
+  String get sentimentBusy;
+
+  /// No description provided for @sentimentUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI hozir band yoki oʻchiq. Birozdan keyin qayta urinib koʻring.'**
+  String get sentimentUnavailable;
+
+  /// No description provided for @sentimentPollFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Holatni yangilab boʻlmadi — qayta uriniladi.'**
+  String get sentimentPollFailed;
 }
 
 class _AppLocalizationsDelegate

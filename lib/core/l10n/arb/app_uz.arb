@@ -736,6 +736,7 @@
   "editorTabAiChat": "AI suhbat",
   "editorTabSummary": "Xulosa",
   "editorTabLearn": "Oʻrganish",
+  "editorTabSentiment": "Tahlil",
   "editorTabSoon": "Bu boʻlim tez orada shu yerda boʻladi.",
   "editorMore": "Fayl amallari",
   "editorRenameTitle": "Transkript nomi",
@@ -794,5 +795,34 @@
   "exportStepFormat": "Format",
   "exportNext": "Keyingi",
   "exportTimedOnly": "Vaqt boʻyicha boʻlinadi — uslub qoʻllanmaydi.",
-  "exportTableHint": "Jadval: vaqt, maʼruzachi va matn ustunlari."
+  "exportTableHint": "Jadval: vaqt, maʼruzachi va matn ustunlari.",
+  "sentimentIntroTitle": "Kayfiyat tahlili",
+  "sentimentIntroBody": "AI har bir gapni ijobiy, neytral yoki salbiy deb belgilaydi va natijani maʼruzachilar boʻyicha hisoblaydi. Tahlil ish maydonining barcha aʼzolariga koʻrinadi.",
+  "sentimentAnalyze": "Kayfiyatni tahlil qilish",
+  "sentimentRerun": "Qayta tahlil qilish",
+  "sentimentPending": "Tahlil ketmoqda…",
+  "sentimentPendingBody": "Uzun yozuvda bir necha daqiqa olishi mumkin. Boshqa boʻlimga oʻtsangiz ham tahlil davom etadi.",
+  "sentimentFailedTitle": "Tahlil tugamadi",
+  "sentimentFailedGeneric": "Tahlil tugamadi — qayta urinib koʻring.",
+  "sentimentOutdated": "Matn tahlildan keyin oʻzgargan",
+  "sentimentOutdatedBody": "Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.",
+  "sentimentOverall": "Umumiy kayfiyat",
+  "sentimentShareHint": "Gapirish vaqtidan ulush",
+  "sentimentPositive": "Ijobiy",
+  "sentimentNeutral": "Neytral",
+  "sentimentNegative": "Salbiy",
+  "sentimentScore": "Ball: {score}",
+  "@sentimentScore": {
+    "placeholders": { "score": { "type": "String" } }
+  },
+  "sentimentSpeakers": "Maʼruzachilar boʻyicha",
+  "sentimentNoSpeaker": "Maʼruzachisiz qismlar",
+  "sentimentUnlabeled": "Tahlildan keyin paydo boʻlgan {count} ta segment hisobga kirmagan.",
+  "@sentimentUnlabeled": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "sentimentForbidden": "Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlay oladi.",
+  "sentimentBusy": "Tahlil hozir ketmoqda — kuting.",
+  "sentimentUnavailable": "AI hozir band yoki oʻchiq. Birozdan keyin qayta urinib koʻring.",
+  "sentimentPollFailed": "Holatni yangilab boʻlmadi — qayta uriniladi."
 }

@@ -4,6 +4,8 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/features/sentiment/domain/entities/sentiment.dart';
+import 'package:transkriptor_uz/features/sentiment/presentation/widgets/sentiment_bar.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
 /// One segment: speaker chip, timecode, text. The chip's colour is the
@@ -23,8 +25,14 @@ class SegmentTile extends StatelessWidget {
     this.active = false,
     this.onDoubleTap,
     this.onTimeTap,
+    this.sentiment,
     super.key,
   });
+
+  /// The segment's label from a finished analysis. Positive and negative
+  /// get a small dot by the timecode; neutral and none get nothing. The
+  /// text is never coloured.
+  final SentimentLabel? sentiment;
 
   final Segment segment;
 
@@ -95,6 +103,10 @@ class SegmentTile extends StatelessWidget {
                         style: AppText.muted.copyWith(fontSize: 11),
                       ),
                     ],
+                    if (_sentimentMark(l10n) case final mark?) ...[
+                      const SizedBox(width: 8),
+                      mark,
+                    ],
                     const SizedBox(width: 8),
                     if (onTimeTap == null)
                       Padding(
@@ -125,6 +137,26 @@ class SegmentTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+extension on SegmentTile {
+  Widget? _sentimentMark(AppLocalizations l10n) {
+    final label = sentiment;
+    if (label == null) return null;
+    final color = sentimentColor(label);
+    if (color == null) return null;
+    return Semantics(
+      label: label == SentimentLabel.positive
+          ? l10n.sentimentPositive
+          : l10n.sentimentNegative,
+      child: Container(
+        key: Key('sentiment_mark_${segment.id}'),
+        width: 7,
+        height: 7,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );
   }

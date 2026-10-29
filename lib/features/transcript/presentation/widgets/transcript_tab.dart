@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/core/widgets/app_empty_view.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
+import 'package:transkriptor_uz/features/sentiment/domain/entities/sentiment.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/follow_along.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/editor_actions.dart';
@@ -18,7 +19,11 @@ import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker
 /// kept in view — until the person scrolls on their own; «Joriy joyga»
 /// brings the following back.
 class TranscriptTab extends StatefulWidget {
-  const TranscriptTab({super.key});
+  const TranscriptTab({this.sentiment = const {}, super.key});
+
+  /// Segment id → sentiment label of a finished analysis; a labelled
+  /// segment gets a small marker. Empty: no markers.
+  final Map<String, SentimentLabel> sentiment;
 
   @override
   State<TranscriptTab> createState() => _TranscriptTabState();
@@ -125,6 +130,7 @@ class _TranscriptTabState extends State<TranscriptTab> {
                         state: state,
                         controller: _scroll,
                         keyOf: _keyOf,
+                        sentiment: widget.sentiment,
                         // In the list, not above it: on a short screen
                         // they scroll away instead of squeezing the text.
                         header: [
@@ -176,7 +182,10 @@ class _Segments extends StatelessWidget {
     required this.controller,
     required this.keyOf,
     required this.header,
+    required this.sentiment,
   });
+
+  final Map<String, SentimentLabel> sentiment;
 
   /// Filter bar and edit hint, first in the list.
   final List<Widget> header;
@@ -218,6 +227,7 @@ class _Segments extends StatelessWidget {
               speaker: speakers[segment.speakerId],
               showSpeaker: state.showSpeakers,
               active: segment.id == active,
+              sentiment: sentiment[segment.id],
               onSpeakerTap: () =>
                   EditorActions.speakerMenu(context, segment.id),
               onLongPress: () => EditorActions.segmentMenu(context, segment),

@@ -220,6 +220,16 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/recorder_module
     as _i540;
 import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart'
     as _i1005;
+import 'package:transkriptor_uz/features/sentiment/application/sentiment_cubit.dart'
+    as _i628;
+import 'package:transkriptor_uz/features/sentiment/application/sentiment_poll_policy.dart'
+    as _i172;
+import 'package:transkriptor_uz/features/sentiment/domain/i_sentiment_facade.dart'
+    as _i1028;
+import 'package:transkriptor_uz/features/sentiment/infrastructure/facades/sentiment_facade.dart'
+    as _i458;
+import 'package:transkriptor_uz/features/sentiment/infrastructure/repositories/sentiment_repository.dart'
+    as _i47;
 import 'package:transkriptor_uz/features/share/application/share_cubit.dart'
     as _i966;
 import 'package:transkriptor_uz/features/share/domain/i_share_facade.dart'
@@ -316,6 +326,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i597.NativeCaptureChannel(),
     );
     gh.lazySingleton<_i1039.AudioRecorder>(() => recorderModule.audioRecorder);
+    gh.lazySingleton<_i172.SentimentPollPolicy>(
+      () => _i172.SentimentPollPolicy(),
+    );
     gh.lazySingleton<_i431.DemoSummaryRepository>(
       () => _i431.DemoSummaryRepository(),
     );
@@ -443,6 +456,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i282.RatingRepository>(
       () => _i282.RatingRepository(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i47.SentimentRepository>(
+      () => _i47.SentimentRepository(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i438.ShareRepository>(
       () => _i438.ShareRepository(gh<_i361.Dio>()),
     );
@@ -511,6 +527,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i439.INotesFacade>(
       () => _i2.NotesFacade(gh<_i988.NotesRepository>()),
     );
+    gh.lazySingleton<_i1028.ISentimentFacade>(
+      () => _i458.SentimentFacade(gh<_i47.SentimentRepository>()),
+    );
     gh.lazySingleton<_i1050.ISummaryFacade>(
       () => _i471.SummaryFacade(
         gh<_i467.SummaryTemplateRepository>(),
@@ -561,6 +580,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1031.IRatingFacade>(
       () => _i556.RatingFacade(gh<_i282.RatingRepository>()),
+    );
+    gh.factory<_i628.SentimentCubit>(
+      () => _i628.SentimentCubit(
+        gh<_i1028.ISentimentFacade>(),
+        gh<_i172.SentimentPollPolicy>(),
+      ),
     );
     gh.lazySingleton<_i454.IMeetingBotFacade>(
       () => _i842.MeetingBotFacade(gh<_i714.MeetingBotRepository>()),
