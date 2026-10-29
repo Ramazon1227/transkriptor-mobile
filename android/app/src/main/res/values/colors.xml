@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- design/tokens.css: --mint is the logo square, --sf-0 the app ground. -->
+    <!-- design/tokens.css: mint is the logo square, sf-0 the app ground. -->
     <color name="ic_launcher_background">#5FD9BE</color>
     <color name="app_ground">#120F16</color>
 </resources>
