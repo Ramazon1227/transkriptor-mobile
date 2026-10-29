@@ -50,4 +50,12 @@ abstract final class Endpoints {
   // Share links.
   static String transcriptShares(String id) => '/api/v1/transcript/$id/share';
   static String share(String id) => '/api/v1/share/$id';
+
+  // Editor AI tabs (M-R5): the per-transcript chat, the summary template
+  // library and notes (the summary's «save as note»).
+  static String transcriptChat(String id) => '/api/v1/transcript/$id/chat';
+  static const String summaryTemplates = '/api/v1/summary-templates';
+  static String summaryTemplateFavorite(String id) =>
+      '/api/v1/summary-templates/$id/favorite';
+  static const String notes = '/api/v1/notes';
 }

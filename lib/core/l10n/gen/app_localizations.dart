@@ -1887,6 +1887,606 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.'**
   String get logoutBody;
+
+  /// No description provided for @aiMarker.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI'**
+  String get aiMarker;
+
+  /// No description provided for @aiChatIntroTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu yozuv boʻyicha soʻrang'**
+  String get aiChatIntroTitle;
+
+  /// No description provided for @aiChatIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob faqat shu transkriptga tayanadi va vaqtga havola beradi — havolani bossangiz, pleyer oʻsha joyga oʻtadi.'**
+  String get aiChatIntro;
+
+  /// No description provided for @aiChatSuggestionTopics.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy mavzular qanday?'**
+  String get aiChatSuggestionTopics;
+
+  /// No description provided for @aiChatSuggestionWho.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kim nima dedi?'**
+  String get aiChatSuggestionWho;
+
+  /// No description provided for @aiChatSuggestionDecisions.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qanday qarorlar qabul qilindi?'**
+  String get aiChatSuggestionDecisions;
+
+  /// No description provided for @aiChatHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu yozuv boʻyicha soʻrang'**
+  String get aiChatHint;
+
+  /// No description provided for @aiChatHintPending.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob kutilmoqda…'**
+  String get aiChatHintPending;
+
+  /// No description provided for @aiChatSend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuborish'**
+  String get aiChatSend;
+
+  /// No description provided for @aiChatThinking.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkriptni oʻqiyapti… Uzun yozuvda javob bir daqiqagacha olishi mumkin.'**
+  String get aiChatThinking;
+
+  /// No description provided for @aiChatAnswerFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob olinmadi.'**
+  String get aiChatAnswerFailed;
+
+  /// No description provided for @aiChatResend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yuborish'**
+  String get aiChatResend;
+
+  /// No description provided for @aiChatPrivate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatni faqat siz koʻrasiz.'**
+  String get aiChatPrivate;
+
+  /// No description provided for @aiChatClear.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatni tozalash'**
+  String get aiChatClear;
+
+  /// No description provided for @aiChatClearTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbat tozalansinmi?'**
+  String get aiChatClearTitle;
+
+  /// No description provided for @aiChatClearBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu transkript boʻyicha savol va javoblaringiz oʻchadi. Buni qaytarib boʻlmaydi.'**
+  String get aiChatClearBody;
+
+  /// No description provided for @aiChatClearConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tozalash'**
+  String get aiChatClearConfirm;
+
+  /// No description provided for @aiChatBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oldingi savolga javob hali kelmadi — kuting.'**
+  String get aiChatBusy;
+
+  /// No description provided for @aiChatUnavailable.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI hozir band yoki oʻchiq. Birozdan keyin qayta yuboring.'**
+  String get aiChatUnavailable;
+
+  /// No description provided for @aiChatPollFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob holatini olib boʻlmadi — tarmoqni tekshiring.'**
+  String get aiChatPollFailed;
+
+  /// No description provided for @aiChatSeekTo.
+  ///
+  /// In uz, this message translates to:
+  /// **'{time} ga oʻtish'**
+  String aiChatSeekTo(String time);
+
+  /// No description provided for @summaryDemoBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — xulosa hozircha transkriptning oʻz gaplaridan yigʻiladi, uni AI yozmaydi.'**
+  String get summaryDemoBanner;
+
+  /// No description provided for @summaryTooShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa uchun transkript juda qisqa. Kamida uch qatorli yozuv kerak.'**
+  String get summaryTooShort;
+
+  /// No description provided for @summaryTemplateLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shablon'**
+  String get summaryTemplateLabel;
+
+  /// No description provided for @summaryTemplateDefault.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy xulosa'**
+  String get summaryTemplateDefault;
+
+  /// No description provided for @summaryTemplatesTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa shabloni'**
+  String get summaryTemplatesTitle;
+
+  /// No description provided for @summaryTemplatesFavorites.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sevimlilar'**
+  String get summaryTemplatesFavorites;
+
+  /// No description provided for @summaryTemplatesMine.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mening shablonlarim'**
+  String get summaryTemplatesMine;
+
+  /// No description provided for @summaryTemplatesEmpty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shablonlar hali yoʻq — asosiy xulosa ishlatiladi.'**
+  String get summaryTemplatesEmpty;
+
+  /// No description provided for @summaryStar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sevimlilarga qoʻshish'**
+  String get summaryStar;
+
+  /// No description provided for @summaryUnstar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sevimlilardan olib tashlash'**
+  String get summaryUnstar;
+
+  /// No description provided for @summaryFavoriteFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sevimlini saqlab boʻlmadi.'**
+  String get summaryFavoriteFailed;
+
+  /// No description provided for @summaryEmptyTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa hali yoʻq'**
+  String get summaryEmptyTitle;
+
+  /// No description provided for @summaryEmptyBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shablonni tanlang va xulosa yarating.'**
+  String get summaryEmptyBody;
+
+  /// No description provided for @summaryCreate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa yaratish'**
+  String get summaryCreate;
+
+  /// No description provided for @summaryGenerating.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa yozilmoqda…'**
+  String get summaryGenerating;
+
+  /// No description provided for @summaryCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxalash'**
+  String get summaryCopy;
+
+  /// No description provided for @summaryRegenerate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yaratish'**
+  String get summaryRegenerate;
+
+  /// No description provided for @summaryDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get summaryDelete;
+
+  /// No description provided for @summaryDeleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa oʻchirilsinmi?'**
+  String get summaryDeleteTitle;
+
+  /// No description provided for @summaryDeleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa matni oʻchadi. Transkriptning oʻzi oʻzgarmaydi.'**
+  String get summaryDeleteBody;
+
+  /// No description provided for @summarySaveNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatma sifatida saqlash'**
+  String get summarySaveNote;
+
+  /// No description provided for @summaryNoteSaved.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eslatmalarga saqlandi'**
+  String get summaryNoteSaved;
+
+  /// No description provided for @summaryNoteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'{title} — xulosa'**
+  String summaryNoteTitle(String title);
+
+  /// No description provided for @summarySectionOverview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qisqacha'**
+  String get summarySectionOverview;
+
+  /// No description provided for @summarySectionKeyPoints.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy fikrlar'**
+  String get summarySectionKeyPoints;
+
+  /// No description provided for @summarySectionSpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilar'**
+  String get summarySectionSpeakers;
+
+  /// No description provided for @summarySectionNextSteps.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi qadamlar'**
+  String get summarySectionNextSteps;
+
+  /// No description provided for @learnDemoBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — savollar transkript gaplaridan oddiy qoidalar bilan tuziladi, ularni AI yozmaydi.'**
+  String get learnDemoBanner;
+
+  /// No description provided for @learnTooShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻrganish uchun transkript juda qisqa. Kamida uch qatorli yozuv kerak.'**
+  String get learnTooShort;
+
+  /// No description provided for @learnIntro.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu transkript mazmunini oʻrganing:'**
+  String get learnIntro;
+
+  /// No description provided for @learnFlashcardsTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kartochkalar'**
+  String get learnFlashcardsTitle;
+
+  /// No description provided for @learnFlashcardsBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy fikrlarni kartochkalar bilan yodlang.'**
+  String get learnFlashcardsBody;
+
+  /// No description provided for @learnQuizTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Test'**
+  String get learnQuizTitle;
+
+  /// No description provided for @learnQuizBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkript boʻyicha savollar bilan oʻzingizni sinang.'**
+  String get learnQuizBody;
+
+  /// No description provided for @learnCreateFlashcards.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kartochkalar yaratish'**
+  String get learnCreateFlashcards;
+
+  /// No description provided for @learnCreateQuiz.
+  ///
+  /// In uz, this message translates to:
+  /// **'Test yaratish'**
+  String get learnCreateQuiz;
+
+  /// No description provided for @learnCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Savollar soni'**
+  String get learnCount;
+
+  /// No description provided for @learnDifficulty.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qiyinlik'**
+  String get learnDifficulty;
+
+  /// No description provided for @learnEasy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oson'**
+  String get learnEasy;
+
+  /// No description provided for @learnMedium.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻrta'**
+  String get learnMedium;
+
+  /// No description provided for @learnHard.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qiyin'**
+  String get learnHard;
+
+  /// No description provided for @learnQuestionType.
+  ///
+  /// In uz, this message translates to:
+  /// **'Savol turi'**
+  String get learnQuestionType;
+
+  /// No description provided for @learnMultipleChoice.
+  ///
+  /// In uz, this message translates to:
+  /// **'Koʻp tanlovli'**
+  String get learnMultipleChoice;
+
+  /// No description provided for @learnMultipleChoiceBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bir nechta variantdan toʻgʻrisini tanlang.'**
+  String get learnMultipleChoiceBody;
+
+  /// No description provided for @learnTrueFalse.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻgʻri / notoʻgʻri'**
+  String get learnTrueFalse;
+
+  /// No description provided for @learnTrueFalseBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gap transkriptdagidek toʻgʻrimi yoki yoʻqmi — aniqlang.'**
+  String get learnTrueFalseBody;
+
+  /// No description provided for @learnTypeRequired.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kamida bitta savol turini tanlang.'**
+  String get learnTypeRequired;
+
+  /// No description provided for @learnCreate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaratish'**
+  String get learnCreate;
+
+  /// No description provided for @learnCreating.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tayyorlanmoqda…'**
+  String get learnCreating;
+
+  /// No description provided for @learnEmptyResult.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu matndan savol tuzib boʻlmadi — gaplar juda qisqa.'**
+  String get learnEmptyResult;
+
+  /// No description provided for @learnPrevious.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oldingi toʻplamlar'**
+  String get learnPrevious;
+
+  /// No description provided for @learnFlashcardSetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kartochkalar · {count} ta'**
+  String learnFlashcardSetTitle(int count);
+
+  /// No description provided for @learnQuizSetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Test · {count} ta savol'**
+  String learnQuizSetTitle(int count);
+
+  /// No description provided for @learnSetSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'{difficulty} · {time}'**
+  String learnSetSubtitle(String difficulty, String time);
+
+  /// No description provided for @learnProgress.
+  ///
+  /// In uz, this message translates to:
+  /// **'{current} / {total}'**
+  String learnProgress(int current, int total);
+
+  /// No description provided for @learnCardFront.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boʻsh joyga qaysi soʻz tushadi?'**
+  String get learnCardFront;
+
+  /// No description provided for @learnCardBack.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob'**
+  String get learnCardBack;
+
+  /// No description provided for @learnTapToFlip.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javobni koʻrish uchun kartochkani bosing'**
+  String get learnTapToFlip;
+
+  /// No description provided for @learnKnow.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bilaman'**
+  String get learnKnow;
+
+  /// No description provided for @learnRepeat.
+  ///
+  /// In uz, this message translates to:
+  /// **'Takrorlash'**
+  String get learnRepeat;
+
+  /// No description provided for @learnKnownCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bilaman: {count}'**
+  String learnKnownCount(int count);
+
+  /// No description provided for @learnRepeatCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Takrorlash: {count}'**
+  String learnRepeatCount(int count);
+
+  /// No description provided for @learnPreviousCard.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oldingi'**
+  String get learnPreviousCard;
+
+  /// No description provided for @learnNextCard.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi'**
+  String get learnNextCard;
+
+  /// No description provided for @learnFlashcardsDone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻplam tugadi'**
+  String get learnFlashcardsDone;
+
+  /// No description provided for @learnRestart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshidan'**
+  String get learnRestart;
+
+  /// No description provided for @learnRestartRepeat.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faqat takrorlanadiganlar'**
+  String get learnRestartRepeat;
+
+  /// No description provided for @learnTrue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻgʻri'**
+  String get learnTrue;
+
+  /// No description provided for @learnFalse.
+  ///
+  /// In uz, this message translates to:
+  /// **'Notoʻgʻri'**
+  String get learnFalse;
+
+  /// No description provided for @learnQuizTrueFalsePrompt.
+  ///
+  /// In uz, this message translates to:
+  /// **'Gap transkriptdagidek toʻgʻrimi?'**
+  String get learnQuizTrueFalsePrompt;
+
+  /// No description provided for @learnQuizChoosePrompt.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boʻsh joyni toʻldiring'**
+  String get learnQuizChoosePrompt;
+
+  /// No description provided for @learnCorrect.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻgʻri javob!'**
+  String get learnCorrect;
+
+  /// No description provided for @learnWrong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Notoʻgʻri javob'**
+  String get learnWrong;
+
+  /// No description provided for @learnSource.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkriptda: «{sentence}»'**
+  String learnSource(String sentence);
+
+  /// No description provided for @learnFinish.
+  ///
+  /// In uz, this message translates to:
+  /// **'Natija'**
+  String get learnFinish;
+
+  /// No description provided for @learnScoreTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Natijangiz'**
+  String get learnScoreTitle;
+
+  /// No description provided for @learnReview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javoblar'**
+  String get learnReview;
+
+  /// No description provided for @learnYourAnswer.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sizning javobingiz: {answer}'**
+  String learnYourAnswer(String answer);
+
+  /// No description provided for @learnRightAnswer.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻgʻri javob: {answer}'**
+  String learnRightAnswer(String answer);
 }
 
 class _AppLocalizationsDelegate
