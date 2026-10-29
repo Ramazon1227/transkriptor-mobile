@@ -20,10 +20,8 @@ Future<void> showTemplatePicker(BuildContext context) {
   }
   return showAppSheet<void>(
     context,
-    builder: (_) => BlocProvider.value(
-      value: cubit,
-      child: const TemplatePickerSheet(),
-    ),
+    builder: (_) =>
+        BlocProvider.value(value: cubit, child: const TemplatePickerSheet()),
   );
 }
 

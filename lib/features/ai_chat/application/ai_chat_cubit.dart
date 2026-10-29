@@ -124,11 +124,7 @@ class AiChatCubit extends Cubit<AiChatState> {
     final accepted = result.fold(
       (failure) {
         emit(
-          state.copyWith(
-            sending: false,
-            items: before,
-            actionFailure: failure,
-          ),
+          state.copyWith(sending: false, items: before, actionFailure: failure),
         );
         // 409: an answer is already being written somewhere (another
         // device); show it instead of leaving the chat stale.
@@ -175,11 +171,7 @@ class AiChatCubit extends Cubit<AiChatState> {
         if (state.pending) _schedule(generation);
       },
       (_) => emit(
-        state.copyWith(
-          clearing: false,
-          items: const [],
-          pollFailure: null,
-        ),
+        state.copyWith(clearing: false, items: const [], pollFailure: null),
       ),
     );
   }

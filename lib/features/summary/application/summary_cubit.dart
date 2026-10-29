@@ -113,18 +113,13 @@ class SummaryCubit extends Cubit<SummaryState> {
         noteFailure: null,
       ),
     );
-    final result = await _facade.generate(
-      transcript,
-      template: state.template,
-    );
+    final result = await _facade.generate(transcript, template: state.template);
     if (isClosed || generation != _generation) return;
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: SummaryStatus.failure, failure: failure),
-      ),
-      (summary) => emit(
-        state.copyWith(status: SummaryStatus.success, summary: summary),
-      ),
+      (failure) =>
+          emit(state.copyWith(status: SummaryStatus.failure, failure: failure)),
+      (summary) =>
+          emit(state.copyWith(status: SummaryStatus.success, summary: summary)),
     );
   }
 

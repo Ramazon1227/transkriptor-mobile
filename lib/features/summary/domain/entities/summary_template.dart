@@ -47,9 +47,8 @@ abstract class SummaryTemplateLibrary with _$SummaryTemplateLibrary {
   List<SummaryTemplate> get favorites =>
       templates.where((t) => t.favorite).toList();
 
-  List<SummaryTemplate> get mine => templates
-      .where((t) => t.owner == SummaryTemplateOwner.user)
-      .toList();
+  List<SummaryTemplate> get mine =>
+      templates.where((t) => t.owner == SummaryTemplateOwner.user).toList();
 
   List<SummaryTemplate> inCategory(String categoryId) => templates
       .where(

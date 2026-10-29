@@ -87,11 +87,7 @@ class LearnGenerator {
     );
   }
 
-  QuizQuestion _trueFalse(
-    _Pick p,
-    List<String> distractors,
-    Random random,
-  ) {
+  QuizQuestion _trueFalse(_Pick p, List<String> distractors, Random random) {
     final makeFalse = distractors.isNotEmpty && random.nextBool();
     return QuizQuestion(
       type: QuizQuestionType.trueFalse,
@@ -151,9 +147,7 @@ class LearnGenerator {
     final seen = <String>{};
     final words = [
       for (final w in sentenceWords(sentence))
-        if (w.runes.length >= min &&
-            !_isNumber(w) &&
-            seen.add(w.toLowerCase()))
+        if (w.runes.length >= min && !_isNumber(w) && seen.add(w.toLowerCase()))
           w,
     ];
     return switch (difficulty) {
@@ -208,8 +202,10 @@ class LearnGenerator {
 
   static String _replaceFirst(String sentence, String word, String by) =>
       sentence.replaceFirst(
-        RegExp('(?<![\\p{L}\\p{N}])${RegExp.escape(word)}(?![\\p{L}\\p{N}])',
-            unicode: true),
+        RegExp(
+          '(?<![\\p{L}\\p{N}])${RegExp.escape(word)}(?![\\p{L}\\p{N}])',
+          unicode: true,
+        ),
         by,
       );
 

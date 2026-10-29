@@ -120,37 +120,35 @@ class _AiChatViewState extends State<_AiChatView> {
           return _Suggestions(enabled: !state.busy, onPick: _send);
         }
         final items = state.items.reversed.toList();
-        return Column(
-          children: [
-            _ChatHeader(
-              onClear: state.busy ? null : _clear,
-              clearing: state.clearing,
-            ),
-            Expanded(
-              child: ListView.separated(
-                key: const Key('ai_chat_list'),
-                // Newest at the bottom, and the list opens there.
-                reverse: true,
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, i) {
-                  final m = items[i];
-                  return MessageBubble(
-                    key: ValueKey(m.id),
-                    message: m,
-                    onSeek: widget.onSeek,
-                    onRetry:
-                        m.status == AiMessageStatus.failed &&
-                            m.role == AiRole.assistant &&
-                            !state.busy
-                        ? () => cubit.retry(m.id)
-                        : null,
-                  );
-                },
-              ),
-            ),
-          ],
+        return ListView.separated(
+          key: const Key('ai_chat_list'),
+          // Newest at the bottom, and the list opens there. The header
+          // (privacy note, clear) is the list's last item, so it scrolls
+          // away instead of taking height from a short tab.
+          reverse: true,
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          itemCount: items.length + 1,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (context, i) {
+            if (i == items.length) {
+              return _ChatHeader(
+                onClear: state.busy ? null : _clear,
+                clearing: state.clearing,
+              );
+            }
+            final m = items[i];
+            return MessageBubble(
+              key: ValueKey(m.id),
+              message: m,
+              onSeek: widget.onSeek,
+              onRetry:
+                  m.status == AiMessageStatus.failed &&
+                      m.role == AiRole.assistant &&
+                      !state.busy
+                  ? () => cubit.retry(m.id)
+                  : null,
+            );
+          },
         );
     }
   }
@@ -166,7 +164,7 @@ class _ChatHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 4, 0),
+      padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
           const Icon(

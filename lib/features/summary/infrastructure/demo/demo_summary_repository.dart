@@ -56,7 +56,18 @@ class DemoSummaryRepository {
 
     final sections = <SummarySection>[];
 
-    final overview = all.take(2).join(' ');
+    final opening = all.take(2).toList();
+    final overview = opening.join(' ');
+
+    // Sentences that sound like a task or a plan become next steps; they
+    // are kept out of the key points so nothing is said twice.
+    var steps = all
+        .skip(opening.length)
+        .where(_actionWords.hasMatch)
+        .take(_nextSteps)
+        .toList();
+    if (steps.isEmpty && all.length > opening.length) steps = [all.last];
+
     if (overview.isNotEmpty) {
       sections.add(
         SummarySection(kind: SummarySectionKind.overview, paragraph: overview),
@@ -64,14 +75,20 @@ class DemoSummaryRepository {
     }
 
     // Evenly spread over the recording: one per stretch, its first
-    // sentence — the opening of each part usually names its subject.
+    // sentence that is not a next step — the opening of each part
+    // usually names its subject.
     final points = <String>[];
     if (perSegment.isNotEmpty) {
       final step = perSegment.length / _keyPoints;
       for (var i = 0; i < _keyPoints; i++) {
         final index = (i * step).floor().clamp(0, perSegment.length - 1);
-        final sentence = perSegment[index].$2.first;
-        if (!points.contains(sentence) && !overview.contains(sentence)) {
+        final sentence = perSegment[index].$2.firstWhere(
+          (x) => !steps.contains(x),
+          orElse: () => '',
+        );
+        if (sentence.isNotEmpty &&
+            !points.contains(sentence) &&
+            !opening.contains(sentence)) {
           points.add(sentence);
         }
       }
@@ -98,12 +115,6 @@ class DemoSummaryRepository {
       );
     }
 
-    var steps = all
-        .where(_actionWords.hasMatch)
-        .where((s) => !points.contains(s))
-        .take(_nextSteps)
-        .toList();
-    if (steps.isEmpty && all.isNotEmpty) steps = [all.last];
     if (steps.isNotEmpty) {
       sections.add(
         SummarySection(kind: SummarySectionKind.nextSteps, bullets: steps),

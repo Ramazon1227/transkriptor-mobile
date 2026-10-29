@@ -107,10 +107,7 @@ class _SummaryView extends StatelessWidget {
               style: AppText.body.copyWith(color: AppColors.bad),
             ),
             const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: cubit.generate,
-              child: Text(l10n.retry),
-            ),
+            OutlinedButton(onPressed: cubit.generate, child: Text(l10n.retry)),
           ],
         );
       case SummaryStatus.success:
@@ -303,12 +300,7 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _Notice extends StatelessWidget {
-  const _Notice({
-    required this.text,
-    this.icon,
-    this.busy = false,
-    super.key,
-  });
+  const _Notice({required this.text, this.icon, this.busy = false, super.key});
 
   final String text;
   final IconData? icon;

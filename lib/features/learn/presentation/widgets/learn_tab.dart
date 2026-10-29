@@ -82,10 +82,7 @@ class _LearnView extends StatelessWidget {
             DemoBanner(message: l10n.learnDemoBanner),
             const SizedBox(height: 12),
             if (state.status == LearnStatus.tooShort)
-              _Info(
-                key: const Key('learn_too_short'),
-                text: l10n.learnTooShort,
-              )
+              _Info(key: const Key('learn_too_short'), text: l10n.learnTooShort)
             else ...[
               Text(l10n.learnIntro, style: AppText.caption),
               const SizedBox(height: 8),
