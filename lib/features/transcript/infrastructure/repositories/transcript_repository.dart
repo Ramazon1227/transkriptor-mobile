@@ -113,4 +113,34 @@ class TranscriptRepository {
       return SpeakerEditModel.fromJson(envelopeData(response.data)).speaker;
     });
   }
+
+  /// The title takes part in the revision: a stale one is a 409.
+  Future<Either<Failure, TranscriptMetaModel>> renameTranscript({
+    required String transcriptId,
+    required String title,
+    required int revision,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        Endpoints.transcript(transcriptId),
+        data: {'title': title, 'revision': revision},
+      );
+      return TranscriptMetaModel.fromJson(envelopeData(response.data));
+    });
+  }
+
+  /// The revision goes in the query: many clients drop a DELETE body.
+  Future<Either<Failure, SegmentDeletedModel>> deleteSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  }) {
+    return runRequest(() async {
+      final response = await _dio.delete<Map<String, dynamic>>(
+        Endpoints.transcriptSegment(transcriptId, segmentId),
+        queryParameters: {'revision': revision},
+      );
+      return SegmentDeletedModel.fromJson(envelopeData(response.data));
+    });
+  }
 }

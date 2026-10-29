@@ -30,6 +30,10 @@ abstract final class Endpoints {
   static String workspaceFolder(String workspaceId, String folderId) =>
       '/api/v1/workspaces/$workspaceId/folders/$folderId';
   static String mediaConfirm(String id) => '/api/v1/media/$id/confirm';
+
+  /// A fresh read link for the player; YouTube media answer with the
+  /// video id instead.
+  static String mediaUrl(String id) => '/api/v1/media/$id/url';
   static const String mediaYoutube = '/api/v1/media/youtube';
   static const String mediaCloud = '/api/v1/media/cloud';
 
@@ -46,6 +50,11 @@ abstract final class Endpoints {
       '/api/v1/transcript/$id/segments/$segmentId/merge-next';
   static String transcriptSpeaker(String id, String speakerId) =>
       '/api/v1/transcript/$id/speakers/$speakerId';
+  static String transcriptComments(String id) =>
+      '/api/v1/transcript/$id/comments';
+  static String transcriptComment(String id, String commentId) =>
+      '/api/v1/transcript/$id/comments/$commentId';
+  static String transcriptRating(String id) => '/api/v1/transcript/$id/rating';
 
   // Share links.
   static String transcriptShares(String id) => '/api/v1/transcript/$id/share';

@@ -44,6 +44,7 @@ _TranscriptModel _$TranscriptModelFromJson(Map<String, dynamic> json) =>
     _TranscriptModel(
       id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? '',
+      mediaId: json['media_id'] as String? ?? '',
       durationMs: (json['duration_ms'] as num?)?.toInt(),
       speakers:
           (json['speakers'] as List<dynamic>?)
@@ -62,6 +63,7 @@ Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
+      'media_id': instance.mediaId,
       'duration_ms': instance.durationMs,
       'speakers': instance.speakers,
       'segments': instance.segments,
@@ -121,3 +123,20 @@ Map<String, dynamic> _$SegmentMergeModelToJson(_SegmentMergeModel instance) =>
       'removed_id': instance.removedId,
       'revision': instance.revision,
     };
+
+_TranscriptMetaModel _$TranscriptMetaModelFromJson(Map<String, dynamic> json) =>
+    _TranscriptMetaModel(
+      title: json['title'] as String? ?? '',
+      revision: (json['revision'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$TranscriptMetaModelToJson(
+  _TranscriptMetaModel instance,
+) => <String, dynamic>{'title': instance.title, 'revision': instance.revision};
+
+_SegmentDeletedModel _$SegmentDeletedModelFromJson(Map<String, dynamic> json) =>
+    _SegmentDeletedModel(revision: (json['revision'] as num?)?.toInt() ?? 0);
+
+Map<String, dynamic> _$SegmentDeletedModelToJson(
+  _SegmentDeletedModel instance,
+) => <String, dynamic>{'revision': instance.revision};

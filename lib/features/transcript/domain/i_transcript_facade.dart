@@ -44,4 +44,18 @@ abstract interface class ITranscriptFacade {
     required String speakerId,
     required String label,
   });
+
+  /// Changes the title against [revision]; 409 when it is stale.
+  Future<Either<Failure, TranscriptMeta>> renameTranscript({
+    required String transcriptId,
+    required String title,
+    required int revision,
+  });
+
+  /// Removes one segment; answers the transcript's new revision.
+  Future<Either<Failure, int>> deleteSegment({
+    required String transcriptId,
+    required String segmentId,
+    required int revision,
+  });
 }

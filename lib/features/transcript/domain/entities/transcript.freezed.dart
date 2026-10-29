@@ -570,7 +570,10 @@ as bool,
 /// @nodoc
 mixin _$Transcript {
 
- String get id; String get title; Duration? get duration; List<Speaker> get speakers;/// In position order, as the API returns them.
+ String get id; String get title;/// The file this transcript was made from: the player's media and
+/// what «Qayta transkripsiya» starts again. Empty if the server
+/// left it out.
+ String get mediaId; Duration? get duration; List<Speaker> get speakers;/// In position order, as the API returns them.
  List<Segment> get segments;/// Optimistic lock for segment text. Sent with every text edit; the
 /// server answers 409 when someone saved in between.
  int get revision;
@@ -585,20 +588,20 @@ $TranscriptCopyWith<Transcript> get copyWith => _$TranscriptCopyWithImpl<Transcr
 @override
 bool operator ==(Object other) {
   final _this = this as Transcript;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Transcript;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
+  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
 }
 
 @override
 String toString() {
   final _this = this as Transcript;
-  return 'Transcript(id: ${_this.id}, title: ${_this.title}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
+  return 'Transcript(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
 }
 
 
@@ -609,7 +612,7 @@ abstract mixin class $TranscriptCopyWith<$Res>  {
   factory $TranscriptCopyWith(Transcript value, $Res Function(Transcript) _then) = _$TranscriptCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
+ String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
 });
 
 
@@ -626,10 +629,11 @@ class _$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
@@ -719,10 +723,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   return orElse();
 
 }
@@ -740,10 +744,10 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)  $default,) {final _that = this;
 switch (_that) {
 case _Transcript():
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -760,10 +764,10 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
   return null;
 
 }
@@ -775,11 +779,15 @@ return $default(_that.id,_that.title,_that.duration,_that.speakers,_that.segment
 
 
 class _Transcript implements Transcript {
-  const _Transcript({required this.id, required this.title, this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[], this.revision = 0}): _speakers = speakers,_segments = segments;
+  const _Transcript({required this.id, required this.title, this.mediaId = '', this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[], this.revision = 0}): _speakers = speakers,_segments = segments;
   
 
 @override final  String id;
 @override final  String title;
+/// The file this transcript was made from: the player's media and
+/// what «Qayta transkripsiya» starts again. Empty if the server
+/// left it out.
+@override@JsonKey() final  String mediaId;
 @override final  Duration? duration;
  final  List<Speaker> _speakers;
 @override@JsonKey() List<Speaker> get speakers {
@@ -811,18 +819,18 @@ _$TranscriptCopyWith<_Transcript> get copyWith => __$TranscriptCopyWithImpl<_Tra
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
+    return Object.hash(runtimeType,id,title,mediaId,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
 }
 
 @override
 String toString() {
-    return 'Transcript(id: $id, title: $title, duration: $duration, speakers: $speakers, segments: $segments, revision: $revision)';
+    return 'Transcript(id: $id, title: $title, mediaId: $mediaId, duration: $duration, speakers: $speakers, segments: $segments, revision: $revision)';
 }
 
 
@@ -833,7 +841,7 @@ abstract mixin class _$TranscriptCopyWith<$Res> implements $TranscriptCopyWith<$
   factory _$TranscriptCopyWith(_Transcript value, $Res Function(_Transcript) _then) = __$TranscriptCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
+ String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
 });
 
 
@@ -850,10 +858,11 @@ class __$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
   return _then(_Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
@@ -1773,6 +1782,273 @@ $SegmentCopyWith<$Res> get segment {
     return _then(_self.copyWith(segment: value));
   });
 }
+}
+
+/// @nodoc
+mixin _$TranscriptMeta {
+
+ String get title; int get revision;
+/// Create a copy of TranscriptMeta
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TranscriptMetaCopyWith<TranscriptMeta> get copyWith => _$TranscriptMetaCopyWithImpl<TranscriptMeta>(this as TranscriptMeta, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as TranscriptMeta;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptMeta&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as TranscriptMeta;
+  return Object.hash(runtimeType,_this.title,_this.revision);
+}
+
+@override
+String toString() {
+  final _this = this as TranscriptMeta;
+  return 'TranscriptMeta(title: ${_this.title}, revision: ${_this.revision})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TranscriptMetaCopyWith<$Res>  {
+  factory $TranscriptMetaCopyWith(TranscriptMeta value, $Res Function(TranscriptMeta) _then) = _$TranscriptMetaCopyWithImpl;
+@useResult
+$Res call({
+ String title, int revision
+});
+
+
+
+
+}
+/// @nodoc
+class _$TranscriptMetaCopyWithImpl<$Res>
+    implements $TranscriptMetaCopyWith<$Res> {
+  _$TranscriptMetaCopyWithImpl(this._self, this._then);
+
+  final TranscriptMeta _self;
+  final $Res Function(TranscriptMeta) _then;
+
+/// Create a copy of TranscriptMeta
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? revision = null,}) {
+  return _then(TranscriptMeta(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TranscriptMeta].
+extension TranscriptMetaPatterns on TranscriptMeta {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TranscriptMeta value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TranscriptMeta() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TranscriptMeta value)  $default,){
+final _that = this;
+switch (_that) {
+case _TranscriptMeta():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TranscriptMeta value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TranscriptMeta() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TranscriptMeta() when $default != null:
+return $default(_that.title,_that.revision);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  int revision)  $default,) {final _that = this;
+switch (_that) {
+case _TranscriptMeta():
+return $default(_that.title,_that.revision);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  int revision)?  $default,) {final _that = this;
+switch (_that) {
+case _TranscriptMeta() when $default != null:
+return $default(_that.title,_that.revision);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _TranscriptMeta implements TranscriptMeta {
+  const _TranscriptMeta({required this.title, required this.revision});
+  
+
+@override final  String title;
+@override final  int revision;
+
+/// Create a copy of TranscriptMeta
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TranscriptMetaCopyWith<_TranscriptMeta> get copyWith => __$TranscriptMetaCopyWithImpl<_TranscriptMeta>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptMeta&&(identical(other.title, title) || other.title == title)&&(identical(other.revision, revision) || other.revision == revision));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,title,revision);
+}
+
+@override
+String toString() {
+    return 'TranscriptMeta(title: $title, revision: $revision)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TranscriptMetaCopyWith<$Res> implements $TranscriptMetaCopyWith<$Res> {
+  factory _$TranscriptMetaCopyWith(_TranscriptMeta value, $Res Function(_TranscriptMeta) _then) = __$TranscriptMetaCopyWithImpl;
+@override @useResult
+$Res call({
+ String title, int revision
+});
+
+
+
+
+}
+/// @nodoc
+class __$TranscriptMetaCopyWithImpl<$Res>
+    implements _$TranscriptMetaCopyWith<$Res> {
+  __$TranscriptMetaCopyWithImpl(this._self, this._then);
+
+  final _TranscriptMeta _self;
+  final $Res Function(_TranscriptMeta) _then;
+
+/// Create a copy of TranscriptMeta
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? revision = null,}) {
+  return _then(_TranscriptMeta(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
 }
 
 // dart format on
