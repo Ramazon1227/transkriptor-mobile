@@ -48,6 +48,9 @@ abstract class PlayerState with _$PlayerState {
 
     /// The video surface is folded away. Playback does not notice.
     @Default(false) bool videoFolded,
+
+    /// Where the sample playing now starts; null when none is.
+    Duration? clipStart,
     Failure? failure,
   }) = _PlayerState;
 
@@ -80,6 +83,15 @@ class PlayerCubit extends Cubit<PlayerState> {
 
   /// What the open engine really plays at. A new engine starts at 1×.
   double _engineSpeed = 1;
+
+  /// Where the playing sample stops itself, and where the player stood
+  /// before the first one.
+  Duration? _clipEnd;
+  Duration? _clipReturn;
+
+  /// Further past a sample's end than this is an old position, reported
+  /// from before the seek: the new sample must not stop at once.
+  static const Duration _clipSlack = Duration(seconds: 5);
 
   /// [mediaId] is the transcript's. Empty: there is no file to play.
   Future<void> open(String mediaId) => _load(mediaId, Duration.zero);
@@ -174,6 +186,7 @@ class PlayerCubit extends Cubit<PlayerState> {
       );
       return;
     }
+    _checkClip(s);
     emit(
       state.copyWith(
         position: s.position,
@@ -184,6 +197,41 @@ class PlayerCubit extends Cubit<PlayerState> {
         aspectRatio: s.aspectRatio > 0 ? s.aspectRatio : 16 / 9,
       ),
     );
+  }
+
+  /// Stops by position, not by a timer: a slow network would eat the
+  /// timer's seconds, and the chosen speed would stretch them.
+  void _checkClip(PlaybackSnapshot s) {
+    final end = _clipEnd;
+    if (end == null) return;
+    final atFileEnd = s.duration > Duration.zero && s.position >= s.duration;
+    if (atFileEnd || (s.position >= end && s.position < end + _clipSlack)) {
+      unawaited(stopClip());
+    }
+  }
+
+  /// A speaker's voice: from [start] until [end], then it pauses by itself.
+  Future<void> playClip(Duration start, Duration end) async {
+    if (_engine == null || !state.canPlay) return;
+    _clipReturn ??= state.position;
+    _clipEnd = end;
+    emit(state.copyWith(clipStart: start));
+    await seekTo(start, play: true);
+  }
+
+  Future<void> stopClip() async {
+    _clipEnd = null;
+    emit(state.copyWith(clipStart: null));
+    await pause();
+  }
+
+  /// The sheet closed: back to where the player stood before the samples.
+  Future<void> leaveClips() async {
+    final back = _clipReturn;
+    if (back == null) return;
+    _clipReturn = null;
+    await stopClip();
+    await seekTo(back);
   }
 
   Future<void> togglePlay() => state.playing ? pause() : play();
@@ -200,6 +248,10 @@ class PlayerCubit extends Cubit<PlayerState> {
 
   /// Also what the page calls when the app leaves the screen.
   Future<void> pause() async {
+    if (_clipEnd != null) {
+      _clipEnd = null;
+      emit(state.copyWith(clipStart: null));
+    }
     final engine = _engine;
     if (engine == null || !state.playing) return;
     await engine.pause();

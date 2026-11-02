@@ -6,9 +6,19 @@ import 'package:transkriptor_uz/core/widgets/app_sheet.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/presentation/widgets/speed_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
+import 'package:transkriptor_uz/features/transcript/domain/speaker_intro.dart';
 
 /// What the «…» sheet hands back for the page to open.
-enum FileAction { rename, speed, export, share, comments, rating, retranscribe }
+enum FileAction {
+  rename,
+  speakers,
+  speed,
+  export,
+  share,
+  comments,
+  rating,
+  retranscribe,
+}
 
 /// «…» in the editor's app bar: view switches act at once; everything
 /// that opens its own sheet closes this one first.
@@ -71,6 +81,13 @@ class EditorActionsSheet extends StatelessWidget {
                     label: l10n.editorRenameTitle,
                     onTap: () => pop(FileAction.rename),
                   ),
+                  if (transcript != null && SpeakerIntro.canReopen(transcript))
+                    ActionRow(
+                      key: const Key('file_speakers'),
+                      icon: Icons.record_voice_over_outlined,
+                      label: l10n.speakerIntroTitle,
+                      onTap: () => pop(FileAction.speakers),
+                    ),
                 ],
               ),
               const SizedBox(height: 16),

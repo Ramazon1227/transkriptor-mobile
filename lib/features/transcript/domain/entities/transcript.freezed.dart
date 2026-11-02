@@ -576,7 +576,9 @@ mixin _$Transcript {
  String get mediaId; Duration? get duration; List<Speaker> get speakers;/// In position order, as the API returns them.
  List<Segment> get segments;/// Optimistic lock for segment text. Sent with every text edit; the
 /// server answers 409 when someone saved in between.
- int get revision;
+ int get revision;/// The caller's role in this file's workspace. Unknown — an older
+/// server — is treated as the least privileged.
+ WorkspaceRole get role;
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -588,20 +590,20 @@ $TranscriptCopyWith<Transcript> get copyWith => _$TranscriptCopyWithImpl<Transcr
 @override
 bool operator ==(Object other) {
   final _this = this as Transcript;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transcript&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.role, _this.role) || other.role == _this.role));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Transcript;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
+  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.duration,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision,_this.role);
 }
 
 @override
 String toString() {
   final _this = this as Transcript;
-  return 'Transcript(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
+  return 'Transcript(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, duration: ${_this.duration}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision}, role: ${_this.role})';
 }
 
 
@@ -612,7 +614,7 @@ abstract mixin class $TranscriptCopyWith<$Res>  {
   factory $TranscriptCopyWith(Transcript value, $Res Function(Transcript) _then) = _$TranscriptCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
+ String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision, WorkspaceRole role
 });
 
 
@@ -629,7 +631,7 @@ class _$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
   return _then(Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -638,7 +640,8 @@ as String,duration: freezed == duration ? _self.duration : duration // ignore: c
 as Duration?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
 as List<Segment>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,
   ));
 }
 
@@ -723,10 +726,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision,  WorkspaceRole role)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   return orElse();
 
 }
@@ -744,10 +747,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision,  WorkspaceRole role)  $default,) {final _that = this;
 switch (_that) {
 case _Transcript():
-return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -764,10 +767,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String mediaId,  Duration? duration,  List<Speaker> speakers,  List<Segment> segments,  int revision,  WorkspaceRole role)?  $default,) {final _that = this;
 switch (_that) {
 case _Transcript() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   return null;
 
 }
@@ -779,7 +782,7 @@ return $default(_that.id,_that.title,_that.mediaId,_that.duration,_that.speakers
 
 
 class _Transcript implements Transcript {
-  const _Transcript({required this.id, required this.title, this.mediaId = '', this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[], this.revision = 0}): _speakers = speakers,_segments = segments;
+  const _Transcript({required this.id, required this.title, this.mediaId = '', this.duration,  List<Speaker> speakers = const <Speaker>[],  List<Segment> segments = const <Segment>[], this.revision = 0, this.role = WorkspaceRole.unknown}): _speakers = speakers,_segments = segments;
   
 
 @override final  String id;
@@ -808,6 +811,9 @@ class _Transcript implements Transcript {
 /// Optimistic lock for segment text. Sent with every text edit; the
 /// server answers 409 when someone saved in between.
 @override@JsonKey() final  int revision;
+/// The caller's role in this file's workspace. Unknown — an older
+/// server — is treated as the least privileged.
+@override@JsonKey() final  WorkspaceRole role;
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
@@ -819,18 +825,18 @@ _$TranscriptCopyWith<_Transcript> get copyWith => __$TranscriptCopyWithImpl<_Tra
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transcript&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.duration, duration) || other.duration == duration)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.role, role) || other.role == role));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,mediaId,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
+    return Object.hash(runtimeType,id,title,mediaId,duration,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision,role);
 }
 
 @override
 String toString() {
-    return 'Transcript(id: $id, title: $title, mediaId: $mediaId, duration: $duration, speakers: $speakers, segments: $segments, revision: $revision)';
+    return 'Transcript(id: $id, title: $title, mediaId: $mediaId, duration: $duration, speakers: $speakers, segments: $segments, revision: $revision, role: $role)';
 }
 
 
@@ -841,7 +847,7 @@ abstract mixin class _$TranscriptCopyWith<$Res> implements $TranscriptCopyWith<$
   factory _$TranscriptCopyWith(_Transcript value, $Res Function(_Transcript) _then) = __$TranscriptCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision
+ String id, String title, String mediaId, Duration? duration, List<Speaker> speakers, List<Segment> segments, int revision, WorkspaceRole role
 });
 
 
@@ -858,7 +864,7 @@ class __$TranscriptCopyWithImpl<$Res>
 
 /// Create a copy of Transcript
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? duration = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
   return _then(_Transcript(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -867,7 +873,8 @@ as String,duration: freezed == duration ? _self.duration : duration // ignore: c
 as Duration?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<Speaker>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
 as List<Segment>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,
   ));
 }
 

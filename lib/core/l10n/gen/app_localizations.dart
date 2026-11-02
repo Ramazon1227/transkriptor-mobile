@@ -4071,6 +4071,54 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Holatni yangilab boʻlmadi — qayta uriniladi.'**
   String get sentimentPollFailed;
+
+  /// No description provided for @speakerIntroTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilarni tanishtiring'**
+  String get speakerIntroTitle;
+
+  /// No description provided for @speakerIntroBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism matnda, xulosada va eksportda chiqadi. «Eshitish» shu odamning ovozidan bir boʻlakni oʻynatadi.'**
+  String get speakerIntroBody;
+
+  /// No description provided for @speakerIntroListen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eshitish'**
+  String get speakerIntroListen;
+
+  /// No description provided for @speakerIntroStop.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish'**
+  String get speakerIntroStop;
+
+  /// No description provided for @speakerIntroLater.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyinroq'**
+  String get speakerIntroLater;
+
+  /// No description provided for @speakerIntroOff.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi fayllarda soʻralmasin'**
+  String get speakerIntroOff;
+
+  /// No description provided for @speakerIntroSameName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ism boshqa maʼruzachida ham bor.'**
+  String get speakerIntroSameName;
+
+  /// No description provided for @settingsSpeakerIntroOff.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ochilganda maʼruzachilarni soʻramaslik'**
+  String get settingsSpeakerIntroOff;
 }
 
 class _AppLocalizationsDelegate

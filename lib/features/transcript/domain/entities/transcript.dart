@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 
 part 'transcript.freezed.dart';
 
@@ -48,6 +49,10 @@ abstract class Transcript with _$Transcript {
     /// Optimistic lock for segment text. Sent with every text edit; the
     /// server answers 409 when someone saved in between.
     @Default(0) int revision,
+
+    /// The caller's role in this file's workspace. Unknown — an older
+    /// server — is treated as the least privileged.
+    @Default(WorkspaceRole.unknown) WorkspaceRole role,
   }) = _Transcript;
 }
 

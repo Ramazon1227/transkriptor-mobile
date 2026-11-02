@@ -577,7 +577,7 @@ as bool,
 /// @nodoc
 mixin _$TranscriptModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -591,20 +591,20 @@ $TranscriptModelCopyWith<TranscriptModel> get copyWith => _$TranscriptModelCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as TranscriptModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.role, _this.role) || other.role == _this.role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as TranscriptModel;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision);
+  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision,_this.role);
 }
 
 @override
 String toString() {
   final _this = this as TranscriptModel;
-  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision})';
+  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision}, role: ${_this.role})';
 }
 
 
@@ -615,7 +615,7 @@ abstract mixin class $TranscriptModelCopyWith<$Res>  {
   factory $TranscriptModelCopyWith(TranscriptModel value, $Res Function(TranscriptModel) _then) = _$TranscriptModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role
 });
 
 
@@ -632,7 +632,7 @@ class _$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
   return _then(TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -641,7 +641,8 @@ as String,durationMs: freezed == durationMs ? _self.durationMs : durationMs // i
 as int?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<SpeakerModel>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
 as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,
   ));
 }
 
@@ -726,10 +727,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   return orElse();
 
 }
@@ -747,10 +748,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel():
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -767,10 +768,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)?  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
   return null;
 
 }
@@ -782,7 +783,7 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 @JsonSerializable()
 
 class _TranscriptModel extends TranscriptModel {
-  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0}): _speakers = speakers,_segments = segments,super._();
+  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown}): _speakers = speakers,_segments = segments,super._();
   factory _TranscriptModel.fromJson(Map<String, dynamic> json) => _$TranscriptModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -804,6 +805,7 @@ class _TranscriptModel extends TranscriptModel {
 }
 
 @override@JsonKey(name: 'revision') final  int revision;
+@override@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) final  WorkspaceRole role;
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
@@ -818,18 +820,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,mediaId,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision);
+    return Object.hash(runtimeType,id,title,mediaId,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision,role);
 }
 
 @override
 String toString() {
-    return 'TranscriptModel(id: $id, title: $title, mediaId: $mediaId, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision)';
+    return 'TranscriptModel(id: $id, title: $title, mediaId: $mediaId, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision, role: $role)';
 }
 
 
@@ -840,7 +842,7 @@ abstract mixin class _$TranscriptModelCopyWith<$Res> implements $TranscriptModel
   factory _$TranscriptModelCopyWith(_TranscriptModel value, $Res Function(_TranscriptModel) _then) = __$TranscriptModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role
 });
 
 
@@ -857,7 +859,7 @@ class __$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
   return _then(_TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -866,7 +868,8 @@ as String,durationMs: freezed == durationMs ? _self.durationMs : durationMs // i
 as int?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_nullable_to_non_nullable
 as List<SpeakerModel>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
 as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
-as int,
+as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as WorkspaceRole,
   ));
 }
 

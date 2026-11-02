@@ -2243,4 +2243,30 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get sentimentPollFailed =>
       'Holatni yangilab boʻlmadi — qayta uriniladi.';
+
+  @override
+  String get speakerIntroTitle => 'Maʼruzachilarni tanishtiring';
+
+  @override
+  String get speakerIntroBody =>
+      'Ism matnda, xulosada va eksportda chiqadi. «Eshitish» shu odamning ovozidan bir boʻlakni oʻynatadi.';
+
+  @override
+  String get speakerIntroListen => 'Eshitish';
+
+  @override
+  String get speakerIntroStop => 'Toʻxtatish';
+
+  @override
+  String get speakerIntroLater => 'Keyinroq';
+
+  @override
+  String get speakerIntroOff => 'Yangi fayllarda soʻralmasin';
+
+  @override
+  String get speakerIntroSameName => 'Bu ism boshqa maʼruzachida ham bor.';
+
+  @override
+  String get settingsSpeakerIntroOff =>
+      'Ochilganda maʼruzachilarni soʻramaslik';
 }

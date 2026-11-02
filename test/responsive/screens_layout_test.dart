@@ -110,6 +110,7 @@ import 'package:transkriptor_uz/features/summary/domain/entities/summary.dart';
 import 'package:transkriptor_uz/features/summary/domain/entities/summary_template.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/summary_tab.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/template_picker_sheet.dart';
+import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
@@ -125,6 +126,8 @@ import 'package:transkriptor_uz/features/upload/presentation/pages/send_many_pag
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
 import 'package:transkriptor_uz/features/workspace/application/workspace_list_cubit.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_switcher_sheet.dart';
+
+import '../helpers/editor_fakes.dart';
 
 // ---------------------------------------------------------------- mocks
 
@@ -893,6 +896,9 @@ void _makeMocks() {
     ..registerFactory<RecorderCubit>(() => recorder)
     ..registerFactory<TranscriptCubit>(() => transcript)
     ..registerFactory<PlayerCubit>(() => player)
+    ..registerFactory<SpeakerIntroCubit>(
+      () => SpeakerIntroCubit(FakeSpeakerIntroFacade()),
+    )
     ..registerFactory<CalendarCubit>(() => calendar)
     ..registerFactory<BalanceCubit>(() => balance)
     ..registerFactory<PlansCubit>(() => plans)

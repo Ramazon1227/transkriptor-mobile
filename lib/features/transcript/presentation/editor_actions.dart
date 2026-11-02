@@ -19,6 +19,7 @@ import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/merge_confirm.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/retranscribe_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_actions_sheet.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker_intro_sheet.dart';
 
 /// The editor's flows that open one sheet after another. [BuildContext]
 /// is always the page's, which sees [TranscriptCubit] and [PlayerCubit].
@@ -148,6 +149,8 @@ abstract final class EditorActions {
     switch (action) {
       case FileAction.rename:
         await renameTitle(context);
+      case FileAction.speakers:
+        await SpeakerIntroSheet.show(context);
       case FileAction.speed:
         await showSpeedSheet(context, player);
       case FileAction.export:

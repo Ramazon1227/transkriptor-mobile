@@ -245,6 +245,20 @@ class TranscriptCubit extends Cubit<TranscriptState> {
     ]);
   }
 
+  /// Several names, one request each, in order; stops at the first refusal
+  /// so its reason stays on screen. A retry sends only what is still
+  /// different. Nothing changed at all is still a success.
+  Future<void> renameSpeakers(Map<String, String> labels) async {
+    emit(state.copyWith(editStatus: EditStatus.idle, editFailure: null));
+    for (final MapEntry(key: id, value: label) in labels.entries) {
+      final current = state.transcript?.speakers.where((s) => s.id == id);
+      if (current == null || current.isEmpty) continue;
+      if (current.first.label == EditRules.clean(label)) continue;
+      await renameSpeaker(id, label);
+      if (isClosed || state.editStatus == EditStatus.failure) return;
+    }
+  }
+
   /// "Maʼruzachi 1" → a real name. An empty or unchanged name sends
   /// nothing.
   Future<void> renameSpeaker(String speakerId, String label) async {

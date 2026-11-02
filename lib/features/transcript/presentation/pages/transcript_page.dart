@@ -10,10 +10,12 @@ import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/presentation/widgets/player_panel.dart';
+import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/editor_actions.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_tabs.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/speaker_intro_sheet.dart';
 
 /// The editor: player on top, then Transkript · AI suhbat · Xulosa ·
 /// Oʻrganish. The title renames on tap; «…» holds the file's actions.
@@ -34,6 +36,7 @@ class TranscriptPage extends StatelessWidget {
           },
         ),
         BlocProvider(create: (_) => getIt<PlayerCubit>()),
+        BlocProvider(create: (_) => getIt<SpeakerIntroCubit>()),
       ],
       child: _EditorView(transcriptId: transcriptId),
     );
@@ -69,15 +72,31 @@ class _EditorViewState extends State<_EditorView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<TranscriptCubit, TranscriptState>(
-      // The file is known once the transcript is; a 409 refetch keeps the
-      // same one and does not reopen it.
-      listenWhen: (p, n) =>
-          n.transcript != null &&
-          p.transcript?.mediaId != n.transcript?.mediaId,
-      listener: (context, state) => unawaited(
-        context.read<PlayerCubit>().open(state.transcript!.mediaId),
-      ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<TranscriptCubit, TranscriptState>(
+          // The file is known once the transcript is; a 409 refetch keeps
+          // the same one and does not reopen it.
+          listenWhen: (p, n) =>
+              n.transcript != null &&
+              p.transcript?.mediaId != n.transcript?.mediaId,
+          listener: (context, state) => unawaited(
+            context.read<PlayerCubit>().open(state.transcript!.mediaId),
+          ),
+        ),
+        // Asked once, when the transcript first arrives: naming someone
+        // must not close or reopen anything.
+        BlocListener<TranscriptCubit, TranscriptState>(
+          listenWhen: (p, n) => p.transcript == null && n.transcript != null,
+          listener: (context, state) => unawaited(
+            context.read<SpeakerIntroCubit>().check(state.transcript!),
+          ),
+        ),
+        BlocListener<SpeakerIntroCubit, SpeakerIntroState>(
+          listenWhen: (p, n) => !p.due && n.due,
+          listener: (context, _) => unawaited(SpeakerIntroSheet.show(context)),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,

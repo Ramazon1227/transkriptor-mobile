@@ -255,15 +255,23 @@ import 'package:transkriptor_uz/features/summary/infrastructure/repositories/sum
 import 'package:transkriptor_uz/features/summary/infrastructure/repositories/summary_template_repository.dart'
     as _i467;
 import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart'
+    as _i424;
+import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart'
     as _i421;
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart'
     as _i86;
+import 'package:transkriptor_uz/features/transcript/domain/i_speaker_intro_facade.dart'
+    as _i1034;
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart'
     as _i899;
+import 'package:transkriptor_uz/features/transcript/infrastructure/facades/speaker_intro_facade.dart'
+    as _i200;
 import 'package:transkriptor_uz/features/transcript/infrastructure/facades/transcript_facade.dart'
     as _i39;
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart'
     as _i78;
+import 'package:transkriptor_uz/features/transcript/infrastructure/storage/speaker_intro_storage.dart'
+    as _i459;
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart'
     as _i741;
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart'
@@ -356,6 +364,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i324.PlayerSpeedStorage>(
       () => _i324.PlayerSpeedStorage(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.lazySingleton<_i459.SpeakerIntroStorage>(
+      () => _i459.SpeakerIntroStorage(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i464.WorkspaceSelectionStorage>(
       () => _i464.WorkspaceSelectionStorage(gh<_i558.FlutterSecureStorage>()),
     );
@@ -420,6 +431,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i88.ScreenCaptureCubit>(
       () => _i88.ScreenCaptureCubit(gh<_i266.IScreenCaptureFacade>()),
+    );
+    gh.lazySingleton<_i1034.ISpeakerIntroFacade>(
+      () => _i200.SpeakerIntroFacade(gh<_i459.SpeakerIntroStorage>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.dio(gh<_i60.TokenInterceptor>()),
@@ -494,6 +508,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i754.SessionManager>(),
         gh<_i605.GoogleIdTokenSource>(),
       ),
+    );
+    gh.factory<_i421.SpeakerIntroCubit>(
+      () => _i421.SpeakerIntroCubit(gh<_i1034.ISpeakerIntroFacade>()),
     );
     gh.factory<_i568.FoldersCubit>(
       () => _i568.FoldersCubit(
@@ -665,8 +682,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i452.RatingCubit>(
       () => _i452.RatingCubit(gh<_i1031.IRatingFacade>()),
     );
-    gh.factory<_i421.RetranscribeCubit>(
-      () => _i421.RetranscribeCubit(gh<_i727.IJobFacade>()),
+    gh.factory<_i424.RetranscribeCubit>(
+      () => _i424.RetranscribeCubit(gh<_i727.IJobFacade>()),
     );
     gh.factory<_i86.TranscriptCubit>(
       () => _i86.TranscriptCubit(gh<_i899.ITranscriptFacade>()),

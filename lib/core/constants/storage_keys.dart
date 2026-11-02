@@ -9,4 +9,9 @@ abstract final class StorageKeys {
 
   /// The playback speed the person last chose, on this phone.
   static const String playbackSpeed = 'playback_speed';
+
+  /// The first-open speaker sheet: switched off on this phone, and the
+  /// prefix of «already closed for this transcript» (followed by its id).
+  static const String speakerIntroOff = 'speaker_intro_off';
+  static const String speakerIntroSeen = 'speaker_intro_seen_';
 }

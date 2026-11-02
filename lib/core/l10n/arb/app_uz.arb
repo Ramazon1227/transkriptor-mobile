@@ -846,5 +846,13 @@
   "sentimentForbidden": "Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlay oladi.",
   "sentimentBusy": "Tahlil hozir ketmoqda — kuting.",
   "sentimentUnavailable": "AI hozir band yoki oʻchiq. Birozdan keyin qayta urinib koʻring.",
-  "sentimentPollFailed": "Holatni yangilab boʻlmadi — qayta uriniladi."
+  "sentimentPollFailed": "Holatni yangilab boʻlmadi — qayta uriniladi.",
+  "speakerIntroTitle": "Maʼruzachilarni tanishtiring",
+  "speakerIntroBody": "Ism matnda, xulosada va eksportda chiqadi. «Eshitish» shu odamning ovozidan bir boʻlakni oʻynatadi.",
+  "speakerIntroListen": "Eshitish",
+  "speakerIntroStop": "Toʻxtatish",
+  "speakerIntroLater": "Keyinroq",
+  "speakerIntroOff": "Yangi fayllarda soʻralmasin",
+  "speakerIntroSameName": "Bu ism boshqa maʼruzachida ham bor.",
+  "settingsSpeakerIntroOff": "Ochilganda maʼruzachilarni soʻramaslik"
 }

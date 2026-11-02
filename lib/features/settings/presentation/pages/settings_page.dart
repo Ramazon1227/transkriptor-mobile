@@ -24,6 +24,7 @@ import 'package:transkriptor_uz/features/links/presentation/open_link.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/delete_account_sheet.dart';
 import 'package:transkriptor_uz/features/settings/presentation/widgets/logout_sheet.dart';
+import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_role_label.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_switcher_sheet.dart';
 
@@ -123,6 +124,7 @@ class _SettingsBody extends StatelessWidget {
                 value: l10n.settingsLanguageUzbek,
               ),
               const _NotificationsRow(),
+              const _SpeakerIntroRow(),
             ],
           ),
           const SizedBox(height: 20),
@@ -291,6 +293,37 @@ class _PlanRow extends StatelessWidget {
         SubscriptionStatus.expired => l10n.planStatusExpired,
         SubscriptionStatus.none || SubscriptionStatus.unknown => null,
       };
+}
+
+/// On this phone only, like the playback speed.
+class _SpeakerIntroRow extends StatelessWidget {
+  const _SpeakerIntroRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) {
+        final cubit = getIt<SpeakerIntroCubit>();
+        unawaited(cubit.loadOff());
+        return cubit;
+      },
+      child: BlocBuilder<SpeakerIntroCubit, SpeakerIntroState>(
+        builder: (context, state) {
+          final cubit = context.read<SpeakerIntroCubit>();
+          return ActionRow(
+            key: const Key('settings_speaker_intro'),
+            icon: Icons.record_voice_over_outlined,
+            label: context.l10n.settingsSpeakerIntroOff,
+            onTap: () => cubit.setOff(off: !state.off),
+            trailing: Switch(
+              value: state.off,
+              onChanged: (v) => cubit.setOff(off: v),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _NotificationsRow extends StatelessWidget {

@@ -57,6 +57,13 @@ _TranscriptModel _$TranscriptModelFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const <SegmentModel>[],
       revision: (json['revision'] as num?)?.toInt() ?? 0,
+      role:
+          $enumDecodeNullable(
+            _$WorkspaceRoleEnumMap,
+            json['role'],
+            unknownValue: WorkspaceRole.unknown,
+          ) ??
+          WorkspaceRole.unknown,
     );
 
 Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
@@ -68,7 +75,16 @@ Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
       'speakers': instance.speakers,
       'segments': instance.segments,
       'revision': instance.revision,
+      'role': _$WorkspaceRoleEnumMap[instance.role]!,
     };
+
+const _$WorkspaceRoleEnumMap = {
+  WorkspaceRole.owner: 'OWNER',
+  WorkspaceRole.admin: 'ADMIN',
+  WorkspaceRole.member: 'MEMBER',
+  WorkspaceRole.viewer: 'VIEWER',
+  WorkspaceRole.unknown: 'unknown',
+};
 
 _SegmentEditModel _$SegmentEditModelFromJson(Map<String, dynamic> json) =>
     _SegmentEditModel(

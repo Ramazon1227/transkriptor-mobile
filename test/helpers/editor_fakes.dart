@@ -10,6 +10,7 @@ import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
 import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart';
 import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
+import 'package:transkriptor_uz/features/transcript/domain/i_speaker_intro_facade.dart';
 
 /// Answers every media link with [answer] (default: 404, no file).
 class FakePlayerFacade implements IPlayerFacade {
@@ -39,6 +40,25 @@ class FakePlayerFacade implements IPlayerFacade {
 
   @override
   Future<void> saveSpeed(double speed) async => saved = speed;
+}
+
+/// A phone that has seen nothing and has the sheet switched on, by default.
+class FakeSpeakerIntroFacade implements ISpeakerIntroFacade {
+  final Set<String> seen = {};
+  bool off = false;
+
+  @override
+  Future<bool> isDue(String transcriptId) async =>
+      !off && !seen.contains(transcriptId);
+
+  @override
+  Future<void> markSeen(String transcriptId) async => seen.add(transcriptId);
+
+  @override
+  Future<bool> isOff() async => off;
+
+  @override
+  Future<void> setOff({required bool off}) async => this.off = off;
 }
 
 /// A platform-free engine: records calls, reports what the test pushes.

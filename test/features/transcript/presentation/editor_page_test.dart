@@ -1,11 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Right;
+import 'package:dartz/dartz.dart' show Left, Right;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChannels;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations_uz.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
@@ -25,6 +26,7 @@ import 'package:transkriptor_uz/features/sentiment/presentation/widgets/sentimen
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
 import 'package:transkriptor_uz/features/summary/presentation/widgets/summary_tab.dart';
 import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart';
+import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
@@ -99,6 +101,7 @@ void main() {
     getIt
       ..registerFactory(() => TranscriptCubit(facade))
       ..registerFactory(() => PlayerCubit(player, engines))
+      ..registerFactory(() => SpeakerIntroCubit(FakeSpeakerIntroFacade()))
       ..registerFactory(() => ExportCubit(_MockExportFacade()))
       ..registerFactory(() => RetranscribeCubit(_MockJobFacade()))
       ..registerFactory<SummaryCubit>(() {
@@ -128,6 +131,199 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  group('speaker intro sheet', () {
+    const named = Transcript(
+      id: 't1',
+      title: 'Kengash',
+      mediaId: 'm1',
+      role: WorkspaceRole.owner,
+      speakers: [
+        Speaker(id: 's1', label: "Ma'ruzachi 1", ordinal: 1),
+        Speaker(id: 's2', label: "Ma'ruzachi 2", ordinal: 2),
+      ],
+      segments: [
+        Segment(
+          id: 'g1',
+          start: Duration(seconds: 1),
+          end: Duration(seconds: 4),
+          text: 'birinchi gap',
+          speakerId: 's1',
+        ),
+        Segment(
+          id: 'g2',
+          start: Duration(seconds: 10),
+          end: Duration(seconds: 40),
+          text: 'ikkinchi gap',
+          speakerId: 's2',
+        ),
+      ],
+    );
+    late FakeSpeakerIntroFacade intro;
+
+    setUp(() async {
+      intro = FakeSpeakerIntroFacade();
+      await getIt.unregister<SpeakerIntroCubit>();
+      getIt.registerFactory(() => SpeakerIntroCubit(intro));
+      when(() => facade.getTranscript('t1'))
+          .thenAnswer((_) async => const Right(named));
+    });
+
+    testWidgets('opens on a new transcript; «Keyinroq» remembers it', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('speaker_intro_later')));
+      await tester.pumpAndSettle();
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsNothing);
+      expect(intro.seen, {'t1'});
+    });
+
+    testWidgets('a transcript already closed stays closed', (tester) async {
+      intro.seen.add('t1');
+      await pumpPage(tester);
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsNothing);
+    });
+
+    testWidgets('the switch silences it and is remembered', (tester) async {
+      intro.off = true;
+      await pumpPage(tester);
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsNothing);
+    });
+
+    testWidgets('a viewer is not asked', (tester) async {
+      when(() => facade.getTranscript('t1')).thenAnswer(
+        (_) async => Right(named.copyWith(role: WorkspaceRole.viewer)),
+      );
+      await pumpPage(tester);
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsNothing);
+    });
+
+    testWidgets('saves what was typed, and only that', (tester) async {
+      when(
+        () => facade.renameSpeaker(
+          transcriptId: 't1',
+          speakerId: 's2',
+          label: 'Dilnoza',
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const Right(Speaker(id: 's2', label: 'Dilnoza', ordinal: 2)),
+      );
+      await pumpPage(tester);
+      await tester.enterText(
+        find.byKey(const Key('speaker_intro_name_s2')),
+        '  Dilnoza ',
+      );
+      await tester.tap(find.byKey(const Key('speaker_intro_save')));
+      await tester.pumpAndSettle();
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsNothing);
+      verify(
+        () => facade.renameSpeaker(
+          transcriptId: 't1',
+          speakerId: 's2',
+          label: 'Dilnoza',
+        ),
+      ).called(1);
+      verifyNever(
+        () => facade.renameSpeaker(
+          transcriptId: 't1',
+          speakerId: 's1',
+          label: any(named: 'label'),
+        ),
+      );
+      expect(intro.seen, {'t1'});
+    });
+
+    testWidgets('a refused name keeps the sheet open with the reason', (
+      tester,
+    ) async {
+      when(
+        () => facade.renameSpeaker(
+          transcriptId: 't1',
+          speakerId: 's1',
+          label: 'Aziz',
+        ),
+      ).thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
+      await pumpPage(tester);
+      await tester.enterText(
+        find.byKey(const Key('speaker_intro_name_s1')),
+        'Aziz',
+      );
+      await tester.tap(find.byKey(const Key('speaker_intro_save')));
+      await tester.pumpAndSettle();
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsOneWidget);
+      expect(
+        find.text('Bu ish maydonida faqat oʻqish huquqingiz bor.'),
+        findsOneWidget,
+      );
+      expect(intro.seen, isEmpty);
+    });
+
+    testWidgets('warns when two speakers end up with one name', (tester) async {
+      await pumpPage(tester);
+      await tester.enterText(
+        find.byKey(const Key('speaker_intro_name_s1')),
+        'Aziz',
+      );
+      await tester.enterText(
+        find.byKey(const Key('speaker_intro_name_s2')),
+        'aziz',
+      );
+      await tester.pump();
+      expect(
+        find.text('Bu ism boshqa maʼruzachida ham bor.'),
+        findsNWidgets(2),
+      );
+    });
+
+    testWidgets('«Eshitish» plays the longest line and stops at 8 s', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      await tester.tap(find.byKey(const Key('speaker_intro_play_s2')));
+      await tester.pump();
+      final engine = engines.made.last;
+      expect(engine.calls, containsAllInOrder(['seek:10000', 'play']));
+      expect(find.text('Toʻxtatish'), findsOneWidget);
+
+      engine.push(
+        const PlaybackSnapshot(
+          position: Duration(seconds: 18),
+          duration: Duration(minutes: 1),
+          playing: true,
+        ),
+      );
+      await tester.pump();
+      expect(engine.calls, contains('pause'));
+      expect(find.text('Toʻxtatish'), findsNothing);
+
+      await tester.tap(find.byKey(const Key('speaker_intro_later')));
+      await tester.pumpAndSettle();
+      expect(engine.calls.last, 'seek:0');
+    });
+
+    testWidgets('YouTube: names yes, «Eshitish» no', (tester) async {
+      player.answer = const Right(
+        PlayableMedia(url: 'https://youtu.be/x', youtubeId: 'x'),
+      );
+      await pumpPage(tester);
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsOneWidget);
+      expect(find.byKey(const Key('speaker_intro_play_s1')), findsNothing);
+      expect(find.byKey(const Key('speaker_intro_name_s1')), findsOneWidget);
+    });
+
+    testWidgets('the «…» sheet opens it again', (tester) async {
+      intro.seen.add('t1');
+      await pumpPage(tester);
+      await tester.tap(find.byKey(const Key('transcript_more')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('file_speakers')));
+      await tester.pumpAndSettle();
+      expect(find.text('Maʼruzachilarni tanishtiring'), findsOneWidget);
+    });
+  });
 
   group('tabs and player', () {
     testWidgets('five tabs; another tab opens and the transcript is kept', (

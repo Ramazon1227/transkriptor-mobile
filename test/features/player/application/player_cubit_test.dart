@@ -33,6 +33,70 @@ void main() {
 
   FakeEngine engine() => engines.made.last;
 
+  group('a speaker sample', () {
+    const start = Duration(seconds: 3);
+    const end = Duration(seconds: 11);
+
+    PlaybackSnapshot at(int seconds) => PlaybackSnapshot(
+      position: Duration(seconds: seconds),
+      duration: const Duration(minutes: 1),
+      playing: true,
+    );
+
+    test('plays from its start and stops itself at its end', () async {
+      await cubit.open('m1');
+      await cubit.playClip(start, end);
+      expect(engine().calls, containsAllInOrder(['seek:3000', 'play']));
+      expect(cubit.state.clipStart, start);
+
+      engine().push(at(10));
+      await pumpEventQueue();
+      expect(engine().calls, isNot(contains('pause')));
+
+      engine().push(at(11));
+      await pumpEventQueue();
+      expect(engine().calls, contains('pause'));
+      expect(cubit.state.clipStart, isNull);
+    });
+
+    test('an old position from before the seek does not stop it', () async {
+      await cubit.open('m1');
+      await cubit.playClip(start, end);
+      engine().push(at(40));
+      await pumpEventQueue();
+      expect(engine().calls, isNot(contains('pause')));
+      expect(cubit.state.clipStart, start);
+    });
+
+    test('leaving goes back to where the player stood', () async {
+      await cubit.open('m1');
+      await cubit.seekTo(const Duration(seconds: 20));
+      await cubit.playClip(start, end);
+      await cubit.playClip(
+        const Duration(seconds: 30),
+        const Duration(seconds: 38),
+      );
+      await cubit.leaveClips();
+      expect(cubit.state.clipStart, isNull);
+      expect(cubit.state.playing, isFalse);
+      expect(engine().calls.last, 'seek:20000');
+    });
+
+    test('leaving without a sample touches nothing', () async {
+      await cubit.open('m1');
+      final before = List.of(engine().calls);
+      await cubit.leaveClips();
+      expect(engine().calls, before);
+    });
+
+    test('a manual pause ends it', () async {
+      await cubit.open('m1');
+      await cubit.playClip(start, end);
+      await cubit.pause();
+      expect(cubit.state.clipStart, isNull);
+    });
+  });
+
   test('opens a file: ready, the link handed to the engine', () async {
     await cubit.open('m1');
     expect(cubit.state.status, PlayerStatus.ready);

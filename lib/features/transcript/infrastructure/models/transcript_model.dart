@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
 part 'transcript_model.freezed.dart';
@@ -64,6 +65,9 @@ abstract class TranscriptModel with _$TranscriptModel {
     @Default(<SegmentModel>[])
     List<SegmentModel> segments,
     @JsonKey(name: 'revision') @Default(0) int revision,
+    @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)
+    @Default(WorkspaceRole.unknown)
+    WorkspaceRole role,
   }) = _TranscriptModel;
 
   const TranscriptModel._();
@@ -81,6 +85,7 @@ abstract class TranscriptModel with _$TranscriptModel {
     speakers: speakers.map((s) => s.toEntity()).toList(),
     segments: segments.map((s) => s.toEntity()).toList(),
     revision: revision,
+    role: role,
   );
 }
 
