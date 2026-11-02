@@ -31,7 +31,7 @@ enum PlayerStatus {
 }
 
 /// The playback speeds the transport and the file actions offer.
-const List<double> playbackSpeeds = [0.75, 1, 1.25, 1.5, 2];
+const List<double> playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
 @freezed
 abstract class PlayerState with _$PlayerState {
@@ -74,6 +74,12 @@ class PlayerCubit extends Cubit<PlayerState> {
 
   /// Bumped on every [open]; a late answer for an older one is dropped.
   int _generation = 0;
+
+  /// The saved speed is read once; a choice made meanwhile outranks it.
+  bool _speedKnown = false;
+
+  /// What the open engine really plays at. A new engine starts at 1×.
+  double _engineSpeed = 1;
 
   /// [mediaId] is the transcript's. Empty: there is no file to play.
   Future<void> open(String mediaId) => _load(mediaId, Duration.zero);
@@ -127,13 +133,17 @@ class PlayerCubit extends Cubit<PlayerState> {
     PlayableMedia source,
     Duration resumeAt,
   ) async {
+    await _restoreSpeed();
+    if (isClosed || generation != _generation) return;
     final engine = _engines.create();
     _engine = engine;
+    _engineSpeed = 1;
     _sub = engine.snapshots.listen(_onSnapshot);
     try {
       await engine.open(Uri.parse(source.url));
       if (isClosed || generation != _generation) return;
-      await engine.setSpeed(state.speed);
+      await _applySpeed(engine);
+      if (isClosed || generation != _generation) return;
       if (resumeAt > Duration.zero) await engine.seekTo(resumeAt);
     } on Object {
       if (isClosed || generation != _generation) return;
@@ -212,9 +222,35 @@ class PlayerCubit extends Cubit<PlayerState> {
     if (play && !state.playing) await engine.play();
   }
 
+  /// The choice is saved even if this file refuses it: the next one may not.
   Future<void> setSpeed(double speed) async {
+    _speedKnown = true;
     emit(state.copyWith(speed: speed));
-    await _engine?.setSpeed(speed);
+    final engine = _engine;
+    if (engine != null) await _applySpeed(engine);
+    await _facade.saveSpeed(speed);
+  }
+
+  Future<void> _restoreSpeed() async {
+    if (_speedKnown) return;
+    final saved = await _facade.savedSpeed();
+    if (isClosed || _speedKnown) return;
+    _speedKnown = true;
+    if (playbackSpeeds.contains(saved)) emit(state.copyWith(speed: saved!));
+  }
+
+  /// A file that refuses a speed still plays — a remembered 0,25× must not
+  /// make it unopenable. The transport then shows the speed it really has.
+  Future<void> _applySpeed(PlaybackEngine engine) async {
+    final speed = state.speed;
+    try {
+      await engine.setSpeed(speed);
+      _engineSpeed = speed;
+    } on Object {
+      if (!isClosed && identical(engine, _engine) && state.speed == speed) {
+        emit(state.copyWith(speed: _engineSpeed));
+      }
+    }
   }
 
   /// YouTube media: opens the link in the YouTube app or the browser.
