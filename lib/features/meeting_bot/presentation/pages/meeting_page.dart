@@ -173,8 +173,9 @@ class _FormAndListState extends State<_FormAndList> {
     final l10n = context.l10n;
     return BlocBuilder<MeetingBotCubit, MeetingBotState>(
       builder: (context, state) {
+        if (!state.available) return _ComingSoon(state: state);
         final busy = state.submitting;
-        final canSend = state.available && !busy;
+        final canSend = !busy;
         final failure = state.actionFailure;
         return RefreshIndicator(
           onRefresh: () async {
@@ -196,10 +197,6 @@ class _FormAndListState extends State<_FormAndList> {
               const SizedBox(height: 10),
               Text(l10n.meetIntro, style: AppText.caption),
               const SizedBox(height: 20),
-              if (!state.available) ...[
-                _Note(text: l10n.meetUnavailable, color: AppColors.warn),
-                const SizedBox(height: 16),
-              ],
               TextField(
                 controller: _url,
                 enabled: !busy,
@@ -289,6 +286,49 @@ class _FormAndListState extends State<_FormAndList> {
           ),
         );
       },
+    );
+  }
+}
+
+/// The server has the bot switched off: no form, only what to use meanwhile
+/// and any bots sent earlier. Goes away by itself once the server turns it on.
+class _ComingSoon extends StatelessWidget {
+  const _ComingSoon({required this.state});
+
+  final MeetingBotState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return RefreshIndicator(
+      onRefresh: () async {
+        final id = state.workspaceId;
+        if (id != null) await context.read<MeetingBotCubit>().load(id);
+      },
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+        children: [
+          const Center(
+            child: SourceIcon(source: CaptureSource.meeting, size: 64),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            l10n.comingSoon,
+            textAlign: TextAlign.center,
+            style: AppText.title,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.meetUnavailable,
+            textAlign: TextAlign.center,
+            style: AppText.caption,
+          ),
+          if (state.items.isNotEmpty) ...[
+            const SizedBox(height: 32),
+            _RecentBots(state: state),
+          ],
+        ],
+      ),
     );
   }
 }

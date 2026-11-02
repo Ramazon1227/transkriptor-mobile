@@ -2533,7 +2533,7 @@ abstract class AppLocalizations {
   /// No description provided for @meetUnavailable.
   ///
   /// In uz, this message translates to:
-  /// **'Uchrashuv boti bu serverda hozir oʻchiq.'**
+  /// **'Google Meet uchrashuviga bot yuborish keyingi bosqichda ochiladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.'**
   String get meetUnavailable;
 
   /// No description provided for @meetRouteMissingTitle.

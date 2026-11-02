@@ -1379,7 +1379,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get meetRecentEmpty => 'Hali bot yuborilmagan.';
 
   @override
-  String get meetUnavailable => 'Uchrashuv boti bu serverda hozir oʻchiq.';
+  String get meetUnavailable =>
+      'Google Meet uchrashuviga bot yuborish keyingi bosqichda ochiladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.';
 
   @override
   String get meetRouteMissingTitle => 'Bu server versiyasida hali yoʻq';

@@ -1133,7 +1133,6 @@ final _scenarios = <_Scenario>[
         workspaceId: 'w1',
         listStatus: MeetingListStatus.success,
         items: _bots,
-        available: false,
         defaultBotName: _bots.first.botName,
         urlInvalid: true,
         actionFailure: const Failure.server(statusCode: 402),
@@ -1163,6 +1162,18 @@ final _scenarios = <_Scenario>[
       _summaryState.copyWith(
         templatesStatus: TemplatesStatus.loading,
         template: _templates.templates.first.copyWith(name: _longName),
+      ),
+    ),
+  ),
+  _Scenario(
+    'meeting(coming soon)',
+    MeetingPage.new,
+    arrange: () => when(() => meeting.state).thenReturn(
+      MeetingBotState(
+        workspaceId: 'w1',
+        listStatus: MeetingListStatus.success,
+        items: _bots,
+        available: false,
       ),
     ),
   ),

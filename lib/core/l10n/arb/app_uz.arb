@@ -533,7 +533,7 @@
   "meetJoin": "Botni yuborish",
   "meetRecent": "Oxirgi uchrashuvlar",
   "meetRecentEmpty": "Hali bot yuborilmagan.",
-  "meetUnavailable": "Uchrashuv boti bu serverda hozir oʻchiq.",
+  "meetUnavailable": "Google Meet uchrashuviga bot yuborish keyingi bosqichda ochiladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.",
   "meetRouteMissingTitle": "Bu server versiyasida hali yoʻq",
   "meetRouteMissingBody": "Uchrashuv boti serverning keyingi versiyasi bilan keladi. Hozircha uchrashuvni «Audio yozib olish» bilan yozib oling.",
   "meetStatusScheduled": "Navbatda",
