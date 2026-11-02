@@ -1,6 +1,8 @@
 // The expected files are pasted verbatim from the web's output; wrapping
 // them would hide a byte difference.
 // ignore_for_file: lines_longer_than_80_chars
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:transkriptor_uz/features/export/domain/export_options.dart';
 import 'package:transkriptor_uz/features/export/domain/transcript_export.dart';
@@ -272,5 +274,17 @@ void main() {
       'Kengash_ 27_10.srt',
     );
     expect(TranscriptExport.fileName('', ExportFormat.txt), 'transkript.txt');
+  });
+
+  test('a long title fits a file system, cut on a letter', () {
+    final name = TranscriptExport.fileName('1${'я' * 199}', ExportFormat.docx);
+    // 250 bytes are left for the title: the digit and 124 letters.
+    expect(name, '1${'я' * 124}.docx');
+    expect(utf8.encode(name).length, lessThanOrEqualTo(255));
+
+    expect(
+      TranscriptExport.fileName('я' * 100, ExportFormat.txt),
+      '${'я' * 100}.txt',
+    );
   });
 }
