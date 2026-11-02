@@ -2,13 +2,14 @@ import 'dart:convert';
 
 /// The backend's `models.CleanSegmentText` / `CleanSpeakerLabel` limits,
 /// mirrored so the form can refuse before a request. Go's len() counts
-/// bytes, so these are bytes, not characters: an Uzbek ʻ is two.
+/// bytes, so these are bytes, not characters: an Uzbek ʻ is two. The title
+/// alone is in characters, like the file name it often comes from.
 abstract final class EditRules {
   static const int maxSegmentTextBytes = 5000;
   static const int maxSpeakerLabelBytes = 80;
 
-  /// `models.MaxTitleLen`, counted in bytes like Go's `len`.
-  static const int maxTitleBytes = 200;
+  /// `models.MaxTitleLen`, counted in runes like the server.
+  static const int maxTitleChars = 200;
 
   /// Whitespace collapsed the way the server does it, so "unchanged" and
   /// "too long" are judged on what would actually be stored.
@@ -22,7 +23,7 @@ abstract final class EditRules {
       utf8.encode(clean(label)).length > maxSpeakerLabelBytes;
 
   static bool titleTooLong(String title) =>
-      utf8.encode(clean(title)).length > maxTitleBytes;
+      clean(title).runes.length > maxTitleChars;
 
   /// The web's `serverOffset`: where [cursor] (a UTF-16 index into the
   /// draft, as a text field reports it) falls in the text the server will

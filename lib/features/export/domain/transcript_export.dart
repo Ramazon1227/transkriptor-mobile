@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:transkriptor_uz/features/export/domain/export_options.dart';
@@ -48,10 +49,26 @@ abstract final class TranscriptExport {
   static String title(Transcript t, ExportOptions o) =>
       o.plainApostrophe ? plain(t.title) : t.title;
 
+  /// A file system's limit on one name, in bytes.
+  static const int _maxFileNameBytes = 255;
+
   /// The web's `saveFile` name: characters no file system takes become `_`.
+  /// A title of 200 Cyrillic letters is over the limit, and the phone would
+  /// refuse the file, so the title is cut on a letter to leave the extension.
   static String fileName(String title, ExportFormat format) {
     final base = title.replaceAll(RegExp(r'[\\/:*?"<>|]+'), '_');
-    return '${base.isEmpty ? 'transkript' : base}.${format.extension}';
+    final extension = '.${format.extension}';
+    final room = _maxFileNameBytes - extension.length;
+    final kept = StringBuffer();
+    var bytes = 0;
+    for (final rune in base.runes) {
+      final letter = String.fromCharCode(rune);
+      bytes += utf8.encode(letter).length;
+      if (bytes > room) break;
+      kept.write(letter);
+    }
+    final name = kept.toString().trimRight();
+    return '${name.isEmpty ? 'transkript' : name}$extension';
   }
 
   /// `pkg/uz.Plain`: U+02BB and U+02BC back to `'`.

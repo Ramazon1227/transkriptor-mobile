@@ -7,13 +7,13 @@ void main() {
     expect(NameRules.clean('   '), '');
   });
 
-  test('empty and over 120 bytes are refused', () {
+  test('empty and over 120 characters are refused', () {
     expect(NameRules.validate(''), NameError.empty);
     expect(NameRules.validate('a' * 120), isNull);
     expect(NameRules.validate('a' * 121), NameError.tooLong);
-    // Bytes, not characters: Cyrillic is two bytes, oʻ's U+02BB too.
-    expect(NameRules.validate('Ш' * 60), isNull);
-    expect(NameRules.validate('Ш' * 61), NameError.tooLong);
+    // Characters, not bytes: Cyrillic is two bytes, oʻ's U+02BB too.
+    expect(NameRules.validate('Ш' * 120), isNull);
+    expect(NameRules.validate('Ш' * 121), NameError.tooLong);
     expect(NameRules.validate('Gʻulom'), isNull);
   });
 }
