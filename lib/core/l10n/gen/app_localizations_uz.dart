@@ -632,6 +632,22 @@ class AppLocalizationsUz extends AppLocalizations {
   String get transcriptMergeNext => 'Keyingisi bilan qoʻshish';
 
   @override
+  String get transcriptMergeHidden =>
+      'Keyingi qator filtr ostida yashirin — birlashtirish uchun filtrni oʻchiring.';
+
+  @override
+  String transcriptMergeAsk(String speaker) {
+    return 'Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn «$speaker» nomida qoladi.';
+  }
+
+  @override
+  String get transcriptMergeAskNoName =>
+      'Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn maʼruzachisiz qoladi.';
+
+  @override
+  String get transcriptMergeYes => 'Qoʻshish';
+
+  @override
   String get shareTitle => 'Ulashish';
 
   @override

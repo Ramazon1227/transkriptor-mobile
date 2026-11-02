@@ -36,6 +36,7 @@ abstract interface class ITranscriptFacade {
   Future<Either<Failure, SegmentMerge>> mergeNext({
     required String transcriptId,
     required String segmentId,
+    required String nextId,
     required int revision,
   });
 

@@ -1216,6 +1216,30 @@ abstract class AppLocalizations {
   /// **'Keyingisi bilan qoʻshish'**
   String get transcriptMergeNext;
 
+  /// No description provided for @transcriptMergeHidden.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi qator filtr ostida yashirin — birlashtirish uchun filtrni oʻchiring.'**
+  String get transcriptMergeHidden;
+
+  /// No description provided for @transcriptMergeAsk.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn «{speaker}» nomida qoladi.'**
+  String transcriptMergeAsk(String speaker);
+
+  /// No description provided for @transcriptMergeAskNoName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn maʼruzachisiz qoladi.'**
+  String get transcriptMergeAskNoName;
+
+  /// No description provided for @transcriptMergeYes.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻshish'**
+  String get transcriptMergeYes;
+
   /// No description provided for @shareTitle.
   ///
   /// In uz, this message translates to:

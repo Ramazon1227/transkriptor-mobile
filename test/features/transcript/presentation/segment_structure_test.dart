@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart' show Right;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
@@ -119,7 +120,12 @@ void main() {
 
   testWidgets('merge with the next from the long-press menu', (tester) async {
     when(
-      () => facade.mergeNext(transcriptId: 't1', segmentId: 'g1', revision: 2),
+      () => facade.mergeNext(
+        transcriptId: 't1',
+        segmentId: 'g1',
+        nextId: 'g2',
+        revision: 2,
+      ),
     ).thenAnswer(
       (_) async => Right(
         SegmentMerge(
@@ -160,7 +166,12 @@ void main() {
       ),
     );
     when(
-      () => facade.mergeNext(transcriptId: 't1', segmentId: 'g1', revision: 3),
+      () => facade.mergeNext(
+        transcriptId: 't1',
+        segmentId: 'g1',
+        nextId: 'g2',
+        revision: 3,
+      ),
     ).thenAnswer(
       (_) async => Right(
         SegmentMerge(
@@ -185,7 +196,118 @@ void main() {
         text: 'Salom olam',
         revision: 2,
       ),
-      () => facade.mergeNext(transcriptId: 't1', segmentId: 'g1', revision: 3),
+      () => facade.mergeNext(
+        transcriptId: 't1',
+        segmentId: 'g1',
+        nextId: 'g2',
+        revision: 3,
+      ),
     ]);
+  });
+
+  group('two speakers', () {
+    final twoSpeakers = _transcript.copyWith(
+      speakers: const [
+        Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1),
+        Speaker(id: 's2', label: 'Maʼruzachi 2', ordinal: 2),
+      ],
+      segments: [
+        _a,
+        _b.copyWith(speakerId: 's2'),
+      ],
+    );
+
+    setUp(() {
+      when(() => facade.getTranscript('t1'))
+          .thenAnswer((_) async => Right(twoSpeakers));
+      when(
+        () => facade.mergeNext(
+          transcriptId: 't1',
+          segmentId: 'g1',
+          nextId: 'g2',
+          revision: 2,
+        ),
+      ).thenAnswer(
+        (_) async => Right(
+          SegmentMerge(
+            segment: _a.copyWith(text: 'Salom dunyo Xayr', edited: true),
+            removedId: 'g2',
+            revision: 3,
+          ),
+        ),
+      );
+    });
+
+    testWidgets('the menu says who stays and waits for the answer', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      await tester.longPress(find.text('Salom dunyo'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('merge_next')));
+      await tester.tap(find.byKey(const Key('merge_next')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('«Maʼruzachi 1» nomida qoladi'),
+        findsOneWidget,
+      );
+      verifyNever(
+        () => facade.mergeNext(
+          transcriptId: 't1',
+          segmentId: 'g1',
+          nextId: 'g2',
+          revision: 2,
+        ),
+      );
+
+      await tester.ensureVisible(find.byKey(const Key('merge_no')));
+      await tester.tap(find.byKey(const Key('merge_no')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('merge_next')), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(const Key('merge_next')));
+      await tester.tap(find.byKey(const Key('merge_next')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('merge_yes')));
+      await tester.tap(find.byKey(const Key('merge_yes')));
+      await tester.pumpAndSettle();
+      expect(find.text('Salom dunyo Xayr'), findsOneWidget);
+    });
+
+    testWidgets('the editor asks too', (tester) async {
+      await pumpPage(tester);
+      await doubleTap(tester, find.text('Salom dunyo'));
+      await tester.tap(find.byKey(const Key('segment_merge_next')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('merge_yes')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('merge_yes')));
+      await tester.pumpAndSettle();
+      expect(find.text('Salom dunyo Xayr'), findsOneWidget);
+    });
+
+    testWidgets('a filter that hides the next segment turns the merge off', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      BlocProvider.of<TranscriptCubit>(tester.element(find.text('Salom dunyo')))
+          .filterSpeaker('s1');
+      await tester.pumpAndSettle();
+      expect(find.text('Xayr'), findsNothing);
+
+      await doubleTap(tester, find.text('Salom dunyo'));
+      expect(button(tester, 'segment_merge_next').onPressed, isNull);
+      expect(find.byKey(const Key('merge_hidden_note')), findsOneWidget);
+      await tester.tap(find.text('Bekor qilish'));
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Salom dunyo'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<ListTile>(find.byKey(const Key('merge_next'))).enabled,
+        isFalse,
+      );
+      expect(find.textContaining('filtr ostida yashirin'), findsOneWidget);
+    });
   });
 }

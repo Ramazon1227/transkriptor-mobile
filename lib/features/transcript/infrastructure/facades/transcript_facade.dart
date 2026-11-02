@@ -69,11 +69,13 @@ class TranscriptFacade implements ITranscriptFacade {
   Future<Either<Failure, SegmentMerge>> mergeNext({
     required String transcriptId,
     required String segmentId,
+    required String nextId,
     required int revision,
   }) async {
     final result = await _repository.mergeNext(
       transcriptId: transcriptId,
       segmentId: segmentId,
+      nextId: nextId,
       revision: revision,
     );
     return result.map((m) => m.toEntity());

@@ -87,12 +87,13 @@ class TranscriptRepository {
   Future<Either<Failure, SegmentMergeModel>> mergeNext({
     required String transcriptId,
     required String segmentId,
+    required String nextId,
     required int revision,
   }) {
     return runRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
         Endpoints.transcriptSegmentMergeNext(transcriptId, segmentId),
-        data: {'revision': revision},
+        data: {'revision': revision, 'next_id': nextId},
       );
       return SegmentMergeModel.fromJson(envelopeData(response.data));
     });

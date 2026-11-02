@@ -42,12 +42,41 @@ abstract class TranscriptState with _$TranscriptState {
 
   const TranscriptState._();
 
-  /// Whether a segment comes after [segmentId] in the whole transcript —
-  /// the speaker filter does not change what "next" means to the server.
-  bool hasNext(String segmentId) {
+  /// The segment after [segmentId] in the whole transcript — the speaker
+  /// filter does not change what "next" means to the server.
+  Segment? nextOf(String segmentId) {
     final segments = transcript?.segments ?? const <Segment>[];
     final i = segments.indexWhere((s) => s.id == segmentId);
-    return i >= 0 && i < segments.length - 1;
+    return i >= 0 && i < segments.length - 1 ? segments[i + 1] : null;
+  }
+
+  bool hasNext(String segmentId) => nextOf(segmentId) != null;
+
+  /// The filter hides the next segment. A merge would pull someone else's
+  /// words, unseen, under this speaker's name, so it is refused.
+  bool nextHidden(String segmentId) {
+    final filter = speakerFilter;
+    final next = nextOf(segmentId);
+    return filter != null && next != null && next.speakerId != filter;
+  }
+
+  /// A merge keeps the first segment's speaker: the person is asked first.
+  bool nextIsOtherSpeaker(String segmentId) {
+    final next = nextOf(segmentId);
+    if (next == null) return false;
+    final segment = transcript?.segments.where((s) => s.id == segmentId);
+    return segment?.first.speakerId != next.speakerId;
+  }
+
+  /// The name of [segmentId]'s speaker; null without one.
+  String? speakerLabelOf(String segmentId) {
+    final segment = transcript?.segments
+        .where((s) => s.id == segmentId)
+        .firstOrNull;
+    return transcript?.speakers
+        .where((s) => s.id == segment?.speakerId)
+        .firstOrNull
+        ?.label;
   }
 
   List<Segment> get visibleSegments {
@@ -195,18 +224,22 @@ class TranscriptCubit extends Cubit<TranscriptState> {
 
   /// Folds the next segment into this one. From the editor, a changed
   /// [draft] is saved first; from the menu there is no draft. The last
-  /// segment has nothing to take and sends nothing.
+  /// segment has nothing to take and sends nothing; neither does a next
+  /// segment the filter hides. The server refuses a next it does not agree
+  /// with (409).
   Future<void> mergeNext(String segmentId, {String? draft}) async {
     final transcript = state.transcript;
     if (transcript == null || state.editStatus == EditStatus.saving) return;
     final current = _segment(transcript, segmentId);
     if (current == null) return _gone();
-    if (!state.hasNext(segmentId)) return;
+    final next = state.nextOf(segmentId);
+    if (next == null || state.nextHidden(segmentId)) return;
     await _edit([
       if (draft != null) ..._flush(current, draft),
       (t) async => (await _facade.mergeNext(
         transcriptId: t.id,
         segmentId: segmentId,
+        nextId: next.id,
         revision: t.revision,
       )).map((merge) => _applyMerge(t, merge)),
     ]);

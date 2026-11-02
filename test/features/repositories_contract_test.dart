@@ -630,10 +630,11 @@ void main() {
       final merge = (await TranscriptRepository(fakeDio(http)).mergeNext(
         transcriptId: 't1',
         segmentId: 'g',
+        nextId: 'h',
         revision: 4,
       )).getOrElse(() => throw StateError('left')).toEntity();
 
-      expect(http.sent.single.body, {'revision': 4});
+      expect(http.sent.single.body, {'revision': 4, 'next_id': 'h'});
       expect(merge.segment.text, 'Salom dunyo');
       expect(merge.removedId, 'h');
       expect(merge.revision, 5);

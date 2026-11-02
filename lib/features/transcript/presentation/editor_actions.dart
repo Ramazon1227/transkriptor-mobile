@@ -16,6 +16,7 @@ import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_text_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_actions_sheet.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/merge_confirm.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/retranscribe_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_actions_sheet.dart';
 
@@ -39,6 +40,10 @@ abstract final class EditorActions {
         onMergeNext: state.hasNext(segment.id)
             ? (cubit, text) => cubit.mergeNext(segment.id, draft: text)
             : null,
+        mergeBlocked: state.nextHidden(segment.id)
+            ? l10n.transcriptMergeHidden
+            : null,
+        mergeQuestion: mergeQuestion(context, state, segment.id),
       ),
     );
   }

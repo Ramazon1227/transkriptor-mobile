@@ -527,6 +527,7 @@ void main() {
           () => facade.mergeNext(
             transcriptId: 't1',
             segmentId: 'g1',
+            nextId: 'g2',
             revision: revision,
           ),
         ).thenAnswer((_) async => result);
@@ -757,6 +758,64 @@ void main() {
         ),
       ],
     );
+
+    blocTest<TranscriptCubit, TranscriptState>(
+      'a next segment the filter hides is not merged and nothing is sent',
+      build: () => TranscriptCubit(facade),
+      seed: () => loaded.copyWith(
+        speakerFilter: 's1',
+        transcript: loaded.transcript!.copyWith(
+          segments: [
+            a,
+            b.copyWith(speakerId: 's2'),
+          ],
+        ),
+      ),
+      act: (cubit) => cubit.mergeNext('g1'),
+      expect: () => <TranscriptState>[],
+      verify: (_) => verifyNever(
+        () => facade.mergeNext(
+          transcriptId: any(named: 'transcriptId'),
+          segmentId: any(named: 'segmentId'),
+          nextId: any(named: 'nextId'),
+          revision: any(named: 'revision'),
+        ),
+      ),
+    );
+
+    test('a filter only blocks a merge when it hides the next segment', () {
+      final other = loaded.transcript!.copyWith(
+        segments: [
+          a,
+          b.copyWith(speakerId: 's2'),
+        ],
+      );
+      expect(loaded.copyWith(speakerFilter: 's1').nextHidden('g1'), isFalse);
+      expect(
+        loaded
+            .copyWith(speakerFilter: 's1', transcript: other)
+            .nextHidden('g1'),
+        isTrue,
+      );
+      expect(loaded.copyWith(transcript: other).nextHidden('g1'), isFalse);
+      expect(loaded.copyWith(speakerFilter: 's1').nextHidden('g2'), isFalse);
+    });
+
+    test('two speakers are told apart for the merge question', () {
+      expect(loaded.nextIsOtherSpeaker('g1'), isFalse);
+      expect(loaded.nextIsOtherSpeaker('g2'), isFalse);
+      final other = loaded.transcript!.copyWith(
+        segments: [
+          a,
+          b.copyWith(speakerId: 's2'),
+        ],
+      );
+      expect(
+        loaded.copyWith(transcript: other).nextIsOtherSpeaker('g1'),
+        isTrue,
+      );
+      expect(loaded.speakerLabelOf('g1'), 'Maʼruzachi 1');
+    });
 
     blocTest<TranscriptCubit, TranscriptState>(
       'the last segment has nothing to merge and sends nothing',

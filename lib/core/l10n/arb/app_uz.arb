@@ -238,6 +238,13 @@
   "transcriptNewSpeaker": "Yangi maʼruzachi",
   "transcriptSplit": "Kursor joyida boʻlish",
   "transcriptMergeNext": "Keyingisi bilan qoʻshish",
+  "transcriptMergeHidden": "Keyingi qator filtr ostida yashirin — birlashtirish uchun filtrni oʻchiring.",
+  "transcriptMergeAsk": "Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn «{speaker}» nomida qoladi.",
+  "@transcriptMergeAsk": {
+    "placeholders": { "speaker": { "type": "String" } }
+  },
+  "transcriptMergeAskNoName": "Bu qatorlar har xil maʼruzachiniki. Qoʻshilsa, butun matn maʼruzachisiz qoladi.",
+  "transcriptMergeYes": "Qoʻshish",
 
   "shareTitle": "Ulashish",
   "shareOpen": "Havola ochish",

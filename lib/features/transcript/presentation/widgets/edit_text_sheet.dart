@@ -6,6 +6,7 @@ import 'package:transkriptor_uz/features/transcript/application/transcript_cubit
 import 'package:transkriptor_uz/features/transcript/domain/edit_rules.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_failure_text.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_sheet_route.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/merge_confirm.dart';
 
 /// Bottom sheet that edits one string through [TranscriptCubit]: a
 /// segment's text or a speaker's name. It closes only when the cubit says
@@ -21,6 +22,8 @@ class EditTextSheet extends StatefulWidget {
     required this.onSave,
     this.onSplit,
     this.onMergeNext,
+    this.mergeBlocked,
+    this.mergeQuestion,
     super.key,
   });
 
@@ -39,6 +42,12 @@ class EditTextSheet extends StatefulWidget {
   final void Function(TranscriptCubit cubit, String text, int cursor)? onSplit;
   final void Function(TranscriptCubit cubit, String text)? onMergeNext;
 
+  /// Why the merge is off (the filter hides the next segment).
+  final String? mergeBlocked;
+
+  /// Asked before merging two speakers; null merges straight away.
+  final String? mergeQuestion;
+
   /// Opens the sheet over [context], which must see the page's
   /// [TranscriptCubit]. The save state is reset on open and on close.
   static Future<void> show(BuildContext context, EditTextSheet sheet) =>
@@ -53,7 +62,13 @@ class _EditTextSheetState extends State<EditTextSheet> {
     text: widget.initial,
   )..addListener(_onChanged);
 
+  /// Merging two speakers asks once more, inside the sheet.
+  bool _confirmMerge = false;
+
   void _onChanged() => setState(() {});
+
+  void _merge(BuildContext context) =>
+      widget.onMergeNext!(context.read<TranscriptCubit>(), _controller.text);
 
   @override
   void dispose() {
@@ -125,15 +140,33 @@ class _EditTextSheetState extends State<EditTextSheet> {
                     onSplit: widget.onSplit == null || saving || tooLong
                         ? null
                         : _splitHere(context),
-                    onMergeNext: widget.onMergeNext == null || saving || tooLong
+                    onMergeNext:
+                        widget.onMergeNext == null ||
+                            widget.mergeBlocked != null ||
+                            saving ||
+                            tooLong
                         ? null
-                        : () => widget.onMergeNext!(
-                            context.read<TranscriptCubit>(),
-                            _controller.text,
-                          ),
+                        : widget.mergeQuestion == null
+                        ? () => _merge(context)
+                        : () => setState(() => _confirmMerge = true),
                     showSplit: widget.onSplit != null,
                     showMerge: widget.onMergeNext != null,
                   ),
+                if (widget.onMergeNext != null && widget.mergeBlocked != null)
+                  Text(
+                    widget.mergeBlocked!,
+                    key: const Key('merge_hidden_note'),
+                    style: AppText.caption,
+                  ),
+                if (_confirmMerge && widget.mergeQuestion != null) ...[
+                  const SizedBox(height: 8),
+                  MergeConfirm(
+                    question: widget.mergeQuestion!,
+                    saving: saving,
+                    onCancel: () => setState(() => _confirmMerge = false),
+                    onConfirm: () => _merge(context),
+                  ),
+                ],
                 if (failure != null) ...[
                   const SizedBox(height: 10),
                   EditFailureText(failure: failure),

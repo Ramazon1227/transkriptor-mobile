@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/features/transcript/application/transcript_cubit
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_failure_text.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/edit_sheet_route.dart';
+import 'package:transkriptor_uz/features/transcript/presentation/widgets/merge_confirm.dart';
 
 /// What the sheet hands back for the page to open next: another sheet
 /// cannot open on top of this one while it is still closing.
@@ -61,6 +62,9 @@ class _SegmentActionsSheetState extends State<SegmentActionsSheet> {
   /// Deleting asks once more, inside the sheet.
   bool _confirmDelete = false;
 
+  /// Merging two speakers does too.
+  bool _confirmMerge = false;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -79,6 +83,7 @@ class _SegmentActionsSheetState extends State<SegmentActionsSheet> {
             .where((s) => s.id == segmentId)
             .firstOrNull;
         final speakers = transcript?.speakers ?? const [];
+        final question = mergeQuestion(context, state, segmentId);
         void pop(SegmentAction action) => Navigator.of(context).pop(action);
         return PopScope(
           canPop: !saving,
@@ -151,13 +156,29 @@ class _SegmentActionsSheetState extends State<SegmentActionsSheet> {
                     onTap: () => pop(const EditTextAction()),
                   ),
                   if (state.hasNext(segmentId))
-                    ListTile(
-                      key: const Key('merge_next'),
-                      enabled: !saving,
-                      leading: const Icon(Icons.call_merge),
-                      title: Text(l10n.transcriptMergeNext),
-                      onTap: () => cubit.mergeNext(segmentId),
-                    ),
+                    if (_confirmMerge && question != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        child: MergeConfirm(
+                          question: question,
+                          saving: saving,
+                          onCancel: () => setState(() => _confirmMerge = false),
+                          onConfirm: () => cubit.mergeNext(segmentId),
+                        ),
+                      )
+                    else
+                      ListTile(
+                        key: const Key('merge_next'),
+                        enabled: !saving && !state.nextHidden(segmentId),
+                        leading: const Icon(Icons.call_merge),
+                        title: Text(l10n.transcriptMergeNext),
+                        subtitle: state.nextHidden(segmentId)
+                            ? Text(l10n.transcriptMergeHidden)
+                            : null,
+                        onTap: question == null
+                            ? () => cubit.mergeNext(segmentId)
+                            : () => setState(() => _confirmMerge = true),
+                      ),
                   ListTile(
                     key: const Key('segment_comment'),
                     enabled: !saving,
