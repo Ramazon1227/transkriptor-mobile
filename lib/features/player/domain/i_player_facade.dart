@@ -10,4 +10,11 @@ abstract interface class IPlayerFacade {
   /// Opens a YouTube media's link outside the app: the YouTube app when it
   /// is installed, the browser otherwise. Left when nothing opened it.
   Future<Either<Failure, Unit>> openLink(String url);
+
+  /// The speed last chosen on this phone; null when there is none or the
+  /// store cannot be read.
+  Future<double?> savedSpeed();
+
+  /// Best effort: if it cannot be written, the choice lasts for this file.
+  Future<void> saveSpeed(double speed);
 }

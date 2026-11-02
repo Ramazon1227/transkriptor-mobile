@@ -188,6 +188,8 @@ import 'package:transkriptor_uz/features/player/infrastructure/facades/player_fa
     as _i368;
 import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart'
     as _i423;
+import 'package:transkriptor_uz/features/player/infrastructure/storage/player_speed_storage.dart'
+    as _i324;
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart'
     as _i752;
 import 'package:transkriptor_uz/features/push/domain/i_push_facade.dart'
@@ -350,6 +352,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i522.ILearnFacade>(
       () => _i773.LearnFacade(gh<_i79.DemoLearnRepository>()),
+    );
+    gh.lazySingleton<_i324.PlayerSpeedStorage>(
+      () => _i324.PlayerSpeedStorage(gh<_i558.FlutterSecureStorage>()),
     );
     gh.lazySingleton<_i464.WorkspaceSelectionStorage>(
       () => _i464.WorkspaceSelectionStorage(gh<_i558.FlutterSecureStorage>()),
@@ -589,6 +594,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i172.SentimentPollPolicy>(),
       ),
     );
+    gh.lazySingleton<_i36.IPlayerFacade>(
+      () => _i368.PlayerFacade(
+        gh<_i423.PlayerRepository>(),
+        gh<_i863.ILinksFacade>(),
+        gh<_i324.PlayerSpeedStorage>(),
+      ),
+    );
     gh.lazySingleton<_i454.IMeetingBotFacade>(
       () => _i842.MeetingBotFacade(gh<_i714.MeetingBotRepository>()),
     );
@@ -603,12 +615,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i992.PlansCubit>(
       () => _i992.PlansCubit(gh<_i171.IBillingFacade>()),
-    );
-    gh.lazySingleton<_i36.IPlayerFacade>(
-      () => _i368.PlayerFacade(
-        gh<_i423.PlayerRepository>(),
-        gh<_i863.ILinksFacade>(),
-      ),
     );
     gh.lazySingleton<_i727.IJobFacade>(
       () => _i367.JobFacade(

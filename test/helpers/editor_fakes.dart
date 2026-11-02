@@ -21,6 +21,9 @@ class FakePlayerFacade implements IPlayerFacade {
   /// False: the phone had nothing to open the link with.
   bool openSucceeds = true;
 
+  /// What [savedSpeed] answers; [saveSpeed] writes it.
+  double? saved;
+
   @override
   Future<Either<Failure, PlayableMedia>> mediaSource(String mediaId) async =>
       answer;
@@ -30,6 +33,12 @@ class FakePlayerFacade implements IPlayerFacade {
     opened.add(url);
     return openSucceeds ? const Right(unit) : const Left(Failure.unknown());
   }
+
+  @override
+  Future<double?> savedSpeed() async => saved;
+
+  @override
+  Future<void> saveSpeed(double speed) async => saved = speed;
 }
 
 /// A platform-free engine: records calls, reports what the test pushes.
@@ -38,6 +47,9 @@ class FakeEngine implements PlaybackEngine {
       StreamController<PlaybackSnapshot>.broadcast();
   final List<String> calls = [];
   bool failOpen = false;
+
+  /// Speeds this file cannot play at; setSpeed throws, as the plugin does.
+  Set<double> refusedSpeeds = const {};
   Uri? opened;
   bool disposed = false;
   PlaybackSnapshot last = const PlaybackSnapshot(
@@ -79,7 +91,10 @@ class FakeEngine implements PlaybackEngine {
   }
 
   @override
-  Future<void> setSpeed(double speed) async => calls.add('speed:$speed');
+  Future<void> setSpeed(double speed) async {
+    calls.add('speed:$speed');
+    if (refusedSpeeds.contains(speed)) throw Exception('cannot play at $speed');
+  }
 
   @override
   Widget surface() => const SizedBox.expand(key: Key('fake_surface'));
@@ -103,10 +118,13 @@ class FakeEngine implements PlaybackEngine {
 class FakeEngineFactory implements PlaybackEngineFactory {
   final List<FakeEngine> made = [];
   bool failOpen = false;
+  Set<double> refusedSpeeds = const {};
 
   @override
   PlaybackEngine create() {
-    final e = FakeEngine()..failOpen = failOpen;
+    final e = FakeEngine()
+      ..failOpen = failOpen
+      ..refusedSpeeds = refusedSpeeds;
     made.add(e);
     return e;
   }

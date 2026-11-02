@@ -6,4 +6,7 @@ abstract final class StorageKeys {
   /// The workspace the person last switched to. Falls back to the
   /// personal one when the id is no longer theirs.
   static const String selectedWorkspace = 'selected_workspace';
+
+  /// The playback speed the person last chose, on this phone.
+  static const String playbackSpeed = 'playback_speed';
 }

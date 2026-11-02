@@ -149,6 +149,58 @@ void main() {
     expect(engine().calls, before);
   });
 
+  test('offers eight speeds', () {
+    expect(playbackSpeeds, [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]);
+  });
+
+  test('a choice is saved and the next file opens at it', () async {
+    await cubit.open('m1');
+    await cubit.setSpeed(0.5);
+    expect(engine().calls.last, 'speed:0.5');
+    expect(facade.saved, 0.5);
+
+    // A new editor page is a new cubit.
+    final next = PlayerCubit(facade, engines);
+    addTearDown(next.close);
+    await next.open('m2');
+    expect(next.state.speed, 0.5);
+    expect(engine().calls, ['open', 'speed:0.5']);
+  });
+
+  test('a saved value the app does not offer is ignored', () async {
+    facade.saved = 7;
+    await cubit.open('m1');
+    expect(cubit.state.speed, 1);
+    expect(engine().calls, ['open', 'speed:1.0']);
+  });
+
+  test('a choice made before the saved speed is read wins', () async {
+    facade.saved = 2;
+    await cubit.setSpeed(0.75);
+    await cubit.open('m1');
+    expect(cubit.state.speed, 0.75);
+    expect(facade.saved, 0.75);
+  });
+
+  test('a file refusing the remembered speed still opens at 1×', () async {
+    facade.saved = 0.25;
+    engines.refusedSpeeds = {0.25};
+    await cubit.open('m1');
+    expect(cubit.state.status, PlayerStatus.ready);
+    expect(cubit.state.speed, 1);
+    expect(facade.saved, 0.25, reason: 'the next file may play it');
+  });
+
+  test('a refused choice shows the speed still playing', () async {
+    engines.refusedSpeeds = {0.25};
+    await cubit.open('m1');
+    await cubit.setSpeed(1.5);
+    await cubit.setSpeed(0.25);
+    expect(cubit.state.speed, 1.5);
+    expect(cubit.state.status, PlayerStatus.ready);
+    expect(facade.saved, 0.25);
+  });
+
   test('a late answer for an older file is dropped', () async {
     final slow = _SlowFacade();
     final c = PlayerCubit(slow, engines);
