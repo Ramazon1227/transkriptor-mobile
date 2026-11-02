@@ -20,6 +20,32 @@
   "errorCaptureFailed": "Ekran ovozini yozib boʻlmadi. Baʼzi ilovalar (koʻpincha qoʻngʻiroq ilovalari) oʻz ovozini yozishga ruxsat bermaydi.",
   "errorNoBalance": "Balansda daqiqa qolmagan.",
   "errorTooLarge": "Fayl juda katta.",
+  "errorPendingLimit": "Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.",
+  "heldFilesShow": "Joy egallagan fayllar",
+  "heldFilesHint": "Yiqilgan yoki saqlangan faylni «Fayllar»dan qayta boshlash mumkin.",
+  "heldFileUnconfirmed": "yuklanmay qolgan",
+  "heldFileWaiting": "boshlanmagan",
+  "heldFileFailed": "yiqilgan",
+  "heldFileCancelled": "bekor qilingan",
+  "heldFileExpires": "{date} gacha oʻzi oʻchadi",
+  "@heldFileExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "heldFileBusy": "Hozir yuklanayotgan boʻlishi mumkin",
+  "heldFileDelete": "Oʻchirish",
+  "heldFileDeleteTitle": "Faylni oʻchirish",
+  "heldFileDeleteBody": "«{name}» saqlagichdan oʻchiriladi. Buni qaytarib boʻlmaydi.",
+  "@heldFileDeleteBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "errorTooManyRequests": "Juda koʻp urinish. Bir daqiqadan keyin qayta urining.",
 
   "navFiles": "Fayllar",

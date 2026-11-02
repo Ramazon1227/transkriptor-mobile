@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartz/dartz.dart' show Either, Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right, Unit;
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
@@ -27,6 +27,13 @@ class UploadFacade implements IUploadFacade {
     } on Object {
       return const Left(Failure.storage());
     }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteHeld(String mediaId) async {
+    final result = await _repository.deleteMedia(mediaId);
+    if (result.isRight()) _changes.notify();
+    return result;
   }
 
   @override

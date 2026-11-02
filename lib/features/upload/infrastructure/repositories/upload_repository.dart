@@ -5,11 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/constants/endpoints.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/core/error/held_file.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/network_names.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
+import 'package:transkriptor_uz/features/upload/infrastructure/models/held_file_model.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/media_created_model.dart';
 
 @lazySingleton
@@ -26,27 +28,56 @@ class UploadRepository {
     required String fileName,
     required int sizeBytes,
     required String source,
-  }) {
-    return runRequest(() async {
-      final response = await _dio.post<Map<String, dynamic>>(
-        Endpoints.media,
-        data: {
-          'workspace_id': workspaceId,
-          'filename': fileName,
-          'size_bytes': sizeBytes,
-          'source': source,
-        },
-      );
-      return MediaCreatedModel.fromJson(envelopeData(response.data));
+  }) async {
+    Object? refused;
+    final result = await runRequest(() async {
+      try {
+        final response = await _dio.post<Map<String, dynamic>>(
+          Endpoints.media,
+          data: {
+            'workspace_id': workspaceId,
+            'filename': fileName,
+            'size_bytes': sizeBytes,
+            'source': source,
+          },
+        );
+        return MediaCreatedModel.fromJson(envelopeData(response.data));
+      } on DioException catch (e) {
+        refused = e.response?.data;
+        rethrow;
+      }
     });
+    return result.leftMap((failure) => _pendingLimit(failure, refused));
   }
 
-  /// Drops a row whose bytes never arrived: for an hour and a half it would
-  /// hold a place in the workspace's limit of files not yet transcribed, and
-  /// a retry of several files would be refused. Best effort, so nothing to
-  /// report: the row expires by itself.
-  Future<void> deleteMedia(String id) async {
-    await runRequest(() async {
+  /// The shared mapper reads only `description`; the list is in `data.held`.
+  /// A list that cannot be read still leaves the reason.
+  static Failure _pendingLimit(Failure failure, Object? body) {
+    if (body is! Map<String, dynamic> || body['status'] != 'PENDING_LIMIT') {
+      return failure;
+    }
+    final data = body['data'];
+    final raw = data is Map<String, dynamic> ? data['held'] : null;
+    try {
+      final held = raw is List ? raw : const <Object?>[];
+      return Failure.pendingLimit(
+        held: <HeldFile>[
+          for (final row in held)
+            HeldFileModel.fromJson(row! as Map<String, dynamic>).toEntity(),
+        ],
+      );
+      // fromJson on a mis-shaped body throws a TypeError (CLAUDE.md §3).
+      // ignore: avoid_catching_errors
+    } on TypeError {
+      return const Failure.pendingLimit();
+    }
+  }
+
+  /// Drops a media row. For a row whose bytes never arrived this is best
+  /// effort: for an hour and a half it would count towards the workspace's
+  /// limit of bytes not yet transcribed, and then it expires by itself.
+  Future<Either<Failure, Unit>> deleteMedia(String id) {
+    return runRequest(() async {
       await _dio.delete<Map<String, dynamic>>(Endpoints.mediaById(id));
       return unit;
     });

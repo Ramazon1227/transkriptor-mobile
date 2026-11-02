@@ -214,6 +214,78 @@ abstract class AppLocalizations {
   /// **'Fayl juda katta.'**
   String get errorTooLarge;
 
+  /// No description provided for @errorPendingLimit.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.'**
+  String get errorPendingLimit;
+
+  /// No description provided for @heldFilesShow.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joy egallagan fayllar'**
+  String get heldFilesShow;
+
+  /// No description provided for @heldFilesHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yiqilgan yoki saqlangan faylni «Fayllar»dan qayta boshlash mumkin.'**
+  String get heldFilesHint;
+
+  /// No description provided for @heldFileUnconfirmed.
+  ///
+  /// In uz, this message translates to:
+  /// **'yuklanmay qolgan'**
+  String get heldFileUnconfirmed;
+
+  /// No description provided for @heldFileWaiting.
+  ///
+  /// In uz, this message translates to:
+  /// **'boshlanmagan'**
+  String get heldFileWaiting;
+
+  /// No description provided for @heldFileFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'yiqilgan'**
+  String get heldFileFailed;
+
+  /// No description provided for @heldFileCancelled.
+  ///
+  /// In uz, this message translates to:
+  /// **'bekor qilingan'**
+  String get heldFileCancelled;
+
+  /// No description provided for @heldFileExpires.
+  ///
+  /// In uz, this message translates to:
+  /// **'{date} gacha oʻzi oʻchadi'**
+  String heldFileExpires(String date);
+
+  /// No description provided for @heldFileBusy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozir yuklanayotgan boʻlishi mumkin'**
+  String get heldFileBusy;
+
+  /// No description provided for @heldFileDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get heldFileDelete;
+
+  /// No description provided for @heldFileDeleteTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni oʻchirish'**
+  String get heldFileDeleteTitle;
+
+  /// No description provided for @heldFileDeleteBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{name}» saqlagichdan oʻchiriladi. Buni qaytarib boʻlmaydi.'**
+  String heldFileDeleteBody(String name);
+
   /// No description provided for @errorTooManyRequests.
   ///
   /// In uz, this message translates to:

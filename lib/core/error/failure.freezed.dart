@@ -56,14 +56,15 @@ extension FailurePatterns on Failure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( PendingLimitFailure value)?  pendingLimit,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network(_that);case TimeoutFailure() when timeout != null:
 return timeout(_that);case UnauthorizedFailure() when unauthorized != null:
 return unauthorized(_that);case ServerFailure() when server != null:
-return server(_that);case ParsingFailure() when parsing != null:
+return server(_that);case PendingLimitFailure() when pendingLimit != null:
+return pendingLimit(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -87,14 +88,15 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( PendingLimitFailure value)  pendingLimit,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure():
 return network(_that);case TimeoutFailure():
 return timeout(_that);case UnauthorizedFailure():
 return unauthorized(_that);case ServerFailure():
-return server(_that);case ParsingFailure():
+return server(_that);case PendingLimitFailure():
+return pendingLimit(_that);case ParsingFailure():
 return parsing(_that);case CancelledFailure():
 return cancelled(_that);case PermissionDeniedFailure():
 return permissionDenied(_that);case StorageFailure():
@@ -114,14 +116,15 @@ return unknown(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( PendingLimitFailure value)?  pendingLimit,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network(_that);case TimeoutFailure() when timeout != null:
 return timeout(_that);case UnauthorizedFailure() when unauthorized != null:
 return unauthorized(_that);case ServerFailure() when server != null:
-return server(_that);case ParsingFailure() when parsing != null:
+return server(_that);case PendingLimitFailure() when pendingLimit != null:
+return pendingLimit(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -144,13 +147,14 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function( List<HeldFile> held)?  pendingLimit,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
 return timeout();case UnauthorizedFailure() when unauthorized != null:
 return unauthorized();case ServerFailure() when server != null:
-return server(_that.statusCode,_that.message);case ParsingFailure() when parsing != null:
+return server(_that.statusCode,_that.message);case PendingLimitFailure() when pendingLimit != null:
+return pendingLimit(_that.held);case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -174,13 +178,14 @@ return unknown();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( List<HeldFile> held)  pendingLimit,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure():
 return network();case TimeoutFailure():
 return timeout();case UnauthorizedFailure():
 return unauthorized();case ServerFailure():
-return server(_that.statusCode,_that.message);case ParsingFailure():
+return server(_that.statusCode,_that.message);case PendingLimitFailure():
+return pendingLimit(_that.held);case ParsingFailure():
 return parsing();case CancelledFailure():
 return cancelled();case PermissionDeniedFailure():
 return permissionDenied();case StorageFailure():
@@ -200,13 +205,14 @@ return unknown();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( List<HeldFile> held)?  pendingLimit,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
 return timeout();case UnauthorizedFailure() when unauthorized != null:
 return unauthorized();case ServerFailure() when server != null:
-return server(_that.statusCode,_that.message);case ParsingFailure() when parsing != null:
+return server(_that.statusCode,_that.message);case PendingLimitFailure() when pendingLimit != null:
+return pendingLimit(_that.held);case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -380,6 +386,80 @@ class _$ServerFailureCopyWithImpl<$Res>
 statusCode: freezed == statusCode ? _self.statusCode : statusCode // ignore: cast_nullable_to_non_nullable
 as int?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PendingLimitFailure implements Failure {
+  const PendingLimitFailure({ List<HeldFile> held = const <HeldFile>[]}): _held = held;
+  
+
+ final  List<HeldFile> _held;
+@JsonKey() List<HeldFile> get held {
+  if (_held is EqualUnmodifiableListView) return _held;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_held);
+}
+
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PendingLimitFailureCopyWith<PendingLimitFailure> get copyWith => _$PendingLimitFailureCopyWithImpl<PendingLimitFailure>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PendingLimitFailure&&const DeepCollectionEquality().equals(other.held, _held));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_held));
+}
+
+@override
+String toString() {
+    return 'Failure.pendingLimit(held: $held)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PendingLimitFailureCopyWith<$Res> implements $FailureCopyWith<$Res> {
+  factory $PendingLimitFailureCopyWith(PendingLimitFailure value, $Res Function(PendingLimitFailure) _then) = _$PendingLimitFailureCopyWithImpl;
+@useResult
+$Res call({
+ List<HeldFile> held
+});
+
+
+
+
+}
+/// @nodoc
+class _$PendingLimitFailureCopyWithImpl<$Res>
+    implements $PendingLimitFailureCopyWith<$Res> {
+  _$PendingLimitFailureCopyWithImpl(this._self, this._then);
+
+  final PendingLimitFailure _self;
+  final $Res Function(PendingLimitFailure) _then;
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? held = null,}) {
+  return _then(PendingLimitFailure(
+held: null == held ? _self._held : held // ignore: cast_nullable_to_non_nullable
+as List<HeldFile>,
   ));
 }
 

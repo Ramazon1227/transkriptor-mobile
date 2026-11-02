@@ -13,6 +13,7 @@ import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 /// Several picked files: one list, one speaker count, one button. One file
@@ -267,6 +268,7 @@ class _FileRow extends StatelessWidget {
                 fontSize: 13,
               ),
             ),
+            HeldFilesButton(failure: failure),
           ],
           if (canRetry)
             TextButton(

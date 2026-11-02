@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart' show Either;
+import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
@@ -37,6 +37,10 @@ abstract interface class IUploadFacade {
     required String mediaId,
     int? numSpeakers,
   });
+
+  /// Deletes a file that holds a place in the limit
+  /// (`Failure.pendingLimit`).
+  Future<Either<Failure, Unit>> deleteHeld(String mediaId);
 
   /// Hands a YouTube, Google Drive or Dropbox link to the server, which
   /// downloads it itself.

@@ -74,6 +74,48 @@ class AppLocalizationsUz extends AppLocalizations {
   String get errorTooLarge => 'Fayl juda katta.';
 
   @override
+  String get errorPendingLimit =>
+      'Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.';
+
+  @override
+  String get heldFilesShow => 'Joy egallagan fayllar';
+
+  @override
+  String get heldFilesHint =>
+      'Yiqilgan yoki saqlangan faylni «Fayllar»dan qayta boshlash mumkin.';
+
+  @override
+  String get heldFileUnconfirmed => 'yuklanmay qolgan';
+
+  @override
+  String get heldFileWaiting => 'boshlanmagan';
+
+  @override
+  String get heldFileFailed => 'yiqilgan';
+
+  @override
+  String get heldFileCancelled => 'bekor qilingan';
+
+  @override
+  String heldFileExpires(String date) {
+    return '$date gacha oʻzi oʻchadi';
+  }
+
+  @override
+  String get heldFileBusy => 'Hozir yuklanayotgan boʻlishi mumkin';
+
+  @override
+  String get heldFileDelete => 'Oʻchirish';
+
+  @override
+  String get heldFileDeleteTitle => 'Faylni oʻchirish';
+
+  @override
+  String heldFileDeleteBody(String name) {
+    return '«$name» saqlagichdan oʻchiriladi. Buni qaytarib boʻlmaydi.';
+  }
+
+  @override
   String get errorTooManyRequests =>
       'Juda koʻp urinish. Bir daqiqadan keyin qayta urining.';
 

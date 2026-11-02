@@ -67,7 +67,8 @@ void main() {
     );
     when(() => repository.confirm('m1'))
         .thenAnswer((_) async => const Right(unit));
-    when(() => repository.deleteMedia('m1')).thenAnswer((_) async {});
+    when(() => repository.deleteMedia('m1'))
+        .thenAnswer((_) async => const Right(unit));
   });
 
   tearDown(() => changes.dispose());
@@ -156,9 +157,8 @@ void main() {
     verify(() => repository.deleteMedia('m1')).called(1);
 
     stubPut();
-    when(
-      () => repository.confirm('m1'),
-    ).thenAnswer((_) async => const Left(Failure.network()));
+    when(() => repository.confirm('m1'))
+        .thenAnswer((_) async => const Left(Failure.network()));
     await facade.upload(
       file: file,
       workspaceId: 'w1',

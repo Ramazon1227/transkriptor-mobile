@@ -13,6 +13,7 @@ import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class SendPage extends StatelessWidget {
@@ -139,6 +140,7 @@ class _SendFormState extends State<_SendForm> {
                   state.failure!.message(l10n),
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
+                HeldFilesButton(failure: state.failure),
                 const SizedBox(height: 12),
               ],
               if (uploading) ...[

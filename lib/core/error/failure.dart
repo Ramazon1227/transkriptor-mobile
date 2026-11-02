@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:transkriptor_uz/core/error/held_file.dart';
 
 part 'failure.freezed.dart';
 
@@ -34,6 +35,12 @@ sealed class Failure with _$Failure {
   /// when the body carries one.
   const factory Failure.server({int? statusCode, String? message}) =
       ServerFailure;
+
+  /// 409 PENDING_LIMIT: too many files not yet transcribed. [held] names
+  /// them, so the person can free a place.
+  const factory Failure.pendingLimit({
+    @Default(<HeldFile>[]) List<HeldFile> held,
+  }) = PendingLimitFailure;
 
   /// The answer arrived but did not have the expected shape.
   const factory Failure.parsing() = ParsingFailure;

@@ -272,6 +272,8 @@ import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/
     as _i78;
 import 'package:transkriptor_uz/features/transcript/infrastructure/storage/speaker_intro_storage.dart'
     as _i459;
+import 'package:transkriptor_uz/features/upload/application/held_files_cubit.dart'
+    as _i731;
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart'
     as _i741;
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart'
@@ -722,6 +724,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i669.JobPollPolicy>(),
         gh<_i252.LibraryChanges>(),
       ),
+    );
+    gh.factory<_i731.HeldFilesCubit>(
+      () => _i731.HeldFilesCubit(gh<_i122.IUploadFacade>()),
     );
     gh.factory<_i741.PickFileCubit>(
       () => _i741.PickFileCubit(gh<_i122.IUploadFacade>()),
