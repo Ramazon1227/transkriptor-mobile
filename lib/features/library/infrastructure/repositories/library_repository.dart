@@ -14,12 +14,19 @@ class LibraryRepository {
 
   final Dio _dio;
 
-  /// [folderId] null lists every file, folders included. [source] is the
-  /// backend's `media_source` (UPLOAD, URL, RECORDING, API); null is all.
-  Future<Either<Failure, List<LibraryItemModel>>> getItems({
+  /// One page, newest first. [folderId] null lists every file, folders
+  /// included. [source] is the backend's `media_source` (UPLOAD, URL,
+  /// RECORDING, API); null is all. [meeting] true keeps the meeting
+  /// recordings, false the rest. [cursor] is the last page's `next_cursor`.
+  Future<Either<Failure, LibraryListModel>> getItems({
     required String workspaceId,
     String? folderId,
     String? source,
+    bool? meeting,
+    String? query,
+    String? tag,
+    int? limit,
+    String? cursor,
   }) {
     return runRequest(() async {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -28,13 +35,30 @@ class LibraryRepository {
           'workspace_id': workspaceId,
           'folder_id': ?folderId,
           'source': ?source,
+          'meeting': ?meeting,
+          'q': ?query,
+          'tag': ?tag,
+          'limit': ?limit,
+          'cursor': ?cursor,
         },
       );
+      return LibraryListModel.fromJson(envelopeData(response.data));
+    });
+  }
+
+  /// The workspace's tag names, as the server orders them (most used first).
+  Future<Either<Failure, List<String>>> getTags({required String workspaceId}) {
+    return runRequest(() async {
+      final response = await _dio.get<Map<String, dynamic>>(
+        Endpoints.workspaceTags(workspaceId),
+      );
       final items = envelopeData(response.data)['items'];
-      return ((items as List<dynamic>?) ?? const [])
-          .cast<Map<String, dynamic>>()
-          .map(LibraryItemModel.fromJson)
-          .toList();
+      return [
+        for (final item
+            in ((items as List<dynamic>?) ?? const [])
+                .cast<Map<String, dynamic>>())
+          if (item['tag'] case final String tag when tag.isNotEmpty) tag,
+      ];
     });
   }
 

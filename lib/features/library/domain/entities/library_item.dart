@@ -52,3 +52,19 @@ abstract class LibraryItem with _$LibraryItem {
     String? meetingTitle,
   }) = _LibraryItem;
 }
+
+/// One page of the files list; [nextCursor] null means it was the last.
+@freezed
+abstract class LibraryPage with _$LibraryPage {
+  const factory LibraryPage({
+    @Default(<LibraryItem>[]) List<LibraryItem> items,
+    String? nextCursor,
+
+    /// Every row matching the filters, not only this page's.
+    @Default(0) int total,
+
+    /// Queued and running jobs among those rows, on any page. Null when the
+    /// server did not say.
+    int? inFlight,
+  }) = _LibraryPage;
+}

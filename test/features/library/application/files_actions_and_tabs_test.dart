@@ -28,11 +28,6 @@ const _meeting = LibraryItem(
   source: MediaSource.recording,
   meetingTitle: 'Haftalik yigʻilish',
 );
-const _voice = LibraryItem(
-  mediaId: 'm3',
-  name: 'Ovozli eslatma',
-  source: MediaSource.recording,
-);
 
 void main() {
   late _MockLibraryFacade library;
@@ -163,28 +158,38 @@ void main() {
     );
   });
 
-  group('LibraryBloc source tabs and search', () {
+  group('LibraryBloc source tabs', () {
+    setUp(
+      () =>
+          when(() => library.getTags(workspaceId: 'w1'))
+              .thenAnswer((_) async => const Right(<String>[])),
+    );
+
     blocTest<LibraryBloc, LibraryState>(
-      'Uchrashuvlar asks for RECORDING and keeps only meetings',
+      'Uchrashuvlar asks for RECORDING with meeting=true',
       setUp: () {
-        when(() => library.getItems(workspaceId: 'w1'))
-            .thenAnswer((_) async => const Right([_failed, _meeting, _voice]));
+        when(
+          () =>
+              library.getItems(workspaceId: 'w1', limit: LibraryBloc.pageSize),
+        ).thenAnswer(
+          (_) async => const Right(LibraryPage(items: [_failed, _meeting])),
+        );
         when(
           () => library.getItems(
             workspaceId: 'w1',
             source: MediaSource.recording,
+            meeting: true,
+            limit: LibraryBloc.pageSize,
           ),
-        ).thenAnswer((_) async => const Right([_meeting, _voice]));
+        ).thenAnswer((_) async => const Right(LibraryPage(items: [_meeting])));
       },
       build: () => LibraryBloc(library, changes),
       act: (b) async {
         b.add(const LibraryStarted('w1'));
         await Future<void>.delayed(Duration.zero);
-        b
-          ..add(const LibraryTagSelected('x'))
-          ..add(const LibrarySourceSelected(FilesSource.meetings));
+        b.add(const LibrarySourceSelected(FilesSource.meetings));
       },
-      skip: 3,
+      skip: 2,
       expect: () => const [
         LibraryState(
           status: LibraryStatus.loading,
@@ -201,11 +206,15 @@ void main() {
     );
 
     blocTest<LibraryBloc, LibraryState>(
-      'Yozuvlar without recordings is empty, even if meetings came back',
+      'Yozuvlar asks for meeting=false; no rows is empty',
       setUp: () => when(
-        () =>
-            library.getItems(workspaceId: 'w1', source: MediaSource.recording),
-      ).thenAnswer((_) async => const Right([_meeting])),
+        () => library.getItems(
+          workspaceId: 'w1',
+          source: MediaSource.recording,
+          meeting: false,
+          limit: LibraryBloc.pageSize,
+        ),
+      ).thenAnswer((_) async => const Right(LibraryPage())),
       build: () => LibraryBloc(library, changes),
       seed: () => const LibraryState(
         status: LibraryStatus.success,
@@ -223,18 +232,15 @@ void main() {
       ],
     );
 
-    test('the search narrows by name, any case, with the tag', () {
-      const state = LibraryState(items: [_failed, _meeting, _voice]);
-      expect(state.copyWith(query: 'YIGʻ').visibleItems.map((i) => i.mediaId), [
-        'm2',
-      ]);
-      expect(state.copyWith(query: '  ').visibleItems, hasLength(3));
-    });
-
     test('the tab mapping', () {
       expect(FilesSource.links.serverSource, MediaSource.url);
       expect(FilesSource.all.serverSource, isNull);
-      expect(FilesSource.uploads.matches(_meeting), isTrue);
+      expect(FilesSource.meetings.serverSource, MediaSource.recording);
+      expect(FilesSource.recordings.serverSource, MediaSource.recording);
+      expect(FilesSource.meetings.meeting, isTrue);
+      expect(FilesSource.recordings.meeting, isFalse);
+      expect(FilesSource.all.meeting, isNull);
+      expect(FilesSource.uploads.meeting, isNull);
     });
   });
 }

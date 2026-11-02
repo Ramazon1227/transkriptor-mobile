@@ -67,3 +67,25 @@ const _$MediaSourceEnumMap = {
   MediaSource.api: 'API',
   MediaSource.unknown: 'unknown',
 };
+
+_LibraryListModel _$LibraryListModelFromJson(Map<String, dynamic> json) =>
+    _LibraryListModel(
+      items:
+          (json['items'] as List<dynamic>?)
+              ?.map((e) => LibraryItemModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <LibraryItemModel>[],
+      nextCursor: json['next_cursor'] as String?,
+      total: (json['total'] as num?)?.toInt(),
+      counts: (json['counts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ),
+    );
+
+Map<String, dynamic> _$LibraryListModelToJson(_LibraryListModel instance) =>
+    <String, dynamic>{
+      'items': instance.items,
+      'next_cursor': instance.nextCursor,
+      'total': instance.total,
+      'counts': instance.counts,
+    };

@@ -155,7 +155,7 @@ void main() {
       final items = (await LibraryRepository(fakeDio(http)).getItems(
         workspaceId: 'w1',
         source: 'RECORDING',
-      )).getOrElse(() => throw StateError('left'));
+      )).getOrElse(() => throw StateError('left')).items;
       expect(http.sent.single.options.queryParameters, {
         'workspace_id': 'w1',
         'source': 'RECORDING',

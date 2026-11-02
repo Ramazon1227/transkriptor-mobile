@@ -210,11 +210,129 @@ void main() {
         }),
       ),
     });
-    final items = (await LibraryRepository(
+    final page = (await LibraryRepository(
       fakeDio(http),
     ).getItems(workspaceId: 'w1')).getOrElse(() => throw StateError('left'));
-    expect(items.single.toEntity().jobStatus, JobStatus.running);
+    expect(page.items.single.toEntity().jobStatus, JobStatus.running);
     expect(http.sent.single.options.queryParameters, {'workspace_id': 'w1'});
+  });
+
+  group('LibraryRepository paging', () {
+    test('every filter goes in the query', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/library': (200, ok({'items': <Object>[]})),
+      });
+      await LibraryRepository(fakeDio(http)).getItems(
+        workspaceId: 'w1',
+        folderId: 'f1',
+        source: 'RECORDING',
+        meeting: false,
+        query: 'sud',
+        tag: 'majlis',
+        limit: 30,
+        cursor: 'c1',
+      );
+      expect(http.sent.single.options.queryParameters, {
+        'workspace_id': 'w1',
+        'folder_id': 'f1',
+        'source': 'RECORDING',
+        'meeting': false,
+        'q': 'sud',
+        'tag': 'majlis',
+        'limit': 30,
+        'cursor': 'c1',
+      });
+    });
+
+    test('reads next_cursor, total and the jobs in flight', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/library': (
+          200,
+          ok({
+            'items': [
+              {'media_id': 'm1'},
+            ],
+            'next_cursor': 'c2',
+            'total': 41,
+            'counts': {'SUCCEEDED': 38, 'QUEUED': 2, 'RUNNING': 1},
+          }),
+        ),
+      });
+      final page = (await LibraryRepository(fakeDio(http)).getItems(
+        workspaceId: 'w1',
+      )).getOrElse(() => throw StateError('left')).toEntity();
+      expect(page.nextCursor, 'c2');
+      expect(page.total, 41);
+      expect(page.inFlight, 3);
+    });
+
+    test('tolerates a server without the paging fields', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/library': (
+          200,
+          ok({
+            'items': [
+              {'media_id': 'm1'},
+              {'media_id': 'm2'},
+            ],
+          }),
+        ),
+      });
+      final page = (await LibraryRepository(fakeDio(http)).getItems(
+        workspaceId: 'w1',
+      )).getOrElse(() => throw StateError('left')).toEntity();
+      expect(page.nextCursor, isNull);
+      expect(page.total, 2);
+      expect(page.inFlight, isNull);
+    });
+
+    test('null next_cursor and null items read as the end', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/library': (
+          200,
+          ok({
+            'items': null,
+            'next_cursor': null,
+            'total': 0,
+            'counts': <String, int>{},
+          }),
+        ),
+      });
+      final page = (await LibraryRepository(fakeDio(http)).getItems(
+        workspaceId: 'w1',
+      )).getOrElse(() => throw StateError('left')).toEntity();
+      expect(page.items, isEmpty);
+      expect(page.nextCursor, isNull);
+      expect(page.inFlight, 0);
+    });
+
+    test("tags come from the workspace path, in the server's order", () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/workspaces/w1/tags': (
+          200,
+          ok({
+            'items': [
+              {'tag': 'sud', 'files': 9, 'category_id': null},
+              {'tag': 'majlis', 'files': 2, 'category_id': 'c1'},
+            ],
+          }),
+        ),
+      });
+      final tags = (await LibraryRepository(
+        fakeDio(http),
+      ).getTags(workspaceId: 'w1')).getOrElse(() => throw StateError('left'));
+      expect(tags, ['sud', 'majlis']);
+    });
+
+    test('a workspace without tags answers an empty list', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/workspaces/w1/tags': (200, ok({'items': null})),
+      });
+      final tags = (await LibraryRepository(
+        fakeDio(http),
+      ).getTags(workspaceId: 'w1')).getOrElse(() => throw StateError('left'));
+      expect(tags, isEmpty);
+    });
   });
 
   group('LibraryRepository folders and file patch', () {

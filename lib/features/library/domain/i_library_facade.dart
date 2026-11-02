@@ -5,14 +5,25 @@ import 'package:transkriptor_uz/features/library/domain/entities/library_item.da
 import 'package:transkriptor_uz/features/library/domain/tag_rules.dart';
 
 abstract interface class ILibraryFacade {
-  /// Files of [workspaceId], newest first, in the API's order. [folderId]
-  /// narrows the list to one folder; null is every file. [source] narrows
-  /// it to one origin on the server; null is every origin.
-  Future<Either<Failure, List<LibraryItem>>> getItems({
+  /// One page of [workspaceId]'s files, newest first, in the API's order.
+  /// [folderId] narrows the list to one folder; null is every file. [source]
+  /// narrows it to one origin on the server; null is every origin. [meeting]
+  /// true keeps the meeting recordings, false the rest. [query] is a part of
+  /// the name, [tag] one tag. [limit] is at most 100; [cursor] is the last
+  /// page's [LibraryPage.nextCursor].
+  Future<Either<Failure, LibraryPage>> getItems({
     required String workspaceId,
     String? folderId,
     MediaSource? source,
+    bool? meeting,
+    String? query,
+    String? tag,
+    int? limit,
+    String? cursor,
   });
+
+  /// The workspace's tags, most used first; not only those on loaded rows.
+  Future<Either<Failure, List<String>>> getTags({required String workspaceId});
 
   /// The workspace's folders, in the API's order.
   Future<Either<Failure, List<Folder>>> getFolders({

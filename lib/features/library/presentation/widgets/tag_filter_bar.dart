@@ -4,16 +4,15 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
 import 'package:transkriptor_uz/features/library/presentation/widgets/filter_tab.dart';
 
-/// «Teg: hammasi» plus the tags on the open folder's rows. Hidden when no
-/// row has a tag.
+/// «Teg: hammasi» plus the workspace's tags, most used first. Hidden when
+/// the workspace has none.
 class TagFilterBar extends StatelessWidget {
   const TagFilterBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LibraryBloc, LibraryState>(
-      buildWhen: (prev, next) =>
-          prev.items != next.items || prev.tag != next.tag,
+      buildWhen: (prev, next) => prev.tags != next.tags || prev.tag != next.tag,
       builder: _bar,
     );
   }

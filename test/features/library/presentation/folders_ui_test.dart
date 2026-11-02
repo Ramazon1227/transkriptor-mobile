@@ -38,8 +38,11 @@ void main() {
       () => facade.getItems(
         workspaceId: 'w1',
         folderId: any(named: 'folderId'),
+        limit: LibraryBloc.pageSize,
       ),
-    ).thenAnswer((_) async => const Right([_item]));
+    ).thenAnswer((_) async => const Right(LibraryPage(items: [_item])));
+    when(() => facade.getTags(workspaceId: 'w1'))
+        .thenAnswer((_) async => const Right(<String>[]));
     getIt.registerFactory(
       () => FileActionsCubit(facade, _MockJobFacade(), changes),
     );
@@ -86,7 +89,13 @@ void main() {
 
     await tester.tap(find.byKey(const Key('folder_f1')));
     await tester.pumpAndSettle();
-    verify(() => facade.getItems(workspaceId: 'w1', folderId: 'f1')).called(1);
+    verify(
+      () => facade.getItems(
+        workspaceId: 'w1',
+        folderId: 'f1',
+        limit: LibraryBloc.pageSize,
+      ),
+    ).called(1);
 
     await tester.tap(find.byKey(const Key('folder_new')));
     await tester.pumpAndSettle();

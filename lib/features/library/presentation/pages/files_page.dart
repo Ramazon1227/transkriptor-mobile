@@ -352,10 +352,13 @@ class _FilesList extends StatelessWidget {
           prev.status != next.status ||
           prev.items != next.items ||
           prev.tag != next.tag ||
-          prev.query != next.query,
+          prev.query != next.query ||
+          prev.nextCursor != next.nextCursor ||
+          prev.loadingMore != next.loadingMore ||
+          prev.failure != next.failure,
       builder: (context, state) {
         final bloc = context.read<LibraryBloc>();
-        final items = state.visibleItems;
+        final items = state.items;
         // Reloads the folder bar too: it changes on other devices as well.
         Future<void> refresh() async {
           unawaited(context.read<FoldersCubit>().refresh());
@@ -384,20 +387,103 @@ class _FilesList extends StatelessWidget {
           ),
           LibraryStatus.success => RefreshIndicator(
             onRefresh: refresh,
-            child: ListView.separated(
-              padding: const EdgeInsets.only(left: 20, right: 8),
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (_, i) => LibraryTile(
-                item: items[i],
-                onMore: FileActionsSheet.hasActions(canWrite: canWrite)
-                    ? () => FileActionsSheet.show(context, items[i])
-                    : null,
-              ),
+            // Another search or tag starts again from the top.
+            child: _FilesRows(
+              key: ValueKey((state.query, state.tag)),
+              state: state,
+              canWrite: canWrite,
             ),
           ),
         };
       },
+    );
+  }
+}
+
+/// The rows. Coming near the end loads the next page, by scrolling or
+/// because a page does not fill the screen (a tall tablet).
+class _FilesRows extends StatefulWidget {
+  const _FilesRows({required this.state, required this.canWrite, super.key});
+
+  final LibraryState state;
+  final bool canWrite;
+
+  @override
+  State<_FilesRows> createState() => _FilesRowsState();
+}
+
+class _FilesRowsState extends State<_FilesRows> {
+  /// How far above the end the next page is asked for.
+  static const double _loadAhead = 300;
+
+  final ScrollController _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _loadMoreIfNear(ScrollMetrics metrics) {
+    if (widget.state.nextCursor != null && metrics.extentAfter < _loadAhead) {
+      context.read<LibraryBloc>().add(const LibraryMoreRequested());
+    }
+  }
+
+  /// Not after a failure: this runs on every build, and the failure itself
+  /// is a build, so it would retry in a loop. The next scroll tries again.
+  void _fillViewport() {
+    if (!mounted || !_scroll.hasClients || widget.state.failure != null) return;
+    final position = _scroll.position;
+    if (position.hasContentDimensions) _loadMoreIfNear(position);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    final items = state.items;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fillViewport());
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        // After a failure only a new gesture tries again: a drag notifies
+        // on every frame, and each would be another request.
+        final mayAsk =
+            state.failure == null || notification is ScrollStartNotification;
+        if (notification.depth == 0 && mayAsk) {
+          _loadMoreIfNear(notification.metrics);
+        }
+        return false;
+      },
+      child: ListView.separated(
+        key: const Key('files_list'),
+        controller: _scroll,
+        // A controller turns this default off; a short list must still pull
+        // to refresh.
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(left: 20, right: 8),
+        itemCount: items.length + (state.loadingMore ? 1 : 0),
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (context, i) {
+          if (i >= items.length) {
+            return const Padding(
+              key: Key('files_more_spinner'),
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            );
+          }
+          return LibraryTile(
+            item: items[i],
+            onMore: FileActionsSheet.hasActions(canWrite: widget.canWrite)
+                ? () => FileActionsSheet.show(context, items[i])
+                : null,
+          );
+        },
+      ),
     );
   }
 }

@@ -56,6 +56,36 @@ abstract class LibraryItemModel with _$LibraryItemModel {
   );
 }
 
+/// `handler.LibraryList`: one page, the cursor for the next and the counts.
+@freezed
+abstract class LibraryListModel with _$LibraryListModel {
+  const factory LibraryListModel({
+    @JsonKey(name: 'items')
+    @Default(<LibraryItemModel>[])
+    List<LibraryItemModel> items,
+    @JsonKey(name: 'next_cursor') String? nextCursor,
+    @JsonKey(name: 'total') int? total,
+
+    /// Rows per job status; the status filter does not narrow them.
+    @JsonKey(name: 'counts') Map<String, int>? counts,
+  }) = _LibraryListModel;
+
+  const LibraryListModel._();
+
+  factory LibraryListModel.fromJson(Map<String, dynamic> json) =>
+      _$LibraryListModelFromJson(json);
+
+  LibraryPage toEntity() {
+    final c = counts;
+    return LibraryPage(
+      items: items.map((m) => m.toEntity()).toList(),
+      nextCursor: _blankToNull(nextCursor),
+      total: total ?? items.length,
+      inFlight: c == null ? null : (c['QUEUED'] ?? 0) + (c['RUNNING'] ?? 0),
+    );
+  }
+}
+
 String? _blankToNull(String? s) => (s == null || s.isEmpty) ? null : s;
 
 JobStatus? _jobStatus(String? raw) => switch (raw) {

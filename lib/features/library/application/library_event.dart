@@ -36,18 +36,31 @@ final class LibrarySourceSelected extends LibraryLoadEvent {
   final FilesSource source;
 }
 
-/// The search field: narrows the loaded rows by name. Nothing is fetched,
-/// `/library` has no search.
-final class LibraryQueryChanged extends LibraryEvent {
+/// The search field: after a short pause the list reloads from the top
+/// with `q`. The previous rows stay until the answer.
+final class LibraryQueryChanged extends LibraryLoadEvent {
   const LibraryQueryChanged(this.query);
 
   final String query;
 }
 
-/// Narrow the rows on screen to one tag; null clears it. Nothing is
-/// fetched: like the web, the tag filter works on the open folder's rows.
-final class LibraryTagSelected extends LibraryEvent {
+/// Reload the list from the top with one tag; null clears it. The previous
+/// rows stay until the answer.
+final class LibraryTagSelected extends LibraryLoadEvent {
   const LibraryTagSelected(this.tag);
 
   final String? tag;
+}
+
+/// The end of the list came near: fetch the next page, if there is one.
+final class LibraryMoreRequested extends LibraryLoadEvent {
+  const LibraryMoreRequested();
+}
+
+/// The workspace's tag list arrived. Not a load event: it must not cancel
+/// the list's own request.
+final class _LibraryTagsLoaded extends LibraryEvent {
+  const _LibraryTagsLoaded(this.tags);
+
+  final List<String> tags;
 }

@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Right, unit;
+import 'package:dartz/dartz.dart' show Either, Left, Right, unit;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
@@ -18,6 +21,7 @@ import 'package:transkriptor_uz/features/library/application/library_bloc.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/domain/i_library_facade.dart';
 import 'package:transkriptor_uz/features/library/presentation/pages/files_page.dart';
+import 'package:transkriptor_uz/features/library/presentation/widgets/files_empty_view.dart';
 import 'package:transkriptor_uz/features/notes/application/notes_cubit.dart';
 import 'package:transkriptor_uz/features/notes/domain/entities/note.dart';
 import 'package:transkriptor_uz/features/notes/domain/i_notes_facade.dart';
@@ -50,6 +54,11 @@ const _done = LibraryItem(
   transcriptId: 't3',
 );
 
+List<LibraryItem> _rows(int count, {int from = 0}) => [
+  for (var i = from; i < from + count; i++)
+    LibraryItem(mediaId: 'r$i', name: 'Fayl $i'),
+];
+
 AccountState _account(WorkspaceRole role) => AccountState(
   status: AccountStatus.success,
   account: Account(
@@ -81,8 +90,17 @@ void main() {
         workspaceId: 'w1',
         folderId: any(named: 'folderId'),
         source: any(named: 'source'),
+        meeting: any(named: 'meeting'),
+        query: any(named: 'query'),
+        tag: any(named: 'tag'),
+        limit: any(named: 'limit'),
+        cursor: any(named: 'cursor'),
       ),
-    ).thenAnswer((_) async => const Right([_failed, _running, _done]));
+    ).thenAnswer(
+      (_) async => const Right(LibraryPage(items: [_failed, _running, _done])),
+    );
+    when(() => library.getTags(workspaceId: 'w1'))
+        .thenAnswer((_) async => const Right(<String>[]));
     when(() => notes.list(workspaceId: 'w1')).thenAnswer(
       (_) async => const Right(
         NotesPage(
@@ -148,8 +166,13 @@ void main() {
     await pump(tester);
     await tester.tap(find.byKey(const Key('files_tab_links')));
     await tester.pump();
-    verify(() => library.getItems(workspaceId: 'w1', source: MediaSource.url))
-        .called(1);
+    verify(
+      () => library.getItems(
+        workspaceId: 'w1',
+        source: MediaSource.url,
+        limit: LibraryBloc.pageSize,
+      ),
+    ).called(1);
 
     await tester.dragUntilVisible(
       find.byKey(const Key('files_tab_notes')),
@@ -163,15 +186,199 @@ void main() {
     expect(find.text('Sud majlisi'), findsNothing);
   });
 
-  testWidgets('search narrows the rows by name', (tester) async {
+  // A page of [count] plain rows; [cursor] says more follow.
+  void stubFirstPage(int count, {String? cursor, int from = 0}) =>
+      when(
+        () => library.getItems(
+          workspaceId: 'w1',
+          folderId: any(named: 'folderId'),
+          source: any(named: 'source'),
+          meeting: any(named: 'meeting'),
+          query: any(named: 'query'),
+          tag: any(named: 'tag'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => Right(
+          LibraryPage(
+            items: _rows(count, from: from),
+            nextCursor: cursor,
+          ),
+        ),
+      );
+
+  void stubNextPage(
+    String cursor,
+    Future<Either<Failure, LibraryPage>> Function() answer,
+  ) => when(
+    () => library.getItems(
+      workspaceId: 'w1',
+      limit: LibraryBloc.pageSize,
+      cursor: cursor,
+    ),
+  ).thenAnswer((_) => answer());
+
+  testWidgets('search asks the server after a pause', (tester) async {
     await pump(tester);
     await tester.tap(find.byKey(const Key('files_search')));
     await tester.pump();
+    when(
+      () => library.getItems(
+        workspaceId: 'w1',
+        query: 'sud',
+        limit: LibraryBloc.pageSize,
+      ),
+    ).thenAnswer((_) async => const Right(LibraryPage(items: [_failed])));
     await tester.enterText(find.byKey(const Key('files_search_field')), 'sud');
+    await tester.pump();
+    // The old rows stay until the answer.
+    expect(find.text('Kengash'), findsOneWidget);
+
+    await tester.pump(LibraryBloc.searchDebounce);
     await tester.pump();
     expect(find.text('Sud majlisi'), findsOneWidget);
     expect(find.text('Kengash'), findsNothing);
   });
+
+  testWidgets('a search without a match is «no match», not an empty library', (
+    tester,
+  ) async {
+    await pump(tester);
+    await tester.tap(find.byKey(const Key('files_search')));
+    await tester.pump();
+    when(
+      () => library.getItems(
+        workspaceId: 'w1',
+        query: 'yoq',
+        limit: LibraryBloc.pageSize,
+      ),
+    ).thenAnswer((_) async => const Right(LibraryPage()));
+    await tester.enterText(find.byKey(const Key('files_search_field')), 'yoq');
+    await tester.pump(LibraryBloc.searchDebounce);
+    await tester.pump();
+    expect(find.byType(FilesNoMatchView), findsOneWidget);
+    expect(find.byType(FilesEmptyView), findsNothing);
+  });
+
+  testWidgets('the tag bar lists the workspace tags and asks the server', (
+    tester,
+  ) async {
+    when(() => library.getTags(workspaceId: 'w1'))
+        .thenAnswer((_) async => const Right(['sud', 'majlis']));
+    await pump(tester);
+    expect(find.byKey(const Key('tag_all')), findsOneWidget);
+    expect(find.byKey(const Key('tag_majlis')), findsOneWidget);
+
+    when(
+      () => library.getItems(
+        workspaceId: 'w1',
+        tag: 'sud',
+        limit: LibraryBloc.pageSize,
+      ),
+    ).thenAnswer((_) async => const Right(LibraryPage(items: [_done])));
+    await tester.tap(find.byKey(const Key('tag_sud')));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Matbuot anjumani'), findsOneWidget);
+    expect(find.text('Kengash'), findsNothing);
+    // A tag with few rows does not shrink the bar to itself.
+    expect(find.byKey(const Key('tag_majlis')), findsOneWidget);
+  });
+
+  testWidgets('scrolling near the end loads the next page, once', (
+    tester,
+  ) async {
+    final next = Completer<Either<Failure, LibraryPage>>();
+    var asked = 0;
+    stubFirstPage(LibraryBloc.pageSize, cursor: 'c2');
+    stubNextPage('c2', () {
+      asked++;
+      return next.future;
+    });
+    await pump(tester);
+    // A full page fills the screen: nothing is asked before a scroll.
+    expect(asked, 0);
+
+    await tester.drag(
+      find.byKey(const Key('files_list')),
+      const Offset(0, -6000),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(asked, 1);
+    await tester.pump();
+    expect(find.byKey(const Key('files_more_spinner')), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const Key('files_list')),
+      const Offset(0, -500),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(asked, 1);
+
+    next.complete(
+      Right(LibraryPage(items: _rows(1, from: LibraryBloc.pageSize))),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(const Key('files_more_spinner')), findsNothing);
+    await tester.drag(
+      find.byKey(const Key('files_list')),
+      const Offset(0, -500),
+    );
+    await tester.pump();
+    expect(find.text('Fayl ${LibraryBloc.pageSize}'), findsOneWidget);
+  });
+
+  testWidgets('a page too short for the screen still asks for the next', (
+    tester,
+  ) async {
+    stubFirstPage(2, cursor: 'c2');
+    stubNextPage(
+      'c2',
+      () async => Right(LibraryPage(items: _rows(2, from: 2))),
+    );
+    await pump(tester);
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Fayl 3'), findsOneWidget);
+    verify(
+      () => library.getItems(
+        workspaceId: 'w1',
+        limit: LibraryBloc.pageSize,
+        cursor: 'c2',
+      ),
+    ).called(1);
+  });
+
+  testWidgets(
+    'a failed next page keeps the rows and does not retry by itself',
+    (tester) async {
+      var asked = 0;
+      stubFirstPage(2, cursor: 'c2');
+      stubNextPage('c2', () async {
+        asked++;
+        return const Left(Failure.network());
+      });
+      await pump(tester);
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(asked, 1);
+      expect(find.text('Fayl 1'), findsOneWidget);
+      expect(find.byType(SnackBar), findsOneWidget);
+
+      // The next scroll tries again.
+      await tester.drag(
+        find.byKey(const Key('files_list')),
+        const Offset(0, -50),
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(asked, 2);
+    },
+  );
 
   testWidgets('a VIEWER gets no «…»', (tester) async {
     when(() => account.state).thenReturn(_account(WorkspaceRole.viewer));

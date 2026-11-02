@@ -5,8 +5,7 @@ import 'package:transkriptor_uz/features/library/domain/entities/library_item.da
 ///
 /// `/library?source=` knows UPLOAD, URL, RECORDING and API — no meeting
 /// value. A meeting is a RECORDING with a `meeting_title`, so «Uchrashuvlar»
-/// and «Yozuvlar» both ask the server for RECORDING and split the answer
-/// on that title here.
+/// and «Yozuvlar» both ask for RECORDING and split it with `meeting=`.
 enum FilesSource {
   all,
   uploads,
@@ -22,10 +21,10 @@ enum FilesSource {
     links => MediaSource.url,
   };
 
-  /// The part of the filter the server cannot do.
-  bool matches(LibraryItem item) => switch (this) {
-    meetings => item.meetingTitle != null,
-    recordings => item.meetingTitle == null,
-    all || uploads || links => true,
+  /// `meeting=` on the server; null asks for both.
+  bool? get meeting => switch (this) {
+    meetings => true,
+    recordings => false,
+    all || uploads || links => null,
   };
 }

@@ -328,4 +328,300 @@ as String?,
 
 }
 
+
+/// @nodoc
+mixin _$LibraryListModel {
+
+@JsonKey(name: 'items') List<LibraryItemModel> get items;@JsonKey(name: 'next_cursor') String? get nextCursor;@JsonKey(name: 'total') int? get total;/// Rows per job status; the status filter does not narrow them.
+@JsonKey(name: 'counts') Map<String, int>? get counts;
+/// Create a copy of LibraryListModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LibraryListModelCopyWith<LibraryListModel> get copyWith => _$LibraryListModelCopyWithImpl<LibraryListModel>(this as LibraryListModel, _$identity);
+
+  /// Serializes this LibraryListModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as LibraryListModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LibraryListModel&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.nextCursor, _this.nextCursor) || other.nextCursor == _this.nextCursor)&&(identical(other.total, _this.total) || other.total == _this.total)&&const DeepCollectionEquality().equals(other.counts, _this.counts));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as LibraryListModel;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.items),_this.nextCursor,_this.total,const DeepCollectionEquality().hash(_this.counts));
+}
+
+@override
+String toString() {
+  final _this = this as LibraryListModel;
+  return 'LibraryListModel(items: ${_this.items}, nextCursor: ${_this.nextCursor}, total: ${_this.total}, counts: ${_this.counts})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LibraryListModelCopyWith<$Res>  {
+  factory $LibraryListModelCopyWith(LibraryListModel value, $Res Function(LibraryListModel) _then) = _$LibraryListModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'items') List<LibraryItemModel> items,@JsonKey(name: 'next_cursor') String? nextCursor,@JsonKey(name: 'total') int? total,@JsonKey(name: 'counts') Map<String, int>? counts
+});
+
+
+
+
+}
+/// @nodoc
+class _$LibraryListModelCopyWithImpl<$Res>
+    implements $LibraryListModelCopyWith<$Res> {
+  _$LibraryListModelCopyWithImpl(this._self, this._then);
+
+  final LibraryListModel _self;
+  final $Res Function(LibraryListModel) _then;
+
+/// Create a copy of LibraryListModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? nextCursor = freezed,Object? total = freezed,Object? counts = freezed,}) {
+  return _then(LibraryListModel(
+items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<LibraryItemModel>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int?,counts: freezed == counts ? _self.counts : counts // ignore: cast_nullable_to_non_nullable
+as Map<String, int>?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [LibraryListModel].
+extension LibraryListModelPatterns on LibraryListModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LibraryListModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LibraryListModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LibraryListModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _LibraryListModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LibraryListModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LibraryListModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'items')  List<LibraryItemModel> items, @JsonKey(name: 'next_cursor')  String? nextCursor, @JsonKey(name: 'total')  int? total, @JsonKey(name: 'counts')  Map<String, int>? counts)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LibraryListModel() when $default != null:
+return $default(_that.items,_that.nextCursor,_that.total,_that.counts);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'items')  List<LibraryItemModel> items, @JsonKey(name: 'next_cursor')  String? nextCursor, @JsonKey(name: 'total')  int? total, @JsonKey(name: 'counts')  Map<String, int>? counts)  $default,) {final _that = this;
+switch (_that) {
+case _LibraryListModel():
+return $default(_that.items,_that.nextCursor,_that.total,_that.counts);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'items')  List<LibraryItemModel> items, @JsonKey(name: 'next_cursor')  String? nextCursor, @JsonKey(name: 'total')  int? total, @JsonKey(name: 'counts')  Map<String, int>? counts)?  $default,) {final _that = this;
+switch (_that) {
+case _LibraryListModel() when $default != null:
+return $default(_that.items,_that.nextCursor,_that.total,_that.counts);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _LibraryListModel extends LibraryListModel {
+  const _LibraryListModel({@JsonKey(name: 'items')  List<LibraryItemModel> items = const <LibraryItemModel>[], @JsonKey(name: 'next_cursor') this.nextCursor, @JsonKey(name: 'total') this.total, @JsonKey(name: 'counts')  Map<String, int>? counts}): _items = items,_counts = counts,super._();
+  factory _LibraryListModel.fromJson(Map<String, dynamic> json) => _$LibraryListModelFromJson(json);
+
+ final  List<LibraryItemModel> _items;
+@override@JsonKey(name: 'items') List<LibraryItemModel> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
+}
+
+@override@JsonKey(name: 'next_cursor') final  String? nextCursor;
+@override@JsonKey(name: 'total') final  int? total;
+/// Rows per job status; the status filter does not narrow them.
+ final  Map<String, int>? _counts;
+/// Rows per job status; the status filter does not narrow them.
+@override@JsonKey(name: 'counts') Map<String, int>? get counts {
+  final value = _counts;
+  if (value == null) return null;
+  if (_counts is EqualUnmodifiableMapView) return _counts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+
+/// Create a copy of LibraryListModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LibraryListModelCopyWith<_LibraryListModel> get copyWith => __$LibraryListModelCopyWithImpl<_LibraryListModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LibraryListModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LibraryListModel&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.total, total) || other.total == total)&&const DeepCollectionEquality().equals(other.counts, _counts));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),nextCursor,total,const DeepCollectionEquality().hash(_counts));
+}
+
+@override
+String toString() {
+    return 'LibraryListModel(items: $items, nextCursor: $nextCursor, total: $total, counts: $counts)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LibraryListModelCopyWith<$Res> implements $LibraryListModelCopyWith<$Res> {
+  factory _$LibraryListModelCopyWith(_LibraryListModel value, $Res Function(_LibraryListModel) _then) = __$LibraryListModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'items') List<LibraryItemModel> items,@JsonKey(name: 'next_cursor') String? nextCursor,@JsonKey(name: 'total') int? total,@JsonKey(name: 'counts') Map<String, int>? counts
+});
+
+
+
+
+}
+/// @nodoc
+class __$LibraryListModelCopyWithImpl<$Res>
+    implements _$LibraryListModelCopyWith<$Res> {
+  __$LibraryListModelCopyWithImpl(this._self, this._then);
+
+  final _LibraryListModel _self;
+  final $Res Function(_LibraryListModel) _then;
+
+/// Create a copy of LibraryListModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? nextCursor = freezed,Object? total = freezed,Object? counts = freezed,}) {
+  return _then(_LibraryListModel(
+items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<LibraryItemModel>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int?,counts: freezed == counts ? _self._counts : counts // ignore: cast_nullable_to_non_nullable
+as Map<String, int>?,
+  ));
+}
+
+
+}
+
 // dart format on

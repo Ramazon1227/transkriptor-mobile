@@ -29,6 +29,8 @@ abstract final class Endpoints {
       '/api/v1/workspaces/$workspaceId/folders';
   static String workspaceFolder(String workspaceId, String folderId) =>
       '/api/v1/workspaces/$workspaceId/folders/$folderId';
+  static String workspaceTags(String workspaceId) =>
+      '/api/v1/workspaces/$workspaceId/tags';
   static String mediaConfirm(String id) => '/api/v1/media/$id/confirm';
 
   /// A fresh read link for the player; YouTube media answer with the

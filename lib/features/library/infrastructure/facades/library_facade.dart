@@ -13,10 +13,15 @@ class LibraryFacade implements ILibraryFacade {
   final LibraryRepository _repository;
 
   @override
-  Future<Either<Failure, List<LibraryItem>>> getItems({
+  Future<Either<Failure, LibraryPage>> getItems({
     required String workspaceId,
     String? folderId,
     MediaSource? source,
+    bool? meeting,
+    String? query,
+    String? tag,
+    int? limit,
+    String? cursor,
   }) async {
     final result = await _repository.getItems(
       workspaceId: workspaceId,
@@ -28,9 +33,19 @@ class LibraryFacade implements ILibraryFacade {
         MediaSource.url => 'URL',
         MediaSource.api => 'API',
       },
+      meeting: meeting,
+      query: query,
+      tag: tag,
+      limit: limit,
+      cursor: cursor,
     );
-    return result.map((models) => models.map((m) => m.toEntity()).toList());
+    return result.map((m) => m.toEntity());
   }
+
+  @override
+  Future<Either<Failure, List<String>>> getTags({
+    required String workspaceId,
+  }) => _repository.getTags(workspaceId: workspaceId);
 
   @override
   Future<Either<Failure, List<Folder>>> getFolders({

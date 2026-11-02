@@ -826,6 +826,7 @@ void _makeMocks() {
     LibraryState(
       status: LibraryStatus.success,
       items: _items,
+      tags: _items.first.tags,
       workspaceId: 'w1',
     ),
   );
