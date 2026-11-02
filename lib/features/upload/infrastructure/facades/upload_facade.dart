@@ -21,7 +21,7 @@ class UploadFacade implements IUploadFacade {
   final LibraryChanges _changes;
 
   @override
-  Future<Either<Failure, PendingFile?>> pickFile() async {
+  Future<Either<Failure, List<PendingFile>>> pickFiles() async {
     try {
       return Right(await _picker.pick());
     } on Object {
@@ -62,10 +62,16 @@ class UploadFacade implements IUploadFacade {
               if (whole > 0) onProgress((sent / whole).clamp(0.0, 1.0));
             },
     );
-    if (put.isLeft()) return Left(_failureOf(put));
+    if (put.isLeft()) {
+      await _repository.deleteMedia(media.id);
+      return Left(_failureOf(put));
+    }
 
     final confirmed = await _repository.confirm(media.id);
-    if (confirmed.isLeft()) return Left(_failureOf(confirmed));
+    if (confirmed.isLeft()) {
+      await _repository.deleteMedia(media.id);
+      return Left(_failureOf(confirmed));
+    }
 
     // The server has the file now; our own recording copy is no longer
     // needed. A picked file is the person's own and is never touched.

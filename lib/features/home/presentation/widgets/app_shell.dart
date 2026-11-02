@@ -50,10 +50,14 @@ class _ShellView extends StatelessWidget {
     final l10n = context.l10n;
     return BlocListener<PickFileCubit, PickFileState>(
       listener: (context, state) {
-        final file = state.file;
-        if (state.status == PickFileStatus.picked && file != null) {
+        final files = state.files;
+        if (state.status == PickFileStatus.picked && files.isNotEmpty) {
           context.read<PickFileCubit>().consumed();
-          unawaited(context.push(Routes.send, extra: file));
+          unawaited(
+            files.length == 1
+                ? context.push(Routes.send, extra: files.single)
+                : context.push(Routes.sendMany, extra: files),
+          );
         } else if (state.status == PickFileStatus.failure) {
           ScaffoldMessenger.of(
             context,

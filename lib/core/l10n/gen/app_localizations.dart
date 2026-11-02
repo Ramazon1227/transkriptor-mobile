@@ -940,6 +940,60 @@ abstract class AppLocalizations {
   /// **'Fayllarga oʻtish'**
   String get sendGoToFiles;
 
+  /// No description provided for @sendManyFiles.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayllar ({count})'**
+  String sendManyFiles(int count);
+
+  /// No description provided for @sendManyAdd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yana qoʻshish'**
+  String get sendManyAdd;
+
+  /// No description provided for @sendManyRemove.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roʻyxatdan olib tashlash'**
+  String get sendManyRemove;
+
+  /// No description provided for @sendManyNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Har fayl alohida transkripsiya boʻladi. Fayllar navbat bilan yuklanadi va daqiqa har biri boshlanganda band qilinadi.'**
+  String get sendManyNote;
+
+  /// No description provided for @sendManyStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkripsiyani boshlash ({count})'**
+  String sendManyStart(int count);
+
+  /// No description provided for @sendManyQueued.
+  ///
+  /// In uz, this message translates to:
+  /// **'Navbatda'**
+  String get sendManyQueued;
+
+  /// No description provided for @sendManyStarting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshlanmoqda'**
+  String get sendManyStarting;
+
+  /// No description provided for @sendManyStarted.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkripsiya boshlandi'**
+  String get sendManyStarted;
+
+  /// No description provided for @sendManyNotStarted.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl saqlandi, transkripsiya boshlanmadi'**
+  String get sendManyNotStarted;
+
   /// No description provided for @linkTitle.
   ///
   /// In uz, this message translates to:

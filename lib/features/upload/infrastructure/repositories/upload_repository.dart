@@ -41,6 +41,17 @@ class UploadRepository {
     });
   }
 
+  /// Drops a row whose bytes never arrived: for an hour and a half it would
+  /// hold a place in the workspace's limit of files not yet transcribed, and
+  /// a retry of several files would be refused. Best effort, so nothing to
+  /// report: the row expires by itself.
+  Future<void> deleteMedia(String id) async {
+    await runRequest(() async {
+      await _dio.delete<Map<String, dynamic>>(Endpoints.mediaById(id));
+      return unit;
+    });
+  }
+
   /// Streams the file, so a long recording is never held in memory.
   Future<Either<Failure, Unit>> putFile({
     required String uploadUrl,

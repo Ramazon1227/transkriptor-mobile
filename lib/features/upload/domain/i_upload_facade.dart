@@ -15,8 +15,9 @@ const List<String> supportedExtensions = [
 ];
 
 abstract interface class IUploadFacade {
-  /// Opens the system picker. `Right(null)` when the person closed it.
-  Future<Either<Failure, PendingFile?>> pickFile();
+  /// Opens the system picker; several files can be marked. An empty list
+  /// when the person closed it.
+  Future<Either<Failure, List<PendingFile>>> pickFiles();
 
   /// Creates the media row, uploads the bytes to the signed URL, confirms,
   /// and — when [startTranscription] — starts a job. [title] replaces the

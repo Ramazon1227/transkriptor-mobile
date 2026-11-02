@@ -67,6 +67,7 @@ void main() {
     );
     when(() => repository.confirm('m1'))
         .thenAnswer((_) async => const Right(unit));
+    when(() => repository.deleteMedia('m1')).thenAnswer((_) async {});
   });
 
   tearDown(() => changes.dispose());
@@ -133,6 +134,38 @@ void main() {
         numSpeakers: any(named: 'numSpeakers'),
       ),
     );
+  });
+
+  test('a failed PUT or confirm frees the half-made row', () async {
+    when(
+      () => repository.putFile(
+        uploadUrl: any(named: 'uploadUrl'),
+        path: any(named: 'path'),
+        sizeBytes: any(named: 'sizeBytes'),
+        contentType: any(named: 'contentType'),
+        onProgress: any(named: 'onProgress'),
+      ),
+    ).thenAnswer((_) async => const Left(Failure.network()));
+
+    await facade.upload(
+      file: file,
+      workspaceId: 'w1',
+      title: 'x',
+      startTranscription: true,
+    );
+    verify(() => repository.deleteMedia('m1')).called(1);
+
+    stubPut();
+    when(
+      () => repository.confirm('m1'),
+    ).thenAnswer((_) async => const Left(Failure.network()));
+    await facade.upload(
+      file: file,
+      workspaceId: 'w1',
+      title: 'x',
+      startTranscription: true,
+    );
+    verify(() => repository.deleteMedia('m1')).called(1);
   });
 
   test('save only stores the file, starts no job, announces it', () async {

@@ -1,0 +1,227 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
+
+part 'upload_queue_cubit.freezed.dart';
+
+enum QueueItemStatus {
+  waiting,
+  uploading,
+  starting,
+  started,
+
+  /// The file is on the server; the job did not start. Retry starts it.
+  stored,
+
+  /// The file did not reach the server. Retry uploads it.
+  failed,
+}
+
+@freezed
+abstract class QueueItem with _$QueueItem {
+  const factory QueueItem({
+    required PendingFile file,
+    @Default(QueueItemStatus.waiting) QueueItemStatus status,
+
+    /// 0–1, bytes sent of this file.
+    @Default(0) double progress,
+    String? mediaId,
+    Failure? failure,
+  }) = _QueueItem;
+}
+
+@freezed
+abstract class UploadQueueState with _$UploadQueueState {
+  const factory UploadQueueState({
+    @Default(<QueueItem>[]) List<QueueItem> items,
+
+    /// Uploading the list. Nothing is added while it runs, and the page
+    /// cannot be left.
+    @Default(false) bool running,
+    Failure? pickFailure,
+  }) = _UploadQueueState;
+
+  const UploadQueueState._();
+
+  int get waitingCount =>
+      items.where((i) => i.status == QueueItemStatus.waiting).length;
+
+  bool get allStarted =>
+      items.isNotEmpty &&
+      items.every((i) => i.status == QueueItemStatus.started);
+}
+
+/// Several picked files, each with its own upload and job. One at a time:
+/// a file with a job leaves the workspace's limit of files not yet
+/// transcribed, so going in turn never reaches that limit by itself.
+@injectable
+class UploadQueueCubit extends Cubit<UploadQueueState> {
+  UploadQueueCubit(this._facade) : super(const UploadQueueState());
+
+  final IUploadFacade _facade;
+
+  void open(List<PendingFile> files) => _append(files);
+
+  /// The same path twice would be two transcripts and two charges.
+  void _append(List<PendingFile> files) {
+    final items = [...state.items];
+    for (final file in files) {
+      if (items.any((i) => i.file.path == file.path)) continue;
+      items.add(QueueItem(file: file));
+    }
+    emit(state.copyWith(items: items, pickFailure: null));
+  }
+
+  Future<void> addMore() async {
+    if (state.running) return;
+    final result = await _facade.pickFiles();
+    if (isClosed) return;
+    result.fold(
+      (failure) => emit(state.copyWith(pickFailure: failure)),
+      _append,
+    );
+  }
+
+  /// A running item stays: its request cannot be taken back. A stored one
+  /// only leaves the list; the file stays in Files.
+  void remove(String path) {
+    bool busy(QueueItem i) =>
+        i.status == QueueItemStatus.uploading ||
+        i.status == QueueItemStatus.starting;
+    emit(
+      state.copyWith(
+        items: state.items
+            .where((i) => i.file.path != path || busy(i))
+            .toList(),
+      ),
+    );
+  }
+
+  Future<void> start({required String workspaceId, int? numSpeakers}) async {
+    final paths = state.items
+        .where((i) => i.status == QueueItemStatus.waiting)
+        .map((i) => i.file.path)
+        .toList();
+    await _run(paths, workspaceId, numSpeakers);
+  }
+
+  Future<void> retry(
+    String path, {
+    required String workspaceId,
+    int? numSpeakers,
+  }) => _run([path], workspaceId, numSpeakers);
+
+  /// A failed file does not stop the others: a shorter one may still fit
+  /// the balance.
+  Future<void> _run(
+    List<String> paths,
+    String workspaceId,
+    int? numSpeakers,
+  ) async {
+    if (state.running || paths.isEmpty) return;
+    emit(state.copyWith(running: true));
+    for (final path in paths) {
+      if (isClosed) return;
+      final item = _find(path);
+      if (item == null) continue; // removed while it waited
+      final mediaId = item.mediaId;
+      if (mediaId == null) {
+        await _uploadAndStart(item, workspaceId, numSpeakers);
+      } else {
+        await _startOnly(item, mediaId, numSpeakers);
+      }
+    }
+    if (!isClosed) emit(state.copyWith(running: false));
+  }
+
+  Future<void> _uploadAndStart(
+    QueueItem item,
+    String workspaceId,
+    int? numSpeakers,
+  ) async {
+    final path = item.file.path;
+    _update(
+      path,
+      (i) => i.copyWith(
+        status: QueueItemStatus.uploading,
+        progress: 0,
+        failure: null,
+      ),
+    );
+    final result = await _facade.upload(
+      file: item.file,
+      workspaceId: workspaceId,
+      title: item.file.baseName,
+      startTranscription: true,
+      numSpeakers: numSpeakers,
+      onProgress: (p) {
+        final current = _find(path);
+        // Dio reports every chunk; one rebuild per percent is enough.
+        if (current == null || ((p - current.progress) < 0.01 && p < 1)) return;
+        _update(path, (i) => i.copyWith(progress: p));
+      },
+    );
+    result.fold(
+      (failure) => _update(
+        path,
+        (i) => i.copyWith(status: QueueItemStatus.failed, failure: failure),
+      ),
+      (done) => _update(
+        path,
+        (i) => i.copyWith(
+          status: done.startFailure == null
+              ? QueueItemStatus.started
+              : QueueItemStatus.stored,
+          progress: 1,
+          mediaId: done.mediaId,
+          failure: done.startFailure,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _startOnly(
+    QueueItem item,
+    String mediaId,
+    int? numSpeakers,
+  ) async {
+    final path = item.file.path;
+    _update(
+      path,
+      (i) => i.copyWith(status: QueueItemStatus.starting, failure: null),
+    );
+    final result = await _facade.startTranscription(
+      mediaId: mediaId,
+      numSpeakers: numSpeakers,
+    );
+    result.fold(
+      (failure) => _update(
+        path,
+        (i) => i.copyWith(status: QueueItemStatus.stored, failure: failure),
+      ),
+      (_) => _update(path, (i) => i.copyWith(status: QueueItemStatus.started)),
+    );
+  }
+
+  QueueItem? _find(String path) {
+    for (final item in state.items) {
+      if (item.file.path == path) return item;
+    }
+    return null;
+  }
+
+  void _update(String path, QueueItem Function(QueueItem) change) {
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        items: [
+          for (final item in state.items)
+            if (item.file.path == path) change(item) else item,
+        ],
+      ),
+    );
+  }
+}

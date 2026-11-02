@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PickFileState {
 
- PickFileStatus get status; PendingFile? get file; Failure? get failure;
+ PickFileStatus get status; List<PendingFile> get files; Failure? get failure;
 /// Create a copy of PickFileState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $PickFileStateCopyWith<PickFileState> get copyWith => _$PickFileStateCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as PickFileState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PickFileState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.file, _this.file) || other.file == _this.file)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PickFileState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.files, _this.files)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PickFileState;
-  return Object.hash(runtimeType,_this.status,_this.file,_this.failure);
+  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.files),_this.failure);
 }
 
 @override
 String toString() {
   final _this = this as PickFileState;
-  return 'PickFileState(status: ${_this.status}, file: ${_this.file}, failure: ${_this.failure})';
+  return 'PickFileState(status: ${_this.status}, files: ${_this.files}, failure: ${_this.failure})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $PickFileStateCopyWith<$Res>  {
   factory $PickFileStateCopyWith(PickFileState value, $Res Function(PickFileState) _then) = _$PickFileStateCopyWithImpl;
 @useResult
 $Res call({
- PickFileStatus status, PendingFile? file, Failure? failure
+ PickFileStatus status, List<PendingFile> files, Failure? failure
 });
 
 
-$PendingFileCopyWith<$Res>? get file;$FailureCopyWith<$Res>? get failure;
+$FailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -68,27 +68,15 @@ class _$PickFileStateCopyWithImpl<$Res>
 
 /// Create a copy of PickFileState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? file = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? files = null,Object? failure = freezed,}) {
   return _then(PickFileState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as PickFileStatus,file: freezed == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
-as PendingFile?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as PickFileStatus,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
+as List<PendingFile>,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
 /// Create a copy of PickFileState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$PendingFileCopyWith<$Res>? get file {
-    if (_self.file == null) {
-    return null;
-  }
-
-  return $PendingFileCopyWith<$Res>(_self.file!, (value) {
-    return _then(_self.copyWith(file: value));
-  });
-}/// Create a copy of PickFileState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -182,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PickFileStatus status,  PendingFile? file,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PickFileStatus status,  List<PendingFile> files,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PickFileState() when $default != null:
-return $default(_that.status,_that.file,_that.failure);case _:
+return $default(_that.status,_that.files,_that.failure);case _:
   return orElse();
 
 }
@@ -203,10 +191,10 @@ return $default(_that.status,_that.file,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PickFileStatus status,  PendingFile? file,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PickFileStatus status,  List<PendingFile> files,  Failure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _PickFileState():
-return $default(_that.status,_that.file,_that.failure);case _:
+return $default(_that.status,_that.files,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -223,10 +211,10 @@ return $default(_that.status,_that.file,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PickFileStatus status,  PendingFile? file,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PickFileStatus status,  List<PendingFile> files,  Failure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _PickFileState() when $default != null:
-return $default(_that.status,_that.file,_that.failure);case _:
+return $default(_that.status,_that.files,_that.failure);case _:
   return null;
 
 }
@@ -238,11 +226,17 @@ return $default(_that.status,_that.file,_that.failure);case _:
 
 
 class _PickFileState implements PickFileState {
-  const _PickFileState({this.status = PickFileStatus.initial, this.file, this.failure});
+  const _PickFileState({this.status = PickFileStatus.initial,  List<PendingFile> files = const <PendingFile>[], this.failure}): _files = files;
   
 
 @override@JsonKey() final  PickFileStatus status;
-@override final  PendingFile? file;
+ final  List<PendingFile> _files;
+@override@JsonKey() List<PendingFile> get files {
+  if (_files is EqualUnmodifiableListView) return _files;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_files);
+}
+
 @override final  Failure? failure;
 
 /// Create a copy of PickFileState
@@ -255,18 +249,18 @@ _$PickFileStateCopyWith<_PickFileState> get copyWith => __$PickFileStateCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PickFileState&&(identical(other.status, status) || other.status == status)&&(identical(other.file, file) || other.file == file)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PickFileState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.files, _files)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,file,failure);
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_files),failure);
 }
 
 @override
 String toString() {
-    return 'PickFileState(status: $status, file: $file, failure: $failure)';
+    return 'PickFileState(status: $status, files: $files, failure: $failure)';
 }
 
 
@@ -277,11 +271,11 @@ abstract mixin class _$PickFileStateCopyWith<$Res> implements $PickFileStateCopy
   factory _$PickFileStateCopyWith(_PickFileState value, $Res Function(_PickFileState) _then) = __$PickFileStateCopyWithImpl;
 @override @useResult
 $Res call({
- PickFileStatus status, PendingFile? file, Failure? failure
+ PickFileStatus status, List<PendingFile> files, Failure? failure
 });
 
 
-@override $PendingFileCopyWith<$Res>? get file;@override $FailureCopyWith<$Res>? get failure;
+@override $FailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -294,28 +288,16 @@ class __$PickFileStateCopyWithImpl<$Res>
 
 /// Create a copy of PickFileState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? file = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? files = null,Object? failure = freezed,}) {
   return _then(_PickFileState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as PickFileStatus,file: freezed == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
-as PendingFile?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as PickFileStatus,files: null == files ? _self._files : files // ignore: cast_nullable_to_non_nullable
+as List<PendingFile>,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
 
 /// Create a copy of PickFileState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$PendingFileCopyWith<$Res>? get file {
-    if (_self.file == null) {
-    return null;
-  }
-
-  return $PendingFileCopyWith<$Res>(_self.file!, (value) {
-    return _then(_self.copyWith(file: value));
-  });
-}/// Create a copy of PickFileState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

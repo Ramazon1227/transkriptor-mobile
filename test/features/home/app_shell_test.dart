@@ -14,6 +14,7 @@ import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/source_sheet.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 
 class _Pick extends MockCubit<PickFileState> implements PickFileCubit;
 
@@ -44,6 +45,8 @@ GoRouter _router() => GoRouter(
       ],
     ),
     for (final path in [
+      Routes.send,
+      Routes.sendMany,
       Routes.link,
       Routes.record,
       Routes.dictation,
@@ -161,5 +164,44 @@ void main() {
     await t.pumpAndSettle();
 
     verify(() => pick.pick()).called(1);
+  });
+
+  PendingFile picked(String name) => PendingFile(
+    path: '/tmp/$name',
+    fileName: name,
+    sizeBytes: 10,
+    source: UploadSource.upload,
+  );
+
+  testWidgets('one picked file opens the send page', (t) async {
+    whenListen(
+      pick,
+      Stream.value(
+        PickFileState(status: PickFileStatus.picked, files: [picked('a.mp3')]),
+      ),
+      initialState: const PickFileState(),
+    );
+    await t.pumpWidget(_app(_router()));
+    await t.pumpAndSettle();
+
+    expect(find.text('PAGE ${Routes.send}'), findsOneWidget);
+    verify(() => pick.consumed()).called(1);
+  });
+
+  testWidgets('several picked files open the list page', (t) async {
+    whenListen(
+      pick,
+      Stream.value(
+        PickFileState(
+          status: PickFileStatus.picked,
+          files: [picked('a.mp3'), picked('b.wav')],
+        ),
+      ),
+      initialState: const PickFileState(),
+    );
+    await t.pumpWidget(_app(_router()));
+    await t.pumpAndSettle();
+
+    expect(find.text('PAGE ${Routes.sendMany}'), findsOneWidget);
   });
 }

@@ -118,8 +118,10 @@ import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/transcript_tab.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
+import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/send_many_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
 import 'package:transkriptor_uz/features/workspace/application/workspace_list_cubit.dart';
 import 'package:transkriptor_uz/features/workspace/presentation/widgets/workspace_switcher_sheet.dart';
@@ -144,6 +146,8 @@ class _Forgot extends MockBloc<ForgotPasswordEvent, ForgotPasswordState>
     implements ForgotPasswordBloc;
 
 class _Upload extends MockBloc<UploadEvent, UploadState> implements UploadBloc;
+
+class _Queue extends MockCubit<UploadQueueState> implements UploadQueueCubit;
 
 class _Job extends MockCubit<JobState> implements JobCubit;
 
@@ -695,6 +699,7 @@ late _Login login;
 late _Register register;
 late _Forgot forgot;
 late _Upload upload;
+late _Queue queue;
 late _Job job;
 late _Recorder recorder;
 late _Transcript transcript;
@@ -729,6 +734,7 @@ void _makeMocks() {
   register = _Register();
   forgot = _Forgot();
   upload = _Upload();
+  queue = _Queue();
   job = _Job();
   recorder = _Recorder();
   transcript = _Transcript();
@@ -830,6 +836,11 @@ void _makeMocks() {
   when(() => register.state).thenReturn(const RegisterState());
   when(() => forgot.state).thenReturn(const ForgotPasswordState());
   when(() => upload.state).thenReturn(const UploadState());
+  when(() => queue.state).thenReturn(
+    const UploadQueueState(
+      items: [QueueItem(file: _pendingFile), QueueItem(file: _pickedFile)],
+    ),
+  );
   when(() => job.state).thenReturn(const JobState());
   when(() => recorder.state).thenReturn(const RecorderState());
   when(() => recorder.start()).thenAnswer((_) async {});
@@ -877,6 +888,7 @@ void _makeMocks() {
     ..registerFactory<RegisterBloc>(() => register)
     ..registerFactory<ForgotPasswordBloc>(() => forgot)
     ..registerFactory<UploadBloc>(() => upload)
+    ..registerFactory<UploadQueueCubit>(() => queue)
     ..registerFactory<JobCubit>(() => job)
     ..registerFactory<RecorderCubit>(() => recorder)
     ..registerFactory<TranscriptCubit>(() => transcript)
@@ -1328,6 +1340,33 @@ final _scenarios = <_Scenario>[
       const UploadState(status: UploadStatus.uploading, progress: .42),
     ),
     measure: {'TextField': _field},
+  ),
+  _Scenario(
+    'sendMany(initial)',
+    () => const SendManyPage(files: [_pendingFile, _pickedFile]),
+    measure: {'FilledButton': _filled},
+  ),
+  _Scenario(
+    'sendMany(running+failure)',
+    () => const SendManyPage(files: [_pendingFile, _pickedFile]),
+    arrange: () => when(() => queue.state).thenReturn(
+      const UploadQueueState(
+        running: true,
+        items: [
+          QueueItem(
+            file: _pendingFile,
+            status: QueueItemStatus.stored,
+            mediaId: 'm1',
+            failure: Failure.server(statusCode: 503),
+          ),
+          QueueItem(
+            file: _pickedFile,
+            status: QueueItemStatus.uploading,
+            progress: .42,
+          ),
+        ],
+      ),
+    ),
   ),
   _Scenario(
     'send(stored+failure)',

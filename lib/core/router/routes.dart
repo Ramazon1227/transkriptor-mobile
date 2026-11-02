@@ -23,6 +23,9 @@ abstract final class Routes {
   /// Takes a `PendingFile` as `extra`.
   static const String send = '/send';
 
+  /// Takes a `List<PendingFile>` as `extra`: each becomes its own transcript.
+  static const String sendMany = '/send-many';
+
   /// YouTube, Google Drive and Dropbox links. An optional `String` extra
   /// prefills the field.
   static const String link = '/link';

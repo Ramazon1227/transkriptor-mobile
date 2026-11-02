@@ -266,6 +266,8 @@ import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart
     as _i741;
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart'
     as _i956;
+import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart'
+    as _i954;
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart'
     as _i122;
 import 'package:transkriptor_uz/features/upload/infrastructure/facades/upload_facade.dart'
@@ -703,6 +705,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i956.UploadBloc>(
       () => _i956.UploadBloc(gh<_i122.IUploadFacade>()),
+    );
+    gh.factory<_i954.UploadQueueCubit>(
+      () => _i954.UploadQueueCubit(gh<_i122.IUploadFacade>()),
     );
     return this;
   }

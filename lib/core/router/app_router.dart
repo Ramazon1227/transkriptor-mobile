@@ -21,6 +21,7 @@ import 'package:transkriptor_uz/features/settings/presentation/pages/settings_pa
 import 'package:transkriptor_uz/features/transcript/presentation/pages/transcript_page.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/send_many_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
 
 /// Owns the [GoRouter]. Session expiry reaches it through [SessionManager]
@@ -108,6 +109,13 @@ class AppRouter {
             state.extra is PendingFile ? null : Routes.home,
         builder: (context, state) =>
             SendPage(file: state.extra! as PendingFile),
+      ),
+      GoRoute(
+        path: Routes.sendMany,
+        redirect: (context, state) =>
+            state.extra is List<PendingFile> ? null : Routes.home,
+        builder: (context, state) =>
+            SendManyPage(files: state.extra! as List<PendingFile>),
       ),
       GoRoute(
         path: Routes.link,

@@ -180,6 +180,21 @@
   "sendSaved": "Fayl saqlandi.",
   "sendStoredNotStarted": "Fayl saqlandi, lekin transkripsiya boshlanmadi. Daqiqa band qilinmadi.",
   "sendGoToFiles": "Fayllarga oʻtish",
+  "sendManyFiles": "Fayllar ({count})",
+  "@sendManyFiles": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "sendManyAdd": "Yana qoʻshish",
+  "sendManyRemove": "Roʻyxatdan olib tashlash",
+  "sendManyNote": "Har fayl alohida transkripsiya boʻladi. Fayllar navbat bilan yuklanadi va daqiqa har biri boshlanganda band qilinadi.",
+  "sendManyStart": "Transkripsiyani boshlash ({count})",
+  "@sendManyStart": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "sendManyQueued": "Navbatda",
+  "sendManyStarting": "Boshlanmoqda",
+  "sendManyStarted": "Transkripsiya boshlandi",
+  "sendManyNotStarted": "Fayl saqlandi, transkripsiya boshlanmadi",
 
   "linkTitle": "Havola orqali",
   "linkLabel": "Havola",

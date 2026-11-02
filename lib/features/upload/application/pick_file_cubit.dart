@@ -13,12 +13,12 @@ enum PickFileStatus { initial, picking, picked, failure }
 abstract class PickFileState with _$PickFileState {
   const factory PickFileState({
     @Default(PickFileStatus.initial) PickFileStatus status,
-    PendingFile? file,
+    @Default(<PendingFile>[]) List<PendingFile> files,
     Failure? failure,
   }) = _PickFileState;
 }
 
-/// Opens the system picker; the page navigates when a file comes back.
+/// Opens the system picker; the page navigates when files come back.
 @injectable
 class PickFileCubit extends Cubit<PickFileState> {
   PickFileCubit(this._facade) : super(const PickFileState());
@@ -28,15 +28,15 @@ class PickFileCubit extends Cubit<PickFileState> {
   Future<void> pick() async {
     if (state.status == PickFileStatus.picking) return;
     emit(const PickFileState(status: PickFileStatus.picking));
-    final result = await _facade.pickFile();
+    final result = await _facade.pickFiles();
     if (isClosed) return;
     result.fold(
       (failure) =>
           emit(PickFileState(status: PickFileStatus.failure, failure: failure)),
-      (file) => emit(
-        file == null
+      (files) => emit(
+        files.isEmpty
             ? const PickFileState()
-            : PickFileState(status: PickFileStatus.picked, file: file),
+            : PickFileState(status: PickFileStatus.picked, files: files),
       ),
     );
   }

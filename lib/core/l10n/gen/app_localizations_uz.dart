@@ -480,6 +480,38 @@ class AppLocalizationsUz extends AppLocalizations {
   String get sendGoToFiles => 'Fayllarga oʻtish';
 
   @override
+  String sendManyFiles(int count) {
+    return 'Fayllar ($count)';
+  }
+
+  @override
+  String get sendManyAdd => 'Yana qoʻshish';
+
+  @override
+  String get sendManyRemove => 'Roʻyxatdan olib tashlash';
+
+  @override
+  String get sendManyNote =>
+      'Har fayl alohida transkripsiya boʻladi. Fayllar navbat bilan yuklanadi va daqiqa har biri boshlanganda band qilinadi.';
+
+  @override
+  String sendManyStart(int count) {
+    return 'Transkripsiyani boshlash ($count)';
+  }
+
+  @override
+  String get sendManyQueued => 'Navbatda';
+
+  @override
+  String get sendManyStarting => 'Boshlanmoqda';
+
+  @override
+  String get sendManyStarted => 'Transkripsiya boshlandi';
+
+  @override
+  String get sendManyNotStarted => 'Fayl saqlandi, transkripsiya boshlanmadi';
+
+  @override
   String get linkTitle => 'Havola orqali';
 
   @override

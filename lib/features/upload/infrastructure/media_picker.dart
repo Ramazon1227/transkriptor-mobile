@@ -7,21 +7,27 @@ import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 /// without a platform channel.
 @lazySingleton
 class MediaPicker {
-  /// Null when the person closed the picker, or the file has no local path.
-  Future<PendingFile?> pick() async {
-    final picked = await FilePicker.pickFile(
+  /// Empty when the person closed the picker. A file without a local path
+  /// or without bytes is left out.
+  Future<List<PendingFile>> pick() async {
+    final picked = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: supportedExtensions,
     );
-    final path = picked?.path;
-    if (picked == null || path == null) return null;
-    final size = await picked.length();
-    if (size == null || size <= 0) return null;
-    return PendingFile(
-      path: path,
-      fileName: picked.name,
-      sizeBytes: size,
-      source: UploadSource.upload,
-    );
+    final files = <PendingFile>[];
+    for (final file in picked) {
+      final path = file.path;
+      final size = await file.length();
+      if (path == null || size == null || size <= 0) continue;
+      files.add(
+        PendingFile(
+          path: path,
+          fileName: file.name,
+          sizeBytes: size,
+          source: UploadSource.upload,
+        ),
+      );
+    }
+    return files;
   }
 }
