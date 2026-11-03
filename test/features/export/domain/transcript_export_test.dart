@@ -102,6 +102,7 @@ final Transcript _layoutTranscript = _transcript.copyWith(
 );
 
 void main() {
+  _overflowMain();
   const base = ExportOptions();
 
   test('TXT matches the web', () {
@@ -286,5 +287,26 @@ void main() {
       TranscriptExport.fileName('я' * 100, ExportFormat.txt),
       '${'я' * 100}.txt',
     );
+  });
+}
+
+// S-1: a cue never has a line longer than the line length. The old web
+// `wrap` put the overflow on the last line (here 50 characters). Expected
+// outputs from tr-frontend/src/lib/export.ts `render` in Node, 2026-11-03.
+const _overflowText =
+    'bildirishdi hukumat mustahkamlanayotganligini yangi deputatlar qilindi hukumat vakillari yangi boʻyicha hukumat bugun qonun hisobotni hisobotni qilindi';
+const _overflowSrt =
+    '1\n00:00:00,000 --> 00:00:02,081\nbildirishdi hukumat\nmustahkamlanayotganligini yangi deputatlar\n\n2\n00:00:02,081 --> 00:00:04,765\nqilindi hukumat vakillari yangi boʻyicha\nhukumat bugun qonun hisobotni hisobotni\n\n3\n00:00:04,765 --> 00:00:05,000\nqilindi\n';
+const _overflowVtt =
+    'WEBVTT\n\n00:00:00.000 --> 00:00:02.081\nbildirishdi hukumat\nmustahkamlanayotganligini yangi deputatlar\n\n00:00:02.081 --> 00:00:04.765\nqilindi hukumat vakillari yangi boʻyicha\nhukumat bugun qonun hisobotni hisobotni\n\n00:00:04.765 --> 00:00:05.000\nqilindi\n';
+
+void _overflowMain() {
+  final t = _transcript.copyWith(
+    segments: [_seg('5', null, 0, 5000, _overflowText)],
+  );
+  test('subtitle cues fit the frame, as on the web (S-1)', () {
+    const o = ExportOptions();
+    expect(TranscriptExport.render(ExportFormat.srt, t, o), _overflowSrt);
+    expect(TranscriptExport.render(ExportFormat.vtt, t, o), _overflowVtt);
   });
 }

@@ -964,6 +964,30 @@ abstract class AppLocalizations {
   /// **'Bilsangiz koʻrsating — ajratish aniqroq boʻladi.'**
   String get speakersHint;
 
+  /// No description provided for @serviceLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xizmat'**
+  String get serviceLabel;
+
+  /// No description provided for @serviceTranscription.
+  ///
+  /// In uz, this message translates to:
+  /// **'Transkripsiya'**
+  String get serviceTranscription;
+
+  /// No description provided for @serviceSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Subtitr'**
+  String get serviceSubtitle;
+
+  /// No description provided for @serviceSubtitleHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Matn subtitr kadrlariga boʻlinadi: bir kadrda 2 satr × 42 belgi va 6 soniyagacha.'**
+  String get serviceSubtitleHint;
+
   /// No description provided for @sendThisFile.
   ///
   /// In uz, this message translates to:

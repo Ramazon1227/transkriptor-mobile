@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
@@ -45,6 +46,7 @@ class UploadFacade implements IUploadFacade {
     required bool startTranscription,
     required String jobKey,
     int? numSpeakers,
+    JobService? service,
     void Function(double progress)? onProgress,
     UploadCancel? cancel,
   }) async {
@@ -99,7 +101,7 @@ class UploadFacade implements IUploadFacade {
 
     // A failed start is not a failed send: the file is stored, and a retry
     // must start the job, not upload the bytes again.
-    final job = await _startJob(media.id, jobKey, numSpeakers);
+    final job = await _startJob(media.id, jobKey, numSpeakers, service);
     return Right(
       job.fold(
         (failure) => UploadResult(mediaId: media.id, startFailure: failure),
@@ -113,17 +115,20 @@ class UploadFacade implements IUploadFacade {
     required String mediaId,
     required String idempotencyKey,
     int? numSpeakers,
-  }) => _startJob(mediaId, idempotencyKey, numSpeakers);
+    JobService? service,
+  }) => _startJob(mediaId, idempotencyKey, numSpeakers, service);
 
   Future<Either<Failure, Job>> _startJob(
     String mediaId,
     String key,
     int? numSpeakers,
+    JobService? service,
   ) async {
     final result = await _jobs.createJob(
       mediaId: mediaId,
       idempotencyKey: key,
       numSpeakers: numSpeakers,
+      service: service,
     );
     // Minutes were reserved and the file now has a job.
     if (result.isRight()) _changes.notify();
@@ -136,6 +141,7 @@ class UploadFacade implements IUploadFacade {
     required String workspaceId,
     required String idempotencyKey,
     int? numSpeakers,
+    JobService? service,
   }) async {
     final host = Uri.tryParse(url.trim())?.host.toLowerCase() ?? '';
     final youtube = host.endsWith('youtube.com') || host == 'youtu.be';
@@ -145,6 +151,7 @@ class UploadFacade implements IUploadFacade {
       youtube: youtube,
       idempotencyKey: idempotencyKey,
       numSpeakers: numSpeakers,
+      service: service,
     );
     if (result.isRight()) _changes.notify();
     return result.map((m) => m.toEntity());

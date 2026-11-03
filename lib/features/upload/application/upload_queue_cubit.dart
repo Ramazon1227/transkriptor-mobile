@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
@@ -149,19 +150,24 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     return super.close();
   }
 
-  Future<void> start({required String workspaceId, int? numSpeakers}) async {
+  Future<void> start({
+    required String workspaceId,
+    int? numSpeakers,
+    JobService? service,
+  }) async {
     final paths = state.items
         .where((i) => i.status == QueueItemStatus.waiting)
         .map((i) => i.file.path)
         .toList();
-    await _run(paths, workspaceId, numSpeakers);
+    await _run(paths, workspaceId, numSpeakers, service);
   }
 
   Future<void> retry(
     String path, {
     required String workspaceId,
     int? numSpeakers,
-  }) => _run([path], workspaceId, numSpeakers);
+    JobService? service,
+  }) => _run([path], workspaceId, numSpeakers, service);
 
   /// A failed file does not stop the others: a shorter one may still fit
   /// the balance.
@@ -169,6 +175,7 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     List<String> paths,
     String workspaceId,
     int? numSpeakers,
+    JobService? service,
   ) async {
     if (state.running || paths.isEmpty) return;
     emit(state.copyWith(running: true));
@@ -178,9 +185,9 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
       if (item == null) continue; // removed while it waited
       final mediaId = item.mediaId;
       if (mediaId == null) {
-        await _uploadAndStart(item, workspaceId, numSpeakers);
+        await _uploadAndStart(item, workspaceId, numSpeakers, service);
       } else {
-        await _startOnly(item, mediaId, numSpeakers);
+        await _startOnly(item, mediaId, numSpeakers, service);
       }
     }
     if (!isClosed) emit(state.copyWith(running: false));
@@ -190,6 +197,7 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     QueueItem item,
     String workspaceId,
     int? numSpeakers,
+    JobService? service,
   ) async {
     final path = item.file.path;
     _update(
@@ -218,6 +226,7 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
       startTranscription: true,
       jobKey: jobKey,
       numSpeakers: numSpeakers,
+      service: service,
       onProgress: (p) {
         final current = _find(path);
         // Dio reports every chunk; one rebuild per percent is enough.
@@ -255,6 +264,7 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     QueueItem item,
     String mediaId,
     int? numSpeakers,
+    JobService? service,
   ) async {
     final path = item.file.path;
     _update(
@@ -265,6 +275,7 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
       mediaId: mediaId,
       idempotencyKey: _keys.keyFor(mediaId),
       numSpeakers: numSpeakers,
+      service: service,
     );
     _keys.settle(mediaId, result.fold((f) => f, (_) => null));
     result.fold(

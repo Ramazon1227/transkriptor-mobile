@@ -16,6 +16,7 @@ import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
@@ -52,6 +53,7 @@ void main() {
       startTranscription: any(named: 'startTranscription'),
       jobKey: any(named: 'jobKey'),
       numSpeakers: any(named: 'numSpeakers'),
+      service: any(named: 'service'),
       onProgress: any(named: 'onProgress'),
       cancel: any(named: 'cancel'),
     ),
@@ -137,6 +139,7 @@ void main() {
         startTranscription: true,
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -179,6 +182,7 @@ void main() {
       () => facade.startTranscription(
         mediaId: 'm1',
         idempotencyKey: any(named: 'idempotencyKey'),
+        service: JobService.transcription,
       ),
     ).thenAnswer((_) async => const Right(_job));
 
@@ -195,6 +199,7 @@ void main() {
       () => facade.startTranscription(
         mediaId: 'm1',
         idempotencyKey: any(named: 'idempotencyKey'),
+        service: JobService.transcription,
       ),
     ).called(1);
     expect(find.textContaining(l10n.sendManyStarted), findsOneWidget);
@@ -212,6 +217,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),

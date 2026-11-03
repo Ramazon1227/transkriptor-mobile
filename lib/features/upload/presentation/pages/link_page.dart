@@ -9,7 +9,9 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class LinkPage extends StatelessWidget {
@@ -49,6 +51,7 @@ class _LinkForm extends StatefulWidget {
 class _LinkFormState extends State<_LinkForm> {
   late final _url = TextEditingController(text: widget.initialUrl);
   int? _speakers;
+  JobService _service = JobService.transcription;
 
   @override
   void dispose() {
@@ -71,6 +74,7 @@ class _LinkFormState extends State<_LinkForm> {
         url: _url.text,
         workspaceId: widget.workspaceId,
         numSpeakers: _speakers,
+        service: _service,
       ),
     );
   }
@@ -120,6 +124,12 @@ class _LinkFormState extends State<_LinkForm> {
               value: _speakers,
               enabled: !busy,
               onChanged: (v) => setState(() => _speakers = v),
+            ),
+            const SizedBox(height: 22),
+            ServicePicker(
+              value: _service,
+              enabled: !busy,
+              onChanged: (v) => setState(() => _service = v),
             ),
             const SizedBox(height: 24),
             Text(l10n.linkWhich.toUpperCase(), style: AppText.label),

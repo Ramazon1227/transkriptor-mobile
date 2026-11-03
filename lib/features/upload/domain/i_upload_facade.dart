@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 
@@ -33,10 +34,13 @@ abstract interface class IUploadFacade {
     required bool startTranscription,
     required String jobKey,
     int? numSpeakers,
+    JobService? service,
     void Function(double progress)? onProgress,
     UploadCancel? cancel,
   });
 
+  /// [service] null lets the server decide (the file's previous job, else
+  /// transcription); the pages always send it.
   /// Starts transcription of a file already stored (a retry after
   /// `UploadResult.startFailure`). A file that already has a queued or
   /// running job is `Failure.jobActive`.
@@ -44,6 +48,7 @@ abstract interface class IUploadFacade {
     required String mediaId,
     required String idempotencyKey,
     int? numSpeakers,
+    JobService? service,
   });
 
   /// Deletes a file that holds a place in the limit
@@ -57,5 +62,6 @@ abstract interface class IUploadFacade {
     required String workspaceId,
     required String idempotencyKey,
     int? numSpeakers,
+    JobService? service,
   });
 }

@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/core/error/held_file.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/network_names.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
@@ -128,6 +129,7 @@ class UploadRepository {
     required bool youtube,
     required String idempotencyKey,
     int? numSpeakers,
+    JobService? service,
   }) {
     return runJobRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -136,6 +138,7 @@ class UploadRepository {
           'url': url,
           'workspace_id': workspaceId,
           'num_speakers': ?numSpeakers,
+          'service': ?service?.apiValue,
           'idempotency_key': idempotencyKey,
         },
         options: Options(headers: {'Idempotency-Key': idempotencyKey}),

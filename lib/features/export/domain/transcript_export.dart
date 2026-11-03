@@ -258,9 +258,8 @@ abstract final class TranscriptExport {
     var size = 0;
     for (final w in words) {
       final last = chunks.last;
-      if (last.isNotEmpty &&
-          size + w.length + 1 > target &&
-          chunks.length < count) {
+      final balanced = size + w.length + 1 > target && chunks.length < count;
+      if (last.isNotEmpty && (balanced || !_fits([...last, w].join(' ')))) {
         chunks.add([w]);
         size = w.length;
       } else {
@@ -283,21 +282,25 @@ abstract final class TranscriptExport {
     return out;
   }
 
-  static String _wrap(String text) {
+  /// Chunks are cut to fit the frame, so the line count stays within
+  /// [lines]; more only for a word longer than [lineLength], on its own line
+  /// (web `wrapLines`, S-1).
+  static String _wrap(String text) => _lines(text).join('\n');
+
+  static bool _fits(String text) => _lines(text).length <= lines;
+
+  static List<String> _lines(String text) {
     final out = <String>[];
     var line = '';
-    for (final w in text.split(' ')) {
-      if (line.isNotEmpty &&
-          '$line $w'.length > lineLength &&
-          out.length < lines - 1) {
+    for (final w in text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty)) {
+      if (line.isNotEmpty && line.length + 1 + w.length > lineLength) {
         out.add(line);
-        line = w;
-      } else {
-        line = line.isEmpty ? w : '$line $w';
+        line = '';
       }
+      line = line.isEmpty ? w : '$line $w';
     }
-    out.add(line);
-    return out.join('\n');
+    if (line.isNotEmpty) out.add(line);
+    return out;
   }
 
   static String _stamp(num ms, String sep) {

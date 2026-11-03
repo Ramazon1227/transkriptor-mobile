@@ -12,9 +12,11 @@ import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class SendPage extends StatelessWidget {
@@ -54,6 +56,7 @@ class _SendFormState extends State<_SendForm> {
     text: widget.file.baseName,
   );
   int? _speakers;
+  JobService _service = JobService.transcription;
 
   @override
   void dispose() {
@@ -70,6 +73,7 @@ class _SendFormState extends State<_SendForm> {
         title: _title.text,
         startTranscription: start,
         numSpeakers: _speakers,
+        service: _service,
       ),
     );
   }
@@ -141,6 +145,12 @@ class _SendFormState extends State<_SendForm> {
                 onChanged: (v) => setState(() => _speakers = v),
               ),
               const SizedBox(height: 22),
+              ServicePicker(
+                value: _service,
+                enabled: !busy,
+                onChanged: (v) => setState(() => _service = v),
+              ),
+              const SizedBox(height: 22),
               _MinutesCard(duration: widget.file.duration),
               const SizedBox(height: 10),
               Text(
@@ -199,6 +209,7 @@ class _SendFormState extends State<_SendForm> {
                           UploadStartRetried(
                             mediaId: mediaId,
                             numSpeakers: _speakers,
+                            service: _service,
                           ),
                         ),
                   child: Text(l10n.sendStart),

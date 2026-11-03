@@ -493,6 +493,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get speakersHint => 'Bilsangiz koʻrsating — ajratish aniqroq boʻladi.';
 
   @override
+  String get serviceLabel => 'Xizmat';
+
+  @override
+  String get serviceTranscription => 'Transkripsiya';
+
+  @override
+  String get serviceSubtitle => 'Subtitr';
+
+  @override
+  String get serviceSubtitleHint =>
+      'Matn subtitr kadrlariga boʻlinadi: bir kadrda 2 satr × 42 belgi va 6 soniyagacha.';
+
+  @override
   String get sendThisFile => 'Bu fayl';
 
   @override
