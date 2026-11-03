@@ -594,6 +594,27 @@ class AppLocalizationsUz extends AppLocalizations {
   String get jobQueuedHint => 'Navbatda turibdi — tez orada boshlanadi.';
 
   @override
+  String get jobEtaUnderMinute => '1 daqiqadan kam qoldi';
+
+  @override
+  String jobEtaMinutes(int minutes) {
+    return 'taxminan $minutes daqiqa qoldi';
+  }
+
+  @override
+  String jobEtaHours(int hours) {
+    return 'taxminan $hours soat qoldi';
+  }
+
+  @override
+  String jobEtaHoursMinutes(int hours, int minutes) {
+    return 'taxminan $hours soat $minutes daqiqa qoldi';
+  }
+
+  @override
+  String get jobSlow => 'Odatdagidan uzoqroq davom etmoqda';
+
+  @override
   String get jobCancel => 'Bekor qilish';
 
   @override

@@ -17,6 +17,8 @@ abstract class JobModel with _$JobModel {
     @JsonKey(name: 'error_message') String? errorMessage,
     @JsonKey(name: 'transcript_id') String? transcriptId,
     @JsonKey(name: 'num_speakers') int? numSpeakers,
+    @JsonKey(name: 'eta_seconds') int? etaSeconds,
+    @JsonKey(name: 'slow') @Default(false) bool slow,
   }) = _JobModel;
 
   const JobModel._();
@@ -32,5 +34,7 @@ abstract class JobModel with _$JobModel {
     errorMessage: (errorMessage?.isEmpty ?? true) ? null : errorMessage,
     transcriptId: (transcriptId?.isEmpty ?? true) ? null : transcriptId,
     numSpeakers: numSpeakers,
+    etaSeconds: etaSeconds == null || etaSeconds! < 0 ? null : etaSeconds,
+    slow: slow,
   );
 }

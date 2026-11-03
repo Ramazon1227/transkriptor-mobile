@@ -1138,6 +1138,36 @@ abstract class AppLocalizations {
   /// **'Navbatda turibdi — tez orada boshlanadi.'**
   String get jobQueuedHint;
 
+  /// No description provided for @jobEtaUnderMinute.
+  ///
+  /// In uz, this message translates to:
+  /// **'1 daqiqadan kam qoldi'**
+  String get jobEtaUnderMinute;
+
+  /// No description provided for @jobEtaMinutes.
+  ///
+  /// In uz, this message translates to:
+  /// **'taxminan {minutes} daqiqa qoldi'**
+  String jobEtaMinutes(int minutes);
+
+  /// No description provided for @jobEtaHours.
+  ///
+  /// In uz, this message translates to:
+  /// **'taxminan {hours} soat qoldi'**
+  String jobEtaHours(int hours);
+
+  /// No description provided for @jobEtaHoursMinutes.
+  ///
+  /// In uz, this message translates to:
+  /// **'taxminan {hours} soat {minutes} daqiqa qoldi'**
+  String jobEtaHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @jobSlow.
+  ///
+  /// In uz, this message translates to:
+  /// **'Odatdagidan uzoqroq davom etmoqda'**
+  String get jobSlow;
+
   /// No description provided for @jobCancel.
   ///
   /// In uz, this message translates to:

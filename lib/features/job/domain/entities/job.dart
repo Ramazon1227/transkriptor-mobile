@@ -37,5 +37,12 @@ abstract class Job with _$Job {
 
     /// The speaker count chosen at upload; null lets the server decide.
     int? numSpeakers,
+
+    /// Estimated seconds left while running; null when the server has no
+    /// estimate.
+    int? etaSeconds,
+
+    /// The usual time has passed and the job is still running.
+    @Default(false) bool slow,
   }) = _Job;
 }

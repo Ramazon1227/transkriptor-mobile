@@ -235,6 +235,20 @@
 
   "jobKeepsRunning": "Ilovani yopsangiz ham ish davom etadi — tayyor transkript Fayllar boʻlimida paydo boʻladi.",
   "jobQueuedHint": "Navbatda turibdi — tez orada boshlanadi.",
+  "jobEtaUnderMinute": "1 daqiqadan kam qoldi",
+  "jobEtaMinutes": "taxminan {minutes} daqiqa qoldi",
+  "@jobEtaMinutes": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "jobEtaHours": "taxminan {hours} soat qoldi",
+  "@jobEtaHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "jobEtaHoursMinutes": "taxminan {hours} soat {minutes} daqiqa qoldi",
+  "@jobEtaHoursMinutes": {
+    "placeholders": { "hours": { "type": "int" }, "minutes": { "type": "int" } }
+  },
+  "jobSlow": "Odatdagidan uzoqroq davom etmoqda",
   "jobCancel": "Bekor qilish",
   "jobCancelNote": "Bekor qilsangiz band qilingan daqiqalar qaytariladi.",
   "jobDoneTitle": "Transkript tayyor",

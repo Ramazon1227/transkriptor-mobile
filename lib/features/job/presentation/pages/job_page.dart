@@ -12,6 +12,7 @@ import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/presentation/widgets/job_eta.dart';
 import 'package:transkriptor_uz/features/job/presentation/widgets/job_status_chip.dart';
 
 class JobPage extends StatelessWidget {
@@ -111,6 +112,10 @@ class _JobBody extends StatelessWidget {
           if (job.status == JobStatus.queued) ...[
             const SizedBox(height: 12),
             Text(l10n.jobQueuedHint, style: AppText.muted),
+          ],
+          if (jobEtaText(l10n, job) case final eta?) ...[
+            const SizedBox(height: 12),
+            Text(eta, style: AppText.muted),
           ],
           const SizedBox(height: 24),
           _Note(text: l10n.jobKeepsRunning),
