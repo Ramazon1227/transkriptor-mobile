@@ -36,6 +36,7 @@ void main() {
               workspaceId: any(named: 'workspaceId'),
               title: any(named: 'title'),
               startTranscription: any(named: 'startTranscription'),
+              jobKey: any(named: 'jobKey'),
               numSpeakers: any(named: 'numSpeakers'),
               onProgress: any(named: 'onProgress'),
             ),
@@ -76,6 +77,7 @@ void main() {
           workspaceId: any(named: 'workspaceId'),
           title: any(named: 'title'),
           startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
         ),
@@ -109,6 +111,7 @@ void main() {
             workspaceId: any(named: 'workspaceId'),
             title: any(named: 'title'),
             startTranscription: any(named: 'startTranscription'),
+            jobKey: any(named: 'jobKey'),
             numSpeakers: any(named: 'numSpeakers'),
             onProgress: any(named: 'onProgress'),
           ),
@@ -120,8 +123,13 @@ void main() {
             ),
           ),
         );
-        when(() => facade.startTranscription(mediaId: 'm1', numSpeakers: 2))
-            .thenAnswer((_) async => const Right(job));
+        when(
+          () => facade.startTranscription(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+            numSpeakers: 2,
+          ),
+        ).thenAnswer((_) async => const Right(job));
       },
       build: () => UploadBloc(facade),
       act: (bloc) async {
@@ -158,11 +166,69 @@ void main() {
           workspaceId: any(named: 'workspaceId'),
           title: any(named: 'title'),
           startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
         ),
       ).called(1),
     );
+
+    test('a start whose answer was lost is retried with the same key; a '
+        'refused one with a new key', () async {
+      String? uploadKey;
+      when(
+        () => facade.upload(
+          file: any(named: 'file'),
+          workspaceId: any(named: 'workspaceId'),
+          title: any(named: 'title'),
+          startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
+          numSpeakers: any(named: 'numSpeakers'),
+          onProgress: any(named: 'onProgress'),
+        ),
+      ).thenAnswer((inv) async {
+        uploadKey = inv.namedArguments[#jobKey] as String;
+        return const Right(
+          UploadResult(mediaId: 'm1', startFailure: Failure.timeout()),
+        );
+      });
+      final keys = <String>[];
+      final answers = [
+        const Left<Failure, Job>(Failure.jobActive()),
+        const Right<Failure, Job>(job),
+      ];
+      when(
+        () => facade.startTranscription(
+          mediaId: 'm1',
+          idempotencyKey: any(named: 'idempotencyKey'),
+          numSpeakers: any(named: 'numSpeakers'),
+        ),
+      ).thenAnswer((inv) async {
+        keys.add(inv.namedArguments[#idempotencyKey] as String);
+        return answers.removeAt(0);
+      });
+      final bloc = UploadBloc(facade)
+        ..add(
+          const UploadFileSubmitted(
+            file: file,
+            workspaceId: 'w1',
+            title: 'f',
+            startTranscription: true,
+          ),
+        );
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const UploadStartRetried(mediaId: 'm1'));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.failure, const Failure.jobActive());
+      bloc.add(const UploadStartRetried(mediaId: 'm1'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(keys, hasLength(2));
+      expect(keys[0], uploadKey);
+      expect(keys[1], isNot(keys[0]));
+      expect(bloc.state.status, UploadStatus.success);
+      await bloc.close();
+    });
   });
 
   group('UploadBloc link', () {
@@ -180,6 +246,7 @@ void main() {
         () => facade.startLink(
           url: any(named: 'url'),
           workspaceId: any(named: 'workspaceId'),
+          idempotencyKey: any(named: 'idempotencyKey'),
           numSpeakers: any(named: 'numSpeakers'),
         ),
       ),
@@ -191,6 +258,7 @@ void main() {
         () => facade.startLink(
           url: 'https://youtu.be/abc',
           workspaceId: 'w1',
+          idempotencyKey: any(named: 'idempotencyKey'),
           numSpeakers: 3,
         ),
       ).thenAnswer((_) async => const Right(job)),

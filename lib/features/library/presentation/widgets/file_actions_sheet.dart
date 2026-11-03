@@ -178,7 +178,8 @@ class _CloseWhenDone extends StatelessWidget {
 }
 
 /// Why [action] did not go through. Retranscribe has answers of its own:
-/// 409 is a link job already running, 422 a file never fully uploaded.
+/// 409 is a link job already running, 422 a file never fully uploaded; a
+/// file job already running is `Failure.jobActive`, said app-wide.
 String fileActionFailureText(
   AppLocalizations l10n,
   FileAction action,
@@ -359,6 +360,14 @@ class _ConfirmSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   l10n.fileRetranscribeCost(Formatters.minutesNeeded(duration)),
+                  style: AppText.caption,
+                ),
+              ],
+              if (!delete && item.transcriptId != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  l10n.retranscribeReplaces,
+                  key: const Key('retranscribe_replaces'),
                   style: AppText.caption,
                 ),
               ],

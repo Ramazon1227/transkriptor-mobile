@@ -6,9 +6,12 @@ abstract interface class IJobFacade {
   Future<Either<Failure, Job>> getJob(String id);
 
   /// Starts transcription of an uploaded and confirmed file. [numSpeakers]
-  /// null means the server decides.
+  /// null means the server decides. [idempotencyKey] is the action's
+  /// (`IdempotencyKeys`): the same on a retry of that action. A file that
+  /// already has a queued or running job is `Failure.jobActive`.
   Future<Either<Failure, Job>> createJob({
     required String mediaId,
+    required String idempotencyKey,
     int? numSpeakers,
   });
 

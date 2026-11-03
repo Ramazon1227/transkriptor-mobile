@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
+import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
@@ -38,6 +39,7 @@ class JobCubit extends Cubit<JobState> {
   /// Told when a job finishes while watched: the files list and the
   /// balance change on the server at that moment.
   final LibraryChanges _changes;
+  final IdempotencyKeys _keys = IdempotencyKeys();
 
   Timer? _timer;
   late Duration _interval = _policy.first;
@@ -111,12 +113,19 @@ class JobCubit extends Cubit<JobState> {
     _ => false,
   };
 
-  /// Starts the same file again after a failure; follows the new job.
+  /// Starts the same file again after a failure; follows the new job. A
+  /// retry whose answer was lost is sent again with the same idempotency
+  /// key, so it gets that job back rather than a second one.
   Future<void> retry() async {
     final job = state.job;
     if (job == null || job.mediaId.isEmpty || state.busy) return;
     emit(state.copyWith(busy: true, failure: null));
-    final result = await _facade.createJob(mediaId: job.mediaId);
+    final mediaId = job.mediaId;
+    final result = await _facade.createJob(
+      mediaId: mediaId,
+      idempotencyKey: _keys.keyFor(mediaId),
+    );
+    _keys.settle(mediaId, result.fold((f) => f, (_) => null));
     if (isClosed) return;
     result.fold(
       (failure) => emit(state.copyWith(busy: false, failure: failure)),

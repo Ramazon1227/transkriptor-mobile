@@ -474,15 +474,77 @@ void main() {
           ok({'id': 'j', 'media_id': 'm', 'status': 'QUEUED'}),
         ),
       });
-      final job = (await JobRepository(fakeDio(http)).createJob(mediaId: 'm'))
-          .getOrElse(() => throw StateError('left'));
+      final job = (await JobRepository(fakeDio(http)).createJob(
+        mediaId: 'm',
+        idempotencyKey: 'k1',
+      )).getOrElse(() => throw StateError('left'));
 
       final sent = http.sent.single;
       final body = sent.body! as Map<String, Object?>;
       expect(job.status, JobStatus.queued);
       expect(body['media_id'], 'm');
       expect(body.containsKey('num_speakers'), isFalse);
-      expect(sent.options.headers['Idempotency-Key'], body['idempotency_key']);
+      expect(body['idempotency_key'], 'k1');
+      expect(sent.options.headers['Idempotency-Key'], 'k1');
+    });
+
+    test('409 JOB_ACTIVE: the file already has a running job', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/job': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'Bu fayl allaqachon transkripsiya qilinmoqda',
+            'data': {'error': 'JOB_ACTIVE'},
+          },
+        ),
+      });
+      final result = await JobRepository(fakeDio(http))
+          .createJob(mediaId: 'm', idempotencyKey: 'k');
+      expect(result.fold((f) => f, (_) => null), const Failure.jobActive());
+    });
+
+    test(
+      'a key reused with other parameters is IDEMPOTENCY_MISMATCH',
+      () async {
+        for (final code in [409, 422]) {
+          final http = FakeHttpAdapter({
+            'POST /api/v1/job': (
+              code,
+              {
+                'status': 'CONFLICT',
+                'description': 'kalit boshqa soʻrovga tegishli',
+                'data': {'error': 'IDEMPOTENCY_MISMATCH'},
+              },
+            ),
+          });
+          final result = await JobRepository(fakeDio(http))
+              .createJob(mediaId: 'm', idempotencyKey: 'k');
+          expect(
+            result.fold((f) => f, (_) => null),
+            const Failure.idempotencyMismatch(),
+          );
+        }
+      },
+    );
+
+    test('any other 409 keeps the mapper’s failure', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/job': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'ziddiyat',
+            'data': {'error': 'SOMETHING_ELSE'},
+          },
+        ),
+      });
+      final result = await JobRepository(fakeDio(http))
+          .createJob(mediaId: 'm', idempotencyKey: 'k');
+      expect(
+        result.fold((f) => f, (_) => null),
+        const Failure.server(statusCode: 409, message: 'ziddiyat'),
+      );
     });
 
     test('get and cancel use the job id in the path', () async {
@@ -507,7 +569,7 @@ void main() {
         'POST /api/v1/job': (402, {'status': 'PAYMENT_REQUIRED'}),
       });
       final result = await JobRepository(fakeDio(http))
-          .createJob(mediaId: 'm', numSpeakers: 2);
+          .createJob(mediaId: 'm', idempotencyKey: 'k', numSpeakers: 2);
       expect(
         result.fold((f) => f, (_) => null),
         const Failure.server(statusCode: 402),
@@ -819,11 +881,17 @@ void main() {
         'POST /api/v1/media/cloud': (202, ok({'id': 'k', 'status': 'QUEUED'})),
       });
       final repo = UploadRepository(fakeDio(http), fakeDio(http));
-      await repo.startLink(url: 'u', workspaceId: 'w', youtube: true);
+      await repo.startLink(
+        url: 'u',
+        workspaceId: 'w',
+        youtube: true,
+        idempotencyKey: 'k1',
+      );
       await repo.startLink(
         url: 'v',
         workspaceId: 'w',
         youtube: false,
+        idempotencyKey: 'k2',
         numSpeakers: 3,
       );
       expect(http.sent.map((s) => s.options.path), [
@@ -831,6 +899,29 @@ void main() {
         '/api/v1/media/cloud',
       ]);
       expect((http.sent.last.body! as Map)['num_speakers'], 3);
+      expect((http.sent.last.body! as Map)['idempotency_key'], 'k2');
+      expect(http.sent.last.options.headers['Idempotency-Key'], 'k2');
+    });
+
+    test('a link whose job is already running is JOB_ACTIVE', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/media/youtube': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'Bu fayl allaqachon transkripsiya qilinmoqda',
+            'data': {'error': 'JOB_ACTIVE'},
+          },
+        ),
+      });
+      final result = await UploadRepository(fakeDio(http), fakeDio(http))
+          .startLink(
+            url: 'u',
+            workspaceId: 'w',
+            youtube: true,
+            idempotencyKey: 'k',
+          );
+      expect(result.fold((f) => f, (_) => null), const Failure.jobActive());
     });
   });
 

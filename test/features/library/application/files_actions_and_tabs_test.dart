@@ -51,7 +51,13 @@ void main() {
             Job(id: 'j1', status: JobStatus.failed, numSpeakers: 2),
           ),
         );
-        when(() => jobs.createJob(mediaId: 'm1', numSpeakers: 2)).thenAnswer(
+        when(
+          () => jobs.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+            numSpeakers: 2,
+          ),
+        ).thenAnswer(
           (_) async => const Right(Job(id: 'j2', status: JobStatus.queued)),
         );
       },
@@ -73,7 +79,12 @@ void main() {
         when(
           () => jobs.getJob('j1'),
         ).thenAnswer((_) async => const Left(Failure.server(statusCode: 404)));
-        when(() => jobs.createJob(mediaId: 'm1')).thenAnswer(
+        when(
+          () => jobs.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ),
+        ).thenAnswer(
           (_) async => const Right(Job(id: 'j2', status: JobStatus.queued)),
         );
       },
@@ -92,7 +103,10 @@ void main() {
           (_) async => const Right(Job(id: 'j1', status: JobStatus.failed)),
         );
         when(
-          () => jobs.createJob(mediaId: 'm1'),
+          () => jobs.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ),
         ).thenAnswer((_) async => const Left(Failure.server(statusCode: 402)));
       },
       build: () => FileActionsCubit(library, jobs, changes),
@@ -105,6 +119,74 @@ void main() {
         ),
       ],
     );
+
+    blocTest<FileActionsCubit, FileActionsState>(
+      'a file with a running job (409 JOB_ACTIVE) stays on the sheet',
+      setUp: () {
+        when(() => jobs.getJob('j1')).thenAnswer(
+          (_) async => const Right(Job(id: 'j1', status: JobStatus.failed)),
+        );
+        when(
+          () => jobs.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ),
+        ).thenAnswer((_) async => const Left(Failure.jobActive()));
+      },
+      build: () => FileActionsCubit(library, jobs, changes),
+      act: (c) => c.retranscribe(_failed),
+      expect: () => const [
+        FileActionsState(status: FileActionStatus.busy),
+        FileActionsState(
+          status: FileActionStatus.failure,
+          failure: Failure.jobActive(),
+        ),
+      ],
+    );
+
+    test('a retry after a lost answer repeats the key and the speaker '
+        'count; a refusal ends the action', () async {
+      final sent = <(String, int?)>[];
+      final answers = [
+        const Left<Failure, Job>(Failure.timeout()),
+        const Left<Failure, Job>(Failure.server(statusCode: 402)),
+        const Right<Failure, Job>(Job(id: 'j2', status: JobStatus.queued)),
+      ];
+      // The previous job is read once; a retry must not ask again, and an
+      // answer that changed in between must not change the request.
+      var reads = 0;
+      when(() => jobs.getJob('j1')).thenAnswer((_) async {
+        reads++;
+        return Right(
+          Job(id: 'j1', status: JobStatus.failed, numSpeakers: reads + 1),
+        );
+      });
+      when(
+        () => jobs.createJob(
+          mediaId: 'm1',
+          idempotencyKey: any(named: 'idempotencyKey'),
+          numSpeakers: any(named: 'numSpeakers'),
+        ),
+      ).thenAnswer((inv) async {
+        sent.add((
+          inv.namedArguments[#idempotencyKey] as String,
+          inv.namedArguments[#numSpeakers] as int?,
+        ));
+        return answers.removeAt(0);
+      });
+      final cubit = FileActionsCubit(library, jobs, changes);
+
+      await cubit.retranscribe(_failed);
+      await cubit.retranscribe(_failed);
+      await cubit.retranscribe(_failed);
+
+      expect(sent[1], sent[0]);
+      expect(sent[0].$2, 2);
+      expect(sent[2].$1, isNot(sent[1].$1));
+      expect(reads, 2);
+      expect(cubit.state.jobId, 'j2');
+      await cubit.close();
+    });
   });
 
   group('FileActionsCubit rename and delete', () {

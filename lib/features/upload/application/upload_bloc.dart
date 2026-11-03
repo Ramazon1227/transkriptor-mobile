@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
@@ -20,6 +21,10 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
 
   final IUploadFacade _facade;
 
+  /// A start whose answer was lost is retried with the same key, so it
+  /// gets that job back instead of a second one.
+  final IdempotencyKeys _keys = IdempotencyKeys();
+
   Future<void> _onEvent(UploadEvent event, Emitter<UploadState> emit) =>
       switch (event) {
         UploadFileSubmitted() => _onFile(event, emit),
@@ -33,11 +38,14 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
   ) async {
     emit(const UploadState(status: UploadStatus.uploading));
 
+    // Every send is a new media row, so its job is a new action.
+    final jobKey = newIdempotencyKey();
     final result = await _facade.upload(
       file: event.file,
       workspaceId: event.workspaceId,
       title: event.title,
       startTranscription: event.startTranscription,
+      jobKey: jobKey,
       numSpeakers: event.numSpeakers,
       onProgress: (p) {
         // Dio reports every chunk; one rebuild per percent is enough.
@@ -49,18 +57,21 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
     result.fold(
       (failure) =>
           emit(state.copyWith(status: UploadStatus.failure, failure: failure)),
-      (done) => emit(
-        state.copyWith(
-          // Stored but not started: the page offers a start-only retry.
-          status: done.startFailure == null
-              ? UploadStatus.success
-              : UploadStatus.stored,
-          progress: 1,
-          mediaId: done.mediaId,
-          job: done.job,
-          failure: done.startFailure,
-        ),
-      ),
+      (done) {
+        _keys.settle(done.mediaId, done.startFailure, key: jobKey);
+        emit(
+          state.copyWith(
+            // Stored but not started: the page offers a start-only retry.
+            status: done.startFailure == null
+                ? UploadStatus.success
+                : UploadStatus.stored,
+            progress: 1,
+            mediaId: done.mediaId,
+            job: done.job,
+            failure: done.startFailure,
+          ),
+        );
+      },
     );
   }
 
@@ -72,8 +83,10 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
     emit(state.copyWith(status: UploadStatus.starting, failure: null));
     final result = await _facade.startTranscription(
       mediaId: event.mediaId,
+      idempotencyKey: _keys.keyFor(event.mediaId),
       numSpeakers: event.numSpeakers,
     );
+    _keys.settle(event.mediaId, result.fold((f) => f, (_) => null));
     result.fold(
       (failure) =>
           emit(state.copyWith(status: UploadStatus.stored, failure: failure)),
@@ -92,11 +105,14 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
     }
     emit(const UploadState(status: UploadStatus.uploading));
 
+    final link = (url, event.workspaceId, event.numSpeakers);
     final result = await _facade.startLink(
       url: url,
       workspaceId: event.workspaceId,
+      idempotencyKey: _keys.keyFor(link),
       numSpeakers: event.numSpeakers,
     );
+    _keys.settle(link, result.fold((f) => f, (_) => null));
 
     result.fold(
       (failure) =>

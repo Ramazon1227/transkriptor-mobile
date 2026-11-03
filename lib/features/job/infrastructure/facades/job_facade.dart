@@ -22,10 +22,12 @@ class JobFacade implements IJobFacade {
   @override
   Future<Either<Failure, Job>> createJob({
     required String mediaId,
+    required String idempotencyKey,
     int? numSpeakers,
   }) async {
     final result = await _repository.createJob(
       mediaId: mediaId,
+      idempotencyKey: idempotencyKey,
       numSpeakers: numSpeakers,
     );
     // Minutes were reserved and the file now has a job.

@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 
@@ -62,6 +63,10 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
   UploadQueueCubit(this._facade) : super(const UploadQueueState());
 
   final IUploadFacade _facade;
+
+  /// A start whose answer was lost is retried with the same key, so it
+  /// gets that job back instead of a second one.
+  final IdempotencyKeys _keys = IdempotencyKeys();
 
   void open(List<PendingFile> files) => _append(files);
 
@@ -151,11 +156,14 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
         failure: null,
       ),
     );
+    // Every upload is a new media row, so its job is a new action.
+    final jobKey = newIdempotencyKey();
     final result = await _facade.upload(
       file: item.file,
       workspaceId: workspaceId,
       title: item.file.baseName,
       startTranscription: true,
+      jobKey: jobKey,
       numSpeakers: numSpeakers,
       onProgress: (p) {
         final current = _find(path);
@@ -169,17 +177,20 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
         path,
         (i) => i.copyWith(status: QueueItemStatus.failed, failure: failure),
       ),
-      (done) => _update(
-        path,
-        (i) => i.copyWith(
-          status: done.startFailure == null
-              ? QueueItemStatus.started
-              : QueueItemStatus.stored,
-          progress: 1,
-          mediaId: done.mediaId,
-          failure: done.startFailure,
-        ),
-      ),
+      (done) {
+        _keys.settle(done.mediaId, done.startFailure, key: jobKey);
+        _update(
+          path,
+          (i) => i.copyWith(
+            status: done.startFailure == null
+                ? QueueItemStatus.started
+                : QueueItemStatus.stored,
+            progress: 1,
+            mediaId: done.mediaId,
+            failure: done.startFailure,
+          ),
+        );
+      },
     );
   }
 
@@ -195,8 +206,10 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     );
     final result = await _facade.startTranscription(
       mediaId: mediaId,
+      idempotencyKey: _keys.keyFor(mediaId),
       numSpeakers: numSpeakers,
     );
+    _keys.settle(mediaId, result.fold((f) => f, (_) => null));
     result.fold(
       (failure) => _update(
         path,

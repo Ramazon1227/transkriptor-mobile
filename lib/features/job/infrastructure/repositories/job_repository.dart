@@ -5,7 +5,7 @@ import 'package:transkriptor_uz/core/constants/endpoints.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
-import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
+import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 
 @lazySingleton
@@ -23,20 +23,22 @@ class JobRepository {
     });
   }
 
+  /// [idempotencyKey] belongs to the person's action (`IdempotencyKeys`),
+  /// not to this call: a retry of that action sends the same one.
   Future<Either<Failure, JobModel>> createJob({
     required String mediaId,
+    required String idempotencyKey,
     int? numSpeakers,
   }) {
-    final key = newIdempotencyKey();
-    return runRequest(() async {
+    return runJobRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
         Endpoints.job,
         data: {
           'media_id': mediaId,
           'num_speakers': ?numSpeakers,
-          'idempotency_key': key,
+          'idempotency_key': idempotencyKey,
         },
-        options: Options(headers: {'Idempotency-Key': key}),
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return JobModel.fromJson(envelopeData(response.data));
     });

@@ -10,8 +10,10 @@ import 'package:transkriptor_uz/core/widgets/app_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/application/retranscribe_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
-/// Asks before spending balance, inside the sheet. Closes with the new
-/// job's id once the server took it.
+/// Asks before spending balance, inside the sheet, and says what happens to
+/// the current transcript: it stays until the new one is ready, then the
+/// new one replaces it. Closes with the new job's id once the server took
+/// it.
 class RetranscribeSheet extends StatelessWidget {
   const RetranscribeSheet({required this.transcript, super.key});
 
@@ -97,6 +99,12 @@ class _RetranscribeView extends StatelessWidget {
                     style: AppText.caption,
                   ),
                 ],
+                const SizedBox(height: 8),
+                Text(
+                  l10n.retranscribeReplaces,
+                  key: const Key('retranscribe_replaces'),
+                  style: AppText.caption,
+                ),
                 if (failure != null) ...[
                   const SizedBox(height: 12),
                   Text(

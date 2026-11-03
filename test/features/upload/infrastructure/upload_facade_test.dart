@@ -75,7 +75,9 @@ void main() {
 
   test('create → PUT → confirm → job, with the new title and type', () async {
     stubPut();
-    when(() => jobs.createJob(mediaId: 'm1', numSpeakers: 2)).thenAnswer(
+    when(
+      () => jobs.createJob(mediaId: 'm1', idempotencyKey: 'k1', numSpeakers: 2),
+    ).thenAnswer(
       (_) async => const Right(
         JobModel(id: 'j1', mediaId: 'm1', status: JobStatus.queued),
       ),
@@ -86,6 +88,7 @@ void main() {
       workspaceId: 'w1',
       title: '  Kengash yigʻilishi ',
       startTranscription: true,
+      jobKey: 'k1',
       numSpeakers: 2,
     );
 
@@ -105,7 +108,7 @@ void main() {
         onProgress: any(named: 'onProgress'),
       ),
       () => repository.confirm('m1'),
-      () => jobs.createJob(mediaId: 'm1', numSpeakers: 2),
+      () => jobs.createJob(mediaId: 'm1', idempotencyKey: 'k1', numSpeakers: 2),
     ]);
   });
 
@@ -125,6 +128,7 @@ void main() {
       workspaceId: 'w1',
       title: '',
       startTranscription: true,
+      jobKey: 'k1',
     );
 
     expect(result, const Left<Failure, Object>(Failure.network()));
@@ -132,6 +136,7 @@ void main() {
     verifyNever(
       () => jobs.createJob(
         mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
       ),
     );
@@ -153,6 +158,7 @@ void main() {
       workspaceId: 'w1',
       title: 'x',
       startTranscription: true,
+      jobKey: 'k1',
     );
     verify(() => repository.deleteMedia('m1')).called(1);
 
@@ -164,6 +170,7 @@ void main() {
       workspaceId: 'w1',
       title: 'x',
       startTranscription: true,
+      jobKey: 'k1',
     );
     verify(() => repository.deleteMedia('m1')).called(1);
   });
@@ -176,6 +183,7 @@ void main() {
       workspaceId: 'w1',
       title: '',
       startTranscription: false,
+      jobKey: 'k1',
     );
     await Future<void>.delayed(Duration.zero);
 
@@ -186,6 +194,7 @@ void main() {
     verifyNever(
       () => jobs.createJob(
         mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
       ),
     );
@@ -198,6 +207,7 @@ void main() {
       workspaceId: 'w1',
       title: ' ',
       startTranscription: false,
+      jobKey: 'k1',
     );
     verify(
       () => repository.createMedia(
@@ -217,16 +227,22 @@ void main() {
           url: any(named: 'url'),
           workspaceId: any(named: 'workspaceId'),
           youtube: any(named: 'youtube'),
+          idempotencyKey: any(named: 'idempotencyKey'),
           numSpeakers: any(named: 'numSpeakers'),
         ),
       ).thenAnswer(
         (_) async => const Right(JobModel(id: 'j', status: JobStatus.queued)),
       );
 
-      await facade.startLink(url: 'https://youtu.be/abc', workspaceId: 'w1');
+      await facade.startLink(
+        url: 'https://youtu.be/abc',
+        workspaceId: 'w1',
+        idempotencyKey: 'k1',
+      );
       await facade.startLink(
         url: 'https://drive.google.com/file/d/x/view',
         workspaceId: 'w1',
+        idempotencyKey: 'k2',
       );
 
       verify(
@@ -234,6 +250,7 @@ void main() {
           url: 'https://youtu.be/abc',
           workspaceId: 'w1',
           youtube: true,
+          idempotencyKey: 'k1',
         ),
       ).called(1);
       verify(
@@ -241,6 +258,7 @@ void main() {
           url: 'https://drive.google.com/file/d/x/view',
           workspaceId: 'w1',
           youtube: false,
+          idempotencyKey: 'k2',
         ),
       ).called(1);
     },
@@ -251,6 +269,7 @@ void main() {
     when(
       () => jobs.createJob(
         mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
       ),
     ).thenAnswer((_) async => const Left(Failure.server(statusCode: 402)));
@@ -260,6 +279,7 @@ void main() {
       workspaceId: 'w1',
       title: '',
       startTranscription: true,
+      jobKey: 'k1',
     );
 
     final done = result.getOrElse(() => throw StateError('left'));
@@ -291,6 +311,7 @@ void main() {
           workspaceId: 'w1',
           title: '',
           startTranscription: false,
+          jobKey: 'k1',
         );
       }
 

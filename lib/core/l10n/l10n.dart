@@ -20,6 +20,8 @@ extension FailureMessage on Failure {
     ServerFailure(statusCode: 429) => l10n.errorTooManyRequests,
     ServerFailure() => l10n.errorServer,
     PendingLimitFailure() => l10n.errorPendingLimit,
+    JobActiveFailure() => l10n.retranscribeActive,
+    IdempotencyMismatchFailure() => l10n.errorIdempotencyMismatch,
     ParsingFailure() => l10n.errorParsing,
     PermissionDeniedFailure() => l10n.errorMicPermission,
     StorageFailure() => l10n.errorStorage,

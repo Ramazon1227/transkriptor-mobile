@@ -567,6 +567,12 @@ void main() {
         ),
         findsOneWidget,
       );
+      // What happens to this transcript is said before anything is spent.
+      expect(
+        find.textContaining('yangisi tayyor boʻlguncha qoladi'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('ulashish havolalari'), findsOneWidget);
     });
   });
 

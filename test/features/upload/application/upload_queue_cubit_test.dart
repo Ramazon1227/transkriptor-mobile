@@ -36,6 +36,7 @@ void main() {
         workspaceId: any(named: 'workspaceId'),
         title: any(named: 'title'),
         startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
       ),
@@ -91,6 +92,7 @@ void main() {
         workspaceId: 'w1',
         title: 'a',
         startTranscription: true,
+        jobKey: any(named: 'jobKey'),
         numSpeakers: 3,
         onProgress: any(named: 'onProgress'),
       ),
@@ -112,6 +114,7 @@ void main() {
           workspaceId: any(named: 'workspaceId'),
           title: any(named: 'title'),
           startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
         ),
@@ -136,6 +139,7 @@ void main() {
         workspaceId: any(named: 'workspaceId'),
         title: any(named: 'title'),
         startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
       ),
@@ -147,8 +151,13 @@ void main() {
         ),
       ),
     );
-    when(() => facade.startTranscription(mediaId: 'm1', numSpeakers: 2))
-        .thenAnswer((_) async => const Right(_job));
+    when(
+      () => facade.startTranscription(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: 2,
+      ),
+    ).thenAnswer((_) async => const Right(_job));
 
     final file = _file('a.mp3');
     final cubit = UploadQueueCubit(facade)..open([file]);
@@ -165,10 +174,58 @@ void main() {
         workspaceId: 'w2',
         title: any(named: 'title'),
         startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
       ),
     );
-    verify(() => facade.startTranscription(mediaId: 'm1', numSpeakers: 2))
-        .called(1);
+    verify(
+      () => facade.startTranscription(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: 2,
+      ),
+    ).called(1);
+    await cubit.close();
+  });
+
+  test('a stored file whose start answer was lost retries with the '
+      'upload’s key; JOB_ACTIVE stays on the row', () async {
+    String? uploadKey;
+    when(
+      () => facade.upload(
+        file: any(named: 'file'),
+        workspaceId: any(named: 'workspaceId'),
+        title: any(named: 'title'),
+        startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+        onProgress: any(named: 'onProgress'),
+      ),
+    ).thenAnswer((inv) async {
+      uploadKey = inv.namedArguments[#jobKey] as String;
+      return const Right(
+        UploadResult(mediaId: 'm1', startFailure: Failure.network()),
+      );
+    });
+    final keys = <String>[];
+    when(
+      () => facade.startTranscription(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+      ),
+    ).thenAnswer((inv) async {
+      keys.add(inv.namedArguments[#idempotencyKey] as String);
+      return const Left(Failure.jobActive());
+    });
+
+    final file = _file('a.mp3');
+    final cubit = UploadQueueCubit(facade)..open([file]);
+    await cubit.start(workspaceId: 'w1');
+    await cubit.retry(file.path, workspaceId: 'w1');
+
+    expect(keys.single, uploadKey);
+    expect(statusOf(cubit, 'a.mp3'), QueueItemStatus.stored);
+    expect(cubit.state.items.single.failure, const Failure.jobActive());
     await cubit.close();
   });
 
@@ -187,6 +244,7 @@ void main() {
           workspaceId: any(named: 'workspaceId'),
           title: any(named: 'title'),
           startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
         ),
@@ -224,6 +282,7 @@ void main() {
           workspaceId: any(named: 'workspaceId'),
           title: any(named: 'title'),
           startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
         ),

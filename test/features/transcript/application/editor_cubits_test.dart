@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
@@ -199,9 +201,14 @@ void main() {
     late _MockJobFacade jobs;
     setUp(() => jobs = _MockJobFacade());
 
+    Future<Either<Failure, Job>> create() => jobs.createJob(
+      mediaId: 'm1',
+      idempotencyKey: any(named: 'idempotencyKey'),
+    );
+
     blocTest<RetranscribeCubit, RetranscribeState>(
       'starts a job for the media and hands back its id',
-      setUp: () => when(() => jobs.createJob(mediaId: 'm1')).thenAnswer(
+      setUp: () => when(create).thenAnswer(
         (_) async =>
             const Right(Job(id: 'j9', status: JobStatus.queued, mediaId: 'm1')),
       ),
@@ -218,12 +225,12 @@ void main() {
           jobId: 'j9',
         ),
       ],
-      verify: (_) => verify(() => jobs.createJob(mediaId: 'm1')).called(1),
+      verify: (_) => verify(create).called(1),
     );
 
     blocTest<RetranscribeCubit, RetranscribeState>(
       'no balance is a failure the sheet shows',
-      setUp: () => when(() => jobs.createJob(mediaId: 'm1'))
+      setUp: () => when(create)
           .thenAnswer((_) async => const Left(Failure.server(statusCode: 402))),
       build: () => RetranscribeCubit(jobs),
       act: (c) => c.start('m1'),
@@ -235,5 +242,65 @@ void main() {
         ),
       ],
     );
+
+    blocTest<RetranscribeCubit, RetranscribeState>(
+      'a file whose job is still running is JOB_ACTIVE on the sheet',
+      setUp: () =>
+          when(create).thenAnswer((_) async => const Left(Failure.jobActive())),
+      build: () => RetranscribeCubit(jobs),
+      act: (c) => c.start('m1'),
+      expect: () => [
+        const RetranscribeState(status: RetranscribeStatus.busy),
+        const RetranscribeState(
+          status: RetranscribeStatus.failure,
+          failure: Failure.jobActive(),
+        ),
+      ],
+    );
+
+    test('a retry after a lost answer sends the same key; one after a '
+        'refusal or a success, a new one', () async {
+      final keys = <String>[];
+      final answers = <Either<Failure, Job>>[
+        const Left(Failure.network()),
+        const Left(Failure.server(statusCode: 503)),
+        const Left(Failure.idempotencyMismatch()),
+        const Right(Job(id: 'j9', status: JobStatus.queued)),
+      ];
+      when(create).thenAnswer((inv) async {
+        keys.add(inv.namedArguments[#idempotencyKey] as String);
+        return answers.removeAt(0);
+      });
+      final cubit = RetranscribeCubit(jobs);
+
+      await cubit.start('m1');
+      await cubit.start('m1');
+      await cubit.start('m1');
+      expect(cubit.state.failure, const Failure.idempotencyMismatch());
+      await cubit.start('m1');
+
+      expect(keys, hasLength(4));
+      expect(keys[1], keys[0]);
+      expect(keys[2], keys[0]);
+      expect(keys[3], isNot(keys[2]));
+      expect(cubit.state.jobId, 'j9');
+      await cubit.close();
+    });
+
+    test('a second confirm while the first runs sends nothing', () async {
+      final pending = Completer<Either<Failure, Job>>();
+      when(create).thenAnswer((_) => pending.future);
+      final cubit = RetranscribeCubit(jobs);
+
+      final first = cubit.start('m1');
+      await cubit.start('m1');
+      expect(cubit.state.status, RetranscribeStatus.busy);
+      pending.complete(const Right(Job(id: 'j9', status: JobStatus.queued)));
+      await first;
+
+      verify(create).called(1);
+      expect(cubit.state.status, RetranscribeStatus.started);
+      await cubit.close();
+    });
   });
 }

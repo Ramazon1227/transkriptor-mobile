@@ -9,7 +9,7 @@ import 'package:transkriptor_uz/core/error/held_file.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/network_names.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
-import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
+import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/held_file_model.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/media_created_model.dart';
@@ -120,19 +120,19 @@ class UploadRepository {
     required String url,
     required String workspaceId,
     required bool youtube,
+    required String idempotencyKey,
     int? numSpeakers,
   }) {
-    final key = newIdempotencyKey();
-    return runRequest(() async {
+    return runJobRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
         youtube ? Endpoints.mediaYoutube : Endpoints.mediaCloud,
         data: {
           'url': url,
           'workspace_id': workspaceId,
           'num_speakers': ?numSpeakers,
-          'idempotency_key': key,
+          'idempotency_key': idempotencyKey,
         },
-        options: Options(headers: {'Idempotency-Key': key}),
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return JobModel.fromJson(envelopeData(response.data));
     });

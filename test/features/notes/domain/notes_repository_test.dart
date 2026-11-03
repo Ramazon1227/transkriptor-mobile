@@ -187,7 +187,7 @@ void main() {
   });
 
   group('JobRepository retranscribe', () {
-    test('reads num_speakers and sends it back with a fresh key', () async {
+    test('reads num_speakers and sends it back with the given key', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/job/j1': (
           200,
@@ -208,12 +208,18 @@ void main() {
           .getOrElse(() => throw StateError('left'))
           .toEntity();
       expect(previous.numSpeakers, 3);
-      await repo.createJob(mediaId: 'm1', numSpeakers: previous.numSpeakers);
-      await repo.createJob(mediaId: 'm1');
+      await repo.createJob(
+        mediaId: 'm1',
+        idempotencyKey: 'k1',
+        numSpeakers: previous.numSpeakers,
+      );
+      await repo.createJob(mediaId: 'm1', idempotencyKey: 'k2');
       final first = http.sent[1].body! as Map<String, Object?>;
       final second = http.sent[2].body! as Map<String, Object?>;
       expect(first['num_speakers'], 3);
-      expect(first['idempotency_key'], isNot(second['idempotency_key']));
+      expect(first['idempotency_key'], 'k1');
+      expect(http.sent[1].options.headers['Idempotency-Key'], 'k1');
+      expect(second['idempotency_key'], 'k2');
     });
   });
 

@@ -411,7 +411,13 @@ void main() {
       (_) async =>
           const Right(Job(id: 'j1', status: JobStatus.failed, numSpeakers: 4)),
     );
-    when(() => jobs.createJob(mediaId: 'm1', numSpeakers: 4)).thenAnswer(
+    when(
+      () => jobs.createJob(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: 4,
+      ),
+    ).thenAnswer(
       (_) async => const Right(Job(id: 'j9', status: JobStatus.queued)),
     );
     await pump(tester);
@@ -423,12 +429,42 @@ void main() {
     verifyNever(
       () => jobs.createJob(
         mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
       ),
     );
+    // A failed file has no transcript to replace.
+    expect(find.byKey(const Key('retranscribe_replaces')), findsNothing);
     await tester.tap(find.byKey(const Key('file_retranscribe_confirm')));
     await settle(tester);
     expect(find.text('job j9'), findsOneWidget);
+  });
+
+  testWidgets('retranscribing a file with a transcript says it will be '
+      'replaced; a running job is refused on the sheet', (tester) async {
+    when(() => jobs.getJob('j3')).thenAnswer(
+      (_) async => const Right(Job(id: 'j3', status: JobStatus.succeeded)),
+    );
+    when(
+      () => jobs.createJob(
+        mediaId: 'm3',
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+      ),
+    ).thenAnswer((_) async => const Left(Failure.jobActive()));
+    await pump(tester);
+    await tester.tap(find.byKey(const Key('file_more_m3')));
+    await settle(tester);
+    await tester.tap(find.byKey(const Key('file_retranscribe')));
+    await settle(tester);
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('uz'));
+    expect(find.text(l10n.retranscribeReplaces), findsOneWidget);
+    await tester.tap(find.byKey(const Key('file_retranscribe_confirm')));
+    await settle(tester);
+    // The sheet stays open with the reason.
+    expect(find.text(l10n.retranscribeActive), findsOneWidget);
+    expect(find.byKey(const Key('file_retranscribe_confirm')), findsOneWidget);
   });
 
   testWidgets('delete confirms in the sheet and deletes', (tester) async {

@@ -165,8 +165,12 @@ void main() {
     blocTest<JobCubit, JobState>(
       'retry starts the same file again and follows the new job',
       setUp: () {
-        when(() => facade.createJob(mediaId: 'm1'))
-            .thenAnswer((_) async => Right(job(JobStatus.queued, id: 'j2')));
+        when(
+          () => facade.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ),
+        ).thenAnswer((_) async => Right(job(JobStatus.queued, id: 'j2')));
         when(() => facade.getJob('j2'))
             .thenAnswer((_) async => Right(job(JobStatus.queued, id: 'j2')));
       },
@@ -179,10 +183,86 @@ void main() {
       act: (cubit) => cubit.retry(),
       wait: const Duration(milliseconds: 10),
       verify: (cubit) {
-        verify(() => facade.createJob(mediaId: 'm1')).called(1);
+        verify(
+          () => facade.createJob(
+            mediaId: 'm1',
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ),
+        ).called(1);
         expect(cubit.state.jobId, 'j2');
       },
     );
+
+    test('a retry after a lost answer sends the same key; after a refusal, '
+        'a new one', () async {
+      final keys = <String>[];
+      final answers = <Either<Failure, Job>>[
+        const Left(Failure.timeout()),
+        const Left(Failure.jobActive()),
+        const Left(Failure.network()),
+      ];
+      when(
+        () => facade.createJob(
+          mediaId: 'm1',
+          idempotencyKey: any(named: 'idempotencyKey'),
+        ),
+      ).thenAnswer((inv) async {
+        keys.add(inv.namedArguments[#idempotencyKey] as String);
+        return answers.removeAt(0);
+      });
+      final cubit = JobCubit(facade, fast, changes)
+        ..emit(
+          JobState(
+            status: JobViewStatus.success,
+            jobId: 'j1',
+            job: job(JobStatus.failed),
+          ),
+        );
+
+      await cubit.retry();
+      expect(cubit.state.failure, const Failure.timeout());
+      await cubit.retry();
+      expect(cubit.state.failure, const Failure.jobActive());
+      await cubit.retry();
+
+      expect(keys, hasLength(3));
+      expect(keys[1], keys[0]);
+      expect(keys[2], isNot(keys[1]));
+      await cubit.close();
+    });
+
+    test('a second retry while one runs sends nothing', () async {
+      final pending = Completer<Either<Failure, Job>>();
+      when(
+        () => facade.createJob(
+          mediaId: 'm1',
+          idempotencyKey: any(named: 'idempotencyKey'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final cubit = JobCubit(facade, fast, changes)
+        ..emit(
+          JobState(
+            status: JobViewStatus.success,
+            jobId: 'j1',
+            job: job(JobStatus.failed),
+          ),
+        );
+
+      final first = cubit.retry();
+      await cubit.retry();
+      expect(cubit.state.busy, isTrue);
+      pending.complete(const Left(Failure.jobActive()));
+      await first;
+
+      verify(
+        () => facade.createJob(
+          mediaId: 'm1',
+          idempotencyKey: any(named: 'idempotencyKey'),
+        ),
+      ).called(1);
+      expect(cubit.state.busy, isFalse);
+      await cubit.close();
+    });
   });
 
   group('JobPollPolicy', () {

@@ -78,6 +78,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.';
 
   @override
+  String get errorIdempotencyMismatch =>
+      'Bu soʻrov avval boshqa sozlamalar bilan yuborilgan edi. Qaytadan urinib koʻring.';
+
+  @override
   String get heldFilesShow => 'Joy egallagan fayllar';
 
   @override
@@ -2190,6 +2194,10 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get retranscribeGone =>
       'Audio oʻchirilgan — qayta transkripsiya qilib boʻlmaydi.';
+
+  @override
+  String get retranscribeReplaces =>
+      'Hozirgi transkript yangisi tayyor boʻlguncha qoladi, keyin uning oʻrnini yangisi egallaydi. Undagi tahrirlar, izohlar, xulosa, AI suhbat va ulashish havolalari oʻchiriladi. Yangi transkripsiya muvaffaqiyatsiz tugasa, hozirgisi saqlanib qoladi.';
 
   @override
   String get exportStepStyle => 'Uslub';

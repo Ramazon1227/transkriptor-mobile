@@ -49,6 +49,7 @@ void main() {
       workspaceId: any(named: 'workspaceId'),
       title: any(named: 'title'),
       startTranscription: any(named: 'startTranscription'),
+      jobKey: any(named: 'jobKey'),
       numSpeakers: any(named: 'numSpeakers'),
       onProgress: any(named: 'onProgress'),
     ),
@@ -132,6 +133,7 @@ void main() {
         workspaceId: 'w1',
         title: any(named: 'title'),
         startTranscription: true,
+        jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
       ),
@@ -170,8 +172,12 @@ void main() {
         startFailure: Failure.server(statusCode: 503),
       ),
     );
-    when(() => facade.startTranscription(mediaId: 'm1'))
-        .thenAnswer((_) async => const Right(_job));
+    when(
+      () => facade.startTranscription(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+      ),
+    ).thenAnswer((_) async => const Right(_job));
 
     await pump(tester, [_file('a.mp3'), _file('b.wav')]);
     await tester.tap(find.text(l10n.sendManyStart(2)));
@@ -182,7 +188,12 @@ void main() {
     await tester.tap(find.text(l10n.retry).first);
     await settle(tester);
 
-    verify(() => facade.startTranscription(mediaId: 'm1')).called(1);
+    verify(
+      () => facade.startTranscription(
+        mediaId: 'm1',
+        idempotencyKey: any(named: 'idempotencyKey'),
+      ),
+    ).called(1);
     expect(find.textContaining(l10n.sendManyStarted), findsOneWidget);
     await unmount(tester);
   });

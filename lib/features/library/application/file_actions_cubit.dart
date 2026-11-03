@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
+import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/domain/i_library_facade.dart';
@@ -38,6 +39,10 @@ class FileActionsCubit extends Cubit<FileActionsState> {
   final ILibraryFacade _facade;
   final IJobFacade _jobs;
   final LibraryChanges _changes;
+  final IdempotencyKeys _keys = IdempotencyKeys();
+
+  /// The speaker count a retranscription sent when its answer was lost.
+  final Map<String, int?> _triedSpeakers = {};
 
   /// [name] is already normalised by `FileRules`; the same name sends
   /// nothing.
@@ -53,21 +58,35 @@ class FileActionsCubit extends Cubit<FileActionsState> {
     () async => (await _facade.deleteMedia(item.mediaId)).map((_) => null),
   );
 
-  /// A new job for the same file, as the web's retry does: a fresh
-  /// idempotency key (the repository makes one per call) and the speaker
-  /// count of the previous job. When that job cannot be read the server
-  /// decides the count, rather than the retry failing for it.
+  /// A new job for the same file, as the web's retry does, with the
+  /// speaker count of the previous job. When that job cannot be read the
+  /// server decides the count, rather than the retry failing for it.
+  /// A try whose answer was lost is retried with the same idempotency key
+  /// and the same count, so the server sees one action.
   Future<void> retranscribe(LibraryItem item) => _run(() async {
-    int? speakers;
+    final mediaId = item.mediaId;
+    final int? speakers;
     final previous = item.jobId;
-    if (previous != null) {
+    if (_triedSpeakers.containsKey(mediaId)) {
+      speakers = _triedSpeakers[mediaId];
+    } else if (previous != null) {
       final job = await _jobs.getJob(previous);
       speakers = job.fold((_) => null, (j) => j.numSpeakers);
+    } else {
+      speakers = null;
     }
     final result = await _jobs.createJob(
-      mediaId: item.mediaId,
+      mediaId: mediaId,
+      idempotencyKey: _keys.keyFor(mediaId),
       numSpeakers: speakers,
     );
+    final failure = result.fold((f) => f, (_) => null);
+    _keys.settle(mediaId, failure);
+    if (failure != null && IdempotencyKeys.mayHaveReachedServer(failure)) {
+      _triedSpeakers[mediaId] = speakers;
+    } else {
+      _triedSpeakers.remove(mediaId);
+    }
     return result.map((job) => job.id);
   });
 

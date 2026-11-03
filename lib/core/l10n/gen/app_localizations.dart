@@ -220,6 +220,12 @@ abstract class AppLocalizations {
   /// **'Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.'**
   String get errorPendingLimit;
 
+  /// No description provided for @errorIdempotencyMismatch.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu soʻrov avval boshqa sozlamalar bilan yuborilgan edi. Qaytadan urinib koʻring.'**
+  String get errorIdempotencyMismatch;
+
   /// No description provided for @heldFilesShow.
   ///
   /// In uz, this message translates to:
@@ -3975,6 +3981,12 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Audio oʻchirilgan — qayta transkripsiya qilib boʻlmaydi.'**
   String get retranscribeGone;
+
+  /// No description provided for @retranscribeReplaces.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozirgi transkript yangisi tayyor boʻlguncha qoladi, keyin uning oʻrnini yangisi egallaydi. Undagi tahrirlar, izohlar, xulosa, AI suhbat va ulashish havolalari oʻchiriladi. Yangi transkripsiya muvaffaqiyatsiz tugasa, hozirgisi saqlanib qoladi.'**
+  String get retranscribeReplaces;
 
   /// No description provided for @exportStepStyle.
   ///

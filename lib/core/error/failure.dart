@@ -42,6 +42,14 @@ sealed class Failure with _$Failure {
     @Default(<HeldFile>[]) List<HeldFile> held,
   }) = PendingLimitFailure;
 
+  /// 409 JOB_ACTIVE: the file already has a queued or running job. A file
+  /// has one job at a time, so its minutes are never reserved twice.
+  const factory Failure.jobActive() = JobActiveFailure;
+
+  /// IDEMPOTENCY_MISMATCH: the action's key was already used with other
+  /// parameters. The key is dropped, so the next tap is a new action.
+  const factory Failure.idempotencyMismatch() = IdempotencyMismatchFailure;
+
   /// The answer arrived but did not have the expected shape.
   const factory Failure.parsing() = ParsingFailure;
 

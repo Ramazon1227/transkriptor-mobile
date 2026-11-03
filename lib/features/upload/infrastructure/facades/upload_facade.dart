@@ -42,6 +42,7 @@ class UploadFacade implements IUploadFacade {
     required String workspaceId,
     required String title,
     required bool startTranscription,
+    required String jobKey,
     int? numSpeakers,
     void Function(double progress)? onProgress,
   }) async {
@@ -89,7 +90,7 @@ class UploadFacade implements IUploadFacade {
 
     // A failed start is not a failed send: the file is stored, and a retry
     // must start the job, not upload the bytes again.
-    final job = await _startJob(media.id, numSpeakers);
+    final job = await _startJob(media.id, jobKey, numSpeakers);
     return Right(
       job.fold(
         (failure) => UploadResult(mediaId: media.id, startFailure: failure),
@@ -101,15 +102,18 @@ class UploadFacade implements IUploadFacade {
   @override
   Future<Either<Failure, Job>> startTranscription({
     required String mediaId,
+    required String idempotencyKey,
     int? numSpeakers,
-  }) => _startJob(mediaId, numSpeakers);
+  }) => _startJob(mediaId, idempotencyKey, numSpeakers);
 
   Future<Either<Failure, Job>> _startJob(
     String mediaId,
+    String key,
     int? numSpeakers,
   ) async {
     final result = await _jobs.createJob(
       mediaId: mediaId,
+      idempotencyKey: key,
       numSpeakers: numSpeakers,
     );
     // Minutes were reserved and the file now has a job.
@@ -121,6 +125,7 @@ class UploadFacade implements IUploadFacade {
   Future<Either<Failure, Job>> startLink({
     required String url,
     required String workspaceId,
+    required String idempotencyKey,
     int? numSpeakers,
   }) async {
     final host = Uri.tryParse(url.trim())?.host.toLowerCase() ?? '';
@@ -129,6 +134,7 @@ class UploadFacade implements IUploadFacade {
       url: url.trim(),
       workspaceId: workspaceId,
       youtube: youtube,
+      idempotencyKey: idempotencyKey,
       numSpeakers: numSpeakers,
     );
     if (result.isRight()) _changes.notify();
