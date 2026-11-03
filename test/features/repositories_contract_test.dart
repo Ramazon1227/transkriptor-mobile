@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart';
 import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart';
@@ -893,12 +894,15 @@ void main() {
         youtube: false,
         idempotencyKey: 'k2',
         numSpeakers: 3,
+        service: JobService.subtitle,
       );
       expect(http.sent.map((s) => s.options.path), [
         '/api/v1/media/youtube',
         '/api/v1/media/cloud',
       ]);
       expect((http.sent.last.body! as Map)['num_speakers'], 3);
+      expect((http.sent.last.body! as Map)['service'], 'SUBTITLE');
+      expect((http.sent.first.body! as Map).containsKey('service'), isFalse);
       expect((http.sent.last.body! as Map)['idempotency_key'], 'k2');
       expect(http.sent.last.options.headers['Idempotency-Key'], 'k2');
     });

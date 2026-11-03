@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
@@ -41,6 +42,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -87,7 +89,11 @@ void main() {
   test('each file gets its own upload and job, in turn', () async {
     final cubit = UploadQueueCubit(facade)
       ..open([_file('a.mp3'), _file('b.wav')]);
-    await cubit.start(workspaceId: 'w1', numSpeakers: 3);
+    await cubit.start(
+      workspaceId: 'w1',
+      numSpeakers: 3,
+      service: JobService.subtitle,
+    );
 
     expect(sent, ['a.mp3', 'b.wav']);
     verify(
@@ -98,6 +104,7 @@ void main() {
         startTranscription: true,
         jobKey: any(named: 'jobKey'),
         numSpeakers: 3,
+        service: JobService.subtitle,
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -121,6 +128,7 @@ void main() {
           startTranscription: any(named: 'startTranscription'),
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
+          service: any(named: 'service'),
           onProgress: any(named: 'onProgress'),
           cancel: any(named: 'cancel'),
         ),
@@ -147,6 +155,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -205,6 +214,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -220,6 +230,7 @@ void main() {
         mediaId: 'm1',
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     ).thenAnswer((inv) async {
       keys.add(inv.namedArguments[#idempotencyKey] as String);
@@ -253,6 +264,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -292,6 +304,7 @@ void main() {
           startTranscription: any(named: 'startTranscription'),
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
+          service: any(named: 'service'),
           onProgress: any(named: 'onProgress'),
           cancel: any(named: 'cancel'),
         ),
@@ -329,6 +342,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),
@@ -398,6 +412,7 @@ void main() {
           mediaId: any(named: 'mediaId'),
           idempotencyKey: any(named: 'idempotencyKey'),
           numSpeakers: any(named: 'numSpeakers'),
+          service: any(named: 'service'),
         ),
       );
     },
@@ -414,6 +429,7 @@ void main() {
         startTranscription: any(named: 'startTranscription'),
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
         onProgress: any(named: 'onProgress'),
         cancel: any(named: 'cancel'),
       ),

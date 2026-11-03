@@ -192,6 +192,10 @@
   "speakersLabel": "Maʼruzachilar soni",
   "speakersAuto": "Avto",
   "speakersHint": "Bilsangiz koʻrsating — ajratish aniqroq boʻladi.",
+  "serviceLabel": "Xizmat",
+  "serviceTranscription": "Transkripsiya",
+  "serviceSubtitle": "Subtitr",
+  "serviceSubtitleHint": "Matn subtitr kadrlariga boʻlinadi: bir kadrda 2 satr × 42 belgi va 6 soniyagacha.",
   "sendThisFile": "Bu fayl",
   "sendApproxMinutes": "≈ {minutes} daq",
   "@sendApproxMinutes": {

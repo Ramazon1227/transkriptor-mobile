@@ -142,6 +142,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     );
   });
@@ -201,6 +202,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     );
   });
@@ -234,6 +236,7 @@ void main() {
           youtube: any(named: 'youtube'),
           idempotencyKey: any(named: 'idempotencyKey'),
           numSpeakers: any(named: 'numSpeakers'),
+          service: any(named: 'service'),
         ),
       ).thenAnswer(
         (_) async => const Right(JobModel(id: 'j', status: JobStatus.queued)),
@@ -276,6 +279,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     ).thenAnswer((_) async => const Left(Failure.server(statusCode: 402)));
 
@@ -361,6 +365,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     );
   });
@@ -392,6 +397,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     );
   });
@@ -405,6 +411,7 @@ void main() {
         mediaId: any(named: 'mediaId'),
         idempotencyKey: any(named: 'idempotencyKey'),
         numSpeakers: any(named: 'numSpeakers'),
+        service: any(named: 'service'),
       ),
     ).thenAnswer((_) async {
       expect(cancel.cancel(), isFalse);

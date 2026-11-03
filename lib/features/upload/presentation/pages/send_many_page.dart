@@ -12,9 +12,11 @@ import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 /// Several picked files: one list, one speaker count, one button. One file
@@ -52,6 +54,7 @@ class _SendManyForm extends StatefulWidget {
 
 class _SendManyFormState extends State<_SendManyForm> {
   int? _speakers;
+  JobService _service = JobService.transcription;
 
   /// Leaving was confirmed: the emptied list must not pop a second time.
   bool _leaving = false;
@@ -117,6 +120,7 @@ class _SendManyFormState extends State<_SendManyForm> {
                     item.file.path,
                     workspaceId: widget.workspaceId,
                     numSpeakers: _speakers,
+                    service: _service,
                   ),
                 ),
               if (state.pickFailure != null) ...[
@@ -131,6 +135,12 @@ class _SendManyFormState extends State<_SendManyForm> {
                 value: _speakers,
                 enabled: !running,
                 onChanged: (v) => setState(() => _speakers = v),
+              ),
+              const SizedBox(height: 22),
+              ServicePicker(
+                value: _service,
+                enabled: !running,
+                onChanged: (v) => setState(() => _service = v),
               ),
               const SizedBox(height: 22),
               if (seconds != null) ...[
@@ -162,6 +172,7 @@ class _SendManyFormState extends State<_SendManyForm> {
                       : () => cubit.start(
                           workspaceId: widget.workspaceId,
                           numSpeakers: _speakers,
+                          service: _service,
                         ),
                   child: Text(l10n.sendManyStart(state.waitingCount)),
                 ),
