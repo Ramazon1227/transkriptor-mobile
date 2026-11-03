@@ -3046,6 +3046,12 @@ abstract class AppLocalizations {
   /// **'Transkriptni oʻqiyapti… Uzun yozuvda javob bir daqiqagacha olishi mumkin.'**
   String get aiChatThinking;
 
+  /// No description provided for @aiChatWriting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozmoqda…'**
+  String get aiChatWriting;
+
   /// No description provided for @aiChatAnswerFailed.
   ///
   /// In uz, this message translates to:

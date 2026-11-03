@@ -42,6 +42,9 @@ abstract class AiChatState with _$AiChatState {
   /// server would answer 409).
   bool get pending => items.any((m) => m.isPendingAnswer);
 
+  /// The pending answer's text is arriving.
+  bool get writing => items.any((m) => m.isWritingAnswer);
+
   bool get busy => sending || clearing || pending;
 }
 
@@ -210,7 +213,11 @@ class AiChatCubit extends Cubit<AiChatState> {
           ),
         );
         if (state.pending || chat.pending) {
-          _interval = initial ? _policy.first : _policy.next(_interval);
+          _interval = state.writing
+              ? _policy.streaming
+              : initial
+              ? _policy.first
+              : _policy.next(_interval);
           _schedule(generation);
         }
       },

@@ -645,6 +645,7 @@
   "aiChatHintPending": "Javob kutilmoqda…",
   "aiChatSend": "Yuborish",
   "aiChatThinking": "Transkriptni oʻqiyapti… Uzun yozuvda javob bir daqiqagacha olishi mumkin.",
+  "aiChatWriting": "Yozmoqda…",
   "aiChatAnswerFailed": "Javob olinmadi.",
   "aiChatResend": "Qayta yuborish",
   "aiChatPrivate": "Suhbatni faqat siz koʻrasiz.",

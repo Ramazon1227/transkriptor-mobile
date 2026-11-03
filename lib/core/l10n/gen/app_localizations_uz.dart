@@ -1673,6 +1673,9 @@ class AppLocalizationsUz extends AppLocalizations {
       'Transkriptni oʻqiyapti… Uzun yozuvda javob bir daqiqagacha olishi mumkin.';
 
   @override
+  String get aiChatWriting => 'Yozmoqda…';
+
+  @override
   String get aiChatAnswerFailed => 'Javob olinmadi.';
 
   @override

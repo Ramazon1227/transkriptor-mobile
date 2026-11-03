@@ -75,6 +75,25 @@ class MessageBubble extends StatelessWidget {
       );
     }
     switch (message.status) {
+      case AiMessageStatus.pending when message.content.isNotEmpty:
+        // Not a live region: the text grows every second and would be
+        // read out again each time.
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnswerText(text: message.content, onSeek: onSeek),
+            const SizedBox(height: 6),
+            Row(
+              key: Key('ai_writing_${message.id}'),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const TypingIndicator(),
+                const SizedBox(width: 8),
+                Text(l10n.aiChatWriting, style: AppText.caption),
+              ],
+            ),
+          ],
+        );
       case AiMessageStatus.pending:
         return Semantics(
           liveRegion: true,
