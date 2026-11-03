@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 
 class _MockUploadFacade extends Mock implements IUploadFacade;
@@ -39,6 +42,7 @@ void main() {
               jobKey: any(named: 'jobKey'),
               numSpeakers: any(named: 'numSpeakers'),
               onProgress: any(named: 'onProgress'),
+              cancel: any(named: 'cancel'),
             ),
           ).thenAnswer((invocation) async {
             final onProgress =
@@ -80,6 +84,7 @@ void main() {
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
         ),
       ).thenAnswer((_) async => const Left(Failure.server(statusCode: 402))),
       build: () => UploadBloc(facade),
@@ -114,6 +119,7 @@ void main() {
             jobKey: any(named: 'jobKey'),
             numSpeakers: any(named: 'numSpeakers'),
             onProgress: any(named: 'onProgress'),
+            cancel: any(named: 'cancel'),
           ),
         ).thenAnswer(
           (_) async => const Right(
@@ -169,6 +175,7 @@ void main() {
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
         ),
       ).called(1),
     );
@@ -185,6 +192,7 @@ void main() {
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
         ),
       ).thenAnswer((inv) async {
         uploadKey = inv.namedArguments[#jobKey] as String;
@@ -300,4 +308,127 @@ void main() {
     expect(noExt.extension, '');
     expect(noExt.baseName, 'yozuv');
   });
+
+  group('UploadBloc cancel', () {
+    void holdUpload() =>
+        when(
+          () => facade.upload(
+            file: any(named: 'file'),
+            workspaceId: any(named: 'workspaceId'),
+            title: any(named: 'title'),
+            startTranscription: any(named: 'startTranscription'),
+            jobKey: any(named: 'jobKey'),
+            numSpeakers: any(named: 'numSpeakers'),
+            onProgress: any(named: 'onProgress'),
+            cancel: any(named: 'cancel'),
+          ),
+        ).thenAnswer((call) {
+          final cancel = call.namedArguments[#cancel] as UploadCancel?;
+          final done = Completer<Either<Failure, UploadResult>>();
+          cancel!.onCancel(
+            () => done.complete(const Left(Failure.cancelled())),
+          );
+          return done.future;
+        });
+
+    blocTest<UploadBloc, UploadState>(
+      'a cancel is not dropped while the upload runs; the form comes back',
+      setUp: holdUpload,
+      build: () => UploadBloc(facade),
+      act: (bloc) async {
+        bloc.add(
+          const UploadFileSubmitted(
+            file: file,
+            workspaceId: 'w1',
+            title: 'f',
+            startTranscription: true,
+          ),
+        );
+        await pumpEventQueue();
+        bloc.add(const UploadCancelRequested());
+      },
+      expect: () => const [
+        UploadState(status: UploadStatus.uploading),
+        UploadState(),
+      ],
+    );
+
+    test('closing the bloc cancels the upload', () async {
+      UploadCancel? seen;
+      when(
+        () => facade.upload(
+          file: any(named: 'file'),
+          workspaceId: any(named: 'workspaceId'),
+          title: any(named: 'title'),
+          startTranscription: any(named: 'startTranscription'),
+          jobKey: any(named: 'jobKey'),
+          numSpeakers: any(named: 'numSpeakers'),
+          onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
+        ),
+      ).thenAnswer((call) {
+        seen = call.namedArguments[#cancel] as UploadCancel?;
+        return Completer<Either<Failure, UploadResult>>().future;
+      });
+      final bloc = UploadBloc(facade)
+        ..add(
+          const UploadFileSubmitted(
+            file: file,
+            workspaceId: 'w1',
+            title: 'f',
+            startTranscription: true,
+          ),
+        );
+      await pumpEventQueue();
+      expect(seen!.isCancelled, isFalse);
+      unawaited(bloc.close());
+      expect(seen!.isCancelled, isTrue);
+    });
+  });
+
+  blocTest<UploadBloc, UploadState>(
+    'once the job request is on its way it shows starting and a cancel '
+    'changes nothing',
+    setUp: () =>
+        when(
+          () => facade.upload(
+            file: any(named: 'file'),
+            workspaceId: any(named: 'workspaceId'),
+            title: any(named: 'title'),
+            startTranscription: any(named: 'startTranscription'),
+            jobKey: any(named: 'jobKey'),
+            numSpeakers: any(named: 'numSpeakers'),
+            onProgress: any(named: 'onProgress'),
+            cancel: any(named: 'cancel'),
+          ),
+        ).thenAnswer((call) async {
+          (call.namedArguments[#cancel] as UploadCancel?)!.seal();
+          await pumpEventQueue();
+          return const Right(UploadResult(mediaId: 'm1', job: job));
+        }),
+    build: () => UploadBloc(facade),
+    act: (bloc) async {
+      bloc.add(
+        const UploadFileSubmitted(
+          file: file,
+          workspaceId: 'w1',
+          title: 'f',
+          startTranscription: true,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const UploadCancelRequested());
+      await pumpEventQueue();
+    },
+    expect: () => const [
+      UploadState(status: UploadStatus.uploading),
+      UploadState(status: UploadStatus.starting, progress: 1),
+      UploadState(
+        status: UploadStatus.success,
+        progress: 1,
+        mediaId: 'm1',
+        job: job,
+      ),
+    ],
+  );
 }

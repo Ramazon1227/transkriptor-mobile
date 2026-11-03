@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 
 /// The extensions the backend accepts (`models.ClassifyFile`).
 const List<String> supportedExtensions = [
@@ -23,7 +24,8 @@ abstract interface class IUploadFacade {
   /// and — when [startTranscription] — starts a job with [jobKey] as its
   /// idempotency key; a retry of that start ([startTranscription]) sends
   /// the same key. [title] replaces the file name; the extension is kept.
-  /// [onProgress] gets 0–1.
+  /// [onProgress] gets 0–1. [cancel] stops it: the half-made row is
+  /// deleted, no job starts, and the answer is `Failure.cancelled()`.
   Future<Either<Failure, UploadResult>> upload({
     required PendingFile file,
     required String workspaceId,
@@ -32,6 +34,7 @@ abstract interface class IUploadFacade {
     required String jobKey,
     int? numSpeakers,
     void Function(double progress)? onProgress,
+    UploadCancel? cancel,
   });
 
   /// Starts transcription of a file already stored (a retry after

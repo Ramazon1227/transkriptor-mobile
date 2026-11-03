@@ -1072,6 +1072,30 @@ abstract class AppLocalizations {
   /// **'Fayl saqlandi, transkripsiya boshlanmadi'**
   String get sendManyNotStarted;
 
+  /// No description provided for @sendCancelUpload.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklashni bekor qilish'**
+  String get sendCancelUpload;
+
+  /// No description provided for @sendLeaveTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklash toʻxtatilsinmi?'**
+  String get sendLeaveTitle;
+
+  /// No description provided for @sendLeaveMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklanayotgan va navbatdagi fayllar bekor qilinadi, chala yuklangani serverdan oʻchiriladi. Transkripsiyasi boshlangan fayllar «Fayllar»da qoladi.'**
+  String get sendLeaveMessage;
+
+  /// No description provided for @sendLeaveConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish va chiqish'**
+  String get sendLeaveConfirm;
+
   /// No description provided for @linkTitle.
   ///
   /// In uz, this message translates to:

@@ -9,6 +9,7 @@ import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/facades/upload_facade.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/media_picker.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/media_created_model.dart';
@@ -42,6 +43,7 @@ void main() {
       sizeBytes: any(named: 'sizeBytes'),
       contentType: any(named: 'contentType'),
       onProgress: any(named: 'onProgress'),
+      cancel: any(named: 'cancel'),
     ),
   ).thenAnswer((_) async => const Right(unit));
 
@@ -106,6 +108,7 @@ void main() {
         sizeBytes: 3200000,
         contentType: 'audio/mp4',
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
       () => repository.confirm('m1'),
       () => jobs.createJob(mediaId: 'm1', idempotencyKey: 'k1', numSpeakers: 2),
@@ -120,6 +123,7 @@ void main() {
         sizeBytes: any(named: 'sizeBytes'),
         contentType: any(named: 'contentType'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).thenAnswer((_) async => const Left(Failure.network()));
 
@@ -150,6 +154,7 @@ void main() {
         sizeBytes: any(named: 'sizeBytes'),
         contentType: any(named: 'contentType'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).thenAnswer((_) async => const Left(Failure.network()));
 
@@ -319,4 +324,106 @@ void main() {
       expect(picked.existsSync(), isTrue);
     },
   );
+
+  test('a cancel during the PUT stops the bytes, frees the row and starts '
+      'nothing', () async {
+    final cancel = UploadCancel();
+    when(
+      () => repository.putFile(
+        uploadUrl: any(named: 'uploadUrl'),
+        path: any(named: 'path'),
+        sizeBytes: any(named: 'sizeBytes'),
+        contentType: any(named: 'contentType'),
+        onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
+      ),
+    ).thenAnswer((call) async {
+      final passed = call.namedArguments[#cancel] as UploadCancel?;
+      expect(passed, same(cancel));
+      cancel.cancel();
+      return const Left(Failure.cancelled());
+    });
+
+    final result = await facade.upload(
+      file: file,
+      workspaceId: 'w1',
+      title: '',
+      startTranscription: true,
+      jobKey: 'k1',
+      cancel: cancel,
+    );
+
+    expect(result, const Left<Failure, Object>(Failure.cancelled()));
+    verify(() => repository.deleteMedia('m1')).called(1);
+    verifyNever(() => repository.confirm(any()));
+    verifyNever(
+      () => jobs.createJob(
+        mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+      ),
+    );
+  });
+
+  test('a cancel during the confirm waits for it, then frees the row and '
+      'starts nothing', () async {
+    final cancel = UploadCancel();
+    stubPut();
+    when(() => repository.confirm('m1')).thenAnswer((_) async {
+      cancel.cancel();
+      // The delete has not gone out while the confirm still runs.
+      verifyNever(() => repository.deleteMedia(any()));
+      return const Right(unit);
+    });
+
+    final result = await facade.upload(
+      file: file,
+      workspaceId: 'w1',
+      title: '',
+      startTranscription: true,
+      jobKey: 'k1',
+      cancel: cancel,
+    );
+
+    expect(result, const Left<Failure, Object>(Failure.cancelled()));
+    verify(() => repository.deleteMedia('m1')).called(1);
+    verifyNever(
+      () => jobs.createJob(
+        mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+      ),
+    );
+  });
+
+  test('a cancel once the job request is on its way does nothing: the job '
+      'is kept, the row too', () async {
+    final cancel = UploadCancel();
+    stubPut();
+    when(
+      () => jobs.createJob(
+        mediaId: any(named: 'mediaId'),
+        idempotencyKey: any(named: 'idempotencyKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+      ),
+    ).thenAnswer((_) async {
+      expect(cancel.cancel(), isFalse);
+      return const Right(
+        JobModel(id: 'j1', mediaId: 'm1', status: JobStatus.queued),
+      );
+    });
+
+    final result = await facade.upload(
+      file: file,
+      workspaceId: 'w1',
+      title: '',
+      startTranscription: true,
+      jobKey: 'k1',
+      cancel: cancel,
+    );
+
+    expect(result.isRight(), isTrue);
+    expect(cancel.isCancelled, isFalse);
+    verifyNever(() => repository.deleteMedia(any()));
+  });
 }

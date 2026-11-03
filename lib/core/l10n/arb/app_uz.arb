@@ -222,6 +222,10 @@
   "sendManyStarting": "Boshlanmoqda",
   "sendManyStarted": "Transkripsiya boshlandi",
   "sendManyNotStarted": "Fayl saqlandi, transkripsiya boshlanmadi",
+  "sendCancelUpload": "Yuklashni bekor qilish",
+  "sendLeaveTitle": "Yuklash toʻxtatilsinmi?",
+  "sendLeaveMessage": "Yuklanayotgan va navbatdagi fayllar bekor qilinadi, chala yuklangani serverdan oʻchiriladi. Transkripsiyasi boshlangan fayllar «Fayllar»da qoladi.",
+  "sendLeaveConfirm": "Toʻxtatish va chiqish",
 
   "linkTitle": "Havola orqali",
   "linkLabel": "Havola",

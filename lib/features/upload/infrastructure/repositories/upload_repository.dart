@@ -11,6 +11,7 @@ import 'package:transkriptor_uz/core/network/network_names.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/held_file_model.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/models/media_created_model.dart';
 
@@ -84,13 +85,17 @@ class UploadRepository {
   }
 
   /// Streams the file, so a long recording is never held in memory.
+  /// [cancel] stops the bytes at once (`Failure.cancelled()`).
   Future<Either<Failure, Unit>> putFile({
     required String uploadUrl,
     required String path,
     required int sizeBytes,
     required String contentType,
     void Function(int sent, int total)? onProgress,
+    UploadCancel? cancel,
   }) {
+    final token = CancelToken();
+    cancel?.onCancel(token.cancel);
     return runRequest(() async {
       await _uploadDio.put<void>(
         uploadUrl,
@@ -102,6 +107,7 @@ class UploadRepository {
           },
         ),
         onSendProgress: onProgress,
+        cancelToken: token,
       );
       return unit;
     });

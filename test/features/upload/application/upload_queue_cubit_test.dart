@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 
 class _MockFacade extends Mock implements IUploadFacade;
@@ -39,6 +42,7 @@ void main() {
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).thenAnswer((call) async {
       final file = call.namedArguments[#file] as PendingFile;
@@ -95,6 +99,7 @@ void main() {
         jobKey: any(named: 'jobKey'),
         numSpeakers: 3,
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).called(1);
     expect(cubit.state.allStarted, isTrue);
@@ -117,6 +122,7 @@ void main() {
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
         ),
       ).thenAnswer((_) async => const Left(Failure.network()));
 
@@ -142,6 +148,7 @@ void main() {
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).thenAnswer(
       (_) async => const Right(
@@ -199,6 +206,7 @@ void main() {
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).thenAnswer((inv) async {
       uploadKey = inv.namedArguments[#jobKey] as String;
@@ -229,40 +237,40 @@ void main() {
     await cubit.close();
   });
 
-  test(
-    'a file removed while it waited is skipped; the running one stays',
-    () async {
-      final a = _file('a.mp3');
-      final b = _file('b.wav');
-      final cubit = UploadQueueCubit(facade)..open([a, b]);
-      when(
-        () => facade.upload(
-          file: any(
-            named: 'file',
-            that: predicate<PendingFile>((f) => f.fileName == 'a.mp3'),
-          ),
-          workspaceId: any(named: 'workspaceId'),
-          title: any(named: 'title'),
-          startTranscription: any(named: 'startTranscription'),
-          jobKey: any(named: 'jobKey'),
-          numSpeakers: any(named: 'numSpeakers'),
-          onProgress: any(named: 'onProgress'),
+  test('a file removed while it waited is skipped; the uploading one is '
+      'cancelled and its late answer ignored', () async {
+    final a = _file('a.mp3');
+    final b = _file('b.wav');
+    final cubit = UploadQueueCubit(facade)..open([a, b]);
+    when(
+      () => facade.upload(
+        file: any(
+          named: 'file',
+          that: predicate<PendingFile>((f) => f.fileName == 'a.mp3'),
         ),
-      ).thenAnswer((_) async {
-        sent.add('a.mp3');
-        cubit
-          ..remove(a.path)
-          ..remove(b.path);
-        return const Right(UploadResult(mediaId: 'm1', job: _job));
-      });
+        workspaceId: any(named: 'workspaceId'),
+        title: any(named: 'title'),
+        startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+        onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
+      ),
+    ).thenAnswer((_) async {
+      sent.add('a.mp3');
+      cubit
+        ..remove(a.path)
+        ..remove(b.path);
+      return const Right(UploadResult(mediaId: 'm1', job: _job));
+    });
 
-      await cubit.start(workspaceId: 'w1');
+    await cubit.start(workspaceId: 'w1');
 
-      expect(sent, ['a.mp3']);
-      expect(cubit.state.items.map((i) => i.file.fileName), ['a.mp3']);
-      await cubit.close();
-    },
-  );
+    expect(sent, ['a.mp3']);
+    expect(cubit.state.items, isEmpty);
+    expect(cubit.state.running, isFalse);
+    await cubit.close();
+  });
 
   test('a second tap while the list runs starts nothing more', () async {
     final cubit = UploadQueueCubit(facade)..open([_file('a.mp3')]);
@@ -285,6 +293,7 @@ void main() {
           jobKey: any(named: 'jobKey'),
           numSpeakers: any(named: 'numSpeakers'),
           onProgress: any(named: 'onProgress'),
+          cancel: any(named: 'cancel'),
         ),
       ).thenAnswer((call) async {
         (call.namedArguments[#onProgress] as void Function(double))
@@ -308,4 +317,122 @@ void main() {
       predicate<UploadQueueState>((s) => !s.running),
     ],
   );
+
+  /// Holds every upload until it is cancelled; [held] lists what started.
+  List<String> holdUploads() {
+    final held = <String>[];
+    when(
+      () => facade.upload(
+        file: any(named: 'file'),
+        workspaceId: any(named: 'workspaceId'),
+        title: any(named: 'title'),
+        startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+        onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
+      ),
+    ).thenAnswer((call) {
+      final file = call.namedArguments[#file] as PendingFile;
+      final cancel = call.namedArguments[#cancel] as UploadCancel?;
+      held.add(file.fileName);
+      final done = Completer<Either<Failure, UploadResult>>();
+      cancel!.onCancel(() => done.complete(const Left(Failure.cancelled())));
+      return done.future;
+    });
+    return held;
+  }
+
+  test('× on an uploading file cancels it; the next one goes on', () async {
+    final held = holdUploads();
+    final cubit = UploadQueueCubit(facade)
+      ..open([_file('a.mp3'), _file('b.wav')]);
+    unawaited(cubit.start(workspaceId: 'w1'));
+    await pumpEventQueue();
+    expect(statusOf(cubit, 'a.mp3'), QueueItemStatus.uploading);
+    expect(cubit.state.uploading, isTrue);
+
+    cubit.remove('/tmp/a.mp3');
+    await pumpEventQueue();
+    expect(cubit.state.items.map((i) => i.file.fileName), ['b.wav']);
+    expect(held, ['a.mp3', 'b.wav']);
+    expect(statusOf(cubit, 'b.wav'), QueueItemStatus.uploading);
+
+    cubit.remove('/tmp/b.wav');
+    await pumpEventQueue();
+    expect(cubit.state.items, isEmpty);
+    expect(cubit.state.running, isFalse);
+    await cubit.close();
+  });
+
+  test(
+    'leaving cancels the upload and drops the files waiting their turn',
+    () async {
+      final held = holdUploads();
+      final cubit = UploadQueueCubit(facade)
+        ..open([_file('a.mp3'), _file('b.wav')]);
+      unawaited(cubit.start(workspaceId: 'w1'));
+      await pumpEventQueue();
+
+      cubit.cancelAll();
+      await pumpEventQueue();
+      expect(cubit.state.items, isEmpty);
+      expect(held, ['a.mp3']);
+      expect(cubit.state.running, isFalse);
+      await cubit.close();
+    },
+  );
+
+  test(
+    'closing the page cancels the upload: no job starts unwatched',
+    () async {
+      final held = holdUploads();
+      final cubit = UploadQueueCubit(facade)..open([_file('a.mp3')]);
+      unawaited(cubit.start(workspaceId: 'w1'));
+      await pumpEventQueue();
+      expect(held, ['a.mp3']);
+      await cubit.close();
+      await pumpEventQueue();
+      verifyNever(
+        () => facade.startTranscription(
+          mediaId: any(named: 'mediaId'),
+          idempotencyKey: any(named: 'idempotencyKey'),
+          numSpeakers: any(named: 'numSpeakers'),
+        ),
+      );
+    },
+  );
+
+  test('once the job request is on its way the file shows as starting and '
+      '× no longer takes it off', () async {
+    final answer = Completer<Either<Failure, UploadResult>>();
+    when(
+      () => facade.upload(
+        file: any(named: 'file'),
+        workspaceId: any(named: 'workspaceId'),
+        title: any(named: 'title'),
+        startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+        onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
+      ),
+    ).thenAnswer((call) {
+      (call.namedArguments[#cancel] as UploadCancel?)!.seal();
+      return answer.future;
+    });
+    final cubit = UploadQueueCubit(facade)..open([_file('a.mp3')]);
+    final run = cubit.start(workspaceId: 'w1');
+    await pumpEventQueue();
+    expect(statusOf(cubit, 'a.mp3'), QueueItemStatus.starting);
+    expect(cubit.state.uploading, isFalse);
+
+    cubit
+      ..remove('/tmp/a.mp3')
+      ..cancelAll();
+    answer.complete(const Right(UploadResult(mediaId: 'm1', job: _job)));
+    await run;
+    expect(statusOf(cubit, 'a.mp3'), QueueItemStatus.started);
+    await cubit.close();
+  });
 }

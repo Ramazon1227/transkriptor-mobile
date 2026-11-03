@@ -6,6 +6,7 @@ import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 
 part 'upload_bloc.freezed.dart';
@@ -16,7 +17,8 @@ part 'upload_state.dart';
 class UploadBloc extends Bloc<UploadEvent, UploadState> {
   UploadBloc(this._facade) : super(const UploadState()) {
     // Sending is paid work: a second tap while one runs is ignored.
-    on<UploadEvent>(_onEvent, transformer: droppable());
+    on<UploadSendEvent>(_onEvent, transformer: droppable());
+    on<UploadCancelRequested>((_, _) => _cancel?.cancel());
   }
 
   final IUploadFacade _facade;
@@ -25,7 +27,17 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
   /// gets that job back instead of a second one.
   final IdempotencyKeys _keys = IdempotencyKeys();
 
-  Future<void> _onEvent(UploadEvent event, Emitter<UploadState> emit) =>
+  /// The file upload running now.
+  UploadCancel? _cancel;
+
+  /// A closed page has nobody watching: no job starts after it.
+  @override
+  Future<void> close() {
+    _cancel?.cancel();
+    return super.close();
+  }
+
+  Future<void> _onEvent(UploadSendEvent event, Emitter<UploadState> emit) =>
       switch (event) {
         UploadFileSubmitted() => _onFile(event, emit),
         UploadLinkSubmitted() => _onLink(event, emit),
@@ -40,6 +52,16 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
 
     // Every send is a new media row, so its job is a new action.
     final jobKey = newIdempotencyKey();
+    final cancel = _cancel = UploadCancel();
+    // The job request goes out: the cancel button and the prompt on leaving
+    // go away, since the job may already be charged.
+    if (event.startTranscription) {
+      cancel.onSeal(() {
+        if (!emit.isDone) {
+          emit(state.copyWith(status: UploadStatus.starting, progress: 1));
+        }
+      });
+    }
     final result = await _facade.upload(
       file: event.file,
       workspaceId: event.workspaceId,
@@ -52,7 +74,14 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
         if (emit.isDone || ((p - state.progress) < 0.01 && p < 1)) return;
         emit(state.copyWith(progress: p));
       },
+      cancel: cancel,
     );
+    _cancel = null;
+    // Cancelled: the form is back as it was, nothing was stored.
+    if (cancel.isCancelled) {
+      emit(const UploadState());
+      return;
+    }
 
     result.fold(
       (failure) =>

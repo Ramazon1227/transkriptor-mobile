@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart' show Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +18,7 @@ import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_many_page.dart';
 
@@ -52,6 +53,7 @@ void main() {
       jobKey: any(named: 'jobKey'),
       numSpeakers: any(named: 'numSpeakers'),
       onProgress: any(named: 'onProgress'),
+      cancel: any(named: 'cancel'),
     ),
   ).thenAnswer((_) async => Right(result));
 
@@ -136,6 +138,7 @@ void main() {
         jobKey: any(named: 'jobKey'),
         numSpeakers: any(named: 'numSpeakers'),
         onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
       ),
     ).called(2);
     expect(find.textContaining(l10n.sendManyStarted), findsNWidgets(2));
@@ -195,6 +198,58 @@ void main() {
       ),
     ).called(1);
     expect(find.textContaining(l10n.sendManyStarted), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('back during an upload asks, then cancels it and leaves; × on '
+      'the uploading file cancels it', (tester) async {
+    final cancels = <UploadCancel>[];
+    when(
+      () => facade.upload(
+        file: any(named: 'file'),
+        workspaceId: any(named: 'workspaceId'),
+        title: any(named: 'title'),
+        startTranscription: any(named: 'startTranscription'),
+        jobKey: any(named: 'jobKey'),
+        numSpeakers: any(named: 'numSpeakers'),
+        onProgress: any(named: 'onProgress'),
+        cancel: any(named: 'cancel'),
+      ),
+    ).thenAnswer((call) {
+      final cancel = call.namedArguments[#cancel]! as UploadCancel;
+      cancels.add(cancel);
+      final done = Completer<Either<Failure, UploadResult>>();
+      cancel.onCancel(() => done.complete(const Left(Failure.cancelled())));
+      return done.future;
+    });
+
+    await pump(tester, [_file('a.mp3'), _file('b.wav'), _file('c.mov')]);
+    await tester.tap(find.text(l10n.sendManyStart(3)));
+    await tester.pump();
+
+    // The uploading file is cancelled, the next one starts.
+    await tester.tap(find.byTooltip(l10n.sendCancelUpload));
+    await tester.pump();
+    expect(find.text('a.mp3'), findsNothing);
+    expect(cancels, hasLength(2));
+    expect(cancels.first.isCancelled, isTrue);
+
+    // Back: a sheet asks; «Bekor qilish» stays on the page.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.sendLeaveTitle), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirm_sheet_cancel')));
+    await tester.pumpAndSettle();
+    expect(find.text('b.wav'), findsOneWidget);
+    expect(cancels.last.isCancelled, isFalse);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm_sheet_confirm')));
+    await tester.pumpAndSettle();
+    expect(find.text('STUDIO'), findsOneWidget);
+    expect(cancels, hasLength(2));
+    expect(cancels.last.isCancelled, isTrue);
     await unmount(tester);
   });
 }

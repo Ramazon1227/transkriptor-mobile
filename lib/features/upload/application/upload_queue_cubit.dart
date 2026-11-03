@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 
 part 'upload_queue_cubit.freezed.dart';
@@ -39,8 +40,8 @@ abstract class UploadQueueState with _$UploadQueueState {
   const factory UploadQueueState({
     @Default(<QueueItem>[]) List<QueueItem> items,
 
-    /// Uploading the list. Nothing is added while it runs, and the page
-    /// cannot be left.
+    /// Uploading the list. Nothing is added while it runs; leaving the
+    /// page asks first and cancels what is still uploading.
     @Default(false) bool running,
     Failure? pickFailure,
   }) = _UploadQueueState;
@@ -53,6 +54,16 @@ abstract class UploadQueueState with _$UploadQueueState {
   bool get allStarted =>
       items.isNotEmpty &&
       items.every((i) => i.status == QueueItemStatus.started);
+
+  /// Bytes still on their way, or files waiting their turn: leaving would
+  /// cancel them.
+  bool get uploading =>
+      running &&
+      items.any(
+        (i) =>
+            i.status == QueueItemStatus.uploading ||
+            i.status == QueueItemStatus.waiting,
+      );
 }
 
 /// Several picked files, each with its own upload and job. One at a time:
@@ -67,6 +78,9 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
   /// A start whose answer was lost is retried with the same key, so it
   /// gets that job back instead of a second one.
   final IdempotencyKeys _keys = IdempotencyKeys();
+
+  /// The upload running now, by path (U-2).
+  final Map<String, UploadCancel> _cancels = {};
 
   void open(List<PendingFile> files) => _append(files);
 
@@ -90,12 +104,14 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     );
   }
 
-  /// A running item stays: its request cannot be taken back. A stored one
-  /// only leaves the list; the file stays in Files.
+  /// An uploading item is cancelled: its bytes stop and its half-made row
+  /// is deleted. One whose job is being started stays: that request
+  /// cannot be taken back. A stored one only leaves the list; the file
+  /// stays in Files.
   void remove(String path) {
-    bool busy(QueueItem i) =>
-        i.status == QueueItemStatus.uploading ||
-        i.status == QueueItemStatus.starting;
+    // Too late once sealed: the item is already shown as starting.
+    _cancels[path]?.cancel();
+    bool busy(QueueItem i) => i.status == QueueItemStatus.starting;
     emit(
       state.copyWith(
         items: state.items
@@ -103,6 +119,34 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
             .toList(),
       ),
     );
+  }
+
+  /// Leaving the page: what is uploading stops, what waits never starts.
+  /// A job already being started is not taken back.
+  void cancelAll() {
+    for (final cancel in _cancels.values) {
+      cancel.cancel();
+    }
+    emit(
+      state.copyWith(
+        items: state.items
+            .where(
+              (i) =>
+                  i.status != QueueItemStatus.uploading &&
+                  !(state.running && i.status == QueueItemStatus.waiting),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  /// A closed page has nobody watching: no job starts after it.
+  @override
+  Future<void> close() {
+    for (final cancel in _cancels.values) {
+      cancel.cancel();
+    }
+    return super.close();
   }
 
   Future<void> start({required String workspaceId, int? numSpeakers}) async {
@@ -158,6 +202,15 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     );
     // Every upload is a new media row, so its job is a new action.
     final jobKey = newIdempotencyKey();
+    final cancel = UploadCancel()
+      // The job request goes out: no × and no prompt on leaving any more.
+      ..onSeal(
+        () => _update(
+          path,
+          (i) => i.copyWith(status: QueueItemStatus.starting, progress: 1),
+        ),
+      );
+    _cancels[path] = cancel;
     final result = await _facade.upload(
       file: item.file,
       workspaceId: workspaceId,
@@ -171,7 +224,11 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
         if (current == null || ((p - current.progress) < 0.01 && p < 1)) return;
         _update(path, (i) => i.copyWith(progress: p));
       },
+      cancel: cancel,
     );
+    _cancels.remove(path);
+    // Cancelled: the item already left the list.
+    if (cancel.isCancelled) return;
     result.fold(
       (failure) => _update(
         path,

@@ -8,6 +8,7 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
@@ -52,6 +53,9 @@ class _SendManyForm extends StatefulWidget {
 class _SendManyFormState extends State<_SendManyForm> {
   int? _speakers;
 
+  /// Leaving was confirmed: the emptied list must not pop a second time.
+  bool _leaving = false;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -59,15 +63,31 @@ class _SendManyFormState extends State<_SendManyForm> {
     return BlocConsumer<UploadQueueCubit, UploadQueueState>(
       // Every file taken off the list: nothing is left to send.
       listenWhen: (prev, next) => prev.items.isNotEmpty && next.items.isEmpty,
-      listener: (context, state) => context.pop(),
+      listener: (context, state) {
+        if (!_leaving) context.pop();
+      },
       builder: (context, state) {
         final running = state.running;
         final seconds = context.select<AccountCubit, int?>(
           (c) => c.state.account?.currentWorkspace?.balanceSeconds,
         );
-        // Leaving mid-upload would let paid jobs start with nobody watching.
+        // Leaving mid-upload asks first, then cancels what is still
+        // uploading: paid jobs must not start with nobody watching.
         return PopScope(
-          canPop: !running,
+          canPop: !state.uploading,
+          onPopInvokedWithResult: (didPop, _) async {
+            if (didPop) return;
+            final leave = await showConfirmSheet(
+              context,
+              title: l10n.sendLeaveTitle,
+              message: l10n.sendLeaveMessage,
+              confirmLabel: l10n.sendLeaveConfirm,
+            );
+            if (!leave || !context.mounted) return;
+            _leaving = true;
+            cubit.cancelAll();
+            context.pop();
+          },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
@@ -194,8 +214,8 @@ class _FileRow extends StatelessWidget {
     final l10n = context.l10n;
     final failure = item.failure;
     final status = _statusText(l10n);
+    final uploading = item.status == QueueItemStatus.uploading;
     final removable =
-        item.status != QueueItemStatus.uploading &&
         item.status != QueueItemStatus.starting &&
         item.status != QueueItemStatus.started;
     final canRetry =
@@ -240,7 +260,9 @@ class _FileRow extends StatelessWidget {
               if (removable)
                 IconButton(
                   onPressed: onRemove,
-                  tooltip: l10n.sendManyRemove,
+                  tooltip: uploading
+                      ? l10n.sendCancelUpload
+                      : l10n.sendManyRemove,
                   icon: const Icon(Icons.close_rounded, size: 20),
                 ),
             ],

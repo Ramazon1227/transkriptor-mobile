@@ -7,6 +7,7 @@ import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/media_picker.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/repositories/upload_repository.dart';
@@ -45,6 +46,7 @@ class UploadFacade implements IUploadFacade {
     required String jobKey,
     int? numSpeakers,
     void Function(double progress)? onProgress,
+    UploadCancel? cancel,
   }) async {
     final cleanTitle = title.trim().isEmpty ? file.baseName : title.trim();
     final created = await _repository.createMedia(
@@ -57,6 +59,7 @@ class UploadFacade implements IUploadFacade {
     if (media == null || media.id.isEmpty || media.uploadUrl.isEmpty) {
       return Left(_failureOf(created));
     }
+    if (cancel?.isCancelled ?? false) return await _dropped(media.id);
 
     final put = await _repository.putFile(
       uploadUrl: media.uploadUrl,
@@ -69,17 +72,23 @@ class UploadFacade implements IUploadFacade {
               final whole = total > 0 ? total : file.sizeBytes;
               if (whole > 0) onProgress((sent / whole).clamp(0.0, 1.0));
             },
+      cancel: cancel,
     );
+    if (cancel?.isCancelled ?? false) return await _dropped(media.id);
     if (put.isLeft()) {
       await _repository.deleteMedia(media.id);
       return Left(_failureOf(put));
     }
 
     final confirmed = await _repository.confirm(media.id);
+    // Only now: a delete sent while the confirm ran could be overtaken by it.
+    if (cancel?.isCancelled ?? false) return await _dropped(media.id);
     if (confirmed.isLeft()) {
       await _repository.deleteMedia(media.id);
       return Left(_failureOf(confirmed));
     }
+    // From here the job may be created and charged: a cancel is too late.
+    cancel?.seal();
 
     // The server has the file now; our own recording copy is no longer
     // needed. A picked file is the person's own and is never touched.
@@ -139,6 +148,13 @@ class UploadFacade implements IUploadFacade {
     );
     if (result.isRight()) _changes.notify();
     return result.map((m) => m.toEntity());
+  }
+
+  /// A cancelled upload leaves no row behind: it would hold a place in the
+  /// limit of files not yet transcribed for an hour and a half (U-7).
+  Future<Either<Failure, UploadResult>> _dropped(String mediaId) async {
+    await _repository.deleteMedia(mediaId);
+    return const Left(Failure.cancelled());
   }
 
   static Future<void> _deleteQuietly(String path) async {

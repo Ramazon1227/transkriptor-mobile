@@ -558,6 +558,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get sendManyNotStarted => 'Fayl saqlandi, transkripsiya boshlanmadi';
 
   @override
+  String get sendCancelUpload => 'Yuklashni bekor qilish';
+
+  @override
+  String get sendLeaveTitle => 'Yuklash toʻxtatilsinmi?';
+
+  @override
+  String get sendLeaveMessage =>
+      'Yuklanayotgan va navbatdagi fayllar bekor qilinadi, chala yuklangani serverdan oʻchiriladi. Transkripsiyasi boshlangan fayllar «Fayllar»da qoladi.';
+
+  @override
+  String get sendLeaveConfirm => 'Toʻxtatish va chiqish';
+
+  @override
   String get linkTitle => 'Havola orqali';
 
   @override

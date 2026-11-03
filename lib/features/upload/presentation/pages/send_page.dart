@@ -8,6 +8,7 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
+import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
@@ -96,15 +97,32 @@ class _SendFormState extends State<_SendForm> {
             state.status == UploadStatus.starting ||
             state.status == UploadStatus.success;
         // Once stored, the form is done: only starting the job is left.
+        // A starting job without a media id is the first start, right after
+        // the upload; with one it is a retry of a stored file.
         final stored =
             state.status == UploadStatus.stored ||
-            state.status == UploadStatus.starting;
+            (state.status == UploadStatus.starting && state.mediaId != null);
+        final firstStart =
+            state.status == UploadStatus.starting && state.mediaId == null;
         final locked = busy || stored;
         final mediaId = state.mediaId;
-        // Leaving mid-upload would let it finish unseen and start a paid
-        // job nobody is watching.
+        // Leaving mid-upload asks first and cancels it: otherwise it would
+        // finish unseen and start a paid job nobody is watching. A job
+        // being started cannot be taken back, so that moment just waits.
         return PopScope(
           canPop: !busy,
+          onPopInvokedWithResult: (didPop, _) async {
+            if (didPop || !uploading) return;
+            final leave = await showConfirmSheet(
+              context,
+              title: l10n.sendLeaveTitle,
+              message: l10n.sendLeaveMessage,
+              confirmLabel: l10n.sendLeaveConfirm,
+            );
+            if (!leave || !context.mounted) return;
+            context.read<UploadBloc>().add(const UploadCancelRequested());
+            context.pop();
+          },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
@@ -156,6 +174,22 @@ class _SendFormState extends State<_SendForm> {
                     minHeight: 6,
                     backgroundColor: AppColors.sf2,
                   ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () => context.read<UploadBloc>().add(
+                    const UploadCancelRequested(),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.cotton,
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  child: Text(l10n.sendCancelUpload),
+                ),
+              ] else if (firstStart) ...[
+                Text(
+                  l10n.sendManyStarting,
+                  style: AppText.mono.copyWith(fontSize: 13),
                 ),
               ] else if (stored && mediaId != null) ...[
                 FilledButton(

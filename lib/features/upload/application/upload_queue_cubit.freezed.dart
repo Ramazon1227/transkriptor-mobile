@@ -335,8 +335,8 @@ $FailureCopyWith<$Res>? get failure {
 /// @nodoc
 mixin _$UploadQueueState {
 
- List<QueueItem> get items;/// Uploading the list. Nothing is added while it runs, and the page
-/// cannot be left.
+ List<QueueItem> get items;/// Uploading the list. Nothing is added while it runs; leaving the
+/// page asks first and cancels what is still uploading.
  bool get running; Failure? get pickFailure;
 /// Create a copy of UploadQueueState
 /// with the given fields replaced by the non-null parameter values.
@@ -558,8 +558,8 @@ class _UploadQueueState extends UploadQueueState {
   return EqualUnmodifiableListView(_items);
 }
 
-/// Uploading the list. Nothing is added while it runs, and the page
-/// cannot be left.
+/// Uploading the list. Nothing is added while it runs; leaving the
+/// page asks first and cancels what is still uploading.
 @override@JsonKey() final  bool running;
 @override final  Failure? pickFailure;
 
