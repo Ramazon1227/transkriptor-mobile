@@ -19,4 +19,22 @@ void main() {
     expect(parts, hasLength(1));
     expect(parts.single, isA<AnswerPlain>());
   });
+
+  test('a partial answer cut inside a timecode keeps the tail as text', () {
+    for (final tail in [
+      '[',
+      '[1',
+      '[12',
+      '[12:',
+      '[12:3',
+      '[12:34',
+      '[1:02:',
+    ]) {
+      final parts = splitTimecodes('Avval [00:05] keyin $tail');
+      expect(parts, hasLength(3), reason: tail);
+      expect((parts[1] as AnswerTimecode).label, '00:05');
+      expect((parts[2] as AnswerPlain).text, ' keyin $tail');
+    }
+    expect(splitTimecodes('[12:'), [isA<AnswerPlain>()]);
+  });
 }

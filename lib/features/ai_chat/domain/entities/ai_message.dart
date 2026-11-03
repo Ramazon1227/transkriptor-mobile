@@ -29,6 +29,10 @@ abstract class AiMessage with _$AiMessage {
 
   bool get isPendingAnswer =>
       role == AiRole.assistant && status == AiMessageStatus.pending;
+
+  /// A pending answer whose text the server is already writing: [content]
+  /// is partial, may end mid-word, and grows until `DONE` replaces it.
+  bool get isWritingAnswer => isPendingAnswer && content.isNotEmpty;
 }
 
 /// `GET /transcript/:id/chat`: the history, oldest first, and whether an

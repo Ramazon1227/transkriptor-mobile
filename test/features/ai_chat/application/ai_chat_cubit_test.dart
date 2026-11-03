@@ -145,6 +145,55 @@ void main() {
     expect(facade.historyCalls, calls);
   });
 
+  test('a pending answer whose text grows is shown and polled fast', () async {
+    AiChat chat(AiMessageStatus status, String text) => AiChat(
+      items: [q('q1', 'Kim?'), a('a1', status, text)],
+      pending: status == AiMessageStatus.pending,
+    );
+    facade
+      ..answer(Right(chat(AiMessageStatus.pending, '')))
+      ..answer(Right(chat(AiMessageStatus.pending, 'Maʼruzachi')));
+    final third = facade.heldHistory();
+    // Without text the next poll is 200 ms away; with text, 2 ms.
+    final cubit = AiChatCubit(
+      facade,
+      AiChatPollPolicy.custom(
+        first: const Duration(milliseconds: 200),
+        max: const Duration(milliseconds: 200),
+        streaming: const Duration(milliseconds: 2),
+      ),
+    );
+    addTearDown(cubit.close);
+    final states = <AiChatState>[];
+    final sub = cubit.stream.listen(states.add);
+    addTearDown(sub.cancel);
+    await cubit.load('t1');
+    expect(cubit.state.writing, isFalse);
+
+    await settle(260); // the 200 ms poll brings the first text
+    expect(cubit.state.items.last.content, 'Maʼruzachi');
+    expect(cubit.state.writing, isTrue);
+    // The next poll left at the fast pace, long before 200 ms.
+    expect(facade.historyCalls, 3);
+
+    facade
+      ..answer(Right(chat(AiMessageStatus.pending, 'Maʼruzachi 1 [00:12]')))
+      ..answer(Right(chat(AiMessageStatus.done, 'Maʼruzachi 1 [00:12] dedi.')));
+    third.complete(Right(chat(AiMessageStatus.pending, 'Maʼruzachi 1 [00:')));
+    await settle(60); // the rest arrives at the 2 ms pace
+    expect(facade.historyCalls, 5);
+    expect(cubit.state.pending, isFalse);
+    expect(states.map((s) => s.items.isEmpty ? null : s.items.last.content), [
+      null, // loading
+      '',
+      'Maʼruzachi',
+      'Maʼruzachi 1 [00:',
+      'Maʼruzachi 1 [00:12]',
+      'Maʼruzachi 1 [00:12] dedi.',
+    ]);
+    expect(states.last.items.last.status, AiMessageStatus.done);
+  });
+
   test('send is refused while an answer is pending', () async {
     facade.answer(
       Right(

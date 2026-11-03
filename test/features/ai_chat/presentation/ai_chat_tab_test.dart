@@ -118,6 +118,53 @@ void main() {
     expect(seeked, const Duration(minutes: 1, seconds: 23));
   });
 
+  testWidgets('a pending answer with text shows it while it is written', (
+    tester,
+  ) async {
+    when(() => facade.history('t1')).thenAnswer(
+      (_) async => const Right(
+        AiChat(
+          items: [
+            AiMessage(
+              id: 'q1',
+              role: AiRole.user,
+              status: AiMessageStatus.done,
+              content: 'Qachon?',
+            ),
+            AiMessage(
+              id: 'a1',
+              role: AiRole.assistant,
+              status: AiMessageStatus.pending,
+              content: 'Byudjet [01:23] da, keyin [12:',
+            ),
+          ],
+          pending: true,
+        ),
+      ),
+    );
+    Duration? seeked;
+    await tester.pumpWidget(
+      _host(AiChatTab(transcriptId: 't1', onSeek: (d) => seeked = d)),
+    );
+    // The dots animate forever: pump, never settle.
+    await tester.pump();
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('keyin [12:', findRichText: true), findsOne);
+    expect(find.byKey(const Key('ai_writing_a1')), findsOneWidget);
+    expect(find.text('Yozmoqda…'), findsOneWidget);
+    expect(find.textContaining('Transkriptni oʻqiyapti'), findsNothing);
+    await tester.tap(find.byKey(const Key('ai_timecode_01:23')));
+    expect(seeked, const Duration(minutes: 1, seconds: 23));
+    // Still pending: no new question.
+    final send = tester.widget<IconButton>(
+      find.byKey(const Key('ai_chat_send')),
+    );
+    expect(send.onPressed, isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('a failed answer shows its error and a resend button', (
     tester,
   ) async {
