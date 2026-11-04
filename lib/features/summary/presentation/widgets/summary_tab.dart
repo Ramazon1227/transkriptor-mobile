@@ -23,9 +23,12 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 /// (`DemoBanner`). Lives in a tab view under the player: fills a bounded
 /// height, scrolls itself.
 class SummaryTab extends StatelessWidget {
-  const SummaryTab({required this.transcript, super.key});
+  const SummaryTab({required this.transcript, this.onSeek, super.key});
 
   final Transcript transcript;
+
+  /// A server `[mm:ss]` in the summary moves the player there (XU-1).
+  final ValueChanged<Duration>? onSeek;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +38,16 @@ class SummaryTab extends StatelessWidget {
         unawaited(cubit.start(transcript));
         return cubit;
       },
-      child: _SummaryView(transcript: transcript),
+      child: _SummaryView(transcript: transcript, onSeek: onSeek),
     );
   }
 }
 
 class _SummaryView extends StatelessWidget {
-  const _SummaryView({required this.transcript});
+  const _SummaryView({required this.transcript, this.onSeek});
 
   final Transcript transcript;
+  final ValueChanged<Duration>? onSeek;
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +143,7 @@ class _SummaryView extends StatelessWidget {
           summary: summary,
           transcript: transcript,
           saving: state.noteStatus == NoteSaveStatus.saving,
+          onSeek: onSeek,
         );
     }
   }
@@ -225,11 +230,13 @@ class _SummaryCard extends StatelessWidget {
     required this.summary,
     required this.transcript,
     required this.saving,
+    this.onSeek,
   });
 
   final Summary summary;
   final Transcript transcript;
   final bool saving;
+  final ValueChanged<Duration>? onSeek;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +259,7 @@ class _SummaryCard extends StatelessWidget {
         if (fromServer)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: NoteBody(blocks: summary.blocks),
+            child: NoteBody(blocks: summary.blocks, onSeek: onSeek),
           )
         else
           SummarySections(sections: sections),

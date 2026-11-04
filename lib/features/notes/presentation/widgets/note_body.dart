@@ -2,28 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/answer_text.dart';
 import 'package:transkriptor_uz/features/notes/domain/note_document.dart';
 
 /// A note's body, read-only: headings, paragraphs, lists, quotes and code
-/// in their shape; marks (bold, colour, links) are not drawn.
+/// in their shape; marks (bold, colour, links) are not drawn. With
+/// [onSeek] (a summary under the player) `[mm:ss]` in paragraphs and list
+/// items move the player there.
 class NoteBody extends StatelessWidget {
-  const NoteBody({required this.blocks, super.key});
+  const NoteBody({required this.blocks, this.onSeek, super.key});
 
   final List<NoteBlock> blocks;
+  final ValueChanged<Duration>? onSeek;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [for (final b in blocks) _Block(b)],
+      children: [for (final b in blocks) _Block(b, onSeek: onSeek)],
     );
   }
 }
 
 class _Block extends StatelessWidget {
-  const _Block(this.block);
+  const _Block(this.block, {this.onSeek});
 
   final NoteBlock block;
+  final ValueChanged<Duration>? onSeek;
+
+  Widget _text(String text) => onSeek == null
+      ? Text(text, style: AppText.body)
+      : AnswerText(text: text, onSeek: onSeek);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +51,7 @@ class _Block extends StatelessWidget {
       ),
       NoteBlockKind.paragraph => Padding(
         padding: const EdgeInsets.only(bottom: 8),
-        child: Text(b.text, style: AppText.body),
+        child: _text(b.text),
       ),
       NoteBlockKind.listItem => Padding(
         padding: EdgeInsets.only(left: 18.0 * b.depth, bottom: 4),
@@ -56,7 +65,7 @@ class _Block extends StatelessWidget {
                 style: AppText.body.copyWith(color: AppColors.mutedDark),
               ),
             ),
-            Expanded(child: Text(b.text, style: AppText.body)),
+            Expanded(child: _text(b.text)),
           ],
         ),
       ),
