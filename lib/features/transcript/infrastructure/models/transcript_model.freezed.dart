@@ -577,7 +577,7 @@ as bool,
 /// @nodoc
 mixin _$TranscriptModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'title') String get title;@JsonKey(name: 'media_id') String get mediaId;@JsonKey(name: 'duration_ms') int? get durationMs;@JsonKey(name: 'speakers') List<SpeakerModel> get speakers;@JsonKey(name: 'segments') List<SegmentModel> get segments;@JsonKey(name: 'revision') int get revision;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;@JsonKey(name: 'meeting') MeetingModel? get meeting;
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -591,20 +591,20 @@ $TranscriptModelCopyWith<TranscriptModel> get copyWith => _$TranscriptModelCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as TranscriptModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.role, _this.role) || other.role == _this.role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TranscriptModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.mediaId, _this.mediaId) || other.mediaId == _this.mediaId)&&(identical(other.durationMs, _this.durationMs) || other.durationMs == _this.durationMs)&&const DeepCollectionEquality().equals(other.speakers, _this.speakers)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.meeting, _this.meeting) || other.meeting == _this.meeting));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as TranscriptModel;
-  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision,_this.role);
+  return Object.hash(runtimeType,_this.id,_this.title,_this.mediaId,_this.durationMs,const DeepCollectionEquality().hash(_this.speakers),const DeepCollectionEquality().hash(_this.segments),_this.revision,_this.role,_this.meeting);
 }
 
 @override
 String toString() {
   final _this = this as TranscriptModel;
-  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision}, role: ${_this.role})';
+  return 'TranscriptModel(id: ${_this.id}, title: ${_this.title}, mediaId: ${_this.mediaId}, durationMs: ${_this.durationMs}, speakers: ${_this.speakers}, segments: ${_this.segments}, revision: ${_this.revision}, role: ${_this.role}, meeting: ${_this.meeting})';
 }
 
 
@@ -615,11 +615,11 @@ abstract mixin class $TranscriptModelCopyWith<$Res>  {
   factory $TranscriptModelCopyWith(TranscriptModel value, $Res Function(TranscriptModel) _then) = _$TranscriptModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'meeting') MeetingModel? meeting
 });
 
 
-
+$MeetingModelCopyWith<$Res>? get meeting;
 
 }
 /// @nodoc
@@ -632,7 +632,7 @@ class _$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,Object? meeting = freezed,}) {
   return _then(TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -642,10 +642,23 @@ as int?,speakers: null == speakers ? _self.speakers : speakers // ignore: cast_n
 as List<SpeakerModel>,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
 as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as WorkspaceRole,
+as WorkspaceRole,meeting: freezed == meeting ? _self.meeting : meeting // ignore: cast_nullable_to_non_nullable
+as MeetingModel?,
   ));
 }
+/// Create a copy of TranscriptModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MeetingModelCopyWith<$Res>? get meeting {
+    if (_self.meeting == null) {
+    return null;
+  }
 
+  return $MeetingModelCopyWith<$Res>(_self.meeting!, (value) {
+    return _then(_self.copyWith(meeting: value));
+  });
+}
 }
 
 
@@ -727,10 +740,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'meeting')  MeetingModel? meeting)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role,_that.meeting);case _:
   return orElse();
 
 }
@@ -748,10 +761,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'meeting')  MeetingModel? meeting)  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel():
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role,_that.meeting);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -768,10 +781,10 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'title')  String title, @JsonKey(name: 'media_id')  String mediaId, @JsonKey(name: 'duration_ms')  int? durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers, @JsonKey(name: 'segments')  List<SegmentModel> segments, @JsonKey(name: 'revision')  int revision, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'meeting')  MeetingModel? meeting)?  $default,) {final _that = this;
 switch (_that) {
 case _TranscriptModel() when $default != null:
-return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role);case _:
+return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speakers,_that.segments,_that.revision,_that.role,_that.meeting);case _:
   return null;
 
 }
@@ -783,7 +796,7 @@ return $default(_that.id,_that.title,_that.mediaId,_that.durationMs,_that.speake
 @JsonSerializable()
 
 class _TranscriptModel extends TranscriptModel {
-  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown}): _speakers = speakers,_segments = segments,super._();
+  const _TranscriptModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'title') this.title = '', @JsonKey(name: 'media_id') this.mediaId = '', @JsonKey(name: 'duration_ms') this.durationMs, @JsonKey(name: 'speakers')  List<SpeakerModel> speakers = const <SpeakerModel>[], @JsonKey(name: 'segments')  List<SegmentModel> segments = const <SegmentModel>[], @JsonKey(name: 'revision') this.revision = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown, @JsonKey(name: 'meeting') this.meeting}): _speakers = speakers,_segments = segments,super._();
   factory _TranscriptModel.fromJson(Map<String, dynamic> json) => _$TranscriptModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -806,6 +819,7 @@ class _TranscriptModel extends TranscriptModel {
 
 @override@JsonKey(name: 'revision') final  int revision;
 @override@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) final  WorkspaceRole role;
+@override@JsonKey(name: 'meeting') final  MeetingModel? meeting;
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
@@ -820,18 +834,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.role, role) || other.role == role));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TranscriptModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.durationMs, durationMs) || other.durationMs == durationMs)&&const DeepCollectionEquality().equals(other.speakers, _speakers)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.role, role) || other.role == role)&&(identical(other.meeting, meeting) || other.meeting == meeting));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,title,mediaId,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision,role);
+    return Object.hash(runtimeType,id,title,mediaId,durationMs,const DeepCollectionEquality().hash(_speakers),const DeepCollectionEquality().hash(_segments),revision,role,meeting);
 }
 
 @override
 String toString() {
-    return 'TranscriptModel(id: $id, title: $title, mediaId: $mediaId, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision, role: $role)';
+    return 'TranscriptModel(id: $id, title: $title, mediaId: $mediaId, durationMs: $durationMs, speakers: $speakers, segments: $segments, revision: $revision, role: $role, meeting: $meeting)';
 }
 
 
@@ -842,11 +856,11 @@ abstract mixin class _$TranscriptModelCopyWith<$Res> implements $TranscriptModel
   factory _$TranscriptModelCopyWith(_TranscriptModel value, $Res Function(_TranscriptModel) _then) = __$TranscriptModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role
+@JsonKey(name: 'id') String id,@JsonKey(name: 'title') String title,@JsonKey(name: 'media_id') String mediaId,@JsonKey(name: 'duration_ms') int? durationMs,@JsonKey(name: 'speakers') List<SpeakerModel> speakers,@JsonKey(name: 'segments') List<SegmentModel> segments,@JsonKey(name: 'revision') int revision,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'meeting') MeetingModel? meeting
 });
 
 
-
+@override $MeetingModelCopyWith<$Res>? get meeting;
 
 }
 /// @nodoc
@@ -859,7 +873,7 @@ class __$TranscriptModelCopyWithImpl<$Res>
 
 /// Create a copy of TranscriptModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? mediaId = null,Object? durationMs = freezed,Object? speakers = null,Object? segments = null,Object? revision = null,Object? role = null,Object? meeting = freezed,}) {
   return _then(_TranscriptModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -869,7 +883,296 @@ as int?,speakers: null == speakers ? _self._speakers : speakers // ignore: cast_
 as List<SpeakerModel>,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
 as List<SegmentModel>,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as WorkspaceRole,
+as WorkspaceRole,meeting: freezed == meeting ? _self.meeting : meeting // ignore: cast_nullable_to_non_nullable
+as MeetingModel?,
+  ));
+}
+
+/// Create a copy of TranscriptModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MeetingModelCopyWith<$Res>? get meeting {
+    if (_self.meeting == null) {
+    return null;
+  }
+
+  return $MeetingModelCopyWith<$Res>(_self.meeting!, (value) {
+    return _then(_self.copyWith(meeting: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$MeetingModel {
+
+@JsonKey(name: 'attendees') List<Object?> get attendees;
+/// Create a copy of MeetingModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MeetingModelCopyWith<MeetingModel> get copyWith => _$MeetingModelCopyWithImpl<MeetingModel>(this as MeetingModel, _$identity);
+
+  /// Serializes this MeetingModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as MeetingModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MeetingModel&&const DeepCollectionEquality().equals(other.attendees, _this.attendees));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as MeetingModel;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.attendees));
+}
+
+@override
+String toString() {
+  final _this = this as MeetingModel;
+  return 'MeetingModel(attendees: ${_this.attendees})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MeetingModelCopyWith<$Res>  {
+  factory $MeetingModelCopyWith(MeetingModel value, $Res Function(MeetingModel) _then) = _$MeetingModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'attendees') List<Object?> attendees
+});
+
+
+
+
+}
+/// @nodoc
+class _$MeetingModelCopyWithImpl<$Res>
+    implements $MeetingModelCopyWith<$Res> {
+  _$MeetingModelCopyWithImpl(this._self, this._then);
+
+  final MeetingModel _self;
+  final $Res Function(MeetingModel) _then;
+
+/// Create a copy of MeetingModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? attendees = null,}) {
+  return _then(MeetingModel(
+attendees: null == attendees ? _self.attendees : attendees // ignore: cast_nullable_to_non_nullable
+as List<Object?>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [MeetingModel].
+extension MeetingModelPatterns on MeetingModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MeetingModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _MeetingModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MeetingModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _MeetingModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MeetingModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _MeetingModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'attendees')  List<Object?> attendees)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _MeetingModel() when $default != null:
+return $default(_that.attendees);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'attendees')  List<Object?> attendees)  $default,) {final _that = this;
+switch (_that) {
+case _MeetingModel():
+return $default(_that.attendees);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'attendees')  List<Object?> attendees)?  $default,) {final _that = this;
+switch (_that) {
+case _MeetingModel() when $default != null:
+return $default(_that.attendees);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _MeetingModel extends MeetingModel {
+  const _MeetingModel({@JsonKey(name: 'attendees')  List<Object?> attendees = const <Object?>[]}): _attendees = attendees,super._();
+  factory _MeetingModel.fromJson(Map<String, dynamic> json) => _$MeetingModelFromJson(json);
+
+ final  List<Object?> _attendees;
+@override@JsonKey(name: 'attendees') List<Object?> get attendees {
+  if (_attendees is EqualUnmodifiableListView) return _attendees;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_attendees);
+}
+
+
+/// Create a copy of MeetingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$MeetingModelCopyWith<_MeetingModel> get copyWith => __$MeetingModelCopyWithImpl<_MeetingModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$MeetingModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _MeetingModel&&const DeepCollectionEquality().equals(other.attendees, _attendees));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_attendees));
+}
+
+@override
+String toString() {
+    return 'MeetingModel(attendees: $attendees)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$MeetingModelCopyWith<$Res> implements $MeetingModelCopyWith<$Res> {
+  factory _$MeetingModelCopyWith(_MeetingModel value, $Res Function(_MeetingModel) _then) = __$MeetingModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'attendees') List<Object?> attendees
+});
+
+
+
+
+}
+/// @nodoc
+class __$MeetingModelCopyWithImpl<$Res>
+    implements _$MeetingModelCopyWith<$Res> {
+  __$MeetingModelCopyWithImpl(this._self, this._then);
+
+  final _MeetingModel _self;
+  final $Res Function(_MeetingModel) _then;
+
+/// Create a copy of MeetingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? attendees = null,}) {
+  return _then(_MeetingModel(
+attendees: null == attendees ? _self._attendees : attendees // ignore: cast_nullable_to_non_nullable
+as List<Object?>,
   ));
 }
 

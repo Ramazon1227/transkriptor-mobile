@@ -31,6 +31,7 @@ import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/widgets/illustrated_card.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/ai_chat_tab.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
@@ -1560,11 +1561,27 @@ final _scenarios = <_Scenario>[
   ),
   _Scenario(
     'tab(ai chat)',
-    () => _tabHost(AiChatTab(transcriptId: 't1', onSeek: (_) {})),
+    () => _tabHost(
+      AiChatTab(transcriptId: 't1', hints: ChatHints.none, onSeek: (_) {}),
+    ),
   ),
   _Scenario(
     'tab(ai chat,empty)',
-    () => _tabHost(const AiChatTab(transcriptId: 't1')),
+    // The longest texts: three meeting questions and the summary button.
+    () => _tabHost(
+      AiChatTab(
+        transcriptId: 't1',
+        hints: chatHints(
+          const HintFacts(
+            meeting: true,
+            attendees: 4,
+            speakers: 3,
+            duration: Duration(minutes: 15),
+          ),
+        ),
+        onOpenSummary: () {},
+      ),
+    ),
     arrange: () =>
         when(() => aiChat.state)
             .thenReturn(const AiChatState(status: AiChatStatus.success)),

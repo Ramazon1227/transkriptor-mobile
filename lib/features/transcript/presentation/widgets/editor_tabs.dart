@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/ai_chat_tab.dart';
 import 'package:transkriptor_uz/features/learn/presentation/widgets/learn_tab.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
@@ -39,6 +40,7 @@ class _EditorTabsState extends State<EditorTabs>
   final Set<int> _opened = {0};
 
   static const int _count = 5;
+  static const int _summaryTab = 2;
   static const int _sentimentTab = 4;
 
   SentimentCubit? _sentiment;
@@ -82,7 +84,9 @@ class _EditorTabsState extends State<EditorTabs>
       // A timecode in an answer seeks the same player the transcript uses.
       1 => AiChatTab(
         transcriptId: widget.transcript.id,
+        hints: chatHints(HintFacts.of(widget.transcript)),
         onSeek: (at) => context.read<PlayerCubit>().seekTo(at, play: true),
+        onOpenSummary: () => _tabs.animateTo(_summaryTab),
       ),
       2 => SummaryTab(
         transcript: widget.transcript,
