@@ -17,4 +17,11 @@ abstract interface class IPlayerFacade {
 
   /// Best effort: if it cannot be written, the choice lasts for this file.
   Future<void> saveSpeed(double speed);
+
+  /// The volume (0..1) and mute last chosen on this phone; null when there
+  /// is none or the store cannot be read.
+  Future<({double volume, bool muted})?> savedVolume();
+
+  /// Best effort, like [saveSpeed].
+  Future<void> saveVolume(double volume, {required bool muted});
 }

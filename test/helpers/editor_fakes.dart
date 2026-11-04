@@ -40,6 +40,16 @@ class FakePlayerFacade implements IPlayerFacade {
 
   @override
   Future<void> saveSpeed(double speed) async => saved = speed;
+
+  /// What [savedVolume] answers; [saveVolume] writes it.
+  ({double volume, bool muted})? savedLevel;
+
+  @override
+  Future<({double volume, bool muted})?> savedVolume() async => savedLevel;
+
+  @override
+  Future<void> saveVolume(double volume, {required bool muted}) async =>
+      savedLevel = (volume: volume, muted: muted);
 }
 
 /// A phone that has seen nothing and has the sheet switched on, by default.
@@ -115,6 +125,12 @@ class FakeEngine implements PlaybackEngine {
     calls.add('speed:$speed');
     if (refusedSpeeds.contains(speed)) throw Exception('cannot play at $speed');
   }
+
+  /// Every volume handed to the engine, apart from [calls].
+  final List<double> volumes = [];
+
+  @override
+  Future<void> setVolume(double volume) async => volumes.add(volume);
 
   @override
   Widget surface() => const SizedBox.expand(key: Key('fake_surface'));

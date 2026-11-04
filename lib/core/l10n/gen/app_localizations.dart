@@ -3886,6 +3886,24 @@ abstract class AppLocalizations {
   /// **'Videoni ochish'**
   String get playerUnfold;
 
+  /// No description provided for @playerVolume.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovoz balandligi'**
+  String get playerVolume;
+
+  /// No description provided for @playerMute.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovozni oʻchirish'**
+  String get playerMute;
+
+  /// No description provided for @playerUnmute.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovozni yoqish'**
+  String get playerUnmute;
+
   /// No description provided for @playerGone.
   ///
   /// In uz, this message translates to:

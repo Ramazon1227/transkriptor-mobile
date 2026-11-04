@@ -43,4 +43,25 @@ class PlayerFacade implements IPlayerFacade {
       // The speed still applies to the open file.
     }
   }
+
+  @override
+  Future<({double volume, bool muted})?> savedVolume() async {
+    try {
+      final volume = double.tryParse(await _speed.readVolume() ?? '');
+      if (volume == null || volume < 0 || volume > 1) return null;
+      return (volume: volume, muted: await _speed.readMuted() == '1');
+    } on Object {
+      // An unreadable keychain only means full volume.
+      return null;
+    }
+  }
+
+  @override
+  Future<void> saveVolume(double volume, {required bool muted}) async {
+    try {
+      await _speed.writeVolume(volume.toString(), muted: muted);
+    } on Object {
+      // The volume still applies to the open file.
+    }
+  }
 }

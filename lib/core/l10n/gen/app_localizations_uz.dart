@@ -2143,6 +2143,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get playerUnfold => 'Videoni ochish';
 
   @override
+  String get playerVolume => 'Ovoz balandligi';
+
+  @override
+  String get playerMute => 'Ovozni oʻchirish';
+
+  @override
+  String get playerUnmute => 'Ovozni yoqish';
+
+  @override
   String get playerGone =>
       'Audio saqlash muddati tugagani uchun oʻchirilgan. Matn joyida.';
 

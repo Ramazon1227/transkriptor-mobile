@@ -10,6 +10,10 @@ abstract final class StorageKeys {
   /// The playback speed the person last chose, on this phone.
   static const String playbackSpeed = 'playback_speed';
 
+  /// The player's volume (0..1) and whether it is muted, on this phone.
+  static const String playbackVolume = 'playback_volume';
+  static const String playbackMuted = 'playback_muted';
+
   /// The first-open speaker sheet: switched off on this phone, and the
   /// prefix of «already closed for this transcript» (followed by its id).
   static const String speakerIntroOff = 'speaker_intro_off';

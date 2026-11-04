@@ -46,6 +46,10 @@ abstract class PlayerState with _$PlayerState {
     @Default(16 / 9) double aspectRatio,
     @Default(1.0) double speed,
 
+    /// 0..1 of the phone's volume; [muted] silences without forgetting it.
+    @Default(1.0) double volume,
+    @Default(false) bool muted,
+
     /// The video surface is folded away. Playback does not notice.
     @Default(false) bool videoFolded,
 
@@ -84,6 +88,19 @@ class PlayerCubit extends Cubit<PlayerState> {
   /// What the open engine really plays at. A new engine starts at 1×.
   double _engineSpeed = 1;
 
+  /// Like [_speedKnown], for the volume.
+  bool _volumeKnown = false;
+
+  /// The person wants sound: pressed play and has not paused since. A
+  /// broken playback does not change it.
+  bool _wantsPlay = false;
+
+  /// A playback that broke reconnects by itself once (an expired link);
+  /// it may again after it has played on for [_healthyAfter].
+  bool _reconnected = false;
+  Duration _reconnectedAt = Duration.zero;
+  static const Duration _healthyAfter = Duration(seconds: 10);
+
   /// Where the playing sample stops itself, and where the player stood
   /// before the first one.
   Duration? _clipEnd;
@@ -99,10 +116,25 @@ class PlayerCubit extends Cubit<PlayerState> {
   /// After a failure: fetches a fresh link and goes back to where it was.
   Future<void> retry() async {
     final id = _mediaId;
+    _reconnected = false;
     if (id != null) await _load(id, state.position);
   }
 
-  Future<void> _load(String mediaId, Duration resumeAt) async {
+  /// The link expired mid-file (or the network dropped): a fresh link, the
+  /// same second, playing again if it was.
+  Future<void> _reconnect() async {
+    final id = _mediaId;
+    if (id == null) return;
+    _reconnected = true;
+    _reconnectedAt = state.position;
+    await _load(id, state.position, play: _wantsPlay);
+  }
+
+  Future<void> _load(
+    String mediaId,
+    Duration resumeAt, {
+    bool play = false,
+  }) async {
     final generation = ++_generation;
     _mediaId = mediaId;
     await _release();
@@ -135,7 +167,7 @@ class PlayerCubit extends Cubit<PlayerState> {
           emit(state.copyWith(status: PlayerStatus.youtube, source: source));
           return;
         }
-        await _start(generation, source, resumeAt);
+        await _start(generation, source, resumeAt, play: play);
       },
     );
   }
@@ -143,9 +175,11 @@ class PlayerCubit extends Cubit<PlayerState> {
   Future<void> _start(
     int generation,
     PlayableMedia source,
-    Duration resumeAt,
-  ) async {
+    Duration resumeAt, {
+    bool play = false,
+  }) async {
     await _restoreSpeed();
+    await _restoreVolume();
     if (isClosed || generation != _generation) return;
     final engine = _engines.create();
     _engine = engine;
@@ -156,7 +190,13 @@ class PlayerCubit extends Cubit<PlayerState> {
       if (isClosed || generation != _generation) return;
       await _applySpeed(engine);
       if (isClosed || generation != _generation) return;
+      await _applyVolume(engine);
+      if (isClosed || generation != _generation) return;
       if (resumeAt > Duration.zero) await engine.seekTo(resumeAt);
+      if (isClosed || generation != _generation) return;
+      // A pause pressed (or the app sent to the background) while the fresh
+      // link was fetched wins.
+      if (play && _wantsPlay) await engine.play();
     } on Object {
       if (isClosed || generation != _generation) return;
       await _release();
@@ -177,6 +217,10 @@ class PlayerCubit extends Cubit<PlayerState> {
   void _onSnapshot(PlaybackSnapshot s) {
     if (isClosed) return;
     if (s.error != null) {
+      if (!_reconnected) {
+        unawaited(_reconnect());
+        return;
+      }
       emit(
         state.copyWith(
           status: PlayerStatus.failure,
@@ -185,6 +229,12 @@ class PlayerCubit extends Cubit<PlayerState> {
         ),
       );
       return;
+    }
+    if (s.completed) _wantsPlay = false;
+    if (_reconnected &&
+        s.playing &&
+        s.position > _reconnectedAt + _healthyAfter) {
+      _reconnected = false;
     }
     _checkClip(s);
     emit(
@@ -243,6 +293,7 @@ class PlayerCubit extends Cubit<PlayerState> {
     if (state.duration > Duration.zero && state.position >= state.duration) {
       await engine.seekTo(Duration.zero);
     }
+    _wantsPlay = true;
     await engine.play();
   }
 
@@ -252,6 +303,7 @@ class PlayerCubit extends Cubit<PlayerState> {
       _clipEnd = null;
       emit(state.copyWith(clipStart: null));
     }
+    _wantsPlay = false;
     final engine = _engine;
     if (engine == null || !state.playing) return;
     await engine.pause();
@@ -271,7 +323,10 @@ class PlayerCubit extends Cubit<PlayerState> {
     // Shown at once; the engine's next snapshot confirms it.
     emit(state.copyWith(position: at));
     await engine.seekTo(at);
-    if (play && !state.playing) await engine.play();
+    if (play && !state.playing) {
+      _wantsPlay = true;
+      await engine.play();
+    }
   }
 
   /// The choice is saved even if this file refuses it: the next one may not.
@@ -289,6 +344,57 @@ class PlayerCubit extends Cubit<PlayerState> {
     if (isClosed || _speedKnown) return;
     _speedKnown = true;
     if (playbackSpeeds.contains(saved)) emit(state.copyWith(speed: saved!));
+  }
+
+  /// Raising the level is «I want to hear it»: it unmutes. [save] false
+  /// while a finger drags the slider; the release saves.
+  Future<void> setVolume(double volume, {bool save = true}) async {
+    _volumeKnown = true;
+    final v = volume.clamp(0.0, 1.0);
+    emit(state.copyWith(volume: v, muted: state.muted && v == 0));
+    await _volumeChanged(save: save);
+  }
+
+  /// One press brings sound back from a level of zero, muted or not.
+  Future<void> toggleMute() async {
+    if (!state.muted && state.volume == 0) {
+      await setVolume(0.5);
+      return;
+    }
+    _volumeKnown = true;
+    final muted = !state.muted;
+    emit(
+      state.copyWith(
+        muted: muted,
+        volume: !muted && state.volume == 0 ? 0.5 : state.volume,
+      ),
+    );
+    await _volumeChanged();
+  }
+
+  Future<void> _volumeChanged({bool save = true}) async {
+    final engine = _engine;
+    if (engine != null) await _applyVolume(engine);
+    if (save) await _facade.saveVolume(state.volume, muted: state.muted);
+  }
+
+  Future<void> _restoreVolume() async {
+    if (_volumeKnown) return;
+    final saved = await _facade.savedVolume();
+    if (isClosed || _volumeKnown) return;
+    _volumeKnown = true;
+    if (saved != null) {
+      emit(state.copyWith(volume: saved.volume, muted: saved.muted));
+    }
+  }
+
+  /// A refused volume leaves the file playing at the phone's own level.
+  Future<void> _applyVolume(PlaybackEngine engine) async {
+    try {
+      await engine.setVolume(state.muted ? 0 : state.volume);
+    } on Object {
+      // The phone's volume buttons still work.
+    }
   }
 
   /// A file that refuses a speed still plays — a remembered 0,25× must not

@@ -57,6 +57,10 @@ class VideoPlayerEngine implements PlaybackEngine {
       await _controller?.setPlaybackSpeed(speed);
 
   @override
+  Future<void> setVolume(double volume) async =>
+      await _controller?.setVolume(volume);
+
+  @override
   Widget surface() {
     final c = _controller;
     return c == null ? const SizedBox.shrink() : VideoPlayer(c);

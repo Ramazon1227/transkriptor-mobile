@@ -43,6 +43,9 @@ abstract interface class PlaybackEngine {
   Future<void> seekTo(Duration position);
   Future<void> setSpeed(double speed);
 
+  /// 0..1 of the phone's own volume; 0 is silent.
+  Future<void> setVolume(double volume);
+
   /// The picture, for a file that has one. Folding the video away only
   /// stops drawing this; playback is the engine's and goes on.
   Widget surface();

@@ -8,9 +8,10 @@ import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/presentation/widgets/speed_sheet.dart';
+import 'package:transkriptor_uz/features/player/presentation/widgets/volume_sheet.dart';
 
 /// One set of controls for audio and video: seek bar, times, speed,
-/// ±5 s, play/pause, and — for a video — fold/unfold the picture.
+/// ±5 s, play/pause, volume, and — for a video — fold/unfold the picture.
 class PlayerTransport extends StatefulWidget {
   const PlayerTransport({super.key});
 
@@ -135,20 +136,42 @@ class _PlayerTransportState extends State<PlayerTransport> {
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: state.hasVideo
-                          ? IconButton(
-                              key: const Key('player_fold'),
-                              tooltip: state.videoFolded
-                                  ? l10n.playerUnfold
-                                  : l10n.playerFold,
-                              onPressed: cubit.toggleFold,
+                      // Two buttons for a video: on a 320 px phone they
+                      // shrink rather than overflow.
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              key: const Key('player_volume'),
+                              tooltip: l10n.playerVolume,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => showVolumeSheet(context, cubit),
                               icon: Icon(
-                                state.videoFolded
-                                    ? Icons.expand_more_rounded
-                                    : Icons.expand_less_rounded,
+                                volumeIcon(
+                                  volume: state.volume,
+                                  muted: state.muted,
+                                ),
                               ),
-                            )
-                          : const SizedBox.shrink(),
+                            ),
+                            if (state.hasVideo)
+                              IconButton(
+                                key: const Key('player_fold'),
+                                tooltip: state.videoFolded
+                                    ? l10n.playerUnfold
+                                    : l10n.playerFold,
+                                visualDensity: VisualDensity.compact,
+                                onPressed: cubit.toggleFold,
+                                icon: Icon(
+                                  state.videoFolded
+                                      ? Icons.expand_more_rounded
+                                      : Icons.expand_less_rounded,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],

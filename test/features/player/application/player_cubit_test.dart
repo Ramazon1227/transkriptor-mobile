@@ -170,13 +170,136 @@ void main() {
   test('retry after a broken playback goes back to where it was', () async {
     await cubit.open('m1');
     await cubit.seekTo(const Duration(seconds: 20));
+    // The first break reconnects by itself; the second one is shown.
     engine().push(const PlaybackSnapshot(error: 'expired link'));
-    await Future<void>.delayed(Duration.zero);
+    await pumpEventQueue();
+    engine().push(const PlaybackSnapshot(error: 'still broken'));
+    await pumpEventQueue();
     expect(cubit.state.status, PlayerStatus.failure);
 
     await cubit.retry();
     expect(cubit.state.status, PlayerStatus.ready);
     expect(engine().calls, contains('seek:20000'));
+  });
+
+  group('an expired link (E-10)', () {
+    test('reconnects by itself and plays on from that second', () async {
+      await cubit.open('m1');
+      await cubit.seekTo(const Duration(seconds: 42), play: true);
+      final first = engine()
+        ..push(
+          const PlaybackSnapshot(
+            position: Duration(seconds: 42),
+            duration: Duration(minutes: 1),
+            error: 'HTTP 403',
+          ),
+        );
+      await pumpEventQueue();
+      expect(first.disposed, isTrue);
+      expect(engines.made, hasLength(2));
+      expect(engine().calls, ['open', 'speed:1.0', 'seek:42000', 'play']);
+      expect(cubit.state.status, PlayerStatus.ready);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('a pause pressed while reconnecting wins', () async {
+      final slow = _SlowFacade();
+      final c = PlayerCubit(slow, engines);
+      addTearDown(c.close);
+      final opening = c.open('m1');
+      await pumpEventQueue();
+      slow.pending['m1']!.complete(const Right(_audio));
+      await opening;
+      await c.play();
+      engine().push(const PlaybackSnapshot(error: 'HTTP 403'));
+      await pumpEventQueue();
+      // The fresh link is on its way; the person pauses meanwhile.
+      await c.pause();
+      slow.pending['m1']!.complete(const Right(_audio));
+      await pumpEventQueue();
+      expect(c.state.status, PlayerStatus.ready);
+      expect(engine().calls, isNot(contains('play')));
+    });
+
+    test('a paused player stays paused after reconnecting', () async {
+      await cubit.open('m1');
+      await cubit.seekTo(const Duration(seconds: 10));
+      engine().push(const PlaybackSnapshot(error: 'HTTP 403'));
+      await pumpEventQueue();
+      expect(cubit.state.status, PlayerStatus.ready);
+      expect(engine().calls, isNot(contains('play')));
+    });
+
+    test('after playing on for a while it may reconnect again', () async {
+      await cubit.open('m1');
+      engine().push(const PlaybackSnapshot(error: 'HTTP 403'));
+      await pumpEventQueue();
+      engine().push(
+        const PlaybackSnapshot(
+          position: Duration(seconds: 30),
+          duration: Duration(minutes: 1),
+          playing: true,
+        ),
+      );
+      await pumpEventQueue();
+      engine().push(const PlaybackSnapshot(error: 'HTTP 403'));
+      await pumpEventQueue();
+      expect(engines.made, hasLength(3));
+      expect(cubit.state.status, PlayerStatus.ready);
+    });
+  });
+
+  group('volume', () {
+    test('is applied to a new file and remembered', () async {
+      await cubit.open('m1');
+      expect(engine().volumes, [1.0]);
+      await cubit.setVolume(0.4);
+      expect(engine().volumes.last, 0.4);
+      expect(facade.savedLevel, (volume: 0.4, muted: false));
+
+      final next = PlayerCubit(facade, engines);
+      addTearDown(next.close);
+      await next.open('m2');
+      expect(next.state.volume, 0.4);
+      expect(engine().volumes, [0.4]);
+    });
+
+    test('mute keeps the level; raising the level unmutes', () async {
+      await cubit.open('m1');
+      await cubit.setVolume(0.6);
+      await cubit.toggleMute();
+      expect(cubit.state.muted, isTrue);
+      expect(engine().volumes.last, 0);
+      expect(facade.savedLevel, (volume: 0.6, muted: true));
+      await cubit.setVolume(0.8);
+      expect(cubit.state.muted, isFalse);
+      expect(engine().volumes.last, 0.8);
+    });
+
+    test('one press brings sound back from a level of zero', () async {
+      await cubit.open('m1');
+      await cubit.setVolume(0);
+      await cubit.toggleMute();
+      expect(cubit.state.muted, isFalse);
+      expect(cubit.state.volume, greaterThan(0));
+      expect(engine().volumes.last, cubit.state.volume);
+    });
+
+    test('a drag applies at once and saves on release', () async {
+      await cubit.open('m1');
+      await cubit.setVolume(0.3, save: false);
+      expect(engine().volumes.last, 0.3);
+      expect(facade.savedLevel, isNull);
+      await cubit.setVolume(0.3);
+      expect(facade.savedLevel, (volume: 0.3, muted: false));
+    });
+
+    test('a muted choice survives a new editor', () async {
+      facade.savedLevel = (volume: 0.7, muted: true);
+      await cubit.open('m1');
+      expect(cubit.state.muted, isTrue);
+      expect(engine().volumes, [0.0]);
+    });
   });
 
   test('play, pause, ±5 s, clamped seeks, seek-and-play', () async {
