@@ -68,6 +68,7 @@ abstract class TranscriptModel with _$TranscriptModel {
     @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)
     @Default(WorkspaceRole.unknown)
     WorkspaceRole role,
+    @JsonKey(name: 'meeting') MeetingModel? meeting,
   }) = _TranscriptModel;
 
   const TranscriptModel._();
@@ -86,7 +87,25 @@ abstract class TranscriptModel with _$TranscriptModel {
     segments: segments.map((s) => s.toEntity()).toList(),
     revision: revision,
     role: role,
+    meeting: meeting?.toEntity(),
   );
+}
+
+/// `models.Meeting` in the backend, the part the app reads. Attendees are
+/// only counted, so their shape does not matter.
+@freezed
+abstract class MeetingModel with _$MeetingModel {
+  const factory MeetingModel({
+    @JsonKey(name: 'attendees') @Default(<Object?>[]) List<Object?> attendees,
+  }) = _MeetingModel;
+
+  const MeetingModel._();
+
+  factory MeetingModel.fromJson(Map<String, dynamic> json) =>
+      _$MeetingModelFromJson(json);
+
+  TranscriptMeeting toEntity() =>
+      TranscriptMeeting(attendeeCount: attendees.length);
 }
 
 /// `handler.SegmentResponse` in the backend. `new_speaker` is there only

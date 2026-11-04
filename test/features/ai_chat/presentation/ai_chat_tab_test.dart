@@ -8,11 +8,22 @@ import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_poll_policy.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/i_ai_chat_facade.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/ai_chat_tab.dart';
 
 class _MockFacade extends Mock implements IAiChatFacade;
+
+/// A 20-second clip with two voices.
+final ChatHints _clip = chatHints(
+  const HintFacts(
+    meeting: false,
+    attendees: 0,
+    speakers: 2,
+    duration: Duration(seconds: 20),
+  ),
+);
 
 Widget _host(Widget child) => MaterialApp(
   theme: AppTheme.dark(),
@@ -68,10 +79,13 @@ void main() {
         ),
       ),
     );
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(_host(AiChatTab(transcriptId: 't1', hints: _clip)));
     await tester.pump();
 
     expect(find.byKey(const Key('ai_chat_empty')), findsOneWidget);
+    expect(find.text('Bu yozuvda nima deyilgan?'), findsOneWidget);
+    // A short clip gets no summary button.
+    expect(find.byKey(const Key('ai_chat_open_summary')), findsNothing);
     await tester.tap(find.text('Kim nima dedi?'));
     await tester.pump();
     await tester.pump();
@@ -108,7 +122,13 @@ void main() {
     );
     Duration? seeked;
     await tester.pumpWidget(
-      _host(AiChatTab(transcriptId: 't1', onSeek: (d) => seeked = d)),
+      _host(
+        AiChatTab(
+          transcriptId: 't1',
+          hints: ChatHints.none,
+          onSeek: (d) => seeked = d,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -143,7 +163,13 @@ void main() {
     );
     Duration? seeked;
     await tester.pumpWidget(
-      _host(AiChatTab(transcriptId: 't1', onSeek: (d) => seeked = d)),
+      _host(
+        AiChatTab(
+          transcriptId: 't1',
+          hints: ChatHints.none,
+          onSeek: (d) => seeked = d,
+        ),
+      ),
     );
     // The dots animate forever: pump, never settle.
     await tester.pump();
@@ -184,10 +210,46 @@ void main() {
         ),
       ),
     );
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pumpAndSettle();
     expect(find.text('AI hozir javob bermayapti.'), findsOneWidget);
     expect(find.byKey(const Key('ai_retry_a1')), findsOneWidget);
+  });
+
+  testWidgets('the summary button opens the tab and asks nothing', (
+    tester,
+  ) async {
+    when(() => facade.history('t1'))
+        .thenAnswer((_) async => const Right(AiChat()));
+    final meeting = chatHints(
+      const HintFacts(
+        meeting: true,
+        attendees: 3,
+        speakers: 3,
+        duration: Duration(minutes: 15),
+      ),
+    );
+    var opened = 0;
+    await tester.pumpWidget(
+      _host(
+        AiChatTab(
+          transcriptId: 't1',
+          hints: meeting,
+          onOpenSummary: () => opened++,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Qanday qarorlar qabul qilindi?'), findsOneWidget);
+    expect(find.text('Qaysi atamalar tushuntirildi?'), findsNothing);
+    await tester.tap(find.byKey(const Key('ai_chat_open_summary')));
+    await tester.pump();
+
+    expect(opened, 1);
+    verifyNever(() => facade.ask(any(), any()));
   });
 
   testWidgets('clearing asks inside a sheet first', (tester) async {
@@ -206,7 +268,9 @@ void main() {
       ),
     );
     when(() => facade.clear('t1')).thenAnswer((_) async => const Right(unit));
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('ai_chat_clear')));
@@ -261,7 +325,9 @@ void main() {
         null,
       ),
     );
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Qarorlar'), findsOneWidget);
@@ -279,7 +345,9 @@ void main() {
   testWidgets('the question box takes new lines', (tester) async {
     when(() => facade.history('t1'))
         .thenAnswer((_) async => const Right(AiChat()));
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pumpAndSettle();
     final field = tester.widget<TextField>(
       find.byKey(const Key('ai_chat_input')),
@@ -319,7 +387,9 @@ void main() {
         ]),
       ),
     );
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pump();
     await tester.pump();
     // Clearing stays possible while an answer is pending.
@@ -384,7 +454,9 @@ void main() {
         ),
       ),
     );
-    await tester.pumpWidget(_host(const AiChatTab(transcriptId: 't1')));
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('ai_retry_a1')), findsNothing);
     expect(find.text('Qayta yozdirish'), findsOneWidget);

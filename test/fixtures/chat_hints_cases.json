@@ -1,0 +1,63 @@
+{
+  "texts": {
+    "whatSaid": "Bu yozuvda nima deyilgan?",
+    "whoSaid": "Kim nima dedi?",
+    "decisions": "Qanday qarorlar qabul qilindi?",
+    "openIssues": "Qaysi masalalar ochiq qoldi?",
+    "proposals": "Har bir ishtirokchi nimani taklif qildi?",
+    "disagreements": "Qaysi masalalarda fikrlar farq qildi?",
+    "mainPoints": "Asosiy fikrlar qaysilar?",
+    "examples": "Qanday misollar yoki raqamlar keltirildi?",
+    "terms": "Qaysi atamalar tushuntirildi?",
+    "whoTalked": "Kim nima haqida gapirdi?",
+    "agreements": "Qanday kelishuvlarga erishildi?",
+    "chapters": "Yozuvni mavzular boʻyicha boʻlimlarga ajrat"
+  },
+  "cases": [
+    { "name": "20 soniyalik klip, bitta ovoz", "in": { "meeting": false, "attendees": 0, "speakers": 1, "durationMs": 20000 }, "questions": ["whatSaid"], "tabs": false },
+    { "name": "qisqa klip, ikki ovoz", "in": { "meeting": false, "attendees": 0, "speakers": 2, "durationMs": 29999 }, "questions": ["whatSaid", "whoSaid"], "tabs": false },
+    { "name": "qisqa uchrashuv ham qisqa", "in": { "meeting": true, "attendees": 4, "speakers": 3, "durationMs": 15000 }, "questions": ["whatSaid", "whoSaid"], "tabs": false },
+    { "name": "aynan 30 soniya — qisqa emas", "in": { "meeting": false, "attendees": 0, "speakers": 1, "durationMs": 30000 }, "questions": ["mainPoints", "examples", "terms"], "tabs": true },
+    { "name": "40 daqiqalik maʼruza", "in": { "meeting": false, "attendees": 0, "speakers": 1, "durationMs": 2400000 }, "questions": ["mainPoints", "examples", "chapters"], "tabs": true },
+    { "name": "maʼruzachilar ajratilmagan", "in": { "meeting": false, "attendees": 0, "speakers": 0, "durationMs": 300000 }, "questions": ["mainPoints", "examples", "terms"], "tabs": true },
+    { "name": "ikki kishilik suhbat", "in": { "meeting": false, "attendees": 0, "speakers": 2, "durationMs": 600000 }, "questions": ["whoTalked", "disagreements", "agreements"], "tabs": true },
+    { "name": "aynan 20 daqiqa — uzun emas", "in": { "meeting": false, "attendees": 0, "speakers": 4, "durationMs": 1200000 }, "questions": ["whoTalked", "disagreements", "agreements"], "tabs": true },
+    { "name": "uzun suhbat", "in": { "meeting": false, "attendees": 0, "speakers": 4, "durationMs": 1200001 }, "questions": ["whoTalked", "disagreements", "chapters"], "tabs": true },
+    { "name": "ishtirokchilari bor uchrashuv", "in": { "meeting": true, "attendees": 5, "speakers": 3, "durationMs": 900000 }, "questions": ["decisions", "openIssues", "proposals"], "tabs": true },
+    { "name": "ishtirokchisiz uchrashuv", "in": { "meeting": true, "attendees": 0, "speakers": 2, "durationMs": 900000 }, "questions": ["decisions", "openIssues", "disagreements"], "tabs": true },
+    { "name": "bitta ovozli uchrashuv ham uchrashuv", "in": { "meeting": true, "attendees": 2, "speakers": 1, "durationMs": 600000 }, "questions": ["decisions", "openIssues", "proposals"], "tabs": true },
+    { "name": "uzun uchrashuv", "in": { "meeting": true, "attendees": 6, "speakers": 5, "durationMs": 3600000 }, "questions": ["decisions", "openIssues", "chapters"], "tabs": true }
+  ],
+  "facts": [
+    {
+      "name": "boʻsh segment va bir xil maʼruzachi sanalmaydi",
+      "transcript": { "duration_ms": 90000, "meeting": null, "segments": [
+        { "speaker_id": "a", "text": "Salom", "end_ms": 4000 },
+        { "speaker_id": "b", "text": "  ", "end_ms": 6000 },
+        { "speaker_id": "a", "text": "Davom etamiz", "end_ms": 9000 }
+      ] },
+      "in": { "meeting": false, "attendees": 0, "speakers": 1, "durationMs": 90000 }
+    },
+    {
+      "name": "diarizatsiyasiz — maʼruzachi yoʻq",
+      "transcript": { "duration_ms": 60000, "meeting": null, "segments": [
+        { "speaker_id": null, "text": "Matn", "end_ms": 5000 }
+      ] },
+      "in": { "meeting": false, "attendees": 0, "speakers": 0, "durationMs": 60000 }
+    },
+    {
+      "name": "davomiylik nol — oxirgi segment tugashi olinadi",
+      "transcript": { "duration_ms": 0, "meeting": { "attendees": [{}, {}, {}] }, "segments": [
+        { "speaker_id": "a", "text": "Bir", "end_ms": 12000 },
+        { "speaker_id": "b", "text": "Ikki", "end_ms": 47000 },
+        { "speaker_id": "c", "text": "Uch", "end_ms": 31000 }
+      ] },
+      "in": { "meeting": true, "attendees": 3, "speakers": 3, "durationMs": 47000 }
+    },
+    {
+      "name": "uchrashuv ishtirokchisiz",
+      "transcript": { "duration_ms": 600000, "meeting": { "attendees": [] }, "segments": [] },
+      "in": { "meeting": true, "attendees": 0, "speakers": 0, "durationMs": 600000 }
+    }
+  ]
+}

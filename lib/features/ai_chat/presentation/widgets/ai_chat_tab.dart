@@ -12,6 +12,8 @@ import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
+import 'package:transkriptor_uz/features/ai_chat/presentation/chat_hint_text.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/message_bubble.dart';
 
 /// The editor's «AI suhbat» tab: questions about this one transcript,
@@ -19,12 +21,25 @@ import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/message_bu
 /// view under the player, so it fills a bounded height and scrolls on
 /// its own; the composer stays at the bottom.
 class AiChatTab extends StatelessWidget {
-  const AiChatTab({required this.transcriptId, this.onSeek, super.key});
+  const AiChatTab({
+    required this.transcriptId,
+    required this.hints,
+    this.onSeek,
+    this.onOpenSummary,
+    super.key,
+  });
 
   final String transcriptId;
 
+  /// The empty chat's ready questions (`chatHints`).
+  final ChatHints hints;
+
   /// A timecode chip in an answer was tapped. Null: chips do nothing.
   final ValueChanged<Duration>? onSeek;
+
+  /// A summary is not asked in the chat: this opens the «Xulosa» tab.
+  /// Null: no such button.
+  final VoidCallback? onOpenSummary;
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +49,21 @@ class AiChatTab extends StatelessWidget {
         unawaited(cubit.load(transcriptId));
         return cubit;
       },
-      child: _AiChatView(onSeek: onSeek),
+      child: _AiChatView(
+        hints: hints,
+        onSeek: onSeek,
+        onOpenSummary: onOpenSummary,
+      ),
     );
   }
 }
 
 class _AiChatView extends StatefulWidget {
-  const _AiChatView({this.onSeek});
+  const _AiChatView({required this.hints, this.onSeek, this.onOpenSummary});
 
+  final ChatHints hints;
   final ValueChanged<Duration>? onSeek;
+  final VoidCallback? onOpenSummary;
 
   @override
   State<_AiChatView> createState() => _AiChatViewState();
@@ -118,7 +139,12 @@ class _AiChatViewState extends State<_AiChatView> {
         );
       case AiChatStatus.success:
         if (state.items.isEmpty) {
-          return _Suggestions(enabled: !state.busy, onPick: _send);
+          return _Suggestions(
+            hints: widget.hints,
+            enabled: !state.busy,
+            onPick: _send,
+            onOpenSummary: widget.onOpenSummary,
+          );
         }
         final items = state.items.reversed.toList();
         return ListView.separated(
@@ -205,19 +231,23 @@ class _ChatHeader extends StatelessWidget {
 }
 
 class _Suggestions extends StatelessWidget {
-  const _Suggestions({required this.enabled, required this.onPick});
+  const _Suggestions({
+    required this.hints,
+    required this.enabled,
+    required this.onPick,
+    this.onOpenSummary,
+  });
 
+  final ChatHints hints;
   final bool enabled;
   final ValueChanged<String> onPick;
+  final VoidCallback? onOpenSummary;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final suggestions = [
-      l10n.aiChatSuggestionTopics,
-      l10n.aiChatSuggestionWho,
-      l10n.aiChatSuggestionDecisions,
-    ];
+    final suggestions = [for (final h in hints.questions) h.text(l10n)];
+    final openSummary = onOpenSummary;
     return ListView(
       key: const Key('ai_chat_empty'),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -239,16 +269,29 @@ class _Suggestions extends StatelessWidget {
               onTap: enabled ? () => onPick(s) : null,
             ),
           ),
+        if (hints.tabs && openSummary != null)
+          _SuggestionButton(
+            key: const Key('ai_chat_open_summary'),
+            label: l10n.aiChatOpenSummary,
+            icon: Icons.arrow_forward_rounded,
+            onTap: openSummary,
+          ),
       ],
     );
   }
 }
 
 class _SuggestionButton extends StatelessWidget {
-  const _SuggestionButton({required this.label, required this.onTap});
+  const _SuggestionButton({
+    required this.label,
+    required this.onTap,
+    this.icon = Icons.north_east_rounded,
+    super.key,
+  });
 
   final String label;
   final VoidCallback? onTap;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -267,11 +310,7 @@ class _SuggestionButton extends StatelessWidget {
               children: [
                 Expanded(child: Text(label, style: AppText.body)),
                 const SizedBox(width: 8),
-                const Icon(
-                  Icons.north_east_rounded,
-                  size: 16,
-                  color: AppColors.mutedDark,
-                ),
+                Icon(icon, size: 16, color: AppColors.mutedDark),
               ],
             ),
           ),
