@@ -12,5 +12,16 @@ abstract interface class IAiChatFacade {
   /// off or its queue is full.
   Future<Either<Failure, AiExchange>> ask(String transcriptId, String content);
 
+  /// Stops the pending answer; what was written stays as a `FAILED` answer
+  /// with content. Returns the chat as it is now.
+  Future<Either<Failure, AiChat>> stop(String transcriptId);
+
+  /// Writes the last answer again (done, failed or stopped) without
+  /// repeating its question. 409 when it is not the last one.
+  Future<Either<Failure, AiExchange>> retry(
+    String transcriptId,
+    String answerId,
+  );
+
   Future<Either<Failure, Unit>> clear(String transcriptId);
 }

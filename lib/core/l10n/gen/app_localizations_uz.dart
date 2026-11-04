@@ -1716,6 +1716,18 @@ class AppLocalizationsUz extends AppLocalizations {
   String get aiChatResend => 'Qayta yuborish';
 
   @override
+  String get aiChatRewrite => 'Qayta yozdirish';
+
+  @override
+  String get aiChatCopy => 'Nusxalash';
+
+  @override
+  String get aiChatStop => 'Toʻxtatish';
+
+  @override
+  String get aiChatStopped => 'Toʻxtatildi.';
+
+  @override
   String get aiChatPrivate => 'Suhbatni faqat siz koʻrasiz.';
 
   @override

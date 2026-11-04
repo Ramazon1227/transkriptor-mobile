@@ -17,7 +17,8 @@ mixin _$AiChatState {
 
  AiChatStatus get status; List<AiMessage> get items;/// The first load failed: nothing to show but a retry.
  Failure? get failure;/// A question is on its way to the server.
- bool get sending; bool get clearing;/// A send or clear failed; the chat stays as it was.
+ bool get sending; bool get clearing;/// «Toʻxtatish» is on its way to the server.
+ bool get stopping;/// A send or clear failed; the chat stays as it was.
  Failure? get actionFailure;/// Asking about the pending answer failed; still retried when it is
 /// transient.
  Failure? get pollFailure;
@@ -32,20 +33,20 @@ $AiChatStateCopyWith<AiChatState> get copyWith => _$AiChatStateCopyWithImpl<AiCh
 @override
 bool operator ==(Object other) {
   final _this = this as AiChatState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiChatState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.sending, _this.sending) || other.sending == _this.sending)&&(identical(other.clearing, _this.clearing) || other.clearing == _this.clearing)&&(identical(other.actionFailure, _this.actionFailure) || other.actionFailure == _this.actionFailure)&&(identical(other.pollFailure, _this.pollFailure) || other.pollFailure == _this.pollFailure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiChatState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.sending, _this.sending) || other.sending == _this.sending)&&(identical(other.clearing, _this.clearing) || other.clearing == _this.clearing)&&(identical(other.stopping, _this.stopping) || other.stopping == _this.stopping)&&(identical(other.actionFailure, _this.actionFailure) || other.actionFailure == _this.actionFailure)&&(identical(other.pollFailure, _this.pollFailure) || other.pollFailure == _this.pollFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AiChatState;
-  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.failure,_this.sending,_this.clearing,_this.actionFailure,_this.pollFailure);
+  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.failure,_this.sending,_this.clearing,_this.stopping,_this.actionFailure,_this.pollFailure);
 }
 
 @override
 String toString() {
   final _this = this as AiChatState;
-  return 'AiChatState(status: ${_this.status}, items: ${_this.items}, failure: ${_this.failure}, sending: ${_this.sending}, clearing: ${_this.clearing}, actionFailure: ${_this.actionFailure}, pollFailure: ${_this.pollFailure})';
+  return 'AiChatState(status: ${_this.status}, items: ${_this.items}, failure: ${_this.failure}, sending: ${_this.sending}, clearing: ${_this.clearing}, stopping: ${_this.stopping}, actionFailure: ${_this.actionFailure}, pollFailure: ${_this.pollFailure})';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $AiChatStateCopyWith<$Res>  {
   factory $AiChatStateCopyWith(AiChatState value, $Res Function(AiChatState) _then) = _$AiChatStateCopyWithImpl;
 @useResult
 $Res call({
- AiChatStatus status, List<AiMessage> items, Failure? failure, bool sending, bool clearing, Failure? actionFailure, Failure? pollFailure
+ AiChatStatus status, List<AiMessage> items, Failure? failure, bool sending, bool clearing, bool stopping, Failure? actionFailure, Failure? pollFailure
 });
 
 
@@ -73,13 +74,14 @@ class _$AiChatStateCopyWithImpl<$Res>
 
 /// Create a copy of AiChatState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? failure = freezed,Object? sending = null,Object? clearing = null,Object? actionFailure = freezed,Object? pollFailure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? failure = freezed,Object? sending = null,Object? clearing = null,Object? stopping = null,Object? actionFailure = freezed,Object? pollFailure = freezed,}) {
   return _then(AiChatState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AiChatStatus,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<AiMessage>,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,sending: null == sending ? _self.sending : sending // ignore: cast_nullable_to_non_nullable
 as bool,clearing: null == clearing ? _self.clearing : clearing // ignore: cast_nullable_to_non_nullable
+as bool,stopping: null == stopping ? _self.stopping : stopping // ignore: cast_nullable_to_non_nullable
 as bool,actionFailure: freezed == actionFailure ? _self.actionFailure : actionFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,pollFailure: freezed == pollFailure ? _self.pollFailure : pollFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,
@@ -203,10 +205,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  Failure? actionFailure,  Failure? pollFailure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  bool stopping,  Failure? actionFailure,  Failure? pollFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AiChatState() when $default != null:
-return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.actionFailure,_that.pollFailure);case _:
+return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.stopping,_that.actionFailure,_that.pollFailure);case _:
   return orElse();
 
 }
@@ -224,10 +226,10 @@ return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clear
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  Failure? actionFailure,  Failure? pollFailure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  bool stopping,  Failure? actionFailure,  Failure? pollFailure)  $default,) {final _that = this;
 switch (_that) {
 case _AiChatState():
-return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.actionFailure,_that.pollFailure);case _:
+return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.stopping,_that.actionFailure,_that.pollFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -244,10 +246,10 @@ return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clear
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  Failure? actionFailure,  Failure? pollFailure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AiChatStatus status,  List<AiMessage> items,  Failure? failure,  bool sending,  bool clearing,  bool stopping,  Failure? actionFailure,  Failure? pollFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _AiChatState() when $default != null:
-return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.actionFailure,_that.pollFailure);case _:
+return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clearing,_that.stopping,_that.actionFailure,_that.pollFailure);case _:
   return null;
 
 }
@@ -259,7 +261,7 @@ return $default(_that.status,_that.items,_that.failure,_that.sending,_that.clear
 
 
 class _AiChatState extends AiChatState {
-  const _AiChatState({this.status = AiChatStatus.initial,  List<AiMessage> items = const <AiMessage>[], this.failure, this.sending = false, this.clearing = false, this.actionFailure, this.pollFailure}): _items = items,super._();
+  const _AiChatState({this.status = AiChatStatus.initial,  List<AiMessage> items = const <AiMessage>[], this.failure, this.sending = false, this.clearing = false, this.stopping = false, this.actionFailure, this.pollFailure}): _items = items,super._();
   
 
 @override@JsonKey() final  AiChatStatus status;
@@ -275,6 +277,8 @@ class _AiChatState extends AiChatState {
 /// A question is on its way to the server.
 @override@JsonKey() final  bool sending;
 @override@JsonKey() final  bool clearing;
+/// «Toʻxtatish» is on its way to the server.
+@override@JsonKey() final  bool stopping;
 /// A send or clear failed; the chat stays as it was.
 @override final  Failure? actionFailure;
 /// Asking about the pending answer failed; still retried when it is
@@ -291,18 +295,18 @@ _$AiChatStateCopyWith<_AiChatState> get copyWith => __$AiChatStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiChatState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.sending, sending) || other.sending == sending)&&(identical(other.clearing, clearing) || other.clearing == clearing)&&(identical(other.actionFailure, actionFailure) || other.actionFailure == actionFailure)&&(identical(other.pollFailure, pollFailure) || other.pollFailure == pollFailure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiChatState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.sending, sending) || other.sending == sending)&&(identical(other.clearing, clearing) || other.clearing == clearing)&&(identical(other.stopping, stopping) || other.stopping == stopping)&&(identical(other.actionFailure, actionFailure) || other.actionFailure == actionFailure)&&(identical(other.pollFailure, pollFailure) || other.pollFailure == pollFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),failure,sending,clearing,actionFailure,pollFailure);
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),failure,sending,clearing,stopping,actionFailure,pollFailure);
 }
 
 @override
 String toString() {
-    return 'AiChatState(status: $status, items: $items, failure: $failure, sending: $sending, clearing: $clearing, actionFailure: $actionFailure, pollFailure: $pollFailure)';
+    return 'AiChatState(status: $status, items: $items, failure: $failure, sending: $sending, clearing: $clearing, stopping: $stopping, actionFailure: $actionFailure, pollFailure: $pollFailure)';
 }
 
 
@@ -313,7 +317,7 @@ abstract mixin class _$AiChatStateCopyWith<$Res> implements $AiChatStateCopyWith
   factory _$AiChatStateCopyWith(_AiChatState value, $Res Function(_AiChatState) _then) = __$AiChatStateCopyWithImpl;
 @override @useResult
 $Res call({
- AiChatStatus status, List<AiMessage> items, Failure? failure, bool sending, bool clearing, Failure? actionFailure, Failure? pollFailure
+ AiChatStatus status, List<AiMessage> items, Failure? failure, bool sending, bool clearing, bool stopping, Failure? actionFailure, Failure? pollFailure
 });
 
 
@@ -330,13 +334,14 @@ class __$AiChatStateCopyWithImpl<$Res>
 
 /// Create a copy of AiChatState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? failure = freezed,Object? sending = null,Object? clearing = null,Object? actionFailure = freezed,Object? pollFailure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? failure = freezed,Object? sending = null,Object? clearing = null,Object? stopping = null,Object? actionFailure = freezed,Object? pollFailure = freezed,}) {
   return _then(_AiChatState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AiChatStatus,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<AiMessage>,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,sending: null == sending ? _self.sending : sending // ignore: cast_nullable_to_non_nullable
 as bool,clearing: null == clearing ? _self.clearing : clearing // ignore: cast_nullable_to_non_nullable
+as bool,stopping: null == stopping ? _self.stopping : stopping // ignore: cast_nullable_to_non_nullable
 as bool,actionFailure: freezed == actionFailure ? _self.actionFailure : actionFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,pollFailure: freezed == pollFailure ? _self.pollFailure : pollFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,

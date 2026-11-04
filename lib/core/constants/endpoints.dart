@@ -74,6 +74,10 @@ abstract final class Endpoints {
   // Editor AI tabs (M-R5): the per-transcript chat, the summary template
   // library (the summary's «save as note» uses [notes]).
   static String transcriptChat(String id) => '/api/v1/transcript/$id/chat';
+  static String transcriptChatStop(String id) =>
+      '/api/v1/transcript/$id/chat/stop';
+  static String transcriptChatRetry(String id, String answerId) =>
+      '/api/v1/transcript/$id/chat/$answerId/retry';
   // Sentiment (kayfiyat tahlili): started by a button, polled while PENDING.
   static String transcriptSentiment(String id) =>
       '/api/v1/transcript/$id/sentiment';
