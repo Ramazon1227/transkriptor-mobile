@@ -3178,6 +3178,30 @@ abstract class AppLocalizations {
   /// **'Qayta yuborish'**
   String get aiChatResend;
 
+  /// No description provided for @aiChatRewrite.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yozdirish'**
+  String get aiChatRewrite;
+
+  /// No description provided for @aiChatCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxalash'**
+  String get aiChatCopy;
+
+  /// No description provided for @aiChatStop.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish'**
+  String get aiChatStop;
+
+  /// No description provided for @aiChatStopped.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatildi.'**
+  String get aiChatStopped;
+
   /// No description provided for @aiChatPrivate.
   ///
   /// In uz, this message translates to:

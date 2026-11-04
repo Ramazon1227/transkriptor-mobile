@@ -47,6 +47,23 @@ class _FakeFacade implements IAiChatFacade {
 
   @override
   Future<Either<Failure, Unit>> clear(String transcriptId) async => clearResult;
+
+  final Queue<Either<Failure, AiChat>> stops = Queue();
+  final Queue<Either<Failure, AiExchange>> retries = Queue();
+  final List<String> retried = [];
+
+  @override
+  Future<Either<Failure, AiChat>> stop(String transcriptId) async =>
+      stops.removeFirst();
+
+  @override
+  Future<Either<Failure, AiExchange>> retry(
+    String transcriptId,
+    String answerId,
+  ) async {
+    retried.add(answerId);
+    return retries.removeFirst();
+  }
 }
 
 AiMessage q(String id, String text) => AiMessage(
@@ -249,42 +266,156 @@ void main() {
     expect(cubit.state.items, isEmpty);
   });
 
-  test('a FAILED answer can be retried: its question is sent again', () async {
+  test(
+    'retry rewrites the last answer without asking the question again',
+    () async {
+      facade
+        ..answer(
+          Right(
+            AiChat(
+              items: [q('q1', 'Qarorlar?'), a('a1', AiMessageStatus.failed)],
+            ),
+          ),
+        )
+        ..retries.add(
+          Right(
+            AiExchange(
+              question: q('q1', 'Qarorlar?'),
+              answer: a('a2', AiMessageStatus.pending),
+            ),
+          ),
+        )
+        ..answer(
+          Right(
+            AiChat(
+              items: [
+                q('q1', 'Qarorlar?'),
+                a('a2', AiMessageStatus.done, 'Uchta qaror'),
+              ],
+            ),
+          ),
+        );
+      final cubit = AiChatCubit(facade, fast);
+      addTearDown(cubit.close);
+      await cubit.load('t1');
+      final accepted = cubit.retry('a1');
+      // Optimistic: the old answer gives way to a pending one, same question.
+      expect(cubit.state.items.map((m) => m.id), ['q1', 'local-answer']);
+      expect(cubit.state.pending, isTrue);
+      expect(await accepted, isTrue);
+      expect(facade.retried, ['a1']);
+      expect(facade.asked, isEmpty);
+      expect(cubit.state.items.map((m) => m.id), ['q1', 'a2']);
+      await settle();
+      expect(cubit.state.items.last.content, 'Uchta qaror');
+    },
+  );
+
+  test('only the last answer can be rewritten', () async {
+    facade.answer(
+      Right(
+        AiChat(
+          items: [
+            q('q1', 'x'),
+            a('a1', AiMessageStatus.done, 'bir'),
+            q('q2', 'y'),
+            a('a2', AiMessageStatus.done, 'ikki'),
+          ],
+        ),
+      ),
+    );
+    final cubit = AiChatCubit(facade, fast);
+    addTearDown(cubit.close);
+    await cubit.load('t1');
+    expect(await cubit.retry('a1'), isFalse);
+    expect(facade.retried, isEmpty);
+  });
+
+  test('a 409 on retry restores the chat and refetches it quietly', () async {
     facade
       ..answer(
         Right(
-          AiChat(
-            items: [q('q1', 'Qarorlar?'), a('a1', AiMessageStatus.failed)],
-          ),
+          AiChat(items: [q('q1', 'x'), a('a1', AiMessageStatus.done, 'bir')]),
         ),
       )
-      ..asks.add(
-        Right(
-          AiExchange(
-            question: q('q2', 'Qarorlar?'),
-            answer: a('a2', AiMessageStatus.pending),
-          ),
-        ),
-      )
+      ..retries.add(const Left(Failure.server(statusCode: 409)))
       ..answer(
         Right(
           AiChat(
             items: [
-              q('q1', 'Qarorlar?'),
-              a('a1', AiMessageStatus.failed),
-              q('q2', 'Qarorlar?'),
-              a('a2', AiMessageStatus.done, 'Uchta qaror'),
+              q('q1', 'x'),
+              a('a1', AiMessageStatus.done, 'bir'),
+              q('q2', 'boshqa qurilmadan'),
+              a('a2', AiMessageStatus.pending),
             ],
+            pending: true,
           ),
         ),
       );
     final cubit = AiChatCubit(facade, fast);
     addTearDown(cubit.close);
     await cubit.load('t1');
-    expect(await cubit.retry('a1'), isTrue);
-    expect(facade.asked, ['Qarorlar?']);
+    expect(await cubit.retry('a1'), isFalse);
+    await settle(5);
+    expect(cubit.state.actionFailure, isNull);
+    expect(cubit.state.items.last.id, 'a2');
+    expect(cubit.state.pending, isTrue);
+  });
+
+  test('stop keeps the written part and frees the next question', () async {
+    facade
+      ..answer(
+        Right(
+          AiChat(
+            items: [q('q1', 'x'), a('a1', AiMessageStatus.pending, 'Yarim')],
+            pending: true,
+          ),
+        ),
+      )
+      ..stops.add(
+        const Right(
+          AiChat(
+            items: [
+              AiMessage(
+                id: 'q1',
+                role: AiRole.user,
+                status: AiMessageStatus.done,
+                content: 'x',
+              ),
+              AiMessage(
+                id: 'a1',
+                role: AiRole.assistant,
+                status: AiMessageStatus.failed,
+                content: 'Yarim',
+                error: 'Toʻxtatildi.',
+              ),
+            ],
+          ),
+        ),
+      );
+    final held = facade.heldHistory();
+    final cubit = AiChatCubit(facade, fast);
+    addTearDown(cubit.close);
+    await cubit.load('t1');
+    expect(cubit.state.canClear, isTrue);
+    await settle(); // a poll is in flight, held
+    await cubit.stop();
+    expect(cubit.state.pending, isFalse);
+    expect(cubit.state.stopping, isFalse);
+    expect(cubit.state.items.last.content, 'Yarim');
+    expect(cubit.state.items.last.status, AiMessageStatus.failed);
+
+    // The late poll still saw it pending: it is dropped.
+    held.complete(
+      Right(
+        AiChat(
+          items: [q('q1', 'x'), a('a1', AiMessageStatus.pending, 'Yarim')],
+          pending: true,
+        ),
+      ),
+    );
     await settle();
-    expect(cubit.state.items.last.content, 'Uchta qaror');
+    expect(cubit.state.pending, isFalse);
   });
 
   test('a transient poll failure keeps polling and keeps the chat', () async {
