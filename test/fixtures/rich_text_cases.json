@@ -1,0 +1,22 @@
+[
+  { "name": "oddiy matn, qator tashlanishi saqlanadi", "input": "Birinchi qator.\nIkkinchi qator.", "plain": "Birinchi qator.\nIkkinchi qator." },
+  { "name": "paragraflar", "input": "Bir.\n\n\nIkki.", "plain": "Bir.\n\nIkki." },
+  { "name": "sarlavha, ro'yxat va qalin", "input": "## Qarorlar\n- **Byudjet** tasdiqlandi [03:41]\n- Muddat 15-noyabr [05:10, 06:02]", "plain": "Qarorlar\n\n- Byudjet tasdiqlandi [03:41]\n- Muddat 15-noyabr [05:10, 06:02]" },
+  { "name": "sarlavha oxiridagi # lar", "input": "### Xulosa ###\nMatn", "plain": "Xulosa\n\nMatn" },
+  { "name": "tartibli ro'yxat qayta raqamlanadi", "input": "1. Bir\n1. Ikki\n1. Uch", "plain": "1. Bir\n2. Ikki\n3. Uch" },
+  { "name": "tartibli ro'yxat 3 dan", "input": "3) Uch\n4) To'rt", "plain": "3. Uch\n4. To'rt" },
+  { "name": "ichki ro'yxat", "input": "- Ali\n  - hisobot [01:02]\n    - jadval\n- Vali", "plain": "- Ali\n  - hisobot [01:02]\n    - jadval\n- Vali" },
+  { "name": "tartibli ichida belgili, 3 bo'shliq", "input": "1. Reja\n   * birinchi\n   * ikkinchi\n2. Ijro", "plain": "1. Reja\n  - birinchi\n  - ikkinchi\n2. Ijro" },
+  { "name": "bandlar orasida bo'sh qator — bitta ro'yxat", "input": "1. Bir\n\n2. Ikki", "plain": "1. Bir\n2. Ikki" },
+  { "name": "band davomi", "input": "- Uzun band\n  davomi shu yerda\nYangi paragraf", "plain": "- Uzun band davomi shu yerda\n\nYangi paragraf" },
+  { "name": "belgi turi almashsa yangi ro'yxat", "input": "- a\n1. b", "plain": "- a\n\n1. b" },
+  { "name": "chiziq tashlanadi", "input": "Yuqori\n---\nPast", "plain": "Yuqori\n\nPast" },
+  { "name": "yopilmagan qalin — oddiy matn", "input": "Javob **yozilmoqda", "plain": "Javob **yozilmoqda" },
+  { "name": "pastki chiziqli qalin", "input": "__Muhim__ gap", "plain": "Muhim gap" },
+  { "name": "bo'shliq bilan o'ralgan yulduzlar qalin emas", "input": "5 ** 3 va 2 ** 4", "plain": "5 ** 3 va 2 ** 4" },
+  { "name": "HTML matn bo'lib qoladi", "input": "<b>qalin emas</b> <script>x</script>", "plain": "<b>qalin emas</b> <script>x</script>" },
+  { "name": "hashtag sarlavha emas", "input": "#mavzu haqida", "plain": "#mavzu haqida" },
+  { "name": "yil bilan boshlangan qator ro'yxat emas", "input": "2026. yil yakunlari", "plain": "2026. yil yakunlari" },
+  { "name": "qalin ichida vaqt", "input": "**Qaror [1:02:03]** qabul qilindi", "plain": "Qaror [1:02:03] qabul qilindi" },
+  { "name": "Windows qator oxiri", "input": "- a\r\n- b", "plain": "- a\n- b" }
+]

@@ -64,6 +64,9 @@ _TranscriptModel _$TranscriptModelFromJson(Map<String, dynamic> json) =>
             unknownValue: WorkspaceRole.unknown,
           ) ??
           WorkspaceRole.unknown,
+      meeting: json['meeting'] == null
+          ? null
+          : MeetingModel.fromJson(json['meeting'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
@@ -76,6 +79,7 @@ Map<String, dynamic> _$TranscriptModelToJson(_TranscriptModel instance) =>
       'segments': instance.segments,
       'revision': instance.revision,
       'role': _$WorkspaceRoleEnumMap[instance.role]!,
+      'meeting': instance.meeting,
     };
 
 const _$WorkspaceRoleEnumMap = {
@@ -85,6 +89,14 @@ const _$WorkspaceRoleEnumMap = {
   WorkspaceRole.viewer: 'VIEWER',
   WorkspaceRole.unknown: 'unknown',
 };
+
+_MeetingModel _$MeetingModelFromJson(Map<String, dynamic> json) =>
+    _MeetingModel(
+      attendees: json['attendees'] as List<dynamic>? ?? const <Object?>[],
+    );
+
+Map<String, dynamic> _$MeetingModelToJson(_MeetingModel instance) =>
+    <String, dynamic>{'attendees': instance.attendees};
 
 _SegmentEditModel _$SegmentEditModelFromJson(Map<String, dynamic> json) =>
     _SegmentEditModel(

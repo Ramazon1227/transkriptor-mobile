@@ -53,7 +53,18 @@ abstract class Transcript with _$Transcript {
     /// The caller's role in this file's workspace. Unknown — an older
     /// server — is treated as the least privileged.
     @Default(WorkspaceRole.unknown) WorkspaceRole role,
+
+    /// Set when the recording came from a calendar meeting.
+    TranscriptMeeting? meeting,
   }) = _Transcript;
+}
+
+/// What the app reads of `models.Meeting`: only what the AI chat's ready
+/// questions need.
+@freezed
+abstract class TranscriptMeeting with _$TranscriptMeeting {
+  const factory TranscriptMeeting({@Default(0) int attendeeCount}) =
+      _TranscriptMeeting;
 }
 
 /// The answer to a segment text or speaker edit: the stored segment and

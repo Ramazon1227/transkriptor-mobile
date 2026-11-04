@@ -12,7 +12,8 @@ import 'package:transkriptor_uz/core/widgets/app_error_view.dart';
 import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
-import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
+import 'package:transkriptor_uz/features/ai_chat/presentation/chat_hint_text.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/message_bubble.dart';
 
 /// The editor's «AI suhbat» tab: questions about this one transcript,
@@ -20,12 +21,25 @@ import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/message_bu
 /// view under the player, so it fills a bounded height and scrolls on
 /// its own; the composer stays at the bottom.
 class AiChatTab extends StatelessWidget {
-  const AiChatTab({required this.transcriptId, this.onSeek, super.key});
+  const AiChatTab({
+    required this.transcriptId,
+    required this.hints,
+    this.onSeek,
+    this.onOpenSummary,
+    super.key,
+  });
 
   final String transcriptId;
 
+  /// The empty chat's ready questions (`chatHints`).
+  final ChatHints hints;
+
   /// A timecode chip in an answer was tapped. Null: chips do nothing.
   final ValueChanged<Duration>? onSeek;
+
+  /// A summary is not asked in the chat: this opens the «Xulosa» tab.
+  /// Null: no such button.
+  final VoidCallback? onOpenSummary;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +49,21 @@ class AiChatTab extends StatelessWidget {
         unawaited(cubit.load(transcriptId));
         return cubit;
       },
-      child: _AiChatView(onSeek: onSeek),
+      child: _AiChatView(
+        hints: hints,
+        onSeek: onSeek,
+        onOpenSummary: onOpenSummary,
+      ),
     );
   }
 }
 
 class _AiChatView extends StatefulWidget {
-  const _AiChatView({this.onSeek});
+  const _AiChatView({required this.hints, this.onSeek, this.onOpenSummary});
 
+  final ChatHints hints;
   final ValueChanged<Duration>? onSeek;
+  final VoidCallback? onOpenSummary;
 
   @override
   State<_AiChatView> createState() => _AiChatViewState();
@@ -96,7 +116,9 @@ class _AiChatViewState extends State<_AiChatView> {
               enabled: state.status == AiChatStatus.success,
               busy: state.busy,
               pending: state.pending,
+              stopping: state.stopping,
               onSend: _send,
+              onStop: context.read<AiChatCubit>().stop,
             ),
           ],
         );
@@ -117,7 +139,12 @@ class _AiChatViewState extends State<_AiChatView> {
         );
       case AiChatStatus.success:
         if (state.items.isEmpty) {
-          return _Suggestions(enabled: !state.busy, onPick: _send);
+          return _Suggestions(
+            hints: widget.hints,
+            enabled: !state.busy,
+            onPick: _send,
+            onOpenSummary: widget.onOpenSummary,
+          );
         }
         final items = state.items.reversed.toList();
         return ListView.separated(
@@ -132,7 +159,7 @@ class _AiChatViewState extends State<_AiChatView> {
           itemBuilder: (context, i) {
             if (i == items.length) {
               return _ChatHeader(
-                onClear: state.busy ? null : _clear,
+                onClear: state.canClear ? _clear : null,
                 clearing: state.clearing,
               );
             }
@@ -142,8 +169,9 @@ class _AiChatViewState extends State<_AiChatView> {
               message: m,
               onSeek: widget.onSeek,
               onRetry:
-                  m.status == AiMessageStatus.failed &&
-                      m.role == AiRole.assistant &&
+                  i == 0 &&
+                      m.id == state.lastAnswer?.id &&
+                      !m.local &&
                       !state.busy
                   ? () => cubit.retry(m.id)
                   : null,
@@ -203,19 +231,23 @@ class _ChatHeader extends StatelessWidget {
 }
 
 class _Suggestions extends StatelessWidget {
-  const _Suggestions({required this.enabled, required this.onPick});
+  const _Suggestions({
+    required this.hints,
+    required this.enabled,
+    required this.onPick,
+    this.onOpenSummary,
+  });
 
+  final ChatHints hints;
   final bool enabled;
   final ValueChanged<String> onPick;
+  final VoidCallback? onOpenSummary;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final suggestions = [
-      l10n.aiChatSuggestionTopics,
-      l10n.aiChatSuggestionWho,
-      l10n.aiChatSuggestionDecisions,
-    ];
+    final suggestions = [for (final h in hints.questions) h.text(l10n)];
+    final openSummary = onOpenSummary;
     return ListView(
       key: const Key('ai_chat_empty'),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -237,16 +269,29 @@ class _Suggestions extends StatelessWidget {
               onTap: enabled ? () => onPick(s) : null,
             ),
           ),
+        if (hints.tabs && openSummary != null)
+          _SuggestionButton(
+            key: const Key('ai_chat_open_summary'),
+            label: l10n.aiChatOpenSummary,
+            icon: Icons.arrow_forward_rounded,
+            onTap: openSummary,
+          ),
       ],
     );
   }
 }
 
 class _SuggestionButton extends StatelessWidget {
-  const _SuggestionButton({required this.label, required this.onTap});
+  const _SuggestionButton({
+    required this.label,
+    required this.onTap,
+    this.icon = Icons.north_east_rounded,
+    super.key,
+  });
 
   final String label;
   final VoidCallback? onTap;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -265,11 +310,7 @@ class _SuggestionButton extends StatelessWidget {
               children: [
                 Expanded(child: Text(label, style: AppText.body)),
                 const SizedBox(width: 8),
-                const Icon(
-                  Icons.north_east_rounded,
-                  size: 16,
-                  color: AppColors.mutedDark,
-                ),
+                Icon(icon, size: 16, color: AppColors.mutedDark),
               ],
             ),
           ),
@@ -331,14 +372,18 @@ class _Composer extends StatelessWidget {
     required this.enabled,
     required this.busy,
     required this.pending,
+    required this.stopping,
     required this.onSend,
+    required this.onStop,
   });
 
   final TextEditingController controller;
   final bool enabled;
   final bool busy;
   final bool pending;
+  final bool stopping;
   final ValueChanged<String> onSend;
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -357,11 +402,12 @@ class _Composer extends StatelessWidget {
                   key: const Key('ai_chat_input'),
                   controller: controller,
                   enabled: enabled,
+                  // Enter is a new line; the button sends.
                   minLines: 1,
-                  maxLines: 4,
+                  maxLines: 6,
                   maxLength: aiQuestionMaxLength,
-                  textInputAction: TextInputAction.send,
-                  onSubmitted: busy ? null : onSend,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
                   decoration: InputDecoration(
                     hintText: pending
                         ? l10n.aiChatHintPending
@@ -372,19 +418,27 @@ class _Composer extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: controller,
-                builder: (context, value, _) {
-                  final canSend =
-                      enabled && !busy && value.text.trim().isNotEmpty;
-                  return IconButton.filled(
-                    key: const Key('ai_chat_send'),
-                    tooltip: l10n.aiChatSend,
-                    onPressed: canSend ? () => onSend(controller.text) : null,
-                    icon: const Icon(Icons.arrow_upward_rounded),
-                  );
-                },
-              ),
+              if (pending)
+                IconButton.filledTonal(
+                  key: const Key('ai_chat_stop'),
+                  tooltip: l10n.aiChatStop,
+                  onPressed: stopping ? null : onStop,
+                  icon: const Icon(Icons.stop_rounded),
+                )
+              else
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: controller,
+                  builder: (context, value, _) {
+                    final canSend =
+                        enabled && !busy && value.text.trim().isNotEmpty;
+                    return IconButton.filled(
+                      key: const Key('ai_chat_send'),
+                      tooltip: l10n.aiChatSend,
+                      onPressed: canSend ? () => onSend(controller.text) : null,
+                      icon: const Icon(Icons.arrow_upward_rounded),
+                    );
+                  },
+                ),
             ],
           ),
         ),

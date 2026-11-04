@@ -3058,23 +3058,83 @@ abstract class AppLocalizations {
   /// **'Javob faqat shu transkriptga tayanadi va vaqtga havola beradi — havolani bossangiz, pleyer oʻsha joyga oʻtadi.'**
   String get aiChatIntro;
 
-  /// No description provided for @aiChatSuggestionTopics.
+  /// No description provided for @aiChatHintWhatSaid.
   ///
   /// In uz, this message translates to:
-  /// **'Asosiy mavzular qanday?'**
-  String get aiChatSuggestionTopics;
+  /// **'Bu yozuvda nima deyilgan?'**
+  String get aiChatHintWhatSaid;
 
-  /// No description provided for @aiChatSuggestionWho.
+  /// No description provided for @aiChatHintWhoSaid.
   ///
   /// In uz, this message translates to:
   /// **'Kim nima dedi?'**
-  String get aiChatSuggestionWho;
+  String get aiChatHintWhoSaid;
 
-  /// No description provided for @aiChatSuggestionDecisions.
+  /// No description provided for @aiChatHintDecisions.
   ///
   /// In uz, this message translates to:
   /// **'Qanday qarorlar qabul qilindi?'**
-  String get aiChatSuggestionDecisions;
+  String get aiChatHintDecisions;
+
+  /// No description provided for @aiChatHintOpenIssues.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaysi masalalar ochiq qoldi?'**
+  String get aiChatHintOpenIssues;
+
+  /// No description provided for @aiChatHintProposals.
+  ///
+  /// In uz, this message translates to:
+  /// **'Har bir ishtirokchi nimani taklif qildi?'**
+  String get aiChatHintProposals;
+
+  /// No description provided for @aiChatHintDisagreements.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaysi masalalarda fikrlar farq qildi?'**
+  String get aiChatHintDisagreements;
+
+  /// No description provided for @aiChatHintMainPoints.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy fikrlar qaysilar?'**
+  String get aiChatHintMainPoints;
+
+  /// No description provided for @aiChatHintExamples.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qanday misollar yoki raqamlar keltirildi?'**
+  String get aiChatHintExamples;
+
+  /// No description provided for @aiChatHintTerms.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaysi atamalar tushuntirildi?'**
+  String get aiChatHintTerms;
+
+  /// No description provided for @aiChatHintWhoTalked.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kim nima haqida gapirdi?'**
+  String get aiChatHintWhoTalked;
+
+  /// No description provided for @aiChatHintAgreements.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qanday kelishuvlarga erishildi?'**
+  String get aiChatHintAgreements;
+
+  /// No description provided for @aiChatHintChapters.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuvni mavzular boʻyicha boʻlimlarga ajrat'**
+  String get aiChatHintChapters;
+
+  /// No description provided for @aiChatOpenSummary.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xulosa yozish'**
+  String get aiChatOpenSummary;
 
   /// No description provided for @aiChatHint.
   ///
@@ -3117,6 +3177,30 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Qayta yuborish'**
   String get aiChatResend;
+
+  /// No description provided for @aiChatRewrite.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yozdirish'**
+  String get aiChatRewrite;
+
+  /// No description provided for @aiChatCopy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nusxalash'**
+  String get aiChatCopy;
+
+  /// No description provided for @aiChatStop.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatish'**
+  String get aiChatStop;
+
+  /// No description provided for @aiChatStopped.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toʻxtatildi.'**
+  String get aiChatStopped;
 
   /// No description provided for @aiChatPrivate.
   ///

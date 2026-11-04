@@ -28,6 +28,9 @@ abstract class AiChatState with _$AiChatState {
     @Default(false) bool sending,
     @Default(false) bool clearing,
 
+    /// «Toʻxtatish» is on its way to the server.
+    @Default(false) bool stopping,
+
     /// A send or clear failed; the chat stays as it was.
     Failure? actionFailure,
 
@@ -45,7 +48,17 @@ abstract class AiChatState with _$AiChatState {
   /// The pending answer's text is arriving.
   bool get writing => items.any((m) => m.isWritingAnswer);
 
-  bool get busy => sending || clearing || pending;
+  bool get busy => sending || clearing || stopping || pending;
+
+  /// The chat can be cleared even while an answer is pending: the server
+  /// stops it.
+  bool get canClear => !sending && !clearing && !stopping;
+
+  /// The newest message when it is an answer: only it can be rewritten.
+  AiMessage? get lastAnswer {
+    final last = items.isEmpty ? null : items.last;
+    return last?.role == AiRole.assistant ? last : null;
+  }
 }
 
 /// One transcript's private AI chat. The answer comes from a queue on
@@ -151,18 +164,101 @@ class AiChatCubit extends Cubit<AiChatState> {
     return accepted;
   }
 
-  /// A `FAILED` answer: ask its question again.
+  /// The last answer — done, failed or stopped — is written again. The
+  /// question is not sent again: the server replaces the answer row.
   Future<bool> retry(String answerId) async {
-    final i = state.items.indexWhere((m) => m.id == answerId);
-    if (i <= 0) return false;
-    final question = state.items[i - 1];
-    if (question.role != AiRole.user) return false;
-    return await send(question.content);
+    final id = _transcriptId;
+    if (id == null ||
+        state.status != AiChatStatus.success ||
+        state.busy ||
+        state.lastAnswer?.id != answerId) {
+      return false;
+    }
+    _timer?.cancel();
+    final generation = ++_generation;
+    final before = state.items;
+    emit(
+      state.copyWith(
+        sending: true,
+        actionFailure: null,
+        pollFailure: null,
+        items: [
+          ...before.take(before.length - 1),
+          const AiMessage(
+            id: _localAnswerId,
+            role: AiRole.assistant,
+            status: AiMessageStatus.pending,
+            local: true,
+          ),
+        ],
+      ),
+    );
+    final result = await _facade.retry(id, answerId);
+    if (isClosed || generation != _generation) return result.isRight();
+    return result.fold<bool>(
+      (failure) {
+        // 404/409: the chat moved on elsewhere (another device asked or
+        // rewrote); showing it as it is now says enough.
+        final moved =
+            failure is ServerFailure &&
+            (failure.statusCode == 404 || failure.statusCode == 409);
+        emit(
+          state.copyWith(
+            sending: false,
+            items: before,
+            actionFailure: moved ? null : failure,
+          ),
+        );
+        if (moved) unawaited(_fetch(generation));
+        return false;
+      },
+      (exchange) {
+        emit(
+          state.copyWith(
+            sending: false,
+            items: [...before.take(before.length - 1), exchange.answer],
+          ),
+        );
+        _interval = _policy.first;
+        _schedule(generation);
+        return true;
+      },
+    );
+  }
+
+  /// Stops the pending answer: the server keeps what was written and the
+  /// next question can go at once.
+  Future<void> stop() async {
+    final id = _transcriptId;
+    if (id == null || !state.pending || state.stopping || state.clearing) {
+      return;
+    }
+    _timer?.cancel();
+    final generation = ++_generation;
+    emit(state.copyWith(stopping: true, actionFailure: null));
+    final result = await _facade.stop(id);
+    if (isClosed || generation != _generation) return;
+    result.fold(
+      (failure) {
+        emit(state.copyWith(stopping: false, actionFailure: failure));
+        if (state.pending) _schedule(generation);
+      },
+      (chat) {
+        emit(
+          state.copyWith(stopping: false, items: chat.items, pollFailure: null),
+        );
+        // Another device asked meanwhile: keep following it.
+        if (chat.pending) {
+          _interval = _policy.first;
+          _schedule(generation);
+        }
+      },
+    );
   }
 
   Future<void> clear() async {
     final id = _transcriptId;
-    if (id == null || state.sending || state.clearing) return;
+    if (id == null || !state.canClear) return;
     _timer?.cancel();
     final generation = ++_generation;
     emit(state.copyWith(clearing: true, actionFailure: null));

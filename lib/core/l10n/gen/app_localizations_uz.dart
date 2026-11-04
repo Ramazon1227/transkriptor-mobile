@@ -1685,13 +1685,44 @@ class AppLocalizationsUz extends AppLocalizations {
       'Javob faqat shu transkriptga tayanadi va vaqtga havola beradi — havolani bossangiz, pleyer oʻsha joyga oʻtadi.';
 
   @override
-  String get aiChatSuggestionTopics => 'Asosiy mavzular qanday?';
+  String get aiChatHintWhatSaid => 'Bu yozuvda nima deyilgan?';
 
   @override
-  String get aiChatSuggestionWho => 'Kim nima dedi?';
+  String get aiChatHintWhoSaid => 'Kim nima dedi?';
 
   @override
-  String get aiChatSuggestionDecisions => 'Qanday qarorlar qabul qilindi?';
+  String get aiChatHintDecisions => 'Qanday qarorlar qabul qilindi?';
+
+  @override
+  String get aiChatHintOpenIssues => 'Qaysi masalalar ochiq qoldi?';
+
+  @override
+  String get aiChatHintProposals => 'Har bir ishtirokchi nimani taklif qildi?';
+
+  @override
+  String get aiChatHintDisagreements => 'Qaysi masalalarda fikrlar farq qildi?';
+
+  @override
+  String get aiChatHintMainPoints => 'Asosiy fikrlar qaysilar?';
+
+  @override
+  String get aiChatHintExamples => 'Qanday misollar yoki raqamlar keltirildi?';
+
+  @override
+  String get aiChatHintTerms => 'Qaysi atamalar tushuntirildi?';
+
+  @override
+  String get aiChatHintWhoTalked => 'Kim nima haqida gapirdi?';
+
+  @override
+  String get aiChatHintAgreements => 'Qanday kelishuvlarga erishildi?';
+
+  @override
+  String get aiChatHintChapters =>
+      'Yozuvni mavzular boʻyicha boʻlimlarga ajrat';
+
+  @override
+  String get aiChatOpenSummary => 'Xulosa yozish';
 
   @override
   String get aiChatHint => 'Shu yozuv boʻyicha soʻrang';
@@ -1714,6 +1745,18 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get aiChatResend => 'Qayta yuborish';
+
+  @override
+  String get aiChatRewrite => 'Qayta yozdirish';
+
+  @override
+  String get aiChatCopy => 'Nusxalash';
+
+  @override
+  String get aiChatStop => 'Toʻxtatish';
+
+  @override
+  String get aiChatStopped => 'Toʻxtatildi.';
 
   @override
   String get aiChatPrivate => 'Suhbatni faqat siz koʻrasiz.';
