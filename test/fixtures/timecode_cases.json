@@ -1,0 +1,13 @@
+[
+  { "in": "Muddat 15-noyabr [01:15].", "links": [["01:15", 75000]] },
+  { "in": "Bir soatdan keyin [1:02:03].", "links": [["1:02:03", 3723000]] },
+  { "in": "Ikki joyda [01:15, 01:20].", "links": [["01:15", 75000], ["01:20", 80000]] },
+  { "in": "Oraliq [12:34–13:10].", "links": [["12:34–13:10", 754000]] },
+  { "in": "Oraliq defis bilan [12:34-13:10].", "links": [["12:34-13:10", 754000]] },
+  { "in": "Soat 14:00 da uchrashamiz.", "links": [] },
+  { "in": "Noto'g'ri [12:75] soniya.", "links": [] },
+  { "in": "Manba [1] va [izoh].", "links": [] },
+  { "in": "Aralash [01:15, izoh].", "links": [] },
+  { "in": "Chala [12:", "links": [] },
+  { "in": "Ketma-ket [00:04] va [01:20].", "links": [["00:04", 4000], ["01:20", 80000]] }
+]

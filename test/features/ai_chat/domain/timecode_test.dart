@@ -1,7 +1,27 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/timecode.dart';
 
 void main() {
+  // The web runs the same cases (tr-frontend/src/lib/timecode.fixtures.json);
+  // copy that file here when the rule changes, do not edit it by hand.
+  group('shared with the web', () {
+    final cases = jsonDecode(
+      File('test/fixtures/timecode_cases.json').readAsStringSync(),
+    ) as List<dynamic>;
+    for (final c in cases.cast<Map<String, dynamic>>()) {
+      test(c['in'] as String, () {
+        final links = [
+          for (final p in splitTimecodes(c['in'] as String))
+            if (p is AnswerTimecode) [p.label, p.at.inMilliseconds],
+        ];
+        expect(links, c['links']);
+      });
+    }
+  });
+
   test('splits [mm:ss] and [h:mm:ss] into chips, keeps the rest', () {
     final parts = splitTimecodes('Boshida [01:23] va keyin [1:02:03].');
     expect(parts, hasLength(5));

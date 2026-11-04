@@ -84,7 +84,10 @@ class _EditorTabsState extends State<EditorTabs>
         transcriptId: widget.transcript.id,
         onSeek: (at) => context.read<PlayerCubit>().seekTo(at, play: true),
       ),
-      2 => SummaryTab(transcript: widget.transcript),
+      2 => SummaryTab(
+        transcript: widget.transcript,
+        onSeek: (at) => context.read<PlayerCubit>().seekTo(at, play: true),
+      ),
       3 => LearnTab(transcript: widget.transcript),
       _ => BlocProvider<SentimentCubit>.value(
         value: _sentiment!,
