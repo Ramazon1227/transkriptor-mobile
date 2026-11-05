@@ -69,6 +69,27 @@ void main() {
     expect(chat.pending, isFalse);
   });
 
+  test('outdated is read when the server sends it, false otherwise', () async {
+    final f = facade({
+      'GET $path': (
+        200,
+        ok({
+          'items': [
+            {
+              'id': 'a1',
+              'role': 'ASSISTANT',
+              'status': 'DONE',
+              'outdated': true,
+            },
+            {'id': 'a2', 'role': 'ASSISTANT', 'status': 'DONE'},
+          ],
+        }),
+      ),
+    });
+    final chat = (await f.history('t1')).getOrElse(() => throw StateError(''));
+    expect(chat.items.map((m) => m.outdated), [true, false]);
+  });
+
   test('ask posts {content} and reads question + answer', () async {
     final adapter = FakeHttpAdapter({
       'POST $path': (

@@ -17,7 +17,9 @@ mixin _$AiMessage {
 
  String get id; AiRole get role; AiMessageStatus get status; String get content;/// A fixed sentence from the server when the answer did not come.
  String? get error; DateTime? get createdAt;/// Shown before the server confirmed it (optimistic bubble).
- bool get local;
+ bool get local;/// The transcript text was edited after this answer (CH-7). An older
+/// server and a pending answer leave it false.
+ bool get outdated;
 /// Create a copy of AiMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +31,20 @@ $AiMessageCopyWith<AiMessage> get copyWith => _$AiMessageCopyWithImpl<AiMessage>
 @override
 bool operator ==(Object other) {
   final _this = this as AiMessage;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiMessage&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.content, _this.content) || other.content == _this.content)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.local, _this.local) || other.local == _this.local));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiMessage&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.content, _this.content) || other.content == _this.content)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.local, _this.local) || other.local == _this.local)&&(identical(other.outdated, _this.outdated) || other.outdated == _this.outdated));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AiMessage;
-  return Object.hash(runtimeType,_this.id,_this.role,_this.status,_this.content,_this.error,_this.createdAt,_this.local);
+  return Object.hash(runtimeType,_this.id,_this.role,_this.status,_this.content,_this.error,_this.createdAt,_this.local,_this.outdated);
 }
 
 @override
 String toString() {
   final _this = this as AiMessage;
-  return 'AiMessage(id: ${_this.id}, role: ${_this.role}, status: ${_this.status}, content: ${_this.content}, error: ${_this.error}, createdAt: ${_this.createdAt}, local: ${_this.local})';
+  return 'AiMessage(id: ${_this.id}, role: ${_this.role}, status: ${_this.status}, content: ${_this.content}, error: ${_this.error}, createdAt: ${_this.createdAt}, local: ${_this.local}, outdated: ${_this.outdated})';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $AiMessageCopyWith<$Res>  {
   factory $AiMessageCopyWith(AiMessage value, $Res Function(AiMessage) _then) = _$AiMessageCopyWithImpl;
 @useResult
 $Res call({
- String id, AiRole role, AiMessageStatus status, String content, String? error, DateTime? createdAt, bool local
+ String id, AiRole role, AiMessageStatus status, String content, String? error, DateTime? createdAt, bool local, bool outdated
 });
 
 
@@ -70,7 +72,7 @@ class _$AiMessageCopyWithImpl<$Res>
 
 /// Create a copy of AiMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? local = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? local = null,Object? outdated = null,}) {
   return _then(AiMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -79,6 +81,7 @@ as AiMessageStatus,content: null == content ? _self.content : content // ignore:
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,local: null == local ? _self.local : local // ignore: cast_nullable_to_non_nullable
+as bool,outdated: null == outdated ? _self.outdated : outdated // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -164,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local,  bool outdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AiMessage() when $default != null:
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local,_that.outdated);case _:
   return orElse();
 
 }
@@ -185,10 +188,10 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local,  bool outdated)  $default,) {final _that = this;
 switch (_that) {
 case _AiMessage():
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local,_that.outdated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +208,10 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  AiRole role,  AiMessageStatus status,  String content,  String? error,  DateTime? createdAt,  bool local,  bool outdated)?  $default,) {final _that = this;
 switch (_that) {
 case _AiMessage() when $default != null:
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.local,_that.outdated);case _:
   return null;
 
 }
@@ -220,7 +223,7 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 
 
 class _AiMessage extends AiMessage {
-  const _AiMessage({required this.id, required this.role, required this.status, this.content = '', this.error, this.createdAt, this.local = false}): super._();
+  const _AiMessage({required this.id, required this.role, required this.status, this.content = '', this.error, this.createdAt, this.local = false, this.outdated = false}): super._();
   
 
 @override final  String id;
@@ -232,6 +235,9 @@ class _AiMessage extends AiMessage {
 @override final  DateTime? createdAt;
 /// Shown before the server confirmed it (optimistic bubble).
 @override@JsonKey() final  bool local;
+/// The transcript text was edited after this answer (CH-7). An older
+/// server and a pending answer leave it false.
+@override@JsonKey() final  bool outdated;
 
 /// Create a copy of AiMessage
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +249,18 @@ _$AiMessageCopyWith<_AiMessage> get copyWith => __$AiMessageCopyWithImpl<_AiMess
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.content, content) || other.content == content)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.local, local) || other.local == local));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.content, content) || other.content == content)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.local, local) || other.local == local)&&(identical(other.outdated, outdated) || other.outdated == outdated));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,role,status,content,error,createdAt,local);
+    return Object.hash(runtimeType,id,role,status,content,error,createdAt,local,outdated);
 }
 
 @override
 String toString() {
-    return 'AiMessage(id: $id, role: $role, status: $status, content: $content, error: $error, createdAt: $createdAt, local: $local)';
+    return 'AiMessage(id: $id, role: $role, status: $status, content: $content, error: $error, createdAt: $createdAt, local: $local, outdated: $outdated)';
 }
 
 
@@ -265,7 +271,7 @@ abstract mixin class _$AiMessageCopyWith<$Res> implements $AiMessageCopyWith<$Re
   factory _$AiMessageCopyWith(_AiMessage value, $Res Function(_AiMessage) _then) = __$AiMessageCopyWithImpl;
 @override @useResult
 $Res call({
- String id, AiRole role, AiMessageStatus status, String content, String? error, DateTime? createdAt, bool local
+ String id, AiRole role, AiMessageStatus status, String content, String? error, DateTime? createdAt, bool local, bool outdated
 });
 
 
@@ -282,7 +288,7 @@ class __$AiMessageCopyWithImpl<$Res>
 
 /// Create a copy of AiMessage
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? local = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? local = null,Object? outdated = null,}) {
   return _then(_AiMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -291,6 +297,7 @@ as AiMessageStatus,content: null == content ? _self.content : content // ignore:
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,local: null == local ? _self.local : local // ignore: cast_nullable_to_non_nullable
+as bool,outdated: null == outdated ? _self.outdated : outdated // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

@@ -342,6 +342,82 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets(
+    'an edited-since answer is flagged; the cut note sits apart, not copied',
+    (tester) async {
+      const cut =
+          '(AI yozuvning faqat boshidan 1:30:00 gacha qismini '
+          "ko'rdi — undan keyingi qism javobga kirmagan.)";
+      when(() => facade.history('t1')).thenAnswer(
+        (_) async => Right(
+          chat([
+            question,
+            const AiMessage(
+              id: 'a1',
+              role: AiRole.assistant,
+              status: AiMessageStatus.done,
+              content: 'Asosiy fikr.\n\n$cut',
+              outdated: true,
+            ),
+          ]),
+        ),
+      );
+      String? copied;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied = (call.arguments as Map)['text'] as String;
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('ai_outdated_a1')), findsOneWidget);
+      expect(find.text(cut), findsOneWidget);
+      expect(find.textContaining('Asosiy fikr.', findRichText: true), findsOne);
+
+      await tester.tap(find.byKey(const Key('ai_copy_a1')));
+      await tester.pump();
+      expect(copied, 'Asosiy fikr.');
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets('an answer the server did not flag shows no warning', (
+    tester,
+  ) async {
+    when(() => facade.history('t1')).thenAnswer(
+      (_) async => Right(
+        chat([
+          question,
+          const AiMessage(
+            id: 'a1',
+            role: AiRole.assistant,
+            status: AiMessageStatus.done,
+            content: 'Javob',
+          ),
+        ]),
+      ),
+    );
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('ai_outdated_a1')), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('the question box takes new lines', (tester) async {
     when(() => facade.history('t1'))
         .thenAnswer((_) async => const Right(AiChat()));

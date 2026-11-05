@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AiMessageModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel get role;@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel get status;@JsonKey(name: 'content') String get content;@JsonKey(name: 'error') String? get error;@JsonKey(name: 'created_at') DateTime? get createdAt;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel get role;@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel get status;@JsonKey(name: 'content') String get content;@JsonKey(name: 'error') String? get error;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'outdated') bool get outdated;
 /// Create a copy of AiMessageModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $AiMessageModelCopyWith<AiMessageModel> get copyWith => _$AiMessageModelCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as AiMessageModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiMessageModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.content, _this.content) || other.content == _this.content)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AiMessageModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.content, _this.content) || other.content == _this.content)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.outdated, _this.outdated) || other.outdated == _this.outdated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as AiMessageModel;
-  return Object.hash(runtimeType,_this.id,_this.role,_this.status,_this.content,_this.error,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.role,_this.status,_this.content,_this.error,_this.createdAt,_this.outdated);
 }
 
 @override
 String toString() {
   final _this = this as AiMessageModel;
-  return 'AiMessageModel(id: ${_this.id}, role: ${_this.role}, status: ${_this.status}, content: ${_this.content}, error: ${_this.error}, createdAt: ${_this.createdAt})';
+  return 'AiMessageModel(id: ${_this.id}, role: ${_this.role}, status: ${_this.status}, content: ${_this.content}, error: ${_this.error}, createdAt: ${_this.createdAt}, outdated: ${_this.outdated})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $AiMessageModelCopyWith<$Res>  {
   factory $AiMessageModelCopyWith(AiMessageModel value, $Res Function(AiMessageModel) _then) = _$AiMessageModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel role,@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel status,@JsonKey(name: 'content') String content,@JsonKey(name: 'error') String? error,@JsonKey(name: 'created_at') DateTime? createdAt
+@JsonKey(name: 'id') String id,@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel role,@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel status,@JsonKey(name: 'content') String content,@JsonKey(name: 'error') String? error,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'outdated') bool outdated
 });
 
 
@@ -71,7 +71,7 @@ class _$AiMessageModelCopyWithImpl<$Res>
 
 /// Create a copy of AiMessageModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? outdated = null,}) {
   return _then(AiMessageModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -79,7 +79,8 @@ as AiRoleModel,status: null == status ? _self.status : status // ignore: cast_nu
 as AiStatusModel,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,outdated: null == outdated ? _self.outdated : outdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -164,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'outdated')  bool outdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AiMessageModel() when $default != null:
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.outdated);case _:
   return orElse();
 
 }
@@ -185,10 +186,10 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'outdated')  bool outdated)  $default,) {final _that = this;
 switch (_that) {
 case _AiMessageModel():
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.outdated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +206,10 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown)  AiRoleModel role, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown)  AiStatusModel status, @JsonKey(name: 'content')  String content, @JsonKey(name: 'error')  String? error, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'outdated')  bool outdated)?  $default,) {final _that = this;
 switch (_that) {
 case _AiMessageModel() when $default != null:
-return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt);case _:
+return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that.createdAt,_that.outdated);case _:
   return null;
 
 }
@@ -220,7 +221,7 @@ return $default(_that.id,_that.role,_that.status,_that.content,_that.error,_that
 @JsonSerializable()
 
 class _AiMessageModel extends AiMessageModel {
-  const _AiMessageModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) this.role = AiRoleModel.unknown, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) this.status = AiStatusModel.unknown, @JsonKey(name: 'content') this.content = '', @JsonKey(name: 'error') this.error, @JsonKey(name: 'created_at') this.createdAt}): super._();
+  const _AiMessageModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) this.role = AiRoleModel.unknown, @JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) this.status = AiStatusModel.unknown, @JsonKey(name: 'content') this.content = '', @JsonKey(name: 'error') this.error, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'outdated') this.outdated = false}): super._();
   factory _AiMessageModel.fromJson(Map<String, dynamic> json) => _$AiMessageModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
@@ -229,6 +230,7 @@ class _AiMessageModel extends AiMessageModel {
 @override@JsonKey(name: 'content') final  String content;
 @override@JsonKey(name: 'error') final  String? error;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
+@override@JsonKey(name: 'outdated') final  bool outdated;
 
 /// Create a copy of AiMessageModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.content, content) || other.content == content)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AiMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.content, content) || other.content == content)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.outdated, outdated) || other.outdated == outdated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,role,status,content,error,createdAt);
+    return Object.hash(runtimeType,id,role,status,content,error,createdAt,outdated);
 }
 
 @override
 String toString() {
-    return 'AiMessageModel(id: $id, role: $role, status: $status, content: $content, error: $error, createdAt: $createdAt)';
+    return 'AiMessageModel(id: $id, role: $role, status: $status, content: $content, error: $error, createdAt: $createdAt, outdated: $outdated)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$AiMessageModelCopyWith<$Res> implements $AiMessageModelCo
   factory _$AiMessageModelCopyWith(_AiMessageModel value, $Res Function(_AiMessageModel) _then) = __$AiMessageModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel role,@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel status,@JsonKey(name: 'content') String content,@JsonKey(name: 'error') String? error,@JsonKey(name: 'created_at') DateTime? createdAt
+@JsonKey(name: 'id') String id,@JsonKey(name: 'role', unknownEnumValue: AiRoleModel.unknown) AiRoleModel role,@JsonKey(name: 'status', unknownEnumValue: AiStatusModel.unknown) AiStatusModel status,@JsonKey(name: 'content') String content,@JsonKey(name: 'error') String? error,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'outdated') bool outdated
 });
 
 
@@ -282,7 +284,7 @@ class __$AiMessageModelCopyWithImpl<$Res>
 
 /// Create a copy of AiMessageModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? status = null,Object? content = null,Object? error = freezed,Object? createdAt = freezed,Object? outdated = null,}) {
   return _then(_AiMessageModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -290,7 +292,8 @@ as AiRoleModel,status: null == status ? _self.status : status // ignore: cast_nu
 as AiStatusModel,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,outdated: null == outdated ? _self.outdated : outdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

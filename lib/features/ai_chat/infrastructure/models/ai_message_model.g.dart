@@ -28,6 +28,7 @@ _AiMessageModel _$AiMessageModelFromJson(Map<String, dynamic> json) =>
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
+      outdated: json['outdated'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$AiMessageModelToJson(_AiMessageModel instance) =>
@@ -38,6 +39,7 @@ Map<String, dynamic> _$AiMessageModelToJson(_AiMessageModel instance) =>
       'content': instance.content,
       'error': instance.error,
       'created_at': instance.createdAt?.toIso8601String(),
+      'outdated': instance.outdated,
     };
 
 const _$AiRoleModelEnumMap = {

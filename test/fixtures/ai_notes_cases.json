@@ -1,0 +1,36 @@
+[
+  { "name": "no notes", "input": "Asosiy fikr [00:06].", "body": "Asosiy fikr [00:06].", "notes": [] },
+  {
+    "name": "cut recording",
+    "input": "Javob.\n\n(AI yozuvning faqat boshidan 1:30:00 gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)",
+    "body": "Javob.",
+    "notes": ["(AI yozuvning faqat boshidan 1:30:00 gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)"]
+  },
+  {
+    "name": "truncated answer",
+    "input": "- band\n- band\n\n(Javob uzunlik chegarasida qisqartirildi — savolni aniqroq bering.)\n",
+    "body": "- band\n- band",
+    "notes": ["(Javob uzunlik chegarasida qisqartirildi — savolni aniqroq bering.)"]
+  },
+  {
+    "name": "both, truncated first",
+    "input": "Javob\n\n(Javob uzunlik chegarasida qisqartirildi — savolni aniqroq bering.)\n\n(AI yozuvning faqat boshidan 45:10 gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)",
+    "body": "Javob",
+    "notes": [
+      "(Javob uzunlik chegarasida qisqartirildi — savolni aniqroq bering.)",
+      "(AI yozuvning faqat boshidan 45:10 gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)"
+    ]
+  },
+  {
+    "name": "note words inside the answer stay",
+    "input": "U dedi: (AI yozuvning faqat boshidan) — bu iqtibos.",
+    "body": "U dedi: (AI yozuvning faqat boshidan) — bu iqtibos.",
+    "notes": []
+  },
+  {
+    "name": "a note broken over lines is not a note",
+    "input": "Matn (AI yozuvning faqat boshidan 10:00\n gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)",
+    "body": "Matn (AI yozuvning faqat boshidan 10:00\n gacha qismini ko'rdi — undan keyingi qism javobga kirmagan.)",
+    "notes": []
+  }
+]

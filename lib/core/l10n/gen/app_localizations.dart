@@ -3202,6 +3202,12 @@ abstract class AppLocalizations {
   /// **'Toʻxtatildi.'**
   String get aiChatStopped;
 
+  /// No description provided for @aiChatOutdated.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu javobdan keyin transkript matni tahrirlangan — javob eskirgan boʻlishi mumkin.'**
+  String get aiChatOutdated;
+
   /// No description provided for @aiChatPrivate.
   ///
   /// In uz, this message translates to:
