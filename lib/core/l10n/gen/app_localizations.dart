@@ -4465,13 +4465,13 @@ abstract class AppLocalizations {
   /// No description provided for @advancedTermsList.
   ///
   /// In uz, this message translates to:
-  /// **'Roʻyxat'**
+  /// **'Atamalar roʻyxati'**
   String get advancedTermsList;
 
   /// No description provided for @advancedTermsNoList.
   ///
   /// In uz, this message translates to:
-  /// **'Roʻyxatsiz'**
+  /// **''**
   String get advancedTermsNoList;
 
   /// No description provided for @advancedTermsListsFailed.

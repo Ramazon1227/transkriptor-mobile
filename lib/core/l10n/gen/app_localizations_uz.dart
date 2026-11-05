@@ -2468,10 +2468,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Ismlar, tashkilot nomlari va soha soʻzlari. Ish maydonidagi roʻyxatdan birini tanlang yoki faqat shu fayl uchun yozing — har satrda bitta atama.';
 
   @override
-  String get advancedTermsList => 'Roʻyxat';
+  String get advancedTermsList => 'Atamalar roʻyxati';
 
   @override
-  String get advancedTermsNoList => 'Roʻyxatsiz';
+  String get advancedTermsNoList => '';
 
   @override
   String get advancedTermsListsFailed =>
