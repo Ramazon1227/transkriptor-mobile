@@ -168,7 +168,11 @@ void main() {
 
     await tap(tester, find.byKey(const Key('advanced_open')));
     expect(find.text(l10n.advancedTitle), findsWidgets);
-    // Terms are open first: pick the list, write a free term.
+    // Every fold starts closed: only the list of sections shows.
+    expect(find.byKey(const Key('advanced_glossary_g1')), findsNothing);
+    expect(find.byKey(const Key('advanced_terms')), findsNothing);
+    await tap(tester, find.byKey(const Key('advanced_fold_terms')));
+    // Pick the list, write a free term.
     await tap(tester, find.byKey(const Key('advanced_glossary_g1')));
     await tester.enterText(
       find.byKey(const Key('advanced_terms')),

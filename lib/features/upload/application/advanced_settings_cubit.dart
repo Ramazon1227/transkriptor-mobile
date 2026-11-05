@@ -40,7 +40,7 @@ abstract class AdvancedSettingsState with _$AdvancedSettingsState {
 
     /// The file whose hints are shown.
     String? sourceKey,
-    @Default(AdvancedSection.terms) AdvancedSection? open,
+    AdvancedSection? open,
     @Default(AdvancedLoad.initial) AdvancedLoad foldersStatus,
     @Default(<Folder>[]) List<Folder> folders,
     @Default(AdvancedLoad.initial) AdvancedLoad glossariesStatus,

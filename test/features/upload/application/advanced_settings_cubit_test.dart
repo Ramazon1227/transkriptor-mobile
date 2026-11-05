@@ -94,7 +94,7 @@ void main() {
       expect(s.glossaries.single.name, 'Kengash');
       expect(s.balanceSeconds, 1200);
       expect(s.foldersStatus, AdvancedLoad.success);
-      expect(s.open, AdvancedSection.terms);
+      expect(s.open, isNull); // every fold starts closed
       expect(s.source, _source);
       await cubit.close();
     },

@@ -240,7 +240,7 @@ return $default(_that.draft,_that.workspaces,_that.destinationLocked,_that.sourc
 
 
 class _AdvancedSettingsState extends AdvancedSettingsState {
-  const _AdvancedSettingsState({required this.draft,  List<Workspace> workspaces = const <Workspace>[], this.destinationLocked = false,  List<HintSource> sources = const <HintSource>[], this.sourceKey, this.open = AdvancedSection.terms, this.foldersStatus = AdvancedLoad.initial,  List<Folder> folders = const <Folder>[], this.glossariesStatus = AdvancedLoad.initial,  List<Glossary> glossaries = const <Glossary>[], this.balanceStatus = AdvancedLoad.initial, this.balanceSeconds, this.hintProblem}): _workspaces = workspaces,_sources = sources,_folders = folders,_glossaries = glossaries,super._();
+  const _AdvancedSettingsState({required this.draft,  List<Workspace> workspaces = const <Workspace>[], this.destinationLocked = false,  List<HintSource> sources = const <HintSource>[], this.sourceKey, this.open, this.foldersStatus = AdvancedLoad.initial,  List<Folder> folders = const <Folder>[], this.glossariesStatus = AdvancedLoad.initial,  List<Glossary> glossaries = const <Glossary>[], this.balanceStatus = AdvancedLoad.initial, this.balanceSeconds, this.hintProblem}): _workspaces = workspaces,_sources = sources,_folders = folders,_glossaries = glossaries,super._();
   
 
 /// What «Saqlash» hands back; the page's choice until then.
@@ -268,7 +268,7 @@ class _AdvancedSettingsState extends AdvancedSettingsState {
 
 /// The file whose hints are shown.
 @override final  String? sourceKey;
-@override@JsonKey() final  AdvancedSection? open;
+@override final  AdvancedSection? open;
 @override@JsonKey() final  AdvancedLoad foldersStatus;
  final  List<Folder> _folders;
 @override@JsonKey() List<Folder> get folders {
