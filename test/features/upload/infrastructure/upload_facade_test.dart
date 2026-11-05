@@ -207,6 +207,31 @@ void main() {
     );
   });
 
+  test('a slash in the title does not cut the name (MB-7)', () async {
+    stubPut();
+    for (final (typed, sent) in [
+      ('Kengash 1/2', 'Kengash 1 2.m4a'),
+      ('Hisobot/', 'Hisobot.m4a'),
+      (' / ', 'Yozuv 26.10.2026.m4a'),
+    ]) {
+      await facade.upload(
+        file: file,
+        workspaceId: 'w1',
+        title: typed,
+        startTranscription: false,
+        jobKey: 'k-$typed',
+      );
+      verify(
+        () => repository.createMedia(
+          workspaceId: 'w1',
+          fileName: sent,
+          sizeBytes: any(named: 'sizeBytes'),
+          source: any(named: 'source'),
+        ),
+      ).called(1);
+    }
+  });
+
   test('an empty title keeps the file name', () async {
     stubPut();
     await facade.upload(

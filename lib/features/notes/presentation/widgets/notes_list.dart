@@ -55,28 +55,43 @@ class NotesList extends StatelessWidget {
           ),
           NotesStatus.success => RefreshIndicator(
             onRefresh: refresh,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: items.length + (state.loadingMore ? 1 : 0),
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, i) {
-                if (i >= items.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                // The search filters only what is loaded; the next page is
-                // fetched when the full list's end comes into view.
-                if (i == items.length - 1 &&
+            child: NotificationListener<ScrollStartNotification>(
+              // After a failure only a new scroll near the end tries again
+              // (MB-8): the failure is itself a rebuild of the last row.
+              onNotification: (n) {
+                if (n.depth == 0 &&
+                    state.failure != null &&
                     state.nextCursor != null &&
-                    state.query.isEmpty) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => unawaited(cubit.loadMore()),
-                  );
+                    state.query.isEmpty &&
+                    n.metrics.extentAfter < 300) {
+                  unawaited(cubit.loadMore());
                 }
-                return NoteTile(note: items[i]);
+                return false;
               },
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: items.length + (state.loadingMore ? 1 : 0),
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (context, i) {
+                  if (i >= items.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  // The search filters only what is loaded; the next page is
+                  // fetched when the full list's end comes into view.
+                  if (i == items.length - 1 &&
+                      state.nextCursor != null &&
+                      state.query.isEmpty &&
+                      state.failure == null) {
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => unawaited(cubit.loadMore()),
+                    );
+                  }
+                  return NoteTile(note: items[i]);
+                },
+              ),
             ),
           ),
         };

@@ -53,7 +53,8 @@ class UploadFacade implements IUploadFacade {
     void Function(double progress)? onProgress,
     UploadCancel? cancel,
   }) async {
-    final cleanTitle = title.trim().isEmpty ? file.baseName : title.trim();
+    final typed = _fileSafe(title);
+    final cleanTitle = typed.isEmpty ? file.baseName : typed;
     final created = await _repository.createMedia(
       workspaceId: workspaceId,
       fileName: '$cleanTitle${file.extension}',
@@ -188,6 +189,15 @@ class UploadFacade implements IUploadFacade {
       // A leftover file costs space, not correctness.
     }
   }
+
+  /// The typed name as a file name, as the web's `fileName()` does: the
+  /// server keeps only what follows the last «/» (MB-7), so path and
+  /// reserved characters become spaces.
+  static String _fileSafe(String title) => title
+      .replaceAll(RegExp(r'[\\/:*?"<>|]+'), ' ')
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .join(' ');
 
   static Failure _failureOf<T>(Either<Failure, T> result) =>
       result.fold((f) => f, (_) => const Failure.parsing());
