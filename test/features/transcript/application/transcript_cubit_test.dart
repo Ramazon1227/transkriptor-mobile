@@ -875,10 +875,10 @@ void main() {
     expect(EditRules.splitAt('Salom dunyo', 11), isNull);
   });
 
-  test('EditRules count bytes, as the server does', () {
-    // ʻ is two bytes in UTF-8: 40 of them are 80 bytes, 41 are too many.
-    expect(EditRules.speakerLabelTooLong('ʻ' * 40), isFalse);
-    expect(EditRules.speakerLabelTooLong('ʻ' * 41), isTrue);
+  test('EditRules count a speaker label in characters, as the server does', () {
+    // ʻ is two bytes in UTF-8 but one character: 80 fit, 81 are too many.
+    expect(EditRules.speakerLabelTooLong('ʻ' * 80), isFalse);
+    expect(EditRules.speakerLabelTooLong('ʻ' * 81), isTrue);
     expect(EditRules.clean(' a \n\t b '), 'a b');
   });
 
