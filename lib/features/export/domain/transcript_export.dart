@@ -233,9 +233,16 @@ abstract final class TranscriptExport {
     return '${lines.join('\n')}\n';
   }
 
-  static String _csvCell(String value) => RegExp('[",\n]').hasMatch(value)
-      ? '"${value.replaceAll('"', '""')}"'
-      : value;
+  /// Spreadsheets read a cell starting with `= + - @`, a tab or a CR as a
+  /// formula (CSV injection, E-2): it gets a leading `'` and is always
+  /// quoted. Byte for byte the web's `csvCell`.
+  static String _csvCell(String value) {
+    final formula = RegExp('^[=+\\-@\t\r]').hasMatch(value);
+    final cell = formula ? "'$value" : value;
+    return formula || RegExp('[",\n\r]').hasMatch(cell)
+        ? '"${cell.replaceAll('"', '""')}"'
+        : cell;
+  }
 
   /// One segment as subtitle cues: line length × lines and a longest
   /// duration. Time is split in proportion to characters — there is no
