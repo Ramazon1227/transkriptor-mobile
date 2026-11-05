@@ -61,6 +61,15 @@ abstract class AdvancedSettingsState with _$AdvancedSettingsState {
     hints: draft.hints.values,
   );
 
+  /// The chosen workspace is the personal one: its no-folder place is
+  /// «Mening fayllarim», a team's is «Umumiy fayllar».
+  bool get personalDestination {
+    for (final w in workspaces) {
+      if (w.id == draft.workspaceId) return w.isPersonal;
+    }
+    return false;
+  }
+
   HintSource? get source {
     for (final s in sources) {
       if (s.key == sourceKey) return s;

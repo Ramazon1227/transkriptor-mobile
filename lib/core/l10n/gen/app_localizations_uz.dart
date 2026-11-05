@@ -2429,9 +2429,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get advancedOpen => 'Qoʻshimcha sozlamalar';
 
   @override
-  String get advancedSummaryFiles => 'Fayllar';
-
-  @override
   String get advancedSummarySpeakersAuto => 'Maʼruzachi: avtomatik';
 
   @override
@@ -2516,7 +2513,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get advancedDestFolder => 'Papka';
 
   @override
-  String get advancedDestNoFolder => 'Fayllar (papkasiz)';
+  String get advancedDestMyFiles => 'Mening fayllarim';
+
+  @override
+  String get advancedDestSharedFiles => 'Umumiy fayllar';
 
   @override
   String get advancedDestFoldersFailed => 'Papkalarni yuklab boʻlmadi.';

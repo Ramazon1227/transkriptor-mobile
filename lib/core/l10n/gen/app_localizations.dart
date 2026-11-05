@@ -4402,12 +4402,6 @@ abstract class AppLocalizations {
   /// **'Qoʻshimcha sozlamalar'**
   String get advancedOpen;
 
-  /// No description provided for @advancedSummaryFiles.
-  ///
-  /// In uz, this message translates to:
-  /// **'Fayllar'**
-  String get advancedSummaryFiles;
-
   /// No description provided for @advancedSummarySpeakersAuto.
   ///
   /// In uz, this message translates to:
@@ -4540,11 +4534,17 @@ abstract class AppLocalizations {
   /// **'Papka'**
   String get advancedDestFolder;
 
-  /// No description provided for @advancedDestNoFolder.
+  /// No description provided for @advancedDestMyFiles.
   ///
   /// In uz, this message translates to:
-  /// **'Fayllar (papkasiz)'**
-  String get advancedDestNoFolder;
+  /// **'Mening fayllarim'**
+  String get advancedDestMyFiles;
+
+  /// No description provided for @advancedDestSharedFiles.
+  ///
+  /// In uz, this message translates to:
+  /// **'Umumiy fayllar'**
+  String get advancedDestSharedFiles;
 
   /// No description provided for @advancedDestFoldersFailed.
   ///
