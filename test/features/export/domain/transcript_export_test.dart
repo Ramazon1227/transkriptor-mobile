@@ -33,6 +33,12 @@ const _csvQuoted =
 const _csvPlain =
     'start,end,speaker,text\n01:02:03,01:02:05,"Ali, Vali","U ""ha"" dedi"\n00:00:00,00:00:01,G\'ani,ta\'lim o\'zbek\n';
 
+// CSV injection (E-2): `render("csv")` from tr-frontend/src/lib/export.ts
+// run in Node on 2026-11-05 on the segments of `FORMULA_SEGMENTS` in
+// export.test.ts (the same ones as the test below).
+const _csvFormula =
+    'start,end,speaker,text\n00:00:00,00:00:01,Ali,"\'=1+1"\n00:00:01,00:00:02,Ali,"\'+998 90 123 45 67"\n00:00:02,00:00:03,"\'@test","\'- Ha, albatta"\n00:00:03,00:00:04,Vali,Salom\n00:00:04,00:00:05,Vali,"\'=HYPERLINK(""http://x"",""bos"")"\n00:00:05,00:00:06,,"\'\tichida tab"\n00:00:06,00:00:07,Vali,"a\rb"\n';
+
 // Layouts: tr-frontend/src/lib/export.ts `render("txt")` run in Node,
 // 2026-10-28, on [_layoutTranscript] below. One turn of Ali crosses three
 // segments with a sentence split across two of them; a speakerless
@@ -190,6 +196,29 @@ void main() {
         const ExportOptions(plainApostrophe: true),
       ),
       _csvPlain,
+    );
+  });
+
+  test('CSV keeps cells that look like formulas as text, as the web', () {
+    final formula = _transcript.copyWith(
+      speakers: const [
+        Speaker(id: 'a', label: 'Ali', ordinal: 1),
+        Speaker(id: 't', label: '@test', ordinal: 2),
+        Speaker(id: 'v', label: 'Vali', ordinal: 3),
+      ],
+      segments: [
+        _seg('1', 'a', 0, 1000, '=1+1'),
+        _seg('2', 'a', 1000, 2000, '+998 90 123 45 67'),
+        _seg('3', 't', 2000, 3000, '- Ha, albatta'),
+        _seg('4', 'v', 3000, 4000, 'Salom'),
+        _seg('5', 'v', 4000, 5000, '=HYPERLINK("http://x","bos")'),
+        _seg('6', null, 5000, 6000, '\tichida tab'),
+        _seg('7', 'v', 6000, 7000, 'a\rb'),
+      ],
+    );
+    expect(
+      TranscriptExport.render(ExportFormat.csv, formula, base),
+      _csvFormula,
     );
   });
 
