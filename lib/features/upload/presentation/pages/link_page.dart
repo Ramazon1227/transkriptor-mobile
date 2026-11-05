@@ -8,11 +8,14 @@ import 'package:transkriptor_uz/core/router/routes.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/widgets/content_width.dart';
+import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/advanced_settings_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/advanced_settings_tile.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
-import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class LinkPage extends StatelessWidget {
   const LinkPage({this.initialUrl, super.key});
@@ -50,8 +53,27 @@ class _LinkForm extends StatefulWidget {
 
 class _LinkFormState extends State<_LinkForm> {
   late final _url = TextEditingController(text: widget.initialUrl);
-  int? _speakers;
+
+  /// «Qoʻshimcha sozlamalar» (A-0): for this link only.
+  late AdvancedOptions _options = AdvancedOptions.initial(
+    workspaceId: widget.workspaceId,
+  );
   JobService _service = JobService.transcription;
+
+  /// A link is fetched by the server: there is nothing to play here, so
+  /// the hints fold shows a note instead (A-3). Nothing is uploaded from
+  /// the phone, so the destination never locks.
+  Future<void> _openAdvanced() async {
+    FocusScope.of(context).unfocus();
+    final saved = await AdvancedSettingsPage.open(
+      context,
+      value: _options,
+      workspaces:
+          context.read<AccountCubit>().state.account?.workspaces ?? const [],
+      hintsNote: context.l10n.advancedHintsLinkNote,
+    );
+    if (saved != null && mounted) setState(() => _options = saved);
+  }
 
   @override
   void dispose() {
@@ -72,9 +94,11 @@ class _LinkFormState extends State<_LinkForm> {
     context.read<UploadBloc>().add(
       UploadLinkSubmitted(
         url: _url.text,
-        workspaceId: widget.workspaceId,
-        numSpeakers: _speakers,
+        workspaceId: _options.workspaceId,
+        folderId: _options.folderId,
+        numSpeakers: _options.numSpeakers,
         service: _service,
+        options: _options.jobOptionsFor(),
       ),
     );
   }
@@ -120,16 +144,16 @@ class _LinkFormState extends State<_LinkForm> {
               ),
             ),
             const SizedBox(height: 22),
-            SpeakerCountPicker(
-              value: _speakers,
-              enabled: !busy,
-              onChanged: (v) => setState(() => _speakers = v),
-            ),
-            const SizedBox(height: 22),
             ServicePicker(
               value: _service,
               enabled: !busy,
               onChanged: (v) => setState(() => _service = v),
+            ),
+            const SizedBox(height: 22),
+            AdvancedSettingsTile(
+              value: _options,
+              currentWorkspaceId: widget.workspaceId,
+              onTap: busy ? null : _openAdvanced,
             ),
             const SizedBox(height: 24),
             Text(l10n.linkWhich.toUpperCase(), style: AppText.label),

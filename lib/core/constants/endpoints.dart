@@ -33,6 +33,9 @@ abstract final class Endpoints {
       '/api/v1/workspaces/$workspaceId/tags';
   static String mediaConfirm(String id) => '/api/v1/media/$id/confirm';
 
+  /// «Atamalar» lists; `?workspace_id=` picks the workspace.
+  static const String glossaries = '/api/v1/glossaries';
+
   /// A fresh read link for the player; YouTube media answer with the
   /// video id instead.
   static String mediaUrl(String id) => '/api/v1/media/$id/url';

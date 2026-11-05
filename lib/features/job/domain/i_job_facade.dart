@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Either;
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 
 abstract interface class IJobFacade {
   Future<Either<Failure, Job>> getJob(String id);
@@ -9,10 +10,13 @@ abstract interface class IJobFacade {
   /// null means the server decides. [idempotencyKey] is the action's
   /// (`IdempotencyKeys`): the same on a retry of that action. A file that
   /// already has a queued or running job is `Failure.jobActive`.
+  /// [options] are the panel's (glossary, terms, speaker hints); a retry
+  /// passes the previous job's.
   Future<Either<Failure, Job>> createJob({
     required String mediaId,
     required String idempotencyKey,
     int? numSpeakers,
+    JobOptions options = const JobOptions(),
   });
 
   /// Cancels a queued or running job; reserved minutes are refunded.

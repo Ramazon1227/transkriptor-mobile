@@ -22,6 +22,10 @@ _JobModel _$JobModelFromJson(Map<String, dynamic> json) => _JobModel(
   numSpeakers: (json['num_speakers'] as num?)?.toInt(),
   etaSeconds: (json['eta_seconds'] as num?)?.toInt(),
   slow: json['slow'] as bool? ?? false,
+  glossaryId: json['glossary_id'] as String?,
+  terms: json['terms'] as List<dynamic>? ?? const <Object?>[],
+  termsApplied: (json['terms_applied'] as num?)?.toInt() ?? 0,
+  speakerHints: json['speaker_hints'] as List<dynamic>? ?? const <Object?>[],
 );
 
 Map<String, dynamic> _$JobModelToJson(_JobModel instance) => <String, dynamic>{
@@ -34,6 +38,10 @@ Map<String, dynamic> _$JobModelToJson(_JobModel instance) => <String, dynamic>{
   'num_speakers': instance.numSpeakers,
   'eta_seconds': instance.etaSeconds,
   'slow': instance.slow,
+  'glossary_id': instance.glossaryId,
+  'terms': instance.terms,
+  'terms_applied': instance.termsApplied,
+  'speaker_hints': instance.speakerHints,
 };
 
 const _$JobStatusEnumMap = {

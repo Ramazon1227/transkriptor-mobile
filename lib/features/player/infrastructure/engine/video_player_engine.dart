@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
@@ -17,7 +18,10 @@ class VideoPlayerEngine implements PlaybackEngine {
 
   @override
   Future<void> open(Uri url) async {
-    final controller = VideoPlayerController.networkUrl(url);
+    // A `file:` URI is a picked file not uploaded yet (speaker hints, A-3).
+    final controller = url.isScheme('file')
+        ? VideoPlayerController.file(File(url.toFilePath()))
+        : VideoPlayerController.networkUrl(url);
     _controller = controller;
     await controller.initialize();
     controller.addListener(_report);

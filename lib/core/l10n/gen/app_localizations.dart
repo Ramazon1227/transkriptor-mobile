@@ -4389,6 +4389,402 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Ochilganda maʼruzachilarni soʻramaslik'**
   String get settingsSpeakerIntroOff;
+
+  /// No description provided for @advancedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻshimcha sozlamalar'**
+  String get advancedTitle;
+
+  /// No description provided for @advancedOpen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻshimcha sozlamalar'**
+  String get advancedOpen;
+
+  /// No description provided for @advancedSummaryFiles.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayllar'**
+  String get advancedSummaryFiles;
+
+  /// No description provided for @advancedSummarySpeakersAuto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi: avtomatik'**
+  String get advancedSummarySpeakersAuto;
+
+  /// No description provided for @advancedSummarySpeakers.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi: {count} kishi'**
+  String advancedSummarySpeakers(int count);
+
+  /// No description provided for @advancedSummaryTerms.
+  ///
+  /// In uz, this message translates to:
+  /// **'Atamalar: {list}'**
+  String advancedSummaryTerms(String list);
+
+  /// No description provided for @advancedSummaryHints.
+  ///
+  /// In uz, this message translates to:
+  /// **'Belgi: {count}'**
+  String advancedSummaryHints(int count);
+
+  /// No description provided for @advancedSummaryLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlangan sozlamalar'**
+  String get advancedSummaryLabel;
+
+  /// No description provided for @advancedNone.
+  ///
+  /// In uz, this message translates to:
+  /// **'yoʻq'**
+  String get advancedNone;
+
+  /// No description provided for @advancedTermsTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Atamalar'**
+  String get advancedTermsTitle;
+
+  /// No description provided for @advancedTermsCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} atama'**
+  String advancedTermsCount(int count);
+
+  /// No description provided for @advancedTermsText.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismlar, tashkilot nomlari va soha soʻzlari. Ish maydonidagi roʻyxatdan birini tanlang yoki faqat shu fayl uchun yozing — har satrda bitta atama.'**
+  String get advancedTermsText;
+
+  /// No description provided for @advancedTermsList.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roʻyxat'**
+  String get advancedTermsList;
+
+  /// No description provided for @advancedTermsNoList.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roʻyxatsiz'**
+  String get advancedTermsNoList;
+
+  /// No description provided for @advancedTermsListsFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Atamalar roʻyxatlarini yuklab boʻlmadi.'**
+  String get advancedTermsListsFailed;
+
+  /// No description provided for @advancedTermsFree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu fayl uchun'**
+  String get advancedTermsFree;
+
+  /// No description provided for @advancedTermsPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toshkent shahar hokimligi\nMirziyoyev\nIT Park'**
+  String get advancedTermsPlaceholder;
+
+  /// No description provided for @advancedTermsCounter.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} / {max} atama'**
+  String advancedTermsCounter(int count, int max);
+
+  /// No description provided for @advancedTermsNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha nutqni tanishga taʼsir qilmaydi: tanlangan roʻyxatdagi xato yozilishlar natijada toʻgʻri atamaga almashtiriladi, erkin atamalar esa nutq servisi qabul qilganda ishlaydi.'**
+  String get advancedTermsNote;
+
+  /// No description provided for @advancedDestTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Natija manzili'**
+  String get advancedDestTitle;
+
+  /// No description provided for @advancedDestText.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl shu joyga tushadi va daqiqalar shu ish maydoni balansidan yechiladi. Faqat yozish huquqingiz bor ish maydonlari koʻrinadi.'**
+  String get advancedDestText;
+
+  /// No description provided for @advancedDestLocked.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl yuklanib boʻldi — manzilni endi oʻzgartirib boʻlmaydi.'**
+  String get advancedDestLocked;
+
+  /// No description provided for @advancedDestWorkspace.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ish maydoni'**
+  String get advancedDestWorkspace;
+
+  /// No description provided for @advancedDestPersonal.
+  ///
+  /// In uz, this message translates to:
+  /// **'{name} (shaxsiy)'**
+  String advancedDestPersonal(String name);
+
+  /// No description provided for @advancedDestFolder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papka'**
+  String get advancedDestFolder;
+
+  /// No description provided for @advancedDestNoFolder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayllar (papkasiz)'**
+  String get advancedDestNoFolder;
+
+  /// No description provided for @advancedDestFoldersFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Papkalarni yuklab boʻlmadi.'**
+  String get advancedDestFoldersFailed;
+
+  /// No description provided for @advancedDestBalance.
+  ///
+  /// In uz, this message translates to:
+  /// **'Balans: {value}'**
+  String advancedDestBalance(String value);
+
+  /// No description provided for @advancedHintsTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilarni belgilash'**
+  String get advancedHintsTitle;
+
+  /// No description provided for @advancedHintsCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta belgi'**
+  String advancedHintsCount(int count);
+
+  /// No description provided for @advancedHintsDemo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Namuna — hozircha natijaga taʼsir qilmaydi: belgilar fayl bilan saqlanadi va nutq servisi ularni qabul qilganda maʼruzachilarni ajratishga ishlatiladi.'**
+  String get advancedHintsDemo;
+
+  /// No description provided for @advancedHintsText.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni oʻynating, kim gapirayotgan joyni belgilang va ism bering. Har odamga 3 soniyadan uzun, faqat oʻsha odam gapirgan 1–3 ta joy yetarli.'**
+  String get advancedHintsText;
+
+  /// No description provided for @advancedHintsLinkNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Havoladagi faylni telefonda oldindan oʻynatib boʻlmaydi — belgilash tanlangan fayl uchun.'**
+  String get advancedHintsLinkNote;
+
+  /// No description provided for @advancedHintsNoFile.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval fayl tanlang.'**
+  String get advancedHintsNoFile;
+
+  /// No description provided for @advancedHintsFile.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fayl'**
+  String get advancedHintsFile;
+
+  /// No description provided for @advancedHintsPlayerFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faylni oʻynatib boʻlmadi.'**
+  String get advancedHintsPlayerFailed;
+
+  /// No description provided for @advancedHintsSeek.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻrin'**
+  String get advancedHintsSeek;
+
+  /// No description provided for @advancedHintsStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshi'**
+  String get advancedHintsStart;
+
+  /// No description provided for @advancedHintsEnd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oxiri'**
+  String get advancedHintsEnd;
+
+  /// No description provided for @advancedHintsNow.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozirgi oʻrin'**
+  String get advancedHintsNow;
+
+  /// No description provided for @advancedHintsWho.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kim'**
+  String get advancedHintsWho;
+
+  /// No description provided for @advancedHintsWhoHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Masalan, Sarvar'**
+  String get advancedHintsWhoHint;
+
+  /// No description provided for @advancedHintsAdd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻshish'**
+  String get advancedHintsAdd;
+
+  /// No description provided for @advancedHintsPlayFrom.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu joydan oʻynatish'**
+  String get advancedHintsPlayFrom;
+
+  /// No description provided for @advancedHintsDelete.
+  ///
+  /// In uz, this message translates to:
+  /// **'{name} belgisini oʻchirish'**
+  String advancedHintsDelete(String name);
+
+  /// No description provided for @advancedSpeakersTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilar soni'**
+  String get advancedSpeakersTitle;
+
+  /// No description provided for @advancedSpeakersText.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuvda nechta odam gapirganini bilsangiz, tanlang — matn soxta maʼruzachilarga boʻlinib ketmaydi. Bilmasangiz «Avto» qoldiring.'**
+  String get advancedSpeakersText;
+
+  /// No description provided for @advancedSpeakersAuto.
+  ///
+  /// In uz, this message translates to:
+  /// **'avtomatik'**
+  String get advancedSpeakersAuto;
+
+  /// No description provided for @advancedSpeakersCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} kishi'**
+  String advancedSpeakersCount(int count);
+
+  /// No description provided for @advancedSave.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlash'**
+  String get advancedSave;
+
+  /// No description provided for @advancedFoot.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlov faqat shu yuklashga qoʻllanadi — sahifa yopilsa qayta tiklanadi.'**
+  String get advancedFoot;
+
+  /// No description provided for @advancedBack.
+  ///
+  /// In uz, this message translates to:
+  /// **'Orqaga — saqlamasdan'**
+  String get advancedBack;
+
+  /// No description provided for @advancedErrTermTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'«{start}…» — atama {max} belgidan oshmasin.'**
+  String advancedErrTermTooLong(String start, int max);
+
+  /// No description provided for @advancedErrTooManyTerms.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bitta faylga {max} tadan ortiq atama yozilmaydi (hozir {count}).'**
+  String advancedErrTooManyTerms(int max, int count);
+
+  /// No description provided for @advancedErrHintNoName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kim gapirayotganini yozing.'**
+  String get advancedErrHintNoName;
+
+  /// No description provided for @advancedErrHintNameTooLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism {max} belgidan oshmasin.'**
+  String advancedErrHintNameTooLong(int max);
+
+  /// No description provided for @advancedErrHintOrder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oraliqning oxiri boshidan keyin boʻlsin.'**
+  String get advancedErrHintOrder;
+
+  /// No description provided for @advancedErrHintShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oraliq kamida 1 soniya boʻlsin — yaxshisi 3 soniyadan uzun.'**
+  String get advancedErrHintShort;
+
+  /// No description provided for @advancedErrHintLong.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bitta oraliq 10 daqiqadan oshmasin.'**
+  String get advancedErrHintLong;
+
+  /// No description provided for @advancedErrTooManyHints.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bitta faylga {max} tadan ortiq belgi qoʻyilmaydi.'**
+  String advancedErrTooManyHints(int max);
+
+  /// No description provided for @advancedErrHintOverlap.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu oraliq «{name}» oraligʻi bilan ustma-ust tushadi.'**
+  String advancedErrHintOverlap(String name);
+
+  /// No description provided for @advancedErrTooManyPeople.
+  ///
+  /// In uz, this message translates to:
+  /// **'{max} dan ortiq odam belgilab boʻlmaydi.'**
+  String advancedErrTooManyPeople(int max);
+
+  /// No description provided for @advancedErrMorePeople.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachilar soni {speakers} deb tanlangan — {people}-odamni belgilab boʻlmaydi.'**
+  String advancedErrMorePeople(int speakers, int people);
+
+  /// No description provided for @advancedErrBadTime.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqtni 0:15 yoki 1:02:03 shaklida yozing.'**
+  String get advancedErrBadTime;
+
+  /// No description provided for @advancedErrPastEnd.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oraliq faylning oxiridan keyin tugayapti.'**
+  String get advancedErrPastEnd;
+
+  /// No description provided for @advancedErrPeopleExceed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Belgilangan odamlar ({people}) maʼruzachilar sonidan ({speakers}) koʻp.'**
+  String advancedErrPeopleExceed(int people, int speakers);
 }
 
 class _AppLocalizationsDelegate

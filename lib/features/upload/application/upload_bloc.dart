@@ -5,7 +5,9 @@ import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
+import 'package:transkriptor_uz/features/upload/application/start_subject.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
@@ -69,8 +71,10 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
       title: event.title,
       startTranscription: event.startTranscription,
       jobKey: jobKey,
+      folderId: event.folderId,
       numSpeakers: event.numSpeakers,
       service: event.service,
+      options: event.options,
       onProgress: (p) {
         // Dio reports every chunk; one rebuild per percent is enough.
         if (emit.isDone || ((p - state.progress) < 0.01 && p < 1)) return;
@@ -89,7 +93,16 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
       (failure) =>
           emit(state.copyWith(status: UploadStatus.failure, failure: failure)),
       (done) {
-        _keys.settle(done.mediaId, done.startFailure, key: jobKey);
+        _keys.settle(
+          startSubject(
+            done.mediaId,
+            event.numSpeakers,
+            event.service,
+            event.options,
+          ),
+          done.startFailure,
+          key: jobKey,
+        );
         emit(
           state.copyWith(
             // Stored but not started: the page offers a start-only retry.
@@ -112,13 +125,20 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
     Emitter<UploadState> emit,
   ) async {
     emit(state.copyWith(status: UploadStatus.starting, failure: null));
+    final subject = startSubject(
+      event.mediaId,
+      event.numSpeakers,
+      event.service,
+      event.options,
+    );
     final result = await _facade.startTranscription(
       mediaId: event.mediaId,
-      idempotencyKey: _keys.keyFor(event.mediaId),
+      idempotencyKey: _keys.keyFor(subject),
       numSpeakers: event.numSpeakers,
       service: event.service,
+      options: event.options,
     );
-    _keys.settle(event.mediaId, result.fold((f) => f, (_) => null));
+    _keys.settle(subject, result.fold((f) => f, (_) => null));
     result.fold(
       (failure) =>
           emit(state.copyWith(status: UploadStatus.stored, failure: failure)),
@@ -137,13 +157,24 @@ class UploadBloc extends Bloc<UploadEvent, UploadState> {
     }
     emit(const UploadState(status: UploadStatus.uploading));
 
-    final link = (url, event.workspaceId, event.numSpeakers, event.service);
+    // Every setting is part of the action: the same key with another
+    // one is refused by the server (422 IDEMPOTENCY_MISMATCH).
+    final link = (
+      url,
+      event.workspaceId,
+      event.folderId,
+      event.numSpeakers,
+      event.service,
+      event.options,
+    );
     final result = await _facade.startLink(
       url: url,
       workspaceId: event.workspaceId,
       idempotencyKey: _keys.keyFor(link),
+      folderId: event.folderId,
       numSpeakers: event.numSpeakers,
       service: event.service,
+      options: event.options,
     );
     _keys.settle(link, result.fold((f) => f, (_) => null));
 

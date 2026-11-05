@@ -60,11 +60,13 @@ import 'package:transkriptor_uz/features/capture/application/url_import_cubit.da
 import 'package:transkriptor_uz/features/capture/presentation/pages/dictation_page.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/screen_record_page.dart';
 import 'package:transkriptor_uz/features/capture/presentation/pages/url_page.dart';
+import 'package:transkriptor_uz/features/glossary/domain/entities/glossary.dart';
 import 'package:transkriptor_uz/features/home/presentation/pages/home_page.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/app_shell.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/source_sheet.dart';
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/presentation/pages/job_page.dart';
 import 'package:transkriptor_uz/features/learn/application/flashcards_cubit.dart';
 import 'package:transkriptor_uz/features/learn/application/learn_cubit.dart';
@@ -118,10 +120,15 @@ import 'package:transkriptor_uz/features/transcript/presentation/pages/transcrip
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/editor_actions_sheet.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/segment_tile.dart';
 import 'package:transkriptor_uz/features/transcript/presentation/widgets/transcript_tab.dart';
+import 'package:transkriptor_uz/features/upload/application/advanced_settings_cubit.dart';
+import 'package:transkriptor_uz/features/upload/application/hint_player_cubit.dart';
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
+import 'package:transkriptor_uz/features/upload/domain/advanced_rules.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/advanced_settings_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/link_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_many_page.dart';
 import 'package:transkriptor_uz/features/upload/presentation/pages/send_page.dart';
@@ -152,6 +159,11 @@ class _Forgot extends MockBloc<ForgotPasswordEvent, ForgotPasswordState>
 class _Upload extends MockBloc<UploadEvent, UploadState> implements UploadBloc;
 
 class _Queue extends MockCubit<UploadQueueState> implements UploadQueueCubit;
+
+class _Advanced extends MockCubit<AdvancedSettingsState>
+    implements AdvancedSettingsCubit;
+
+class _HintPlayer extends MockCubit<HintPlayerState> implements HintPlayerCubit;
 
 class _Job extends MockCubit<JobState> implements JobCubit;
 
@@ -704,6 +716,8 @@ late _Register register;
 late _Forgot forgot;
 late _Upload upload;
 late _Queue queue;
+late _Advanced advanced;
+late _HintPlayer hintPlayer;
 late _Job job;
 late _Recorder recorder;
 late _Transcript transcript;
@@ -739,6 +753,8 @@ void _makeMocks() {
   forgot = _Forgot();
   upload = _Upload();
   queue = _Queue();
+  advanced = _Advanced();
+  hintPlayer = _HintPlayer();
   job = _Job();
   recorder = _Recorder();
   transcript = _Transcript();
@@ -841,9 +857,21 @@ void _makeMocks() {
   when(() => register.state).thenReturn(const RegisterState());
   when(() => forgot.state).thenReturn(const ForgotPasswordState());
   when(() => upload.state).thenReturn(const UploadState());
+  when(() => advanced.state).thenReturn(_advancedState());
+  when(() => hintPlayer.state).thenReturn(
+    const HintPlayerState(
+      status: HintPlayerStatus.ready,
+      position: Duration(minutes: 61, seconds: 5),
+      duration: Duration(hours: 2, minutes: 3),
+    ),
+  );
+  when(() => hintPlayer.open(any())).thenAnswer((_) async {});
   when(() => queue.state).thenReturn(
     const UploadQueueState(
-      items: [QueueItem(file: _pendingFile), QueueItem(file: _pickedFile)],
+      items: [
+        QueueItem(file: _pendingFile),
+        QueueItem(file: _pickedFile),
+      ],
     ),
   );
   when(() => job.state).thenReturn(const JobState());
@@ -894,6 +922,8 @@ void _makeMocks() {
     ..registerFactory<ForgotPasswordBloc>(() => forgot)
     ..registerFactory<UploadBloc>(() => upload)
     ..registerFactory<UploadQueueCubit>(() => queue)
+    ..registerFactory<AdvancedSettingsCubit>(() => advanced)
+    ..registerFactory<HintPlayerCubit>(() => hintPlayer)
     ..registerFactory<JobCubit>(() => job)
     ..registerFactory<RecorderCubit>(() => recorder)
     ..registerFactory<TranscriptCubit>(() => transcript)
@@ -946,6 +976,56 @@ class _Scenario {
 
 Finder _field() => find.byType(TextField);
 Finder _filled() => find.byType(FilledButton);
+
+/// The panel at its fullest: long names, many folders, every error.
+AdvancedSettingsState _advancedState({
+  AdvancedSection open = AdvancedSection.terms,
+}) => AdvancedSettingsState(
+  open: open,
+  draft: AdvancedOptions(
+    workspaceId: _workspaces.first.id,
+    workspaceName: _workspaces.first.name,
+    folderId: 'f0',
+    folderName: _longName,
+    numSpeakers: 2,
+    glossaryId: 'g0',
+    glossaryName: _longName,
+    termsText: '${'ж' * 130}\n$_cyrName',
+    hints: {
+      _pendingFile.path: [
+        for (var i = 0; i < 3; i++)
+          SpeakerHint(
+            label: i.isEven ? _user.fullName : _cyrName.substring(0, 60),
+            startMs: 3600000 + i * 20000,
+            endMs: 3600000 + i * 20000 + 15400,
+          ),
+      ],
+    },
+  ),
+  workspaces: _workspaces.take(2).toList(),
+  sources: [
+    for (final f in [_pendingFile, _pickedFile])
+      HintSource(key: f.path, name: '$_longName.m4a', path: f.path),
+  ],
+  sourceKey: _pendingFile.path,
+  destinationLocked: true,
+  foldersStatus: AdvancedLoad.success,
+  folders: [
+    for (var i = 0; i < 4; i++)
+      Folder(id: 'f$i', name: i.isEven ? _longName : _cyrName),
+  ],
+  glossariesStatus: AdvancedLoad.success,
+  glossaries: [
+    for (var i = 0; i < 3; i++)
+      Glossary(
+        id: 'g$i',
+        name: i.isEven ? _longName : _cyrName,
+        termCount: 199,
+      ),
+  ],
+  balanceSeconds: 5999 * 60,
+  hintProblem: const HintOverlap(_cyrName),
+);
 
 final _scenarios = <_Scenario>[
   _Scenario(
@@ -1349,6 +1429,24 @@ final _scenarios = <_Scenario>[
     ),
     measure: {'TextField': _field},
   ),
+  for (final section in AdvancedSection.values)
+    _Scenario(
+      'advanced(${section.name})',
+      () => AdvancedSettingsPage(
+        value: AdvancedOptions.initial(workspaceId: _workspaces.first.id),
+        workspaces: _workspaces,
+        sources: [
+          HintSource(
+            key: _pendingFile.path,
+            name: _pendingFile.fileName,
+            path: _pendingFile.path,
+          ),
+        ],
+      ),
+      arrange: () =>
+          when(() => advanced.state).thenReturn(_advancedState(open: section)),
+      measure: {'FilledButton': _filled},
+    ),
   _Scenario(
     'sendMany(initial)',
     () => const SendManyPage(files: [_pendingFile, _pickedFile]),

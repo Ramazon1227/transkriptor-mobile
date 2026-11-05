@@ -115,17 +115,24 @@ class JobCubit extends Cubit<JobState> {
 
   /// Starts the same file again after a failure; follows the new job. A
   /// retry whose answer was lost is sent again with the same idempotency
-  /// key, so it gets that job back rather than a second one.
+  /// key, so it gets that job back rather than a second one. The new job
+  /// gets this one's speaker count, terms and speaker hints (A-1, A-3),
+  /// as the web's retry does; they are part of the key's subject, since
+  /// the server refuses a key reused with other settings.
   Future<void> retry() async {
     final job = state.job;
     if (job == null || job.mediaId.isEmpty || state.busy) return;
     emit(state.copyWith(busy: true, failure: null));
     final mediaId = job.mediaId;
+    final options = job.options;
+    final subject = (mediaId, job.numSpeakers, options);
     final result = await _facade.createJob(
       mediaId: mediaId,
-      idempotencyKey: _keys.keyFor(mediaId),
+      idempotencyKey: _keys.keyFor(subject),
+      numSpeakers: job.numSpeakers,
+      options: options,
     );
-    _keys.settle(mediaId, result.fold((f) => f, (_) => null));
+    _keys.settle(subject, result.fold((f) => f, (_) => null));
     if (isClosed) return;
     result.fold(
       (failure) => emit(state.copyWith(busy: false, failure: failure)),

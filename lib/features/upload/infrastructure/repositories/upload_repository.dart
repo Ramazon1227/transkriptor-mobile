@@ -9,7 +9,9 @@ import 'package:transkriptor_uz/core/error/held_file.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/network_names.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
+import 'package:transkriptor_uz/features/job/infrastructure/job_option_fields.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
@@ -25,11 +27,13 @@ class UploadRepository {
   /// No token interceptor: the signed URL is its own authority.
   final Dio _uploadDio;
 
+  /// [folderId] null: the file lands outside every folder.
   Future<Either<Failure, MediaCreatedModel>> createMedia({
     required String workspaceId,
     required String fileName,
     required int sizeBytes,
     required String source,
+    String? folderId,
   }) async {
     Object? refused;
     final result = await runRequest(() async {
@@ -41,6 +45,7 @@ class UploadRepository {
             'filename': fileName,
             'size_bytes': sizeBytes,
             'source': source,
+            'folder_id': ?folderId,
           },
         );
         return MediaCreatedModel.fromJson(envelopeData(response.data));
@@ -122,14 +127,16 @@ class UploadRepository {
   }
 
   /// [youtube] picks `/media/youtube`; otherwise `/media/cloud` (Google
-  /// Drive, Dropbox).
+  /// Drive, Dropbox). [folderId] and [options] go only when set.
   Future<Either<Failure, JobModel>> startLink({
     required String url,
     required String workspaceId,
     required bool youtube,
     required String idempotencyKey,
+    String? folderId,
     int? numSpeakers,
     JobService? service,
+    JobOptions options = const JobOptions(),
   }) {
     return runJobRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -137,8 +144,10 @@ class UploadRepository {
         data: {
           'url': url,
           'workspace_id': workspaceId,
+          'folder_id': ?folderId,
           'num_speakers': ?numSpeakers,
           'service': ?service?.apiValue,
+          ...jobOptionFields(options),
           'idempotency_key': idempotencyKey,
         },
         options: Options(headers: {'Idempotency-Key': idempotencyKey}),

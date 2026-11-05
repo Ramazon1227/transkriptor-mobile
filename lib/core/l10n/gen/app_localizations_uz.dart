@@ -2421,4 +2421,250 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get settingsSpeakerIntroOff =>
       'Ochilganda maʼruzachilarni soʻramaslik';
+
+  @override
+  String get advancedTitle => 'Qoʻshimcha sozlamalar';
+
+  @override
+  String get advancedOpen => 'Qoʻshimcha sozlamalar';
+
+  @override
+  String get advancedSummaryFiles => 'Fayllar';
+
+  @override
+  String get advancedSummarySpeakersAuto => 'Maʼruzachi: avtomatik';
+
+  @override
+  String advancedSummarySpeakers(int count) {
+    return 'Maʼruzachi: $count kishi';
+  }
+
+  @override
+  String advancedSummaryTerms(String list) {
+    return 'Atamalar: $list';
+  }
+
+  @override
+  String advancedSummaryHints(int count) {
+    return 'Belgi: $count';
+  }
+
+  @override
+  String get advancedSummaryLabel => 'Tanlangan sozlamalar';
+
+  @override
+  String get advancedNone => 'yoʻq';
+
+  @override
+  String get advancedTermsTitle => 'Atamalar';
+
+  @override
+  String advancedTermsCount(int count) {
+    return '$count atama';
+  }
+
+  @override
+  String get advancedTermsText =>
+      'Ismlar, tashkilot nomlari va soha soʻzlari. Ish maydonidagi roʻyxatdan birini tanlang yoki faqat shu fayl uchun yozing — har satrda bitta atama.';
+
+  @override
+  String get advancedTermsList => 'Roʻyxat';
+
+  @override
+  String get advancedTermsNoList => 'Roʻyxatsiz';
+
+  @override
+  String get advancedTermsListsFailed =>
+      'Atamalar roʻyxatlarini yuklab boʻlmadi.';
+
+  @override
+  String get advancedTermsFree => 'Shu fayl uchun';
+
+  @override
+  String get advancedTermsPlaceholder =>
+      'Toshkent shahar hokimligi\nMirziyoyev\nIT Park';
+
+  @override
+  String advancedTermsCounter(int count, int max) {
+    return '$count / $max atama';
+  }
+
+  @override
+  String get advancedTermsNote =>
+      'Hozircha nutqni tanishga taʼsir qilmaydi: tanlangan roʻyxatdagi xato yozilishlar natijada toʻgʻri atamaga almashtiriladi, erkin atamalar esa nutq servisi qabul qilganda ishlaydi.';
+
+  @override
+  String get advancedDestTitle => 'Natija manzili';
+
+  @override
+  String get advancedDestText =>
+      'Fayl shu joyga tushadi va daqiqalar shu ish maydoni balansidan yechiladi. Faqat yozish huquqingiz bor ish maydonlari koʻrinadi.';
+
+  @override
+  String get advancedDestLocked =>
+      'Fayl yuklanib boʻldi — manzilni endi oʻzgartirib boʻlmaydi.';
+
+  @override
+  String get advancedDestWorkspace => 'Ish maydoni';
+
+  @override
+  String advancedDestPersonal(String name) {
+    return '$name (shaxsiy)';
+  }
+
+  @override
+  String get advancedDestFolder => 'Papka';
+
+  @override
+  String get advancedDestNoFolder => 'Fayllar (papkasiz)';
+
+  @override
+  String get advancedDestFoldersFailed => 'Papkalarni yuklab boʻlmadi.';
+
+  @override
+  String advancedDestBalance(String value) {
+    return 'Balans: $value';
+  }
+
+  @override
+  String get advancedHintsTitle => 'Maʼruzachilarni belgilash';
+
+  @override
+  String advancedHintsCount(int count) {
+    return '$count ta belgi';
+  }
+
+  @override
+  String get advancedHintsDemo =>
+      'Namuna — hozircha natijaga taʼsir qilmaydi: belgilar fayl bilan saqlanadi va nutq servisi ularni qabul qilganda maʼruzachilarni ajratishga ishlatiladi.';
+
+  @override
+  String get advancedHintsText =>
+      'Faylni oʻynating, kim gapirayotgan joyni belgilang va ism bering. Har odamga 3 soniyadan uzun, faqat oʻsha odam gapirgan 1–3 ta joy yetarli.';
+
+  @override
+  String get advancedHintsLinkNote =>
+      'Havoladagi faylni telefonda oldindan oʻynatib boʻlmaydi — belgilash tanlangan fayl uchun.';
+
+  @override
+  String get advancedHintsNoFile => 'Avval fayl tanlang.';
+
+  @override
+  String get advancedHintsFile => 'Fayl';
+
+  @override
+  String get advancedHintsPlayerFailed => 'Faylni oʻynatib boʻlmadi.';
+
+  @override
+  String get advancedHintsSeek => 'Oʻrin';
+
+  @override
+  String get advancedHintsStart => 'Boshi';
+
+  @override
+  String get advancedHintsEnd => 'Oxiri';
+
+  @override
+  String get advancedHintsNow => 'Hozirgi oʻrin';
+
+  @override
+  String get advancedHintsWho => 'Kim';
+
+  @override
+  String get advancedHintsWhoHint => 'Masalan, Sarvar';
+
+  @override
+  String get advancedHintsAdd => 'Qoʻshish';
+
+  @override
+  String get advancedHintsPlayFrom => 'Shu joydan oʻynatish';
+
+  @override
+  String advancedHintsDelete(String name) {
+    return '$name belgisini oʻchirish';
+  }
+
+  @override
+  String get advancedSpeakersTitle => 'Maʼruzachilar soni';
+
+  @override
+  String get advancedSpeakersText =>
+      'Yozuvda nechta odam gapirganini bilsangiz, tanlang — matn soxta maʼruzachilarga boʻlinib ketmaydi. Bilmasangiz «Avto» qoldiring.';
+
+  @override
+  String get advancedSpeakersAuto => 'avtomatik';
+
+  @override
+  String advancedSpeakersCount(int count) {
+    return '$count kishi';
+  }
+
+  @override
+  String get advancedSave => 'Saqlash';
+
+  @override
+  String get advancedFoot =>
+      'Tanlov faqat shu yuklashga qoʻllanadi — sahifa yopilsa qayta tiklanadi.';
+
+  @override
+  String get advancedBack => 'Orqaga — saqlamasdan';
+
+  @override
+  String advancedErrTermTooLong(String start, int max) {
+    return '«$start…» — atama $max belgidan oshmasin.';
+  }
+
+  @override
+  String advancedErrTooManyTerms(int max, int count) {
+    return 'Bitta faylga $max tadan ortiq atama yozilmaydi (hozir $count).';
+  }
+
+  @override
+  String get advancedErrHintNoName => 'Kim gapirayotganini yozing.';
+
+  @override
+  String advancedErrHintNameTooLong(int max) {
+    return 'Ism $max belgidan oshmasin.';
+  }
+
+  @override
+  String get advancedErrHintOrder => 'Oraliqning oxiri boshidan keyin boʻlsin.';
+
+  @override
+  String get advancedErrHintShort =>
+      'Oraliq kamida 1 soniya boʻlsin — yaxshisi 3 soniyadan uzun.';
+
+  @override
+  String get advancedErrHintLong => 'Bitta oraliq 10 daqiqadan oshmasin.';
+
+  @override
+  String advancedErrTooManyHints(int max) {
+    return 'Bitta faylga $max tadan ortiq belgi qoʻyilmaydi.';
+  }
+
+  @override
+  String advancedErrHintOverlap(String name) {
+    return 'Bu oraliq «$name» oraligʻi bilan ustma-ust tushadi.';
+  }
+
+  @override
+  String advancedErrTooManyPeople(int max) {
+    return '$max dan ortiq odam belgilab boʻlmaydi.';
+  }
+
+  @override
+  String advancedErrMorePeople(int speakers, int people) {
+    return 'Maʼruzachilar soni $speakers deb tanlangan — $people-odamni belgilab boʻlmaydi.';
+  }
+
+  @override
+  String get advancedErrBadTime => 'Vaqtni 0:15 yoki 1:02:03 shaklida yozing.';
+
+  @override
+  String get advancedErrPastEnd => 'Oraliq faylning oxiridan keyin tugayapti.';
+
+  @override
+  String advancedErrPeopleExceed(int people, int speakers) {
+    return 'Belgilangan odamlar ($people) maʼruzachilar sonidan ($speakers) koʻp.';
+  }
 }

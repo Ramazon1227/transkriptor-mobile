@@ -5,7 +5,9 @@ import 'package:transkriptor_uz/core/constants/endpoints.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/network/envelope.dart';
 import 'package:transkriptor_uz/core/network/run_request.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
+import 'package:transkriptor_uz/features/job/infrastructure/job_option_fields.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/job_refusal.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/models/job_model.dart';
 
@@ -26,11 +28,13 @@ class JobRepository {
 
   /// [idempotencyKey] belongs to the person's action (`IdempotencyKeys`),
   /// not to this call: a retry of that action sends the same one.
+  /// [options] go only when set (`jobOptionFields`).
   Future<Either<Failure, JobModel>> createJob({
     required String mediaId,
     required String idempotencyKey,
     int? numSpeakers,
     JobService? service,
+    JobOptions options = const JobOptions(),
   }) {
     return runJobRequest(() async {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -39,6 +43,7 @@ class JobRepository {
           'media_id': mediaId,
           'num_speakers': ?numSpeakers,
           'service': ?service?.apiValue,
+          ...jobOptionFields(options),
           'idempotency_key': idempotencyKey,
         },
         options: Options(headers: {'Idempotency-Key': idempotencyKey}),

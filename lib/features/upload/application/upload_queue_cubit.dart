@@ -3,7 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
+import 'package:transkriptor_uz/features/upload/application/start_subject.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/upload_cancel.dart';
 import 'package:transkriptor_uz/features/upload/domain/i_upload_facade.dart';
@@ -51,6 +53,10 @@ abstract class UploadQueueState with _$UploadQueueState {
 
   int get waitingCount =>
       items.where((i) => i.status == QueueItemStatus.waiting).length;
+
+  /// A file of this list reached the server, or the list is uploading: the
+  /// destination went with it and cannot change any more (A-2).
+  bool get destinationLocked => running || items.any((i) => i.mediaId != null);
 
   bool get allStarted =>
       items.isNotEmpty &&
@@ -150,33 +156,41 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     return super.close();
   }
 
+  /// [options] are shared by every file; [hints] are per file, by path
+  /// (A-3), and join each file's own job.
   Future<void> start({
     required String workspaceId,
+    String? folderId,
     int? numSpeakers,
     JobService? service,
+    JobOptions options = const JobOptions(),
+    Map<String, List<SpeakerHint>> hints = const {},
   }) async {
     final paths = state.items
         .where((i) => i.status == QueueItemStatus.waiting)
         .map((i) => i.file.path)
         .toList();
-    await _run(paths, workspaceId, numSpeakers, service);
+    await _run(
+      paths,
+      _Settings(workspaceId, folderId, numSpeakers, service, options, hints),
+    );
   }
 
   Future<void> retry(
     String path, {
     required String workspaceId,
+    String? folderId,
     int? numSpeakers,
     JobService? service,
-  }) => _run([path], workspaceId, numSpeakers, service);
+    JobOptions options = const JobOptions(),
+    Map<String, List<SpeakerHint>> hints = const {},
+  }) => _run([
+    path,
+  ], _Settings(workspaceId, folderId, numSpeakers, service, options, hints));
 
   /// A failed file does not stop the others: a shorter one may still fit
   /// the balance.
-  Future<void> _run(
-    List<String> paths,
-    String workspaceId,
-    int? numSpeakers,
-    JobService? service,
-  ) async {
+  Future<void> _run(List<String> paths, _Settings settings) async {
     if (state.running || paths.isEmpty) return;
     emit(state.copyWith(running: true));
     for (final path in paths) {
@@ -185,21 +199,17 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
       if (item == null) continue; // removed while it waited
       final mediaId = item.mediaId;
       if (mediaId == null) {
-        await _uploadAndStart(item, workspaceId, numSpeakers, service);
+        await _uploadAndStart(item, settings);
       } else {
-        await _startOnly(item, mediaId, numSpeakers, service);
+        await _startOnly(item, mediaId, settings);
       }
     }
     if (!isClosed) emit(state.copyWith(running: false));
   }
 
-  Future<void> _uploadAndStart(
-    QueueItem item,
-    String workspaceId,
-    int? numSpeakers,
-    JobService? service,
-  ) async {
+  Future<void> _uploadAndStart(QueueItem item, _Settings settings) async {
     final path = item.file.path;
+    final options = settings.optionsFor(path);
     _update(
       path,
       (i) => i.copyWith(
@@ -221,12 +231,14 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
     _cancels[path] = cancel;
     final result = await _facade.upload(
       file: item.file,
-      workspaceId: workspaceId,
+      workspaceId: settings.workspaceId,
       title: item.file.baseName,
       startTranscription: true,
       jobKey: jobKey,
-      numSpeakers: numSpeakers,
-      service: service,
+      folderId: settings.folderId,
+      numSpeakers: settings.numSpeakers,
+      service: settings.service,
+      options: options,
       onProgress: (p) {
         final current = _find(path);
         // Dio reports every chunk; one rebuild per percent is enough.
@@ -244,7 +256,11 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
         (i) => i.copyWith(status: QueueItemStatus.failed, failure: failure),
       ),
       (done) {
-        _keys.settle(done.mediaId, done.startFailure, key: jobKey);
+        _keys.settle(
+          settings.subject(done.mediaId, options),
+          done.startFailure,
+          key: jobKey,
+        );
         _update(
           path,
           (i) => i.copyWith(
@@ -263,21 +279,23 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
   Future<void> _startOnly(
     QueueItem item,
     String mediaId,
-    int? numSpeakers,
-    JobService? service,
+    _Settings settings,
   ) async {
     final path = item.file.path;
+    final options = settings.optionsFor(path);
+    final subject = settings.subject(mediaId, options);
     _update(
       path,
       (i) => i.copyWith(status: QueueItemStatus.starting, failure: null),
     );
     final result = await _facade.startTranscription(
       mediaId: mediaId,
-      idempotencyKey: _keys.keyFor(mediaId),
-      numSpeakers: numSpeakers,
-      service: service,
+      idempotencyKey: _keys.keyFor(subject),
+      numSpeakers: settings.numSpeakers,
+      service: settings.service,
+      options: options,
     );
-    _keys.settle(mediaId, result.fold((f) => f, (_) => null));
+    _keys.settle(subject, result.fold((f) => f, (_) => null));
     result.fold(
       (failure) => _update(
         path,
@@ -305,4 +323,34 @@ class UploadQueueCubit extends Cubit<UploadQueueState> {
       ),
     );
   }
+}
+
+/// One start of the list: the destination and the job settings.
+class _Settings {
+  const _Settings(
+    this.workspaceId,
+    this.folderId,
+    this.numSpeakers,
+    this.service,
+    this.options,
+    this.hints,
+  );
+
+  final String workspaceId;
+  final String? folderId;
+  final int? numSpeakers;
+  final JobService? service;
+  final JobOptions options;
+  final Map<String, List<SpeakerHint>> hints;
+
+  /// The shared options with this file's own hints.
+  JobOptions optionsFor(String path) {
+    final own = hints[path];
+    return own == null || own.isEmpty
+        ? options
+        : options.copyWith(speakerHints: own);
+  }
+
+  Object subject(String mediaId, JobOptions options) =>
+      startSubject(mediaId, numSpeakers, service, options);
 }

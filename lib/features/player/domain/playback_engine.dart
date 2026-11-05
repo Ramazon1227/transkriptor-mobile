@@ -33,7 +33,8 @@ class PlaybackSnapshot {
 /// The platform player behind an interface, so the cubit can be tested
 /// without one. One engine plays one file; a new file is a new engine.
 abstract interface class PlaybackEngine {
-  /// Prepares [url]; throws when it cannot be opened.
+  /// Prepares [url] — a link, or a `file:` URI for a local file; throws
+  /// when it cannot be opened.
   Future<void> open(Uri url);
 
   Stream<PlaybackSnapshot> get snapshots;

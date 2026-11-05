@@ -14,12 +14,15 @@ import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_queue_cubit.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/advanced_settings_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/advanced_settings_tile.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
-import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
-/// Several picked files: one list, one speaker count, one button. One file
+/// Several picked files: one list, one set of «Qoʻshimcha sozlamalar», one
+/// button; speaker hints are each file's own. One file
 /// goes to `SendPage`, which also offers a name and "save only".
 class SendManyPage extends StatelessWidget {
   const SendManyPage({required this.files, super.key});
@@ -53,11 +56,55 @@ class _SendManyForm extends StatefulWidget {
 }
 
 class _SendManyFormState extends State<_SendManyForm> {
-  int? _speakers;
+  /// «Qoʻshimcha sozlamalar» (A-0): for this list only.
+  late AdvancedOptions _options = AdvancedOptions.initial(
+    workspaceId: widget.workspaceId,
+  );
   JobService _service = JobService.transcription;
 
   /// Leaving was confirmed: the emptied list must not pop a second time.
   bool _leaving = false;
+
+  Future<void> _openAdvanced(UploadQueueState state) async {
+    final saved = await AdvancedSettingsPage.open(
+      context,
+      value: _options,
+      workspaces:
+          context.read<AccountCubit>().state.account?.workspaces ?? const [],
+      // Hints only for files whose job has not started.
+      sources: [
+        for (final item in state.items)
+          if (item.status != QueueItemStatus.started &&
+              item.status != QueueItemStatus.starting)
+            HintSource(
+              key: item.file.path,
+              name: item.file.fileName,
+              path: item.file.path,
+            ),
+      ],
+      destinationLocked: state.destinationLocked,
+    );
+    if (saved != null && mounted) setState(() => _options = saved);
+  }
+
+  Future<void> _start(UploadQueueCubit cubit) => cubit.start(
+    workspaceId: _options.workspaceId,
+    folderId: _options.folderId,
+    numSpeakers: _options.numSpeakers,
+    service: _service,
+    options: _options.jobOptionsFor(),
+    hints: _options.hints,
+  );
+
+  Future<void> _retry(UploadQueueCubit cubit, String path) => cubit.retry(
+    path,
+    workspaceId: _options.workspaceId,
+    folderId: _options.folderId,
+    numSpeakers: _options.numSpeakers,
+    service: _service,
+    options: _options.jobOptionsFor(),
+    hints: _options.hints,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +118,9 @@ class _SendManyFormState extends State<_SendManyForm> {
       },
       builder: (context, state) {
         final running = state.running;
+        // The destination's balance (A-2).
         final seconds = context.select<AccountCubit, int?>(
-          (c) => c.state.account?.currentWorkspace?.balanceSeconds,
+          (c) => destinationBalance(c.state.account, _options.workspaceId),
         );
         // Leaving mid-upload asks first, then cancels what is still
         // uploading: paid jobs must not start with nobody watching.
@@ -116,12 +164,7 @@ class _SendManyFormState extends State<_SendManyForm> {
                   item: item,
                   running: running,
                   onRemove: () => cubit.remove(item.file.path),
-                  onRetry: () => cubit.retry(
-                    item.file.path,
-                    workspaceId: widget.workspaceId,
-                    numSpeakers: _speakers,
-                    service: _service,
-                  ),
+                  onRetry: () => _retry(cubit, item.file.path),
                 ),
               if (state.pickFailure != null) ...[
                 const SizedBox(height: 8),
@@ -131,18 +174,20 @@ class _SendManyFormState extends State<_SendManyForm> {
                 ),
               ],
               const SizedBox(height: 22),
-              SpeakerCountPicker(
-                value: _speakers,
-                enabled: !running,
-                onChanged: (v) => setState(() => _speakers = v),
-              ),
-              const SizedBox(height: 22),
               ServicePicker(
                 value: _service,
                 enabled: !running,
                 onChanged: (v) => setState(() => _service = v),
               ),
               const SizedBox(height: 22),
+              if (!state.allStarted) ...[
+                AdvancedSettingsTile(
+                  value: _options,
+                  currentWorkspaceId: widget.workspaceId,
+                  onTap: running ? null : () => _openAdvanced(state),
+                ),
+                const SizedBox(height: 22),
+              ],
               if (seconds != null) ...[
                 Row(
                   children: [
@@ -167,13 +212,7 @@ class _SendManyFormState extends State<_SendManyForm> {
               const SizedBox(height: 28),
               if (state.waitingCount > 0)
                 FilledButton(
-                  onPressed: running
-                      ? null
-                      : () => cubit.start(
-                          workspaceId: widget.workspaceId,
-                          numSpeakers: _speakers,
-                          service: _service,
-                        ),
+                  onPressed: running ? null : () => _start(cubit),
                   child: Text(l10n.sendManyStart(state.waitingCount)),
                 ),
               if (state.waitingCount == 0 && !running) ...[

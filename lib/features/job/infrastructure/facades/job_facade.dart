@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 
@@ -24,11 +25,13 @@ class JobFacade implements IJobFacade {
     required String mediaId,
     required String idempotencyKey,
     int? numSpeakers,
+    JobOptions options = const JobOptions(),
   }) async {
     final result = await _repository.createJob(
       mediaId: mediaId,
       idempotencyKey: idempotencyKey,
       numSpeakers: numSpeakers,
+      options: options,
     );
     // Minutes were reserved and the file now has a job.
     if (result.isRight()) _changes.notify();

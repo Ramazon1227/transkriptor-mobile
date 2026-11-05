@@ -15,12 +15,17 @@ final class UploadFileSubmitted extends UploadSendEvent {
     required this.workspaceId,
     required this.title,
     required this.startTranscription,
+    this.folderId,
     this.numSpeakers,
     this.service,
+    this.options = const JobOptions(),
   });
 
   final PendingFile file;
+
+  /// The destination chosen in the panel (A-2).
   final String workspaceId;
+  final String? folderId;
   final String title;
 
   /// False for "save only": the file is stored, no minutes are reserved.
@@ -31,22 +36,31 @@ final class UploadFileSubmitted extends UploadSendEvent {
 
   /// Null lets the server decide; the pages always send it.
   final JobService? service;
+
+  /// Glossary, terms and this file's speaker hints (A-1, A-3).
+  final JobOptions options;
 }
 
 final class UploadLinkSubmitted extends UploadSendEvent {
   const UploadLinkSubmitted({
     required this.url,
     required this.workspaceId,
+    this.folderId,
     this.numSpeakers,
     this.service,
+    this.options = const JobOptions(),
   });
 
   final String url;
   final String workspaceId;
+  final String? folderId;
   final int? numSpeakers;
 
   /// Null lets the server decide; the pages always send it.
   final JobService? service;
+
+  /// Glossary and terms; a link has no speaker hints on mobile.
+  final JobOptions options;
 }
 
 /// Start transcription of a file that was stored when the first start
@@ -56,6 +70,7 @@ final class UploadStartRetried extends UploadSendEvent {
     required this.mediaId,
     this.numSpeakers,
     this.service,
+    this.options = const JobOptions(),
   });
 
   final String mediaId;
@@ -63,6 +78,7 @@ final class UploadStartRetried extends UploadSendEvent {
 
   /// Null lets the server decide; the pages always send it.
   final JobService? service;
+  final JobOptions options;
 }
 
 /// Stops the file upload that is running (U-2). Its own handler, so the

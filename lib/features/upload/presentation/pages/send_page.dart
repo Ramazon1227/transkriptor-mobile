@@ -14,10 +14,12 @@ import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart';
+import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
+import 'package:transkriptor_uz/features/upload/presentation/pages/advanced_settings_page.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/advanced_settings_tile.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/held_files_sheet.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/service_picker.dart';
-import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
 class SendPage extends StatelessWidget {
   const SendPage({required this.file, super.key});
@@ -55,8 +57,19 @@ class _SendFormState extends State<_SendForm> {
   late final TextEditingController _title = TextEditingController(
     text: widget.file.baseName,
   );
-  int? _speakers;
+
+  /// «Qoʻshimcha sozlamalar» (A-0): for this upload only.
+  late AdvancedOptions _options = AdvancedOptions.initial(
+    workspaceId: widget.workspaceId,
+  );
   JobService _service = JobService.transcription;
+
+  /// The picked file or recording is local: the panel can play it.
+  HintSource get _source => HintSource(
+    key: widget.file.path,
+    name: widget.file.fileName,
+    path: widget.file.path,
+  );
 
   @override
   void dispose() {
@@ -64,16 +77,31 @@ class _SendFormState extends State<_SendForm> {
     super.dispose();
   }
 
+  Future<void> _openAdvanced({required bool destinationLocked}) async {
+    FocusScope.of(context).unfocus();
+    final saved = await AdvancedSettingsPage.open(
+      context,
+      value: _options,
+      workspaces:
+          context.read<AccountCubit>().state.account?.workspaces ?? const [],
+      sources: [_source],
+      destinationLocked: destinationLocked,
+    );
+    if (saved != null && mounted) setState(() => _options = saved);
+  }
+
   void _send({required bool start}) {
     FocusScope.of(context).unfocus();
     context.read<UploadBloc>().add(
       UploadFileSubmitted(
         file: widget.file,
-        workspaceId: widget.workspaceId,
+        workspaceId: _options.workspaceId,
+        folderId: _options.folderId,
         title: _title.text,
         startTranscription: start,
-        numSpeakers: _speakers,
+        numSpeakers: _options.numSpeakers,
         service: _service,
+        options: _options.jobOptionsFor(widget.file.path),
       ),
     );
   }
@@ -139,19 +167,27 @@ class _SendFormState extends State<_SendForm> {
                 decoration: InputDecoration(labelText: l10n.sendName),
               ),
               const SizedBox(height: 22),
-              SpeakerCountPicker(
-                value: _speakers,
-                enabled: !busy,
-                onChanged: (v) => setState(() => _speakers = v),
-              ),
-              const SizedBox(height: 22),
               ServicePicker(
                 value: _service,
                 enabled: !busy,
                 onChanged: (v) => setState(() => _service = v),
               ),
               const SizedBox(height: 22),
-              _MinutesCard(duration: widget.file.duration),
+              // The destination went with the file: once stored it stays.
+              AdvancedSettingsTile(
+                value: _options,
+                currentWorkspaceId: widget.workspaceId,
+                onTap: busy
+                    ? null
+                    : () => _openAdvanced(
+                        destinationLocked: stored || mediaId != null,
+                      ),
+              ),
+              const SizedBox(height: 22),
+              _MinutesCard(
+                duration: widget.file.duration,
+                workspaceId: _options.workspaceId,
+              ),
               const SizedBox(height: 10),
               Text(
                 l10n.sendUploadFree,
@@ -208,8 +244,9 @@ class _SendFormState extends State<_SendForm> {
                       : () => context.read<UploadBloc>().add(
                           UploadStartRetried(
                             mediaId: mediaId,
-                            numSpeakers: _speakers,
+                            numSpeakers: _options.numSpeakers,
                             service: _service,
+                            options: _options.jobOptionsFor(widget.file.path),
                           ),
                         ),
                   child: Text(l10n.sendStart),
@@ -316,17 +353,20 @@ class _FileCard extends StatelessWidget {
 }
 
 /// What the file will cost against what is left. A picked file's length
-/// is measured by the server, so only the balance is shown for it.
+/// is measured by the server, so only the balance is shown for it. The
+/// balance is the destination's (A-2), which may not be the app's
+/// workspace.
 class _MinutesCard extends StatelessWidget {
-  const _MinutesCard({required this.duration});
+  const _MinutesCard({required this.duration, required this.workspaceId});
 
   final Duration? duration;
+  final String workspaceId;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final seconds = context.select<AccountCubit, int?>(
-      (c) => c.state.account?.currentWorkspace?.balanceSeconds,
+      (c) => destinationBalance(c.state.account, workspaceId),
     );
     final d = duration;
     return Container(

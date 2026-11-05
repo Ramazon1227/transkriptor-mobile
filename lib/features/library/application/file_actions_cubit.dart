@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/core/utils/idempotency_key.dart';
+import 'package:transkriptor_uz/features/job/domain/entities/job_options.dart';
 import 'package:transkriptor_uz/features/job/domain/i_job_facade.dart';
 import 'package:transkriptor_uz/features/library/domain/entities/library_item.dart';
 import 'package:transkriptor_uz/features/library/domain/i_library_facade.dart';
@@ -41,8 +42,9 @@ class FileActionsCubit extends Cubit<FileActionsState> {
   final LibraryChanges _changes;
   final IdempotencyKeys _keys = IdempotencyKeys();
 
-  /// The speaker count a retranscription sent when its answer was lost.
-  final Map<String, int?> _triedSpeakers = {};
+  /// The speaker count and panel options (A-1, A-3) a retranscription
+  /// sent when its answer was lost.
+  final Map<String, (int?, JobOptions)> _tried = {};
 
   /// [name] is already normalised by `FileRules`; the same name sends
   /// nothing.
@@ -59,33 +61,39 @@ class FileActionsCubit extends Cubit<FileActionsState> {
   );
 
   /// A new job for the same file, as the web's retry does, with the
-  /// speaker count of the previous job. When that job cannot be read the
-  /// server decides the count, rather than the retry failing for it.
-  /// A try whose answer was lost is retried with the same idempotency key
-  /// and the same count, so the server sees one action.
+  /// speaker count, terms and speaker hints of the previous job. When that
+  /// job cannot be read the server decides the count and nothing else is
+  /// sent, rather than the retry failing for it. A try whose answer was
+  /// lost is retried with the same idempotency key and the same settings,
+  /// so the server sees one action.
   Future<void> retranscribe(LibraryItem item) => _run(() async {
     final mediaId = item.mediaId;
-    final int? speakers;
+    final (int?, JobOptions) settings;
     final previous = item.jobId;
-    if (_triedSpeakers.containsKey(mediaId)) {
-      speakers = _triedSpeakers[mediaId];
+    final tried = _tried[mediaId];
+    if (tried != null) {
+      settings = tried;
     } else if (previous != null) {
       final job = await _jobs.getJob(previous);
-      speakers = job.fold((_) => null, (j) => j.numSpeakers);
+      settings = job.fold(
+        (_) => (null, const JobOptions()),
+        (j) => (j.numSpeakers, j.options),
+      );
     } else {
-      speakers = null;
+      settings = (null, const JobOptions());
     }
     final result = await _jobs.createJob(
       mediaId: mediaId,
       idempotencyKey: _keys.keyFor(mediaId),
-      numSpeakers: speakers,
+      numSpeakers: settings.$1,
+      options: settings.$2,
     );
     final failure = result.fold((f) => f, (_) => null);
     _keys.settle(mediaId, failure);
     if (failure != null && IdempotencyKeys.mayHaveReachedServer(failure)) {
-      _triedSpeakers[mediaId] = speakers;
+      _tried[mediaId] = settings;
     } else {
-      _triedSpeakers.remove(mediaId);
+      _tried.remove(mediaId);
     }
     return result.map((job) => job.id);
   });

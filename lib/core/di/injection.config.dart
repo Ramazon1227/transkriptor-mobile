@@ -117,6 +117,12 @@ import 'package:transkriptor_uz/features/export/infrastructure/facades/export_fa
     as _i469;
 import 'package:transkriptor_uz/features/export/infrastructure/share_module.dart'
     as _i41;
+import 'package:transkriptor_uz/features/glossary/domain/i_glossary_facade.dart'
+    as _i74;
+import 'package:transkriptor_uz/features/glossary/infrastructure/facades/glossary_facade.dart'
+    as _i121;
+import 'package:transkriptor_uz/features/glossary/infrastructure/repositories/glossary_repository.dart'
+    as _i574;
 import 'package:transkriptor_uz/features/job/application/job_cubit.dart'
     as _i331;
 import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart'
@@ -272,8 +278,12 @@ import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/
     as _i78;
 import 'package:transkriptor_uz/features/transcript/infrastructure/storage/speaker_intro_storage.dart'
     as _i459;
+import 'package:transkriptor_uz/features/upload/application/advanced_settings_cubit.dart'
+    as _i234;
 import 'package:transkriptor_uz/features/upload/application/held_files_cubit.dart'
     as _i731;
+import 'package:transkriptor_uz/features/upload/application/hint_player_cubit.dart'
+    as _i136;
 import 'package:transkriptor_uz/features/upload/application/pick_file_cubit.dart'
     as _i741;
 import 'package:transkriptor_uz/features/upload/application/upload_bloc.dart'
@@ -392,6 +402,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i933.TokenStorage>(
       () => _i933.SecureTokenStorage(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.factory<_i136.HintPlayerCubit>(
+      () => _i136.HintPlayerCubit(gh<_i257.PlaybackEngineFactory>()),
+    );
     gh.lazySingleton<_i60.TokenInterceptor>(
       () => _i60.TokenInterceptor(
         gh<_i933.TokenStorage>(),
@@ -457,6 +470,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1035.CommentsRepository>(
       () => _i1035.CommentsRepository(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i574.GlossaryRepository>(
+      () => _i574.GlossaryRepository(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i730.JobRepository>(
       () => _i730.JobRepository(gh<_i361.Dio>()),
@@ -550,6 +566,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i464.WorkspaceSelectionStorage>(),
       ),
     );
+    gh.lazySingleton<_i74.IGlossaryFacade>(
+      () => _i121.GlossaryFacade(gh<_i574.GlossaryRepository>()),
+    );
     gh.lazySingleton<_i439.INotesFacade>(
       () => _i2.NotesFacade(gh<_i988.NotesRepository>()),
     );
@@ -566,6 +585,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i171.IBillingFacade>(
       () => _i375.BillingFacade(gh<_i354.BillingRepository>()),
+    );
+    gh.factory<_i234.AdvancedSettingsCubit>(
+      () => _i234.AdvancedSettingsCubit(
+        gh<_i118.ILibraryFacade>(),
+        gh<_i74.IGlossaryFacade>(),
+        gh<_i171.IBillingFacade>(),
+      ),
     );
     gh.factory<_i224.LibraryBloc>(
       () => _i224.LibraryBloc(
