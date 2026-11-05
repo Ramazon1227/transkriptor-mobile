@@ -13,6 +13,7 @@ import 'package:transkriptor_uz/features/upload/application/advanced_settings_cu
 import 'package:transkriptor_uz/features/upload/domain/advanced_rules.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/advanced_problem_text.dart';
+import 'package:transkriptor_uz/features/upload/presentation/widgets/advanced_settings_tile.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/hint_editor.dart';
 import 'package:transkriptor_uz/features/upload/presentation/widgets/speaker_count_picker.dart';
 
@@ -104,7 +105,7 @@ class _Body extends StatelessWidget {
         final termCount = draft.terms.length;
         final list = draft.glossaryId == null ? '' : draft.glossaryName;
         final folder = draft.folderId == null
-            ? l10n.advancedSummaryFiles
+            ? rootFolderLabel(l10n, personal: state.personalDestination)
             : draft.folderName;
         final hintCount = draft.hintCount;
         final speakers = draft.numSpeakers;
@@ -473,7 +474,10 @@ class _DestinationSection extends StatelessWidget {
                   ActionRow(
                     key: const Key('advanced_folder_none'),
                     icon: Icons.inbox_outlined,
-                    label: l10n.advancedDestNoFolder,
+                    label: rootFolderLabel(
+                      l10n,
+                      personal: state.personalDestination,
+                    ),
                     showChevron: false,
                     trailing: _check(draft.folderId == null),
                     onTap: locked ? null : () => cubit.selectFolder(null),
