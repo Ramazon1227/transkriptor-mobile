@@ -8,8 +8,9 @@ void main() {
     expect(EditRules.titleTooLong('a' * 201), isTrue);
   });
 
-  test('a speaker label stays limited in bytes', () {
-    expect(EditRules.speakerLabelTooLong('я' * 40), isFalse);
-    expect(EditRules.speakerLabelTooLong('я' * 41), isTrue);
+  test('a speaker label is limited in characters, like the server', () {
+    expect(EditRules.speakerLabelTooLong('я' * 80), isFalse);
+    expect(EditRules.speakerLabelTooLong('я' * 81), isTrue);
+    expect(EditRules.speakerLabelTooLong('oʻ' * 40), isFalse);
   });
 }
