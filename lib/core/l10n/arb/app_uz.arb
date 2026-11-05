@@ -680,6 +680,7 @@
   "aiChatCopy": "Nusxalash",
   "aiChatStop": "Toʻxtatish",
   "aiChatStopped": "Toʻxtatildi.",
+  "aiChatOutdated": "Bu javobdan keyin transkript matni tahrirlangan — javob eskirgan boʻlishi mumkin.",
   "aiChatPrivate": "Suhbatni faqat siz koʻrasiz.",
   "aiChatClear": "Suhbatni tozalash",
   "aiChatClearTitle": "Suhbat tozalansinmi?",

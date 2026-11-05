@@ -4,6 +4,7 @@ import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/ai_notes.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/rich_text.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/answer_text.dart';
@@ -123,7 +124,7 @@ class MessageBubble extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AnswerText(text: message.content, onSeek: onSeek),
+            ..._answer(context),
             const SizedBox(height: 6),
             Text(
               message.error ?? l10n.aiChatStopped,
@@ -139,8 +140,32 @@ class MessageBubble extends StatelessWidget {
         );
       case AiMessageStatus.done:
       case AiMessageStatus.unknown:
-        return AnswerText(text: message.content, onSeek: onSeek);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _answer(context),
+        );
     }
+  }
+
+  /// A finished (or stopped) answer: the server's notes sit apart from the
+  /// text, and a warning follows when the transcript was edited since.
+  List<Widget> _answer(BuildContext context) {
+    final split = splitAiNotes(message.content);
+    return [
+      AnswerText(text: split.body, onSeek: onSeek),
+      for (final n in split.notes) ...[
+        const SizedBox(height: 6),
+        Text(n, style: AppText.caption),
+      ],
+      if (message.outdated) ...[
+        const SizedBox(height: 6),
+        Text(
+          context.l10n.aiChatOutdated,
+          key: Key('ai_outdated_${message.id}'),
+          style: AppText.caption.copyWith(color: AppColors.warn),
+        ),
+      ],
+    ];
   }
 
   Widget _actions(BuildContext context) {
@@ -176,7 +201,9 @@ class MessageBubble extends StatelessWidget {
     final messenger = ScaffoldMessenger.maybeOf(context);
     final copied = context.l10n.shareCopied;
     await HapticFeedback.selectionClick();
-    await Clipboard.setData(ClipboardData(text: richPlain(message.content)));
+    await Clipboard.setData(
+      ClipboardData(text: richPlain(splitAiNotes(message.content).body)),
+    );
     messenger
       ?..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(copied)));

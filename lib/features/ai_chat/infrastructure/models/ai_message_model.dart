@@ -36,6 +36,7 @@ abstract class AiMessageModel with _$AiMessageModel {
     @JsonKey(name: 'content') @Default('') String content,
     @JsonKey(name: 'error') String? error,
     @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'outdated') @Default(false) bool outdated,
   }) = _AiMessageModel;
 
   const AiMessageModel._();
@@ -59,5 +60,6 @@ abstract class AiMessageModel with _$AiMessageModel {
     content: content,
     error: (error?.isEmpty ?? true) ? null : error,
     createdAt: createdAt,
+    outdated: outdated,
   );
 }

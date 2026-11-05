@@ -1759,6 +1759,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get aiChatStopped => 'Toʻxtatildi.';
 
   @override
+  String get aiChatOutdated =>
+      'Bu javobdan keyin transkript matni tahrirlangan — javob eskirgan boʻlishi mumkin.';
+
+  @override
   String get aiChatPrivate => 'Suhbatni faqat siz koʻrasiz.';
 
   @override

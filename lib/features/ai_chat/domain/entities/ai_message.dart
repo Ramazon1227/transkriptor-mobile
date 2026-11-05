@@ -23,6 +23,10 @@ abstract class AiMessage with _$AiMessage {
 
     /// Shown before the server confirmed it (optimistic bubble).
     @Default(false) bool local,
+
+    /// The transcript text was edited after this answer (CH-7). An older
+    /// server and a pending answer leave it false.
+    @Default(false) bool outdated,
   }) = _AiMessage;
 
   const AiMessage._();
