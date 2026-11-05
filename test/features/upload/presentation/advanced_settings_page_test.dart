@@ -163,7 +163,7 @@ void main() {
     await pump(tester, const SendPage(file: _file));
     expect(
       summary(tester),
-      '${l10n.advancedSummaryFiles} · ${l10n.advancedSummarySpeakersAuto}',
+      'Mening fayllarim · ${l10n.advancedSummarySpeakersAuto}',
     );
 
     await tap(tester, find.byKey(const Key('advanced_open')));

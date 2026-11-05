@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transkriptor_uz/core/l10n/l10n.dart';
 import 'package:transkriptor_uz/core/widgets/action_row.dart';
+import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/advanced_options.dart';
 
@@ -25,13 +27,21 @@ class AdvancedSettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final personal = context.select<AccountCubit, bool>(
+      (c) => destinationPersonal(c.state.account, value.workspaceId),
+    );
     return ActionGroup(
       children: [
         ActionRow(
           key: const Key('advanced_open'),
           icon: Icons.tune_rounded,
           label: context.l10n.advancedOpen,
-          subtitle: advancedSummary(context.l10n, value, currentWorkspaceId),
+          subtitle: advancedSummary(
+            context.l10n,
+            value,
+            currentWorkspaceId,
+            personal: personal,
+          ),
           onTap: onTap,
         ),
       ],
@@ -39,15 +49,22 @@ class AdvancedSettingsTile extends StatelessWidget {
   }
 }
 
-/// «Fayllar · Maʼruzachi: avtomatik», «‹Jamoa› › Hisobotlar · Maʼruzachi:
-/// 2 kishi · Atamalar: Kengash +3 · Belgi: 4».
+/// The place with no folder: in the personal workspace it is the person's
+/// own, in a team one every member sees it — «Mening fayllarim» there
+/// would mislead.
+String rootFolderLabel(AppLocalizations l10n, {required bool personal}) =>
+    personal ? l10n.advancedDestMyFiles : l10n.advancedDestSharedFiles;
+
+/// «Mening fayllarim · Maʼruzachi: avtomatik», «‹Jamoa› › Hisobotlar ·
+/// Maʼruzachi: 2 kishi · Atamalar: Kengash +3 · Belgi: 4».
 String advancedSummary(
   AppLocalizations l10n,
   AdvancedOptions value,
-  String currentWorkspaceId,
-) {
+  String currentWorkspaceId, {
+  required bool personal,
+}) {
   final folder = value.folderId == null || value.folderName.isEmpty
-      ? l10n.advancedSummaryFiles
+      ? rootFolderLabel(l10n, personal: personal)
       : value.folderName;
   final other =
       value.workspaceId != currentWorkspaceId && value.workspaceName.isNotEmpty;
@@ -77,4 +94,14 @@ int? destinationBalance(Account? account, String workspaceId) {
     if (w.id == workspaceId) return w.balanceSeconds;
   }
   return account.currentWorkspace?.balanceSeconds;
+}
+
+/// Whether the destination [workspaceId] is the personal one; the app's
+/// current workspace when that one is not in the account (any more).
+bool destinationPersonal(Account? account, String workspaceId) {
+  if (account == null) return false;
+  for (final w in account.workspaces) {
+    if (w.id == workspaceId) return w.isPersonal;
+  }
+  return account.currentWorkspace?.isPersonal ?? false;
 }
