@@ -478,6 +478,36 @@ void main() {
       page: const LibraryPage(items: items),
       polls: false,
     );
+
+    // MB-9: one dropped request does not stop the poll, and the poll does
+    // not ask for the tags each time.
+    testWidgets('a failed poll keeps polling; the tags are asked once', (
+      tester,
+    ) async {
+      final answers = <Either<Failure, LibraryPage>>[
+        Right(LibraryPage(items: rows(2), inFlight: 1)),
+        const Left(Failure.network()),
+        Right(LibraryPage(items: rows(2), inFlight: 1)),
+      ];
+      when(
+        () => facade.getItems(workspaceId: 'w1', limit: LibraryBloc.pageSize),
+      ).thenAnswer(
+        (_) async => answers.length > 1 ? answers.removeAt(0) : answers.first,
+      );
+      final bloc = LibraryBloc(facade, changes)
+        ..add(const LibraryStarted('w1'));
+      await tester.pump();
+      for (var i = 0; i < 2; i++) {
+        await tester.pump(ApiConfig.jobPollMaxInterval);
+        await tester.pump();
+      }
+      verify(
+        () => facade.getItems(workspaceId: 'w1', limit: LibraryBloc.pageSize),
+      ).called(3);
+      verify(() => facade.getTags(workspaceId: 'w1')).called(1);
+      unawaited(bloc.close());
+      await tester.pump();
+    });
   });
 
   group('LibraryBloc folders', () {

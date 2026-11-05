@@ -52,6 +52,9 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   /// job page was never opened.
   Timer? _inFlight;
 
+  /// The last answer had a file still being transcribed.
+  bool _polling = false;
+
   /// False from a search or tag change until its answer: the rows on screen
   /// belong to the old filter, so a refresh must not keep them as a tail.
   bool _rowsMatchFilter = true;
@@ -92,16 +95,20 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   void _scheduleWhileInFlight(LibraryPage page, List<LibraryItem> rows) {
     _inFlight?.cancel();
     final inFlight = page.inFlight;
-    final running = inFlight != null
+    _polling = inFlight != null
         ? inFlight > 0
         : rows.any(
             (i) =>
                 i.jobStatus == JobStatus.queued ||
                 i.jobStatus == JobStatus.running,
           );
-    if (!running) return;
+    if (_polling) _pollLater();
+  }
+
+  void _pollLater() {
+    _inFlight?.cancel();
     _inFlight = Timer(ApiConfig.jobPollMaxInterval, () {
-      if (!isClosed) add(const LibraryRefreshed());
+      if (!isClosed) add(const LibraryRefreshed(auto: true));
     });
   }
 
@@ -181,7 +188,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     };
     if (workspaceId == null) return;
 
-    if (event is LibraryStarted || event is LibraryRefreshed) {
+    if (event is LibraryStarted || (event is LibraryRefreshed && !event.auto)) {
       _loadTags(workspaceId);
     }
 
@@ -259,14 +266,19 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     if (emit.isDone) return;
 
     result.fold(
-      // A failed refresh keeps the rows and only reports the failure.
-      (failure) => emit(
-        state.copyWith(
-          status: hasItems ? state.status : LibraryStatus.failure,
-          refreshing: false,
-          failure: failure,
-        ),
-      ),
+      // A failed refresh keeps the rows and only reports the failure. A
+      // file still being transcribed keeps the poll going (MB-9): one
+      // dropped request must not freeze its status.
+      (failure) {
+        emit(
+          state.copyWith(
+            status: hasItems ? state.status : LibraryStatus.failure,
+            refreshing: false,
+            failure: failure,
+          ),
+        );
+        if (_polling && event is LibraryRefreshed) _pollLater();
+      },
       (page) {
         _rowsMatchFilter = true;
         final rows = page.items;

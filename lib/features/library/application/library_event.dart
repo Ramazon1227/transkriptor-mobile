@@ -19,7 +19,11 @@ final class LibraryStarted extends LibraryLoadEvent {
 
 /// Pull to refresh, retry, or back from a finished job.
 final class LibraryRefreshed extends LibraryLoadEvent {
-  const LibraryRefreshed();
+  const LibraryRefreshed({this.auto = false});
+
+  /// The bloc's own poll while a file is being transcribed: the tags are
+  /// not asked again each time.
+  final bool auto;
 }
 
 /// Show one folder's files; null shows every file.
