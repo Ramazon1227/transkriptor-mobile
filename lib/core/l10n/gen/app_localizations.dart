@@ -2071,7 +2071,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteBody.
   ///
   /// In uz, this message translates to:
-  /// **'Shaxsiy ish maydoningiz va faqat siz aʼzo boʻlgan ish maydonlari barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.'**
+  /// **'Faqat siz aʼzo boʻlgan ish maydonlari (shaxsiysi ham) barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Shaxsiy ish maydoningizda jamoa boʻlsa, u oʻchmaydi: boshqa ega boʻlsa unga qoladi, boʻlmasa avval egalikni bitta aʼzoga bering. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.'**
   String get deleteBody;
 
   /// No description provided for @deletePasswordLabel.
@@ -2115,6 +2115,12 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.'**
   String get deleteSoleOwner;
+
+  /// No description provided for @deleteSoleOwnerIn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz: {names}. Avval egalikni boshqa aʼzoga bering.'**
+  String deleteSoleOwnerIn(String names);
 
   /// No description provided for @logoutBody.
   ///

@@ -22,6 +22,9 @@ extension FailureMessage on Failure {
     PendingLimitFailure() => l10n.errorPendingLimit,
     JobActiveFailure() => l10n.retranscribeActive,
     IdempotencyMismatchFailure() => l10n.errorIdempotencyMismatch,
+    SoleOwnerFailure(:final workspaces) => l10n.deleteSoleOwnerIn(
+      workspaces.join(', '),
+    ),
     ParsingFailure() => l10n.errorParsing,
     PermissionDeniedFailure() => l10n.errorMicPermission,
     StorageFailure() => l10n.errorStorage,

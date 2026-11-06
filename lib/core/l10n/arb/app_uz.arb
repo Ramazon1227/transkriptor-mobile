@@ -443,7 +443,7 @@
   "profileSignInGoogle": "Google",
   "profileSignInPassword": "Email va parol",
   "deleteTitle": "Hisobni oʻchirish",
-  "deleteBody": "Shaxsiy ish maydoningiz va faqat siz aʼzo boʻlgan ish maydonlari barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.",
+  "deleteBody": "Faqat siz aʼzo boʻlgan ish maydonlari (shaxsiysi ham) barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Shaxsiy ish maydoningizda jamoa boʻlsa, u oʻchmaydi: boshqa ega boʻlsa unga qoladi, boʻlmasa avval egalikni bitta aʼzoga bering. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.",
   "deletePasswordLabel": "Tasdiqlash uchun parolingiz",
   "deleteEmailLabel": "Tasdiqlash uchun emailingizni yozing",
   "deleteEmailHint": "{email}",
@@ -454,6 +454,10 @@
   "deleteRequired": "Maydonni toʻldiring",
   "deleteWrong": "Parol yoki email mos kelmadi.",
   "deleteSoleOwner": "Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.",
+  "deleteSoleOwnerIn": "Siz boshqa aʼzolari bor ish maydonining yagona egasisiz: {names}. Avval egalikni boshqa aʼzoga bering.",
+  "@deleteSoleOwnerIn": {
+    "placeholders": { "names": { "type": "String" } }
+  },
   "logoutBody": "Bu telefondan chiqasiz. Fayllaringiz joyida qoladi.",
   "filesTabUploads": "Yuklangan",
   "filesTabMeetings": "Uchrashuvlar",

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart' show Either, Unit, unit;
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/constants/endpoints.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
@@ -114,14 +115,39 @@ class AuthRepository {
   Future<Either<Failure, Unit>> deleteAccount({
     String? password,
     String? email,
-  }) {
-    return runRequest(() async {
-      await _dio.delete<Map<String, dynamic>>(
-        Endpoints.me,
-        data: {'password': ?password, 'email': ?email},
-      );
+  }) async {
+    Object? body;
+    final result = await runRequest(() async {
+      try {
+        await _dio.delete<Map<String, dynamic>>(
+          Endpoints.me,
+          data: {'password': ?password, 'email': ?email},
+        );
+      } on DioException catch (e) {
+        body = e.response?.data;
+        rethrow;
+      }
       return unit;
     });
+    return result.leftMap((f) => soleOwnerFailure(f, body));
+  }
+
+  /// W-3: a 409 with `data.code == "SOLE_OWNER"` and workspace names becomes
+  /// [Failure.soleOwner]. Anything else is left as it was — an older
+  /// server's 409 has no code and keeps the generic sentence.
+  @visibleForTesting
+  static Failure soleOwnerFailure(Failure failure, Object? body) {
+    if (failure is! ServerFailure || failure.statusCode != 409) return failure;
+    if (body is! Map<String, dynamic>) return failure;
+    final data = body['data'];
+    if (data is! Map<String, dynamic> || data['code'] != 'SOLE_OWNER') {
+      return failure;
+    }
+    final names = data['workspaces'];
+    if (names is! List) return failure;
+    final list = names.whereType<String>().where((n) => n.trim().isNotEmpty);
+    if (list.isEmpty) return failure;
+    return Failure.soleOwner(list.toList());
   }
 
   /// 202 with the same body whether or not the email has an account.

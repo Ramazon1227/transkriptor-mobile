@@ -49,6 +49,11 @@ abstract class WorkspaceModel with _$WorkspaceModel {
     @JsonKey(name: 'id') @Default('') String id,
     @JsonKey(name: 'name') @Default('') String name,
     @JsonKey(name: 'is_personal') @Default(false) bool isPersonal,
+
+    /// W-1: the caller's OWN personal workspace. The team lives in the
+    /// founder's personal workspace, so a member also gets the founder's
+    /// with `is_personal: true`. An older server does not send it.
+    @JsonKey(name: 'is_own_personal') bool? isOwnPersonal,
     @JsonKey(name: 'balance_seconds') @Default(0) int balanceSeconds,
     @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)
     @Default(WorkspaceRole.unknown)
@@ -64,7 +69,7 @@ abstract class WorkspaceModel with _$WorkspaceModel {
   Workspace toEntity() => Workspace(
     id: id,
     name: name,
-    isPersonal: isPersonal,
+    isPersonal: isOwnPersonal ?? isPersonal,
     balanceSeconds: balanceSeconds,
     role: role,
     planCode: plan?.code ?? '',

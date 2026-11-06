@@ -56,7 +56,7 @@ extension FailurePatterns on Failure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( PendingLimitFailure value)?  pendingLimit,TResult Function( JobActiveFailure value)?  jobActive,TResult Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( PendingLimitFailure value)?  pendingLimit,TResult Function( JobActiveFailure value)?  jobActive,TResult Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult Function( SoleOwnerFailure value)?  soleOwner,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
@@ -66,7 +66,8 @@ return unauthorized(_that);case ServerFailure() when server != null:
 return server(_that);case PendingLimitFailure() when pendingLimit != null:
 return pendingLimit(_that);case JobActiveFailure() when jobActive != null:
 return jobActive(_that);case IdempotencyMismatchFailure() when idempotencyMismatch != null:
-return idempotencyMismatch(_that);case ParsingFailure() when parsing != null:
+return idempotencyMismatch(_that);case SoleOwnerFailure() when soleOwner != null:
+return soleOwner(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -90,7 +91,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( PendingLimitFailure value)  pendingLimit,required TResult Function( JobActiveFailure value)  jobActive,required TResult Function( IdempotencyMismatchFailure value)  idempotencyMismatch,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( PendingLimitFailure value)  pendingLimit,required TResult Function( JobActiveFailure value)  jobActive,required TResult Function( IdempotencyMismatchFailure value)  idempotencyMismatch,required TResult Function( SoleOwnerFailure value)  soleOwner,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure():
@@ -100,7 +101,8 @@ return unauthorized(_that);case ServerFailure():
 return server(_that);case PendingLimitFailure():
 return pendingLimit(_that);case JobActiveFailure():
 return jobActive(_that);case IdempotencyMismatchFailure():
-return idempotencyMismatch(_that);case ParsingFailure():
+return idempotencyMismatch(_that);case SoleOwnerFailure():
+return soleOwner(_that);case ParsingFailure():
 return parsing(_that);case CancelledFailure():
 return cancelled(_that);case PermissionDeniedFailure():
 return permissionDenied(_that);case StorageFailure():
@@ -120,7 +122,7 @@ return unknown(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( PendingLimitFailure value)?  pendingLimit,TResult? Function( JobActiveFailure value)?  jobActive,TResult? Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( PendingLimitFailure value)?  pendingLimit,TResult? Function( JobActiveFailure value)?  jobActive,TResult? Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult? Function( SoleOwnerFailure value)?  soleOwner,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
@@ -130,7 +132,8 @@ return unauthorized(_that);case ServerFailure() when server != null:
 return server(_that);case PendingLimitFailure() when pendingLimit != null:
 return pendingLimit(_that);case JobActiveFailure() when jobActive != null:
 return jobActive(_that);case IdempotencyMismatchFailure() when idempotencyMismatch != null:
-return idempotencyMismatch(_that);case ParsingFailure() when parsing != null:
+return idempotencyMismatch(_that);case SoleOwnerFailure() when soleOwner != null:
+return soleOwner(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -153,7 +156,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function( List<HeldFile> held)?  pendingLimit,TResult Function()?  jobActive,TResult Function()?  idempotencyMismatch,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function( List<HeldFile> held)?  pendingLimit,TResult Function()?  jobActive,TResult Function()?  idempotencyMismatch,TResult Function( List<String> workspaces)?  soleOwner,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
@@ -162,7 +165,8 @@ return unauthorized();case ServerFailure() when server != null:
 return server(_that.statusCode,_that.message);case PendingLimitFailure() when pendingLimit != null:
 return pendingLimit(_that.held);case JobActiveFailure() when jobActive != null:
 return jobActive();case IdempotencyMismatchFailure() when idempotencyMismatch != null:
-return idempotencyMismatch();case ParsingFailure() when parsing != null:
+return idempotencyMismatch();case SoleOwnerFailure() when soleOwner != null:
+return soleOwner(_that.workspaces);case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -186,7 +190,7 @@ return unknown();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( List<HeldFile> held)  pendingLimit,required TResult Function()  jobActive,required TResult Function()  idempotencyMismatch,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( List<HeldFile> held)  pendingLimit,required TResult Function()  jobActive,required TResult Function()  idempotencyMismatch,required TResult Function( List<String> workspaces)  soleOwner,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure():
 return network();case TimeoutFailure():
@@ -195,7 +199,8 @@ return unauthorized();case ServerFailure():
 return server(_that.statusCode,_that.message);case PendingLimitFailure():
 return pendingLimit(_that.held);case JobActiveFailure():
 return jobActive();case IdempotencyMismatchFailure():
-return idempotencyMismatch();case ParsingFailure():
+return idempotencyMismatch();case SoleOwnerFailure():
+return soleOwner(_that.workspaces);case ParsingFailure():
 return parsing();case CancelledFailure():
 return cancelled();case PermissionDeniedFailure():
 return permissionDenied();case StorageFailure():
@@ -215,7 +220,7 @@ return unknown();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( List<HeldFile> held)?  pendingLimit,TResult? Function()?  jobActive,TResult? Function()?  idempotencyMismatch,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( List<HeldFile> held)?  pendingLimit,TResult? Function()?  jobActive,TResult? Function()?  idempotencyMismatch,TResult? Function( List<String> workspaces)?  soleOwner,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
@@ -224,7 +229,8 @@ return unauthorized();case ServerFailure() when server != null:
 return server(_that.statusCode,_that.message);case PendingLimitFailure() when pendingLimit != null:
 return pendingLimit(_that.held);case JobActiveFailure() when jobActive != null:
 return jobActive();case IdempotencyMismatchFailure() when idempotencyMismatch != null:
-return idempotencyMismatch();case ParsingFailure() when parsing != null:
+return idempotencyMismatch();case SoleOwnerFailure() when soleOwner != null:
+return soleOwner(_that.workspaces);case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -541,6 +547,80 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class SoleOwnerFailure implements Failure {
+  const SoleOwnerFailure( List<String> workspaces): _workspaces = workspaces;
+  
+
+ final  List<String> _workspaces;
+ List<String> get workspaces {
+  if (_workspaces is EqualUnmodifiableListView) return _workspaces;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_workspaces);
+}
+
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SoleOwnerFailureCopyWith<SoleOwnerFailure> get copyWith => _$SoleOwnerFailureCopyWithImpl<SoleOwnerFailure>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is SoleOwnerFailure&&const DeepCollectionEquality().equals(other.workspaces, _workspaces));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_workspaces));
+}
+
+@override
+String toString() {
+    return 'Failure.soleOwner(workspaces: $workspaces)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SoleOwnerFailureCopyWith<$Res> implements $FailureCopyWith<$Res> {
+  factory $SoleOwnerFailureCopyWith(SoleOwnerFailure value, $Res Function(SoleOwnerFailure) _then) = _$SoleOwnerFailureCopyWithImpl;
+@useResult
+$Res call({
+ List<String> workspaces
+});
+
+
+
+
+}
+/// @nodoc
+class _$SoleOwnerFailureCopyWithImpl<$Res>
+    implements $SoleOwnerFailureCopyWith<$Res> {
+  _$SoleOwnerFailureCopyWithImpl(this._self, this._then);
+
+  final SoleOwnerFailure _self;
+  final $Res Function(SoleOwnerFailure) _then;
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? workspaces = null,}) {
+  return _then(SoleOwnerFailure(
+null == workspaces ? _self._workspaces : workspaces // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

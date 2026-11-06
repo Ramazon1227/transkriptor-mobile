@@ -29,6 +29,85 @@ void main() {
       expect(http.sent.single.body, {'password': 'p'});
     });
 
+    test('409 SOLE_OWNER names the workspaces to hand over (W-3)', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'ziddiyat',
+            'data': {
+              'error': "avval egalikni boshqa a'zoga bering: Sud, Klinika",
+              'code': 'SOLE_OWNER',
+              'workspaces': ['Sud', 'Klinika'],
+            },
+          },
+        ),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      expect(
+        result.fold((f) => f, (_) => null),
+        const Failure.soleOwner(['Sud', 'Klinika']),
+      );
+    });
+
+    test('a 409 from an older server keeps the mapper’s failure', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'ziddiyat',
+            'data': {'error': "avval egalikni boshqa a'zoga bering: Sud"},
+          },
+        ),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      expect(
+        result.fold((f) => f, (_) => null),
+        const Failure.server(statusCode: 409, message: 'ziddiyat'),
+      );
+    });
+
+    test('GET /me: only my own personal workspace is personal (W-1)', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/me': (
+          200,
+          ok({
+            'user': {'id': 'u', 'email': 'e'},
+            'workspaces': [
+              // The founder's personal workspace, older, listed first by
+              // an older server; is_personal is true for the member too.
+              {
+                'id': 'founder',
+                'name': 'F',
+                'is_personal': true,
+                'is_own_personal': false,
+                'role': 'MEMBER',
+              },
+              {
+                'id': 'mine',
+                'name': 'M',
+                'is_personal': true,
+                'is_own_personal': true,
+                'role': 'OWNER',
+              },
+              // An older server: no is_own_personal — is_personal as before.
+              {'id': 'old', 'name': 'O', 'is_personal': true, 'role': 'OWNER'},
+            ],
+          }),
+        ),
+      });
+      final me = (await AuthRepository(
+        fakeDio(http),
+      ).me()).getOrElse(() => throw StateError('left'));
+      final account = me.toEntity();
+      expect(account.workspaces.map((w) => w.isPersonal), [false, true, true]);
+      expect(account.currentWorkspace?.id, 'mine');
+    });
+
     test('GET /me reads has_password and the workspace role', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/me': (
