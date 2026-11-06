@@ -52,13 +52,13 @@ void main() {
   );
 
   blocTest<ShareCubit, ShareState>(
-    'create sends the chosen options, keeps the link, reloads the list',
+    'create sends the chosen options (audio on), keeps the link, reloads',
     setUp: () {
       listAnswers(const [old]);
       when(
         () => facade.createLink(
           transcriptId: 't1',
-          includeMedia: false,
+          includeMedia: true,
           expiresDays: 7,
         ),
       ).thenAnswer((_) async => const Right(made));
@@ -68,7 +68,7 @@ void main() {
       await cubit.load('t1');
       listAnswers(const [made, old]);
       cubit
-        ..setIncludeMedia(value: false)
+        ..setIncludeMedia(value: true)
         ..setExpiresDays(7);
       await cubit.create();
     },
@@ -78,24 +78,58 @@ void main() {
         listStatus: ShareListStatus.success,
         links: [old],
         actionStatus: ShareActionStatus.busy,
-        includeMedia: false,
+        includeMedia: true,
         expiresDays: 7,
       ),
       ShareState(
         listStatus: ShareListStatus.success,
         links: [old],
         created: made,
-        includeMedia: false,
+        includeMedia: true,
         expiresDays: 7,
       ),
       ShareState(
         listStatus: ShareListStatus.success,
         links: [made, old],
         created: made,
-        includeMedia: false,
+        includeMedia: true,
         expiresDays: 7,
       ),
     ],
+  );
+
+  // E-1: audio is personal data — a new link shares text only unless ticked.
+  test('starts with audio off', () {
+    final cubit = ShareCubit(facade);
+    addTearDown(cubit.close);
+    expect(cubit.state.includeMedia, isFalse);
+    expect(const ShareState().includeMedia, isFalse);
+  });
+
+  blocTest<ShareCubit, ShareState>(
+    'create with the defaults sends a text-only link',
+    setUp: () {
+      listAnswers(const []);
+      when(
+        () => facade.createLink(
+          transcriptId: any(named: 'transcriptId'),
+          includeMedia: any(named: 'includeMedia'),
+          expiresDays: any(named: 'expiresDays'),
+        ),
+      ).thenAnswer((_) async => const Right(made));
+    },
+    build: () => ShareCubit(facade),
+    act: (cubit) async {
+      await cubit.load('t1');
+      await cubit.create();
+    },
+    verify: (_) => verify(
+      () => facade.createLink(
+        transcriptId: 't1',
+        includeMedia: false,
+        expiresDays: 30,
+      ),
+    ).called(1),
   );
 
   blocTest<ShareCubit, ShareState>(

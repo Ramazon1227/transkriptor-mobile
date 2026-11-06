@@ -21,13 +21,13 @@ void main() {
     when(
       () => facade.createLink(
         transcriptId: 't1',
-        includeMedia: true,
+        // E-1: the default is text only.
+        includeMedia: false,
         expiresDays: 30,
       ),
     ).thenAnswer(
-      (_) async => const Right(
-        ShareLink(id: 'l1', includeMedia: true, url: 'https://app.test/s/tok'),
-      ),
+      (_) async =>
+          const Right(ShareLink(id: 'l1', url: 'https://app.test/s/tok')),
     );
     getIt.registerFactory(() => ShareCubit(facade));
   });
@@ -52,6 +52,15 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // E-1: «Audio ham koʻrinsin» starts off.
+    expect(
+      tester
+          .widget<SwitchListTile>(
+            find.widgetWithText(SwitchListTile, 'Audio ham koʻrinsin'),
+          )
+          .value,
+      isFalse,
+    );
 
     await tester.tap(find.byKey(const Key('share_create')));
     await tester.pumpAndSettle();

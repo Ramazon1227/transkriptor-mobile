@@ -27,7 +27,9 @@ abstract class ShareState with _$ShareState {
     /// The link just created, with its URL. Shown once: closing the sheet
     /// loses it, and the server cannot show it again.
     ShareLink? created,
-    @Default(true) bool includeMedia,
+
+    /// Audio is personal data: shared only when ticked (E-1).
+    @Default(false) bool includeMedia,
     @Default(30) int expiresDays,
   }) = _ShareState;
 }
