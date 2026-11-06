@@ -43,6 +43,11 @@ abstract class Workspace with _$Workspace {
   const factory Workspace({
     required String id,
     required String name,
+
+    /// The person's OWN personal workspace (W-1): the server's
+    /// `is_own_personal`, or `is_personal` from an older server. The
+    /// founder's personal workspace, where a team lives, is not personal
+    /// for its members.
     @Default(false) bool isPersonal,
 
     /// Minutes are the currency: what is left to transcribe, in seconds.

@@ -292,7 +292,11 @@ as bool,
 /// @nodoc
 mixin _$Workspace {
 
- String get id; String get name; bool get isPersonal;/// Minutes are the currency: what is left to transcribe, in seconds.
+ String get id; String get name;/// The person's OWN personal workspace (W-1): the server's
+/// `is_own_personal`, or `is_personal` from an older server. The
+/// founder's personal workspace, where a team lives, is not personal
+/// for its members.
+ bool get isPersonal;/// Minutes are the currency: what is left to transcribe, in seconds.
  int get balanceSeconds; WorkspaceRole get role;/// The current plan's code (`free`, `pro`, `team`) and display name;
 /// empty when the server did not send one.
  String get planCode; String get planName;
@@ -503,6 +507,10 @@ class _Workspace implements Workspace {
 
 @override final  String id;
 @override final  String name;
+/// The person's OWN personal workspace (W-1): the server's
+/// `is_own_personal`, or `is_personal` from an older server. The
+/// founder's personal workspace, where a team lives, is not personal
+/// for its members.
 @override@JsonKey() final  bool isPersonal;
 /// Minutes are the currency: what is left to transcribe, in seconds.
 @override@JsonKey() final  int balanceSeconds;

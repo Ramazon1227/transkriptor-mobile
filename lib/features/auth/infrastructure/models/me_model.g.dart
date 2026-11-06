@@ -35,6 +35,7 @@ _WorkspaceModel _$WorkspaceModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       isPersonal: json['is_personal'] as bool? ?? false,
+      isOwnPersonal: json['is_own_personal'] as bool?,
       balanceSeconds: (json['balance_seconds'] as num?)?.toInt() ?? 0,
       role:
           $enumDecodeNullable(
@@ -53,6 +54,7 @@ Map<String, dynamic> _$WorkspaceModelToJson(_WorkspaceModel instance) =>
       'id': instance.id,
       'name': instance.name,
       'is_personal': instance.isPersonal,
+      'is_own_personal': instance.isOwnPersonal,
       'balance_seconds': instance.balanceSeconds,
       'role': _$WorkspaceRoleEnumMap[instance.role]!,
       'plan': instance.plan,

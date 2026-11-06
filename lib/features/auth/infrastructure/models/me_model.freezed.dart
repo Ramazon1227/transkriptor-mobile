@@ -570,7 +570,10 @@ as String,
 /// @nodoc
 mixin _$WorkspaceModel {
 
-@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'is_personal') bool get isPersonal;@JsonKey(name: 'balance_seconds') int get balanceSeconds;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;@JsonKey(name: 'plan') WorkspacePlanModel? get plan;
+@JsonKey(name: 'id') String get id;@JsonKey(name: 'name') String get name;@JsonKey(name: 'is_personal') bool get isPersonal;/// W-1: the caller's OWN personal workspace. The team lives in the
+/// founder's personal workspace, so a member also gets the founder's
+/// with `is_personal: true`. An older server does not send it.
+@JsonKey(name: 'is_own_personal') bool? get isOwnPersonal;@JsonKey(name: 'balance_seconds') int get balanceSeconds;@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole get role;@JsonKey(name: 'plan') WorkspacePlanModel? get plan;
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -584,20 +587,20 @@ $WorkspaceModelCopyWith<WorkspaceModel> get copyWith => _$WorkspaceModelCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as WorkspaceModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkspaceModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.plan, _this.plan) || other.plan == _this.plan));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkspaceModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.isOwnPersonal, _this.isOwnPersonal) || other.isOwnPersonal == _this.isOwnPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.plan, _this.plan) || other.plan == _this.plan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as WorkspaceModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds,_this.role,_this.plan);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.isOwnPersonal,_this.balanceSeconds,_this.role,_this.plan);
 }
 
 @override
 String toString() {
   final _this = this as WorkspaceModel;
-  return 'WorkspaceModel(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, plan: ${_this.plan})';
+  return 'WorkspaceModel(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, isOwnPersonal: ${_this.isOwnPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, plan: ${_this.plan})';
 }
 
 
@@ -608,7 +611,7 @@ abstract mixin class $WorkspaceModelCopyWith<$Res>  {
   factory $WorkspaceModelCopyWith(WorkspaceModel value, $Res Function(WorkspaceModel) _then) = _$WorkspaceModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'is_own_personal') bool? isOwnPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
 });
 
 
@@ -625,12 +628,13 @@ class _$WorkspaceModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? isOwnPersonal = freezed,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
   return _then(WorkspaceModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
-as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
+as bool,isOwnPersonal: freezed == isOwnPersonal ? _self.isOwnPersonal : isOwnPersonal // ignore: cast_nullable_to_non_nullable
+as bool?,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as WorkspaceRole,plan: freezed == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as WorkspacePlanModel?,
@@ -730,10 +734,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'is_own_personal')  bool? isOwnPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkspaceModel() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isOwnPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   return orElse();
 
 }
@@ -751,10 +755,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'is_own_personal')  bool? isOwnPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)  $default,) {final _that = this;
 switch (_that) {
 case _WorkspaceModel():
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isOwnPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -771,10 +775,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String id, @JsonKey(name: 'name')  String name, @JsonKey(name: 'is_personal')  bool isPersonal, @JsonKey(name: 'is_own_personal')  bool? isOwnPersonal, @JsonKey(name: 'balance_seconds')  int balanceSeconds, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown)  WorkspaceRole role, @JsonKey(name: 'plan')  WorkspacePlanModel? plan)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkspaceModel() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isOwnPersonal,_that.balanceSeconds,_that.role,_that.plan);case _:
   return null;
 
 }
@@ -786,12 +790,16 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 @JsonSerializable()
 
 class _WorkspaceModel extends WorkspaceModel {
-  const _WorkspaceModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'is_personal') this.isPersonal = false, @JsonKey(name: 'balance_seconds') this.balanceSeconds = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown, @JsonKey(name: 'plan') this.plan}): super._();
+  const _WorkspaceModel({@JsonKey(name: 'id') this.id = '', @JsonKey(name: 'name') this.name = '', @JsonKey(name: 'is_personal') this.isPersonal = false, @JsonKey(name: 'is_own_personal') this.isOwnPersonal, @JsonKey(name: 'balance_seconds') this.balanceSeconds = 0, @JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) this.role = WorkspaceRole.unknown, @JsonKey(name: 'plan') this.plan}): super._();
   factory _WorkspaceModel.fromJson(Map<String, dynamic> json) => _$WorkspaceModelFromJson(json);
 
 @override@JsonKey(name: 'id') final  String id;
 @override@JsonKey(name: 'name') final  String name;
 @override@JsonKey(name: 'is_personal') final  bool isPersonal;
+/// W-1: the caller's OWN personal workspace. The team lives in the
+/// founder's personal workspace, so a member also gets the founder's
+/// with `is_personal: true`. An older server does not send it.
+@override@JsonKey(name: 'is_own_personal') final  bool? isOwnPersonal;
 @override@JsonKey(name: 'balance_seconds') final  int balanceSeconds;
 @override@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) final  WorkspaceRole role;
 @override@JsonKey(name: 'plan') final  WorkspacePlanModel? plan;
@@ -809,18 +817,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkspaceModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.plan, plan) || other.plan == plan));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkspaceModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.isOwnPersonal, isOwnPersonal) || other.isOwnPersonal == isOwnPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.plan, plan) || other.plan == plan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds,role,plan);
+    return Object.hash(runtimeType,id,name,isPersonal,isOwnPersonal,balanceSeconds,role,plan);
 }
 
 @override
 String toString() {
-    return 'WorkspaceModel(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds, role: $role, plan: $plan)';
+    return 'WorkspaceModel(id: $id, name: $name, isPersonal: $isPersonal, isOwnPersonal: $isOwnPersonal, balanceSeconds: $balanceSeconds, role: $role, plan: $plan)';
 }
 
 
@@ -831,7 +839,7 @@ abstract mixin class _$WorkspaceModelCopyWith<$Res> implements $WorkspaceModelCo
   factory _$WorkspaceModelCopyWith(_WorkspaceModel value, $Res Function(_WorkspaceModel) _then) = __$WorkspaceModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
+@JsonKey(name: 'id') String id,@JsonKey(name: 'name') String name,@JsonKey(name: 'is_personal') bool isPersonal,@JsonKey(name: 'is_own_personal') bool? isOwnPersonal,@JsonKey(name: 'balance_seconds') int balanceSeconds,@JsonKey(name: 'role', unknownEnumValue: WorkspaceRole.unknown) WorkspaceRole role,@JsonKey(name: 'plan') WorkspacePlanModel? plan
 });
 
 
@@ -848,12 +856,13 @@ class __$WorkspaceModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkspaceModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? isOwnPersonal = freezed,Object? balanceSeconds = null,Object? role = null,Object? plan = freezed,}) {
   return _then(_WorkspaceModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
-as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
+as bool,isOwnPersonal: freezed == isOwnPersonal ? _self.isOwnPersonal : isOwnPersonal // ignore: cast_nullable_to_non_nullable
+as bool?,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as WorkspaceRole,plan: freezed == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as WorkspacePlanModel?,

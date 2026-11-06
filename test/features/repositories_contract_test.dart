@@ -29,6 +29,43 @@ void main() {
       expect(http.sent.single.body, {'password': 'p'});
     });
 
+    test('GET /me: only my own personal workspace is personal (W-1)', () async {
+      final http = FakeHttpAdapter({
+        'GET /api/v1/me': (
+          200,
+          ok({
+            'user': {'id': 'u', 'email': 'e'},
+            'workspaces': [
+              // The founder's personal workspace, older, listed first by
+              // an older server; is_personal is true for the member too.
+              {
+                'id': 'founder',
+                'name': 'F',
+                'is_personal': true,
+                'is_own_personal': false,
+                'role': 'MEMBER',
+              },
+              {
+                'id': 'mine',
+                'name': 'M',
+                'is_personal': true,
+                'is_own_personal': true,
+                'role': 'OWNER',
+              },
+              // An older server: no is_own_personal — is_personal as before.
+              {'id': 'old', 'name': 'O', 'is_personal': true, 'role': 'OWNER'},
+            ],
+          }),
+        ),
+      });
+      final me = (await AuthRepository(
+        fakeDio(http),
+      ).me()).getOrElse(() => throw StateError('left'));
+      final account = me.toEntity();
+      expect(account.workspaces.map((w) => w.isPersonal), [false, true, true]);
+      expect(account.currentWorkspace?.id, 'mine');
+    });
+
     test('GET /me reads has_password and the workspace role', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/me': (
