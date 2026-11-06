@@ -48,7 +48,7 @@ void main() {
           .deleteAccount(password: 'p');
       expect(
         result.fold((f) => f, (_) => null),
-        const Failure.server(statusCode: 409, message: 'Sud, Klinika'),
+        const Failure.soleOwner(['Sud', 'Klinika']),
       );
     });
 

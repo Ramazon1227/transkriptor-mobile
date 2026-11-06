@@ -50,6 +50,12 @@ sealed class Failure with _$Failure {
   /// parameters. The key is dropped, so the next tap is a new action.
   const factory Failure.idempotencyMismatch() = IdempotencyMismatchFailure;
 
+  /// 409 SOLE_OWNER on account deletion (W-3): the person is the only owner
+  /// of these workspaces, which still have other members. Only a server
+  /// that sends the code and the names produces it; an older server's 409
+  /// stays a [ServerFailure].
+  const factory Failure.soleOwner(List<String> workspaces) = SoleOwnerFailure;
+
   /// The answer arrived but did not have the expected shape.
   const factory Failure.parsing() = ParsingFailure;
 

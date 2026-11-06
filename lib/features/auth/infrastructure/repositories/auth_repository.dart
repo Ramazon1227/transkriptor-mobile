@@ -132,10 +132,9 @@ class AuthRepository {
     return result.leftMap((f) => soleOwnerFailure(f, body));
   }
 
-  /// W-3: a 409 with `data.code == "SOLE_OWNER"` carries the workspaces
-  /// whose ownership must be handed over first; they become the failure's
-  /// message (names joined with ", "). Anything else is left as it was —
-  /// an older server's 409 has no code and keeps the generic sentence.
+  /// W-3: a 409 with `data.code == "SOLE_OWNER"` and workspace names becomes
+  /// [Failure.soleOwner]. Anything else is left as it was — an older
+  /// server's 409 has no code and keeps the generic sentence.
   @visibleForTesting
   static Failure soleOwnerFailure(Failure failure, Object? body) {
     if (failure is! ServerFailure || failure.statusCode != 409) return failure;
@@ -148,7 +147,7 @@ class AuthRepository {
     if (names is! List) return failure;
     final list = names.whereType<String>().where((n) => n.trim().isNotEmpty);
     if (list.isEmpty) return failure;
-    return Failure.server(statusCode: 409, message: list.join(', '));
+    return Failure.soleOwner(list.toList());
   }
 
   /// 202 with the same body whether or not the email has an account.
