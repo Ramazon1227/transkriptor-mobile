@@ -17,7 +17,8 @@ mixin _$ShareState {
 
  ShareListStatus get listStatus; List<ShareLink> get links; Failure? get listFailure; ShareActionStatus get actionStatus; Failure? get actionFailure;/// The link just created, with its URL. Shown once: closing the sheet
 /// loses it, and the server cannot show it again.
- ShareLink? get created; bool get includeMedia; int get expiresDays;
+ ShareLink? get created;/// Audio is personal data: shared only when ticked (E-1).
+ bool get includeMedia; int get expiresDays;
 /// Create a copy of ShareState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -257,7 +258,7 @@ return $default(_that.listStatus,_that.links,_that.listFailure,_that.actionStatu
 
 
 class _ShareState implements ShareState {
-  const _ShareState({this.listStatus = ShareListStatus.initial,  List<ShareLink> links = const <ShareLink>[], this.listFailure, this.actionStatus = ShareActionStatus.idle, this.actionFailure, this.created, this.includeMedia = true, this.expiresDays = 30}): _links = links;
+  const _ShareState({this.listStatus = ShareListStatus.initial,  List<ShareLink> links = const <ShareLink>[], this.listFailure, this.actionStatus = ShareActionStatus.idle, this.actionFailure, this.created, this.includeMedia = false, this.expiresDays = 30}): _links = links;
   
 
 @override@JsonKey() final  ShareListStatus listStatus;
@@ -274,6 +275,7 @@ class _ShareState implements ShareState {
 /// The link just created, with its URL. Shown once: closing the sheet
 /// loses it, and the server cannot show it again.
 @override final  ShareLink? created;
+/// Audio is personal data: shared only when ticked (E-1).
 @override@JsonKey() final  bool includeMedia;
 @override@JsonKey() final  int expiresDays;
 
