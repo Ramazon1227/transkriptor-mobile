@@ -54,6 +54,8 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
     return switch (state.failure) {
       null => null,
       ServerFailure(statusCode: 403) => l10n.deleteWrong,
+      ServerFailure(statusCode: 409, :final message?) when message.isNotEmpty =>
+        l10n.deleteSoleOwnerIn(message),
       ServerFailure(statusCode: 409) => l10n.deleteSoleOwner,
       ServerFailure(statusCode: 400) => l10n.deleteRequired,
       final f => f.message(l10n),

@@ -1112,7 +1112,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get deleteBody =>
-      'Shaxsiy ish maydoningiz va faqat siz aʼzo boʻlgan ish maydonlari barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.';
+      'Faqat siz aʼzo boʻlgan ish maydonlari (shaxsiysi ham) barcha fayllari bilan oʻchadi, faol transkripsiyalar bekor qilinadi. Shaxsiy ish maydoningizda jamoa boʻlsa, u oʻchmaydi: boshqa ega boʻlsa unga qoladi, boʻlmasa avval egalikni bitta aʼzoga bering. Boshqa ish maydonlaridan chiqarilasiz. Buni qaytarib boʻlmaydi.';
 
   @override
   String get deletePasswordLabel => 'Tasdiqlash uchun parolingiz';
@@ -1137,6 +1137,11 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get deleteSoleOwner =>
       'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.';
+
+  @override
+  String deleteSoleOwnerIn(String names) {
+    return 'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz: $names. Avval egalikni boshqa aʼzoga bering.';
+  }
 
   @override
   String get logoutBody =>

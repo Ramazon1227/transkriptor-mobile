@@ -29,6 +29,48 @@ void main() {
       expect(http.sent.single.body, {'password': 'p'});
     });
 
+    test('409 SOLE_OWNER names the workspaces to hand over (W-3)', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'ziddiyat',
+            'data': {
+              'error': "avval egalikni boshqa a'zoga bering: Sud, Klinika",
+              'code': 'SOLE_OWNER',
+              'workspaces': ['Sud', 'Klinika'],
+            },
+          },
+        ),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      expect(
+        result.fold((f) => f, (_) => null),
+        const Failure.server(statusCode: 409, message: 'Sud, Klinika'),
+      );
+    });
+
+    test('a 409 from an older server keeps the mapper’s failure', () async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (
+          409,
+          {
+            'status': 'CONFLICT',
+            'description': 'ziddiyat',
+            'data': {'error': "avval egalikni boshqa a'zoga bering: Sud"},
+          },
+        ),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      expect(
+        result.fold((f) => f, (_) => null),
+        const Failure.server(statusCode: 409, message: 'ziddiyat'),
+      );
+    });
+
     test('GET /me: only my own personal workspace is personal (W-1)', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/me': (
