@@ -151,8 +151,14 @@ class RecorderCubit extends Cubit<RecorderState> {
 
   @override
   Future<void> close() async {
-    // Leaving the screen mid-recording must not leave the microphone on.
-    if (_active) await _facade.discard();
+    // Leaving the screen mid-recording must not leave the microphone on —
+    // and must not lose the recording either (R-4): an expired session sends
+    // the router to login past the PopScope. The file is closed and kept;
+    // the recovery card offers it after the next sign-in.
+    if (_active) {
+      _stopwatch.stop();
+      await _facade.stop(duration: _stopwatch.elapsed);
+    }
     await _stopTicking();
     await super.close();
   }

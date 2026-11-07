@@ -25,6 +25,12 @@ void main() {
     when(() => facade.pause()).thenAnswer((_) async => const Right(unit));
     when(() => facade.resume()).thenAnswer((_) async => const Right(unit));
     when(() => facade.discard()).thenAnswer((_) async {});
+    // close() mid-recording keeps the file (R-4).
+    when(() => facade.stop(duration: any(named: 'duration'))).thenAnswer(
+      (_) async => const Right(
+        Recording(path: '/r.m4a', sizeBytes: 1000, duration: Duration.zero),
+      ),
+    );
   });
 
   tearDown(() => levels.close());
@@ -95,11 +101,13 @@ void main() {
       await cubit.close();
     });
 
-    test('closing mid-recording turns the microphone off', () async {
+    test('closing mid-recording turns the microphone off and keeps the file '
+        '(R-4)', () async {
       final cubit = RecorderCubit(facade);
       await cubit.start();
       await cubit.close();
-      verify(() => facade.discard()).called(1);
+      verify(() => facade.stop(duration: any(named: 'duration'))).called(1);
+      verifyNever(() => facade.discard());
     });
 
     test('discard resets to idle', () async {
