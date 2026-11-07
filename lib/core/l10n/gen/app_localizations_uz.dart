@@ -778,7 +778,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get shareShownOnce =>
-      'Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.';
+      'Bu havola faqat hozir koʻrinadi. Yopgandan keyin uni qayta koʻrsatib boʻlmaydi, nusxasini hozir oling.';
 
   @override
   String get shareActive => 'Amaldagi havolalar';
@@ -1160,7 +1160,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get filesTabLinks => 'Havolalar';
 
   @override
-  String get filesTabNotes => 'Eslatmalar';
+  String get filesTabNotes => 'Notes';
 
   @override
   String get filesMenuCreateFolder => 'Papka yaratish';
@@ -1200,7 +1200,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get filesEmptyNotes =>
-      'Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.';
+      'Hali qayd yoʻq. Xulosa oynasida yoki veb-ilovada «Notes sifatida saqlash»ni bosing, qayd shu yerda paydo boʻladi.';
 
   @override
   String get fileRenameTitle => 'Faylni qayta nomlash';
@@ -1249,7 +1249,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Davom etayotgan transkripsiya bekor qilinadi, band qilingan daqiqalar qaytariladi.';
 
   @override
-  String get noteUntitled => 'Nomsiz eslatma';
+  String get noteUntitled => 'Nomsiz qayd';
 
   @override
   String get noteCopy => 'Matndan nusxa olish';
@@ -1258,7 +1258,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get noteCopied => 'Matn nusxalandi';
 
   @override
-  String get noteRenameTitle => 'Eslatmani qayta nomlash';
+  String get noteRenameTitle => 'Qaydni qayta nomlash';
 
   @override
   String get noteTitleHint => 'Sarlavha';
@@ -1269,11 +1269,11 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get noteDeleteTitle => 'Eslatmani oʻchirish';
+  String get noteDeleteTitle => 'Qaydni oʻchirish';
 
   @override
   String noteDeleteBody(String name) {
-    return '«$name» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.';
+    return '«$name» qaydi oʻchadi. Buni qaytarib boʻlmaydi.';
   }
 
   @override
@@ -1290,10 +1290,10 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get noteEmpty => 'Eslatma boʻsh.';
+  String get noteEmpty => 'Qayd boʻsh.';
 
   @override
-  String get noteStale => 'Eslatma boshqa oynada oʻzgargan. Uni qayta oching.';
+  String get noteStale => 'Qayd boshqa oynada oʻzgargan. Uni qayta oching.';
 
   @override
   String get recorderTapToStart => 'Yozishni boshlash uchun tugmani bosing';
@@ -1312,8 +1312,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get recorderMicDeniedTitle => 'Mikrofonga ruxsat yoʻq';
 
   @override
-  String get recorderMicDeniedBody =>
-      'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.';
+  String recorderMicDeniedBody(String app) {
+    return 'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → $app → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.';
+  }
 
   @override
   String get recorderMicDeniedBodyIos =>
@@ -1323,8 +1324,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get openPhoneSettings => 'Sozlamalarni ochish';
 
   @override
-  String get openPhoneSettingsFailed =>
-      'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.';
+  String openPhoneSettingsFailed(String app) {
+    return 'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → $app → Mikrofon.';
+  }
 
   @override
   String recoveryBannerOne(String duration, String when) {
@@ -1470,8 +1472,9 @@ class AppLocalizationsUz extends AppLocalizations {
       'Tizim oynasida «Boshlash»ni bosmasangiz, yozish boshlanmaydi.';
 
   @override
-  String get screenHintMic =>
-      'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → Transkriptor → Ruxsatlar → Mikrofon.';
+  String screenHintMic(String app) {
+    return 'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → $app → Ruxsatlar → Mikrofon.';
+  }
 
   @override
   String get screenHintBusy =>
@@ -1644,7 +1647,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dictationEmpty => 'Matn shu yerda paydo boʻladi.';
 
   @override
-  String get dictationSaveNote => 'Eslatma sifatida saqlash';
+  String get dictationSaveNote => 'Notes sifatida saqlash';
 
   @override
   String get dictationCopy => 'Nusxa olish';
@@ -1656,7 +1659,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dictationDiscard => 'Tashlab yuborish';
 
   @override
-  String get dictationSaved => 'Eslatma saqlandi';
+  String get dictationSaved => 'Notes\'ga saqlandi';
 
   @override
   String dictationNoteTitle(String date) {
@@ -1677,7 +1680,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get dictationSample4 =>
-      'Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.';
+      'Toʻxtatish tugmasini bosing va matnni Notes\'ga saqlab koʻring.';
 
   @override
   String get aiMarker => 'AI';
@@ -1864,10 +1867,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Xulosa matni oʻchadi. Transkriptning oʻzi oʻzgarmaydi.';
 
   @override
-  String get summarySaveNote => 'Eslatma sifatida saqlash';
+  String get summarySaveNote => 'Notes sifatida saqlash';
 
   @override
-  String get summaryNoteSaved => 'Eslatmalarga saqlandi';
+  String get summaryNoteSaved => 'Notes\'ga saqlandi';
 
   @override
   String summaryNoteTitle(String title) {

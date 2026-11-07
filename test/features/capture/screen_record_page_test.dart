@@ -108,7 +108,7 @@ void main() {
       );
       final hint = switch (c.$2) {
         'screenHintConsent' => l10n.screenHintConsent,
-        'screenHintMic' => l10n.screenHintMic,
+        'screenHintMic' => l10n.screenHintMic(l10n.appTitle),
         'screenHintBusy' => l10n.screenHintBusy,
         _ => l10n.screenHintFailed,
       };

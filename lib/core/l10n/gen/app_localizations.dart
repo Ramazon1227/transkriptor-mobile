@@ -1465,7 +1465,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareShownOnce.
   ///
   /// In uz, this message translates to:
-  /// **'Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.'**
+  /// **'Bu havola faqat hozir koʻrinadi. Yopgandan keyin uni qayta koʻrsatib boʻlmaydi, nusxasini hozir oling.'**
   String get shareShownOnce;
 
   /// No description provided for @shareActive.
@@ -2155,7 +2155,7 @@ abstract class AppLocalizations {
   /// No description provided for @filesTabNotes.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatmalar'**
+  /// **'Notes'**
   String get filesTabNotes;
 
   /// No description provided for @filesMenuCreateFolder.
@@ -2233,7 +2233,7 @@ abstract class AppLocalizations {
   /// No description provided for @filesEmptyNotes.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.'**
+  /// **'Hali qayd yoʻq. Xulosa oynasida yoki veb-ilovada «Notes sifatida saqlash»ni bosing, qayd shu yerda paydo boʻladi.'**
   String get filesEmptyNotes;
 
   /// No description provided for @fileRenameTitle.
@@ -2311,7 +2311,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteUntitled.
   ///
   /// In uz, this message translates to:
-  /// **'Nomsiz eslatma'**
+  /// **'Nomsiz qayd'**
   String get noteUntitled;
 
   /// No description provided for @noteCopy.
@@ -2329,7 +2329,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteRenameTitle.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatmani qayta nomlash'**
+  /// **'Qaydni qayta nomlash'**
   String get noteRenameTitle;
 
   /// No description provided for @noteTitleHint.
@@ -2347,13 +2347,13 @@ abstract class AppLocalizations {
   /// No description provided for @noteDeleteTitle.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatmani oʻchirish'**
+  /// **'Qaydni oʻchirish'**
   String get noteDeleteTitle;
 
   /// No description provided for @noteDeleteBody.
   ///
   /// In uz, this message translates to:
-  /// **'«{name}» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.'**
+  /// **'«{name}» qaydi oʻchadi. Buni qaytarib boʻlmaydi.'**
   String noteDeleteBody(String name);
 
   /// No description provided for @noteFromTranscript.
@@ -2377,13 +2377,13 @@ abstract class AppLocalizations {
   /// No description provided for @noteEmpty.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatma boʻsh.'**
+  /// **'Qayd boʻsh.'**
   String get noteEmpty;
 
   /// No description provided for @noteStale.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatma boshqa oynada oʻzgargan. Uni qayta oching.'**
+  /// **'Qayd boshqa oynada oʻzgargan. Uni qayta oching.'**
   String get noteStale;
 
   /// No description provided for @recorderTapToStart.
@@ -2416,11 +2416,11 @@ abstract class AppLocalizations {
   /// **'Mikrofonga ruxsat yoʻq'**
   String get recorderMicDeniedTitle;
 
-  /// No description provided for @recorderMicDeniedBody.
+  /// app = appTitle; it must match android:label, the name the phone settings show
   ///
   /// In uz, this message translates to:
-  /// **'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.'**
-  String get recorderMicDeniedBody;
+  /// **'Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → {app} → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.'**
+  String recorderMicDeniedBody(String app);
 
   /// No description provided for @recorderMicDeniedBodyIos.
   ///
@@ -2434,11 +2434,11 @@ abstract class AppLocalizations {
   /// **'Sozlamalarni ochish'**
   String get openPhoneSettings;
 
-  /// No description provided for @openPhoneSettingsFailed.
+  /// app = appTitle; it must match android:label, the name the phone settings show
   ///
   /// In uz, this message translates to:
-  /// **'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.'**
-  String get openPhoneSettingsFailed;
+  /// **'Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → {app} → Mikrofon.'**
+  String openPhoneSettingsFailed(String app);
 
   /// No description provided for @recoveryBannerOne.
   ///
@@ -2680,11 +2680,11 @@ abstract class AppLocalizations {
   /// **'Tizim oynasida «Boshlash»ni bosmasangiz, yozish boshlanmaydi.'**
   String get screenHintConsent;
 
-  /// No description provided for @screenHintMic.
+  /// app = appTitle; it must match android:label, the name the phone settings show
   ///
   /// In uz, this message translates to:
-  /// **'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → Transkriptor → Ruxsatlar → Mikrofon.'**
-  String get screenHintMic;
+  /// **'Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → {app} → Ruxsatlar → Mikrofon.'**
+  String screenHintMic(String app);
 
   /// No description provided for @screenHintBusy.
   ///
@@ -2989,7 +2989,7 @@ abstract class AppLocalizations {
   /// No description provided for @dictationSaveNote.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatma sifatida saqlash'**
+  /// **'Notes sifatida saqlash'**
   String get dictationSaveNote;
 
   /// No description provided for @dictationCopy.
@@ -3013,7 +3013,7 @@ abstract class AppLocalizations {
   /// No description provided for @dictationSaved.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatma saqlandi'**
+  /// **'Notes\'ga saqlandi'**
   String get dictationSaved;
 
   /// No description provided for @dictationNoteTitle.
@@ -3043,7 +3043,7 @@ abstract class AppLocalizations {
   /// No description provided for @dictationSample4.
   ///
   /// In uz, this message translates to:
-  /// **'Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.'**
+  /// **'Toʻxtatish tugmasini bosing va matnni Notes\'ga saqlab koʻring.'**
   String get dictationSample4;
 
   /// No description provided for @aiMarker.
@@ -3391,13 +3391,13 @@ abstract class AppLocalizations {
   /// No description provided for @summarySaveNote.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatma sifatida saqlash'**
+  /// **'Notes sifatida saqlash'**
   String get summarySaveNote;
 
   /// No description provided for @summaryNoteSaved.
   ///
   /// In uz, this message translates to:
-  /// **'Eslatmalarga saqlandi'**
+  /// **'Notes\'ga saqlandi'**
   String get summaryNoteSaved;
 
   /// No description provided for @summaryNoteTitle.

@@ -20,7 +20,7 @@ Future<void> openLinkOrCopy(BuildContext context, String? url) async {
 /// iOS: the app's page in the Settings app. A refusal says where to go.
 Future<void> openAppSettings(BuildContext context) async {
   final messenger = ScaffoldMessenger.maybeOf(context);
-  final failed = context.l10n.openPhoneSettingsFailed;
+  final failed = context.l10n.openPhoneSettingsFailed(context.l10n.appTitle);
   final opened = await context.read<LinksCubit>().openAppSettings();
   if (!opened) {
     messenger
