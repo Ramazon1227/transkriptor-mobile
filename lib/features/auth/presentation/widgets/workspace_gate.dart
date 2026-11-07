@@ -27,7 +27,9 @@ class WorkspaceGate extends StatelessWidget {
     // No workspace left (W-4: before the server refused it, a founder could
     // be removed from their own one): a way out, not an endless spinner.
     // After the failure check, so a failed retry still shows its error.
-    if (state.account != null && state.account!.workspaces.isEmpty) {
+    if (state.account != null &&
+        state.account!.workspaces.isEmpty &&
+        state.status != AccountStatus.loading) {
       return const _NoWorkspace();
     }
     return const AppLoadingView();
@@ -42,7 +44,7 @@ class _NoWorkspace extends StatelessWidget {
     final l10n = context.l10n;
     final account = context.read<AccountCubit>();
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,

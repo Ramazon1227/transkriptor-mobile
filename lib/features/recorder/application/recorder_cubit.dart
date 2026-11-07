@@ -113,14 +113,16 @@ class RecorderCubit extends Cubit<RecorderState> {
   Future<void> stop() async {
     if (!_active) return;
     _stopwatch.stop();
-    await _stopTicking();
-    if (isClosed) return;
+    // `stopping` before the first await: a close() landing meanwhile (session
+    // expiry) then sees nothing active and does not stop the same file twice.
     emit(
       state.copyWith(
         status: RecorderStatus.stopping,
         elapsed: _stopwatch.elapsed,
       ),
     );
+    await _stopTicking();
+    if (isClosed) return;
     final result = await _facade.stop(duration: _stopwatch.elapsed);
     if (isClosed) return;
     result.fold(

@@ -110,6 +110,15 @@ void main() {
       verifyNever(() => facade.discard());
     });
 
+    test('closing while stop() runs does not stop the file twice', () async {
+      final cubit = RecorderCubit(facade);
+      await cubit.start();
+      final stopping = cubit.stop();
+      await cubit.close();
+      await stopping;
+      verify(() => facade.stop(duration: any(named: 'duration'))).called(1);
+    });
+
     test('discard resets to idle', () async {
       final cubit = RecorderCubit(facade);
       await cubit.start();
