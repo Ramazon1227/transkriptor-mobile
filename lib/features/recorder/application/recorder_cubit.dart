@@ -111,7 +111,7 @@ class RecorderCubit extends Cubit<RecorderState> {
   }
 
   Future<void> stop() async {
-    if (!_active) return;
+    if (isClosed || !_active) return;
     _stopwatch.stop();
     // `stopping` before the first await: a close() landing meanwhile (session
     // expiry) then sees nothing active and does not stop the same file twice.
