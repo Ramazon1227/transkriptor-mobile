@@ -4807,7 +4807,7 @@ abstract class AppLocalizations {
   /// No description provided for @noWorkspaceBody.
   ///
   /// In uz, this message translates to:
-  /// **'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan taklif soʻrang yoki hisobdan chiqing.'**
+  /// **'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan sizni qayta qoʻshishini soʻrang yoki hisobdan chiqing.'**
   String get noWorkspaceBody;
 }
 

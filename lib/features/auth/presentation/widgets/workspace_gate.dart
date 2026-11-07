@@ -18,16 +18,17 @@ class WorkspaceGate extends StatelessWidget {
     final state = context.watch<AccountCubit>().state;
     final workspaceId = state.account?.currentWorkspace?.id;
     if (workspaceId != null) return builder(context, workspaceId);
-    // No workspace left (W-4: before the server refused it, a founder could
-    // be removed from their own one): a way out, not an endless spinner.
-    if (state.account != null && state.account!.workspaces.isEmpty) {
-      return const _NoWorkspace();
-    }
     if (state.status == AccountStatus.failure) {
       return AppErrorView(
         failure: state.failure ?? const Failure.unknown(),
         onRetry: () => context.read<AccountCubit>().load(),
       );
+    }
+    // No workspace left (W-4: before the server refused it, a founder could
+    // be removed from their own one): a way out, not an endless spinner.
+    // After the failure check, so a failed retry still shows its error.
+    if (state.account != null && state.account!.workspaces.isEmpty) {
+      return const _NoWorkspace();
     }
     return const AppLoadingView();
   }

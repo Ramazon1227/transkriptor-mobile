@@ -2682,5 +2682,5 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noWorkspaceBody =>
-      'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan taklif soʻrang yoki hisobdan chiqing.';
+      'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan sizni qayta qoʻshishini soʻrang yoki hisobdan chiqing.';
 }
