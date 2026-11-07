@@ -309,7 +309,7 @@
   "shareLinkLabel": "Havola",
   "shareCopy": "Nusxa olish",
   "shareCopied": "Nusxalandi",
-  "shareShownOnce": "Bu havola faqat hozir koʻrinadi — bazada tokenning xeshi saqlanadi. Yopgandan keyin qayta olinmaydi.",
+  "shareShownOnce": "Bu havola faqat hozir koʻrinadi. Yopgandan keyin uni qayta koʻrsatib boʻlmaydi, nusxasini hozir oling.",
   "shareActive": "Amaldagi havolalar",
   "shareUntil": "{date} gacha",
   "@shareUntil": {
@@ -463,7 +463,7 @@
   "filesTabMeetings": "Uchrashuvlar",
   "filesTabRecordings": "Yozuvlar",
   "filesTabLinks": "Havolalar",
-  "filesTabNotes": "Eslatmalar",
+  "filesTabNotes": "Notes",
   "filesMenuCreateFolder": "Papka yaratish",
   "filesMenuWorkspaces": "Ish maydonlari",
   "filesSearch": "Qidirish",
@@ -476,7 +476,7 @@
   "filesEmptyMeetings": "Uchrashuv yozuvlari hali yoʻq.",
   "filesEmptyRecordings": "Yozib olingan audio hali yoʻq.",
   "filesEmptyLinks": "Havoladan olingan fayl hali yoʻq.",
-  "filesEmptyNotes": "Eslatmalar hali yoʻq. Transkriptni veb-ilovada eslatma sifatida saqlang — u shu yerda paydo boʻladi.",
+  "filesEmptyNotes": "Hali qayd yoʻq. Xulosa oynasida yoki veb-ilovada «Notes sifatida saqlash»ni bosing, qayd shu yerda paydo boʻladi.",
   "fileRenameTitle": "Faylni qayta nomlash",
   "fileNameHint": "Fayl nomi",
   "fileNameInvalid": "Nom boʻsh boʻlmasin va {max} belgidan oshmasin.",
@@ -498,17 +498,17 @@
     "placeholders": { "name": { "type": "String" } }
   },
   "fileDeleteRunning": "Davom etayotgan transkripsiya bekor qilinadi, band qilingan daqiqalar qaytariladi.",
-  "noteUntitled": "Nomsiz eslatma",
+  "noteUntitled": "Nomsiz qayd",
   "noteCopy": "Matndan nusxa olish",
   "noteCopied": "Matn nusxalandi",
-  "noteRenameTitle": "Eslatmani qayta nomlash",
+  "noteRenameTitle": "Qaydni qayta nomlash",
   "noteTitleHint": "Sarlavha",
   "noteTitleInvalid": "Sarlavha {max} belgidan oshmasin.",
   "@noteTitleInvalid": {
     "placeholders": { "max": { "type": "int" } }
   },
-  "noteDeleteTitle": "Eslatmani oʻchirish",
-  "noteDeleteBody": "«{name}» eslatmasi oʻchadi. Buni qaytarib boʻlmaydi.",
+  "noteDeleteTitle": "Qaydni oʻchirish",
+  "noteDeleteBody": "«{name}» qaydi oʻchadi. Buni qaytarib boʻlmaydi.",
   "@noteDeleteBody": {
     "placeholders": { "name": { "type": "String" } }
   },
@@ -521,17 +521,19 @@
   "@noteUpdated": {
     "placeholders": { "date": { "type": "String" } }
   },
-  "noteEmpty": "Eslatma boʻsh.",
-  "noteStale": "Eslatma boshqa oynada oʻzgargan. Uni qayta oching.",
+  "noteEmpty": "Qayd boʻsh.",
+  "noteStale": "Qayd boshqa oynada oʻzgargan. Uni qayta oching.",
   "recorderTapToStart": "Yozishni boshlash uchun tugmani bosing",
   "recorderRecord": "Yozish",
   "recorderDiscard": "Oʻchirish",
   "recorderScreenOff": "Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.",
   "recorderMicDeniedTitle": "Mikrofonga ruxsat yoʻq",
-  "recorderMicDeniedBody": "Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → Transkriptor → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.",
+  "recorderMicDeniedBody": "Yozish uchun mikrofon kerak. Telefon sozlamalarini oching: Ilovalar → {app} → Ruxsatlar → Mikrofon → «Ruxsat berish». Keyin shu yerga qaytib, «Qayta urinish»ni bosing.",
+  "@recorderMicDeniedBody": { "description": "app = appTitle; it must match android:label, the name the phone settings show", "placeholders": {"app": {"type": "String"}} },
   "recorderMicDeniedBodyIos": "Yozish uchun mikrofon kerak. «Sozlamalarni ochish»ni bosing va Mikrofon tugmasini yoqing. Keyin shu yerga qaytib, «Qayta urinish»ni bosing.",
   "openPhoneSettings": "Sozlamalarni ochish",
-  "openPhoneSettingsFailed": "Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → Transkriptor → Mikrofon.",
+  "openPhoneSettingsFailed": "Sozlamalarni ochib boʻlmadi. Telefonda oching: Sozlamalar → {app} → Mikrofon.",
+  "@openPhoneSettingsFailed": { "description": "app = appTitle; it must match android:label, the name the phone settings show", "placeholders": {"app": {"type": "String"}} },
   "recoveryBannerOne": "Yuborilmagan yozuv bor — {duration}, {when}",
   "@recoveryBannerOne": {
     "placeholders": { "duration": { "type": "String" }, "when": { "type": "String" } }
@@ -590,7 +592,8 @@
   "screenUnsupportedTitle": "Bu telefonda ishlamaydi",
   "screenUnsupportedBody": "Telefondagi ovozni yozish Android 10 va undan yangi versiyalarda bor. iPhone bunday yozishga ruxsat bermaydi. Oʻrniga «Audio yozib olish» yoki «Fayl yuklash»dan foydalaning.",
   "screenHintConsent": "Tizim oynasida «Boshlash»ni bosmasangiz, yozish boshlanmaydi.",
-  "screenHintMic": "Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → Transkriptor → Ruxsatlar → Mikrofon.",
+  "screenHintMic": "Android telefondagi ovozni yozish uchun ham mikrofon ruxsatini talab qiladi — mikrofon aralashtirilmasa ham. Sozlamalar → Ilovalar → {app} → Ruxsatlar → Mikrofon.",
+  "@screenHintMic": { "description": "app = appTitle; it must match android:label, the name the phone settings show", "placeholders": {"app": {"type": "String"}} },
   "screenHintBusy": "Avval boshqa yozuvni toʻxtating (bildirishnomaga qarang).",
   "screenHintFailed": "Qayta urinib koʻring. Takrorlansa, telefonni qayta ishga tushiring.",
   "screenKeptPartial": "Yozish toʻxtab qoldi, lekin shu paytgacha yozilgani saqlandi.",
@@ -644,11 +647,11 @@
   "dictationStop": "Toʻxtatish",
   "dictationListening": "Tinglanmoqda…",
   "dictationEmpty": "Matn shu yerda paydo boʻladi.",
-  "dictationSaveNote": "Eslatma sifatida saqlash",
+  "dictationSaveNote": "Notes sifatida saqlash",
   "dictationCopy": "Nusxa olish",
   "dictationCopied": "Matn nusxalandi",
   "dictationDiscard": "Tashlab yuborish",
-  "dictationSaved": "Eslatma saqlandi",
+  "dictationSaved": "Notes'ga saqlandi",
   "dictationNoteTitle": "Diktovka {date}",
   "@dictationNoteTitle": {
     "placeholders": { "date": { "type": "String" } }
@@ -656,7 +659,7 @@
   "dictationSample1": "Bu namuna matn: jonli diktovka hali serverga ulanmagan.",
   "dictationSample2": "Server oqimli endpoint olganda shu yerda sizning soʻzlaringiz chiqadi.",
   "dictationSample3": "Hozircha ekranning qanday ishlashini koʻrish mumkin: avval xira matn, keyin tasdiqlangan gap.",
-  "dictationSample4": "Toʻxtatish tugmasini bosing va matnni eslatma sifatida saqlab koʻring.",
+  "dictationSample4": "Toʻxtatish tugmasini bosing va matnni Notes'ga saqlab koʻring.",
   "aiMarker": "AI",
   "aiChatIntroTitle": "Shu yozuv boʻyicha soʻrang",
   "aiChatIntro": "Javob faqat shu transkriptga tayanadi va vaqtga havola beradi — havolani bossangiz, pleyer oʻsha joyga oʻtadi.",
@@ -717,8 +720,8 @@
   "summaryDelete": "Oʻchirish",
   "summaryDeleteTitle": "Xulosa oʻchirilsinmi?",
   "summaryDeleteBody": "Xulosa matni oʻchadi. Transkriptning oʻzi oʻzgarmaydi.",
-  "summarySaveNote": "Eslatma sifatida saqlash",
-  "summaryNoteSaved": "Eslatmalarga saqlandi",
+  "summarySaveNote": "Notes sifatida saqlash",
+  "summaryNoteSaved": "Notes'ga saqlandi",
   "summaryNoteTitle": "{title} — xulosa",
   "@summaryNoteTitle": {
     "placeholders": { "title": { "type": "String" } }

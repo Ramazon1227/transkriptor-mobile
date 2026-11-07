@@ -289,7 +289,7 @@ class _FailurePanel extends StatelessWidget {
               Text(
                 appSettings
                     ? l10n.recorderMicDeniedBodyIos
-                    : l10n.recorderMicDeniedBody,
+                    : l10n.recorderMicDeniedBody(l10n.appTitle),
                 style: AppText.caption,
               ),
             ],

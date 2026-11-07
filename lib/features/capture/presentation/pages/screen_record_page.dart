@@ -271,7 +271,7 @@ class _FailureNote extends StatelessWidget {
     final hint = switch (failure) {
       CaptureFailure(reason: CaptureError.consentDenied) =>
         l10n.screenHintConsent,
-      PermissionDeniedFailure() => l10n.screenHintMic,
+      PermissionDeniedFailure() => l10n.screenHintMic(l10n.appTitle),
       CaptureFailure(reason: CaptureError.busy) => l10n.screenHintBusy,
       CaptureFailure(reason: CaptureError.captureFailed) ||
       StorageFailure() => l10n.screenHintFailed,
