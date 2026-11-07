@@ -4797,6 +4797,18 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Belgilangan odamlar ({people}) maʼruzachilar sonidan ({speakers}) koʻp.'**
   String advancedErrPeopleExceed(int people, int speakers);
+
+  /// No description provided for @noWorkspaceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ish maydoningiz yoʻq'**
+  String get noWorkspaceTitle;
+
+  /// No description provided for @noWorkspaceBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan sizni qayta qoʻshishini soʻrang yoki hisobdan chiqing.'**
+  String get noWorkspaceBody;
 }
 
 class _AppLocalizationsDelegate

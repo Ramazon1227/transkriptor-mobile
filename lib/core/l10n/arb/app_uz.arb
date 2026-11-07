@@ -1014,5 +1014,7 @@
   "advancedErrBadTime": "Vaqtni 0:15 yoki 1:02:03 shaklida yozing.",
   "advancedErrPastEnd": "Oraliq faylning oxiridan keyin tugayapti.",
   "advancedErrPeopleExceed": "Belgilangan odamlar ({people}) maʼruzachilar sonidan ({speakers}) koʻp.",
-  "@advancedErrPeopleExceed": { "placeholders": {"people": {"type": "int"}, "speakers": {"type": "int"}} }
+  "@advancedErrPeopleExceed": { "placeholders": {"people": {"type": "int"}, "speakers": {"type": "int"}} },
+  "noWorkspaceTitle": "Ish maydoningiz yoʻq",
+  "noWorkspaceBody": "Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan sizni qayta qoʻshishini soʻrang yoki hisobdan chiqing."
 }

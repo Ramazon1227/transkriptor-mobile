@@ -146,11 +146,12 @@ void main() {
     await cubit.close();
   });
 
-  test('closing mid-capture cancels it', () async {
+  test('closing mid-capture stops it and keeps the file (R-4)', () async {
     final cubit = ScreenCaptureCubit(facade);
     await cubit.start(withMic: false);
     await cubit.close();
-    verify(() => facade.cancel()).called(1);
+    verify(() => facade.stop()).called(1);
+    verifyNever(() => facade.cancel());
   });
 
   test('cancel resets but remembers support', () async {

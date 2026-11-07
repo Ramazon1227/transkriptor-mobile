@@ -160,7 +160,9 @@ class ScreenCaptureCubit extends Cubit<ScreenCaptureState> {
   Future<void> close() async {
     // Leaving the screen mid-capture must not leave capture running
     // unseen; the notification's stop button covers the app being killed.
-    if (_active) await _facade.cancel();
+    // Stopped, not cancelled (R-4): an expired session sends the router to
+    // login past the page, and the recovery card offers the file afterwards.
+    if (_active) await _facade.stop();
     await _stopListening();
     await super.close();
   }
