@@ -2676,4 +2676,11 @@ class AppLocalizationsUz extends AppLocalizations {
   String advancedErrPeopleExceed(int people, int speakers) {
     return 'Belgilangan odamlar ($people) maʼruzachilar sonidan ($speakers) koʻp.';
   }
+
+  @override
+  String get noWorkspaceTitle => 'Ish maydoningiz yoʻq';
+
+  @override
+  String get noWorkspaceBody =>
+      'Siz hech qaysi ish maydonining aʼzosi emassiz. Jamoaga qaytish uchun uning egasidan sizni qayta qoʻshishini soʻrang yoki hisobdan chiqing.';
 }
