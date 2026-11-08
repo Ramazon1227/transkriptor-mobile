@@ -71,6 +71,43 @@ void main() {
       );
     });
 
+    Future<Failure?> deleteRefusedWith(Map<String, Object> data) async {
+      final http = FakeHttpAdapter({
+        'DELETE /api/v1/me': (
+          409,
+          {'status': 'CONFLICT', 'description': 'ziddiyat', 'data': data},
+        ),
+      });
+      final result = await AuthRepository(fakeDio(http))
+          .deleteAccount(password: 'p');
+      return result.fold<Failure?>((f) => f, (_) => null);
+    }
+
+    test('409 LAST_ADMIN: the only platform admin (AD-1)', () async {
+      // The body the backend sends (handler.DeleteAccount, SoleOwnerData).
+      expect(
+        await deleteRefusedWith({
+          'error':
+              'Siz yagona platforma adminisiz — avval boshqa hisobni admin '
+              'qiling',
+          'code': 'LAST_ADMIN',
+          'workspaces': <String>[],
+        }),
+        const Failure.lastAdmin(),
+      );
+    });
+
+    test('a 409 with a code this app does not know stays generic', () async {
+      expect(
+        await deleteRefusedWith({
+          'error': 'yangi sabab',
+          'code': 'SOMETHING_NEW',
+          'workspaces': <String>[],
+        }),
+        const Failure.server(statusCode: 409, message: 'ziddiyat'),
+      );
+    });
+
     test('GET /me: only my own personal workspace is personal (W-1)', () async {
       final http = FakeHttpAdapter({
         'GET /api/v1/me': (

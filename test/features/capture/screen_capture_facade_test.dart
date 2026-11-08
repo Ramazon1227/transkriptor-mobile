@@ -14,6 +14,7 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_c
 import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart';
 
 import '../../helpers/adts.dart';
+import '../../helpers/tokens.dart';
 
 class _MockSource extends Mock implements ScreenAudioSource;
 
@@ -36,7 +37,7 @@ void main() {
     source = _MockSource();
     recorder = _MockRecorder();
     native = _MockNative();
-    store = RecordingsStore.at(dir, native);
+    store = RecordingsStore.at(dir, native, FakeTokenStorage('u1'));
     facade = ScreenCaptureFacade(source, recorder, native, store);
     events = StreamController<Map<String, Object?>>.broadcast();
     startedPath = null;

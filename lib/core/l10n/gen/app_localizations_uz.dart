@@ -1139,6 +1139,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.';
 
   @override
+  String get deleteLastAdmin =>
+      'Siz yagona platforma adminisiz — avval boshqa hisobni admin qiling.';
+
+  @override
   String deleteSoleOwnerIn(String names) {
     return 'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz: $names. Avval egalikni boshqa aʼzoga bering.';
   }

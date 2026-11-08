@@ -2116,6 +2116,12 @@ abstract class AppLocalizations {
   /// **'Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.'**
   String get deleteSoleOwner;
 
+  /// No description provided for @deleteLastAdmin.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz yagona platforma adminisiz — avval boshqa hisobni admin qiling.'**
+  String get deleteLastAdmin;
+
   /// No description provided for @deleteSoleOwnerIn.
   ///
   /// In uz, this message translates to:

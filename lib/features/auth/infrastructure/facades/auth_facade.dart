@@ -8,13 +8,21 @@ import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/auth/domain/i_auth_facade.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart';
+import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart';
 
 @LazySingleton(as: IAuthFacade)
 class AuthFacade implements IAuthFacade {
-  AuthFacade(this._repository, this._storage, this._session, this._google);
+  AuthFacade(
+    this._repository,
+    this._storage,
+    this._session,
+    this._google,
+    this._recordings,
+  );
 
   final AuthRepository _repository;
   final GoogleIdTokenSource _google;
+  final RecordingsStore _recordings;
   final TokenStorage _storage;
   final SessionManager _session;
 
@@ -149,6 +157,7 @@ class AuthFacade implements IAuthFacade {
       email: email,
     );
     if (result.isLeft()) return result;
+    await _forgetRecordings();
     // The server already closed every session; nothing to revoke here.
     await _google.signOut();
     try {
@@ -159,6 +168,18 @@ class AuthFacade implements IAuthFacade {
       _session.expire();
     }
     return const Right(unit);
+  }
+
+  /// MB-12: the deleted account's unsent recordings leave the phone. The
+  /// account is read from the token, so this runs before it is cleared.
+  /// Best effort: the account is gone either way.
+  Future<void> _forgetRecordings() async {
+    try {
+      final owner = tokenSubject(await _storage.readAccessToken());
+      if (owner != null) await _recordings.deleteOwnedBy(owner);
+    } on Object {
+      // Files that stay are hidden from every other account (MB-11).
+    }
   }
 
   @override

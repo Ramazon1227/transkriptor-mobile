@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:transkriptor_uz/core/storage/token_storage.dart';
 import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_capture_channel.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/store/adts_scanner.dart';
@@ -21,17 +22,25 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/store/adts_scan
 ///   muxer never finished has no index and cannot be played, so one left
 ///   behind by a killed app holds nothing to recover and is deleted.
 ///
-/// So "unsent" needs no sidecar: anything in the folder that no live
-/// session is writing is recoverable.
+/// So "unsent" needs no state of its own: anything in the folder that no
+/// live session is writing is recoverable.
+///
+/// One phone can be used by several accounts (MB-11): `mic_1.owner` next
+/// to `mic_1.aac` / `.m4a` holds the id of the account that made it, and
+/// [list] offers only the signed-in account's recordings. The others stay
+/// on disk, untouched, until their owner signs in again. A recording from
+/// before owners were written goes to the first account that sees it.
 @lazySingleton
 class RecordingsStore {
-  RecordingsStore(this._native) : _fixedRoot = null;
+  RecordingsStore(this._native, this._tokens) : _fixedRoot = null;
 
   @visibleForTesting
-  RecordingsStore.at(Directory root, this._native) : _fixedRoot = root;
+  RecordingsStore.at(Directory root, this._native, this._tokens)
+    : _fixedRoot = root;
 
   final Directory? _fixedRoot;
   final NativeCaptureChannel _native;
+  final TokenStorage _tokens;
 
   /// Files a live session in this engine is writing.
   final Set<String> _active = {};
@@ -76,7 +85,55 @@ class RecordingsStore {
     }
     final path = '${dir.path}/${prefix}_$ms$ext';
     _active.add(path);
+    try {
+      final owner = await _owner();
+      if (owner != null) await _writeLabel(path, owner);
+    } on Object {
+      _active.remove(path);
+      rethrow;
+    }
     return path;
+  }
+
+  /// The signed-in account, from the token it signed in with. Null when
+  /// nobody is, or when the token store cannot be read (Keystore after a
+  /// backup restore, a locked iOS keychain): recording must still work.
+  Future<String?> _owner() async {
+    try {
+      return tokenSubject(await _tokens.readAccessToken());
+    } on Object {
+      return null;
+    }
+  }
+
+  /// Written to a temp file and renamed, so a killed app never leaves a
+  /// half label that would hide the recording from its owner.
+  static Future<void> _writeLabel(String path, String owner) async {
+    final label = _ownerPath(path);
+    final tmp = File('$label.tmp');
+    await tmp.writeAsString(owner, flush: true);
+    await tmp.rename(label);
+  }
+
+  /// The account a label names; null when there is none, or it is blank or
+  /// unreadable (then it is treated as from before labels).
+  static Future<String?> _readLabel(String path) async {
+    try {
+      final owner = (await File(_ownerPath(path)).readAsString()).trim();
+      return owner.isEmpty ? null : owner;
+    } on FileSystemException {
+      return null;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  /// `<dir>/mic_1.aac`, `.m4a` or `.part.m4a` → `<dir>/mic_1.owner`: one
+  /// label for every stage of a recording.
+  static String _ownerPath(String path) {
+    final slash = path.lastIndexOf('/');
+    final dot = path.indexOf('.', slash + 1);
+    return '${dot < 0 ? path : path.substring(0, dot)}.owner';
   }
 
   void release(String path) => _active.remove(path);
@@ -119,6 +176,9 @@ class RecordingsStore {
   Future<List<RecoverableRecording>> list({
     Iterable<String> exclude = const [],
   }) async {
+    final owner = await _owner();
+    // Nobody signed in (or unknown): nothing here is theirs.
+    if (owner == null) return const [];
     final dir = await directory();
     final skip = {..._active, ...exclude};
     final files = <File>[];
@@ -137,6 +197,9 @@ class RecordingsStore {
       }
       final match = _name.firstMatch(name);
       if (match == null || skip.contains(file.path)) continue;
+      final madeBy = await _readLabel(file.path);
+      // Another account's recording: not shown and not touched.
+      if (madeBy != null && madeBy != owner) continue;
       final interrupted = match.group(3) == 'aac';
       if (interrupted && names.contains(_basename(finishedPath(name)))) {
         await _deleteQuietly(file.path);
@@ -167,6 +230,7 @@ class RecordingsStore {
           duration = null;
         }
       }
+      if (madeBy == null) await _claim(file.path, owner);
       found.add(
         RecoverableRecording(
           path: file.path,
@@ -184,8 +248,67 @@ class RecordingsStore {
         ),
       );
     }
+    await _dropStrayOwners(files, exclude);
     found.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return found;
+  }
+
+  /// A recording from before owners were written. Best effort: if the
+  /// label cannot be written it is offered unlabelled, as it was before.
+  static Future<void> _claim(String path, String owner) async {
+    try {
+      await _writeLabel(path, owner);
+    } on FileSystemException {
+      // Asked again on the next list.
+    }
+  }
+
+  /// Labels whose recording is gone (sent, discarded, held nothing), and
+  /// temp labels a killed app left behind.
+  Future<void> _dropStrayOwners(
+    List<File> files,
+    Iterable<String> exclude,
+  ) async {
+    for (final file in files) {
+      final name = _basename(file.path);
+      final temp = name.endsWith('.owner.tmp');
+      if (!temp && !name.endsWith('.owner')) continue;
+      final label = temp
+          ? file.path.substring(0, file.path.length - '.tmp'.length)
+          : file.path;
+      // [_held] reads the live set: a session may have started meanwhile.
+      if (_held(label, exclude)) continue;
+      if (temp || !_stageLeft(label)) await _deleteQuietly(file.path);
+    }
+  }
+
+  /// MB-12: the account [owner] was deleted, so its unsent recordings go
+  /// too. A recording still being written (this engine's, or a native
+  /// screen session), another account's and an unlabelled one are left.
+  /// A file that cannot be deleted is skipped.
+  Future<void> deleteOwnedBy(String owner) async {
+    String? screen;
+    try {
+      screen = await _native.activeScreenPath();
+    } on Object {
+      screen = null; // iOS has no channel; nothing native is running.
+    }
+    final dir = await directory();
+    final labels = <String>[];
+    await for (final entity in dir.list(followLinks: false)) {
+      if (entity is File && entity.path.endsWith('.owner')) {
+        labels.add(entity.path);
+      }
+    }
+    for (final label in labels) {
+      if (_held(label, [?screen])) continue;
+      if (await _readLabel(label) != owner) continue;
+      final stem = label.substring(0, label.length - '.owner'.length);
+      for (final ext in ['.aac', '.m4a', '.part.m4a']) {
+        await _deleteQuietly('$stem$ext');
+      }
+      await _deleteQuietly(label);
+    }
   }
 
   static Future<AdtsInfo> scan(File file) async {
@@ -197,6 +320,23 @@ class RecordingsStore {
   Future<void> delete(String path) async {
     _active.remove(path);
     await _deleteQuietly(path);
+    final label = _ownerPath(path);
+    if (!_held(label, const []) && !_stageLeft(label)) {
+      await _deleteQuietly(label);
+    }
+  }
+
+  bool _held(String label, Iterable<String> exclude) =>
+      {..._active, ...exclude}.any((p) => _ownerPath(p) == label);
+
+  /// Whether any stage of the recording [label] belongs to is on disk.
+  static bool _stageLeft(String label) {
+    final stem = label.substring(0, label.length - '.owner'.length);
+    return [
+      '.aac',
+      '.m4a',
+      '.part.m4a',
+    ].any((e) => File('$stem$e').existsSync());
   }
 
   static String _basename(String path) =>

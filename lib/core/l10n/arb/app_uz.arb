@@ -454,6 +454,7 @@
   "deleteRequired": "Maydonni toʻldiring",
   "deleteWrong": "Parol yoki email mos kelmadi.",
   "deleteSoleOwner": "Siz boshqa aʼzolari bor ish maydonining yagona egasisiz. Avval egalikni boshqa aʼzoga bering.",
+  "deleteLastAdmin": "Siz yagona platforma adminisiz — avval boshqa hisobni admin qiling.",
   "deleteSoleOwnerIn": "Siz boshqa aʼzolari bor ish maydonining yagona egasisiz: {names}. Avval egalikni boshqa aʼzoga bering.",
   "@deleteSoleOwnerIn": {
     "placeholders": { "names": { "type": "String" } }
