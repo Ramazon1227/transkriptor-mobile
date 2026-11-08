@@ -152,12 +152,15 @@ class AuthFacade implements IAuthFacade {
     String? password,
     String? email,
   }) async {
+    // Read first: a 401 whose refresh fails during the request clears the
+    // tokens, and then nothing would say whose recordings to delete.
+    final owner = await _accountId();
     final result = await _repository.deleteAccount(
       password: password,
       email: email,
     );
     if (result.isLeft()) return result;
-    await _forgetRecordings();
+    await _forgetRecordings(owner);
     // The server already closed every session; nothing to revoke here.
     await _google.signOut();
     try {
@@ -170,15 +173,34 @@ class AuthFacade implements IAuthFacade {
     return const Right(unit);
   }
 
-  /// MB-12: the deleted account's unsent recordings leave the phone. The
-  /// account is read from the token, so this runs before it is cleared.
+  /// MB-12: the deleted account's unsent recordings leave the phone.
   /// Best effort: the account is gone either way.
-  Future<void> _forgetRecordings() async {
+  Future<void> _forgetRecordings(String? owner) async {
+    if (owner == null) return;
     try {
-      final owner = tokenSubject(await _storage.readAccessToken());
-      if (owner != null) await _recordings.deleteOwnedBy(owner);
+      await _recordings.deleteOwnedBy(owner);
     } on Object {
       // Files that stay are hidden from every other account (MB-11).
+    }
+  }
+
+  /// The signed-in account, from its token; null when it cannot be read.
+  Future<String?> _accountId() async {
+    try {
+      return tokenSubject(await _storage.readAccessToken());
+    } on Object {
+      return null;
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> unsentRecordings() async {
+    final owner = await _accountId();
+    if (owner == null) return const Right(0);
+    try {
+      return Right(await _recordings.countOwnedBy(owner));
+    } on Object {
+      return const Left(Failure.storage());
     }
   }
 

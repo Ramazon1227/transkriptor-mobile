@@ -176,6 +176,7 @@ class RecordingsStore {
   Future<List<RecoverableRecording>> list({
     Iterable<String> exclude = const [],
   }) async {
+    await _purgeDeleted(exclude);
     final owner = await _owner();
     // Nobody signed in (or unknown): nothing here is theirs.
     if (owner == null) return const [];
@@ -285,13 +286,35 @@ class RecordingsStore {
   /// MB-12: the account [owner] was deleted, so its unsent recordings go
   /// too. A recording still being written (this engine's, or a native
   /// screen session), another account's and an unlabelled one are left.
-  /// A file that cannot be deleted is skipped.
+  /// The account is remembered, so a recording that was still being written
+  /// goes on a later [list]. A file that cannot be deleted is skipped.
   Future<void> deleteOwnedBy(String owner) async {
+    try {
+      await _rememberDeleted(owner);
+    } on Object {
+      // Only the later clean-up is lost; what can go now still goes.
+    }
+    await _deleteLabels(await _ownedBy({owner}));
+  }
+
+  /// How many recordings [deleteOwnedBy] would take now, for the warning.
+  Future<int> countOwnedBy(String owner) async =>
+      (await _ownedBy({owner})).where(_stageLeft).length;
+
+  /// Labels naming one of [owners] whose recording nothing is writing.
+  Future<List<String>> _ownedBy(
+    Set<String> owners, {
+    Iterable<String> exclude = const [],
+  }) async {
     String? screen;
+    var screenUnknown = false;
     try {
       screen = await _native.activeScreenPath();
     } on Object {
-      screen = null; // iOS has no channel; nothing native is running.
+      // No answer: a screen session may be running, so every screen
+      // recording counts as live. iOS has no channel and no screen
+      // recordings, so this costs it nothing.
+      screenUnknown = true;
     }
     final dir = await directory();
     final labels = <String>[];
@@ -300,14 +323,63 @@ class RecordingsStore {
         labels.add(entity.path);
       }
     }
+    final owned = <String>[];
     for (final label in labels) {
-      if (_held(label, [?screen])) continue;
-      if (await _readLabel(label) != owner) continue;
+      if (screenUnknown && _basename(label).startsWith('screen_')) continue;
+      if (_held(label, [...exclude, ?screen])) continue;
+      final madeBy = await _readLabel(label);
+      if (madeBy != null && owners.contains(madeBy)) owned.add(label);
+    }
+    return owned;
+  }
+
+  static Future<void> _deleteLabels(List<String> labels) async {
+    for (final label in labels) {
       final stem = label.substring(0, label.length - '.owner'.length);
       for (final ext in ['.aac', '.m4a', '.part.m4a']) {
         await _deleteQuietly('$stem$ext');
       }
       await _deleteQuietly(label);
+    }
+  }
+
+  /// Ids of deleted accounts, newest last, one per line; only ids.
+  static const String _deletedName = 'deleted_accounts';
+  static const int _deletedKept = 10;
+
+  Future<List<String>> _readDeleted() async {
+    final file = File('${(await directory()).path}/$_deletedName');
+    try {
+      return [
+        for (final line in await file.readAsLines())
+          if (line.trim().isNotEmpty) line.trim(),
+      ];
+    } on FileSystemException {
+      return const [];
+    } on FormatException {
+      return const [];
+    }
+  }
+
+  Future<void> _rememberDeleted(String owner) async {
+    final ids = [...(await _readDeleted()).where((id) => id != owner), owner];
+    final kept = ids.length > _deletedKept
+        ? ids.sublist(ids.length - _deletedKept)
+        : ids;
+    final path = '${(await directory()).path}/$_deletedName';
+    final tmp = File('$path.tmp');
+    await tmp.writeAsString('${kept.join('\n')}\n', flush: true);
+    await tmp.rename(path);
+  }
+
+  /// Recordings of deleted accounts that were still being written then.
+  Future<void> _purgeDeleted(Iterable<String> exclude) async {
+    try {
+      final gone = await _readDeleted();
+      if (gone.isEmpty) return;
+      await _deleteLabels(await _ownedBy(gone.toSet(), exclude: exclude));
+    } on Object {
+      // Tried again on the next list.
     }
   }
 

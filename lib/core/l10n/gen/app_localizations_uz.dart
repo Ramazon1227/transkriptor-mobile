@@ -1126,6 +1126,11 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String deleteUnsentRecordings(int count) {
+    return 'Telefondagi $count ta yuborilmagan yozuv ham oʻchadi.';
+  }
+
+  @override
   String get deleteConfirm => 'Hisobni butunlay oʻchirish';
 
   @override

@@ -69,4 +69,41 @@ void main() {
       ),
     ],
   );
+
+  blocTest<DeleteAccountCubit, DeleteAccountState>(
+    'the warning count is loaded and kept through a refusal (MB-12)',
+    setUp: () {
+      when(() => facade.unsentRecordings())
+          .thenAnswer((_) async => const Right(2));
+      when(() => facade.deleteAccount(password: 'x'))
+          .thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
+    },
+    build: () => DeleteAccountCubit(facade),
+    act: (cubit) async {
+      await cubit.loadUnsent();
+      await cubit.submit(confirmation: 'x', hasPassword: true);
+    },
+    expect: () => const [
+      DeleteAccountState(unsentRecordings: 2),
+      DeleteAccountState(
+        status: DeleteAccountStatus.loading,
+        unsentRecordings: 2,
+      ),
+      DeleteAccountState(
+        status: DeleteAccountStatus.failure,
+        failure: Failure.server(statusCode: 403),
+        unsentRecordings: 2,
+      ),
+    ],
+  );
+
+  blocTest<DeleteAccountCubit, DeleteAccountState>(
+    'a count that cannot be read shows no warning',
+    setUp: () =>
+        when(() => facade.unsentRecordings())
+            .thenAnswer((_) async => const Left(Failure.storage())),
+    build: () => DeleteAccountCubit(facade),
+    act: (cubit) => cubit.loadUnsent(),
+    expect: () => const <DeleteAccountState>[],
+  );
 }

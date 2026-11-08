@@ -2092,6 +2092,12 @@ abstract class AppLocalizations {
   /// **'{email}'**
   String deleteEmailHint(String email);
 
+  /// No description provided for @deleteUnsentRecordings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefondagi {count} ta yuborilmagan yozuv ham oʻchadi.'**
+  String deleteUnsentRecordings(int count);
+
   /// No description provided for @deleteConfirm.
   ///
   /// In uz, this message translates to:

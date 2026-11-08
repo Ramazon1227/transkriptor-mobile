@@ -450,6 +450,10 @@
   "@deleteEmailHint": {
     "placeholders": { "email": { "type": "String" } }
   },
+  "deleteUnsentRecordings": "Telefondagi {count} ta yuborilmagan yozuv ham oʻchadi.",
+  "@deleteUnsentRecordings": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "deleteConfirm": "Hisobni butunlay oʻchirish",
   "deleteRequired": "Maydonni toʻldiring",
   "deleteWrong": "Parol yoki email mos kelmadi.",
