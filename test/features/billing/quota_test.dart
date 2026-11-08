@@ -29,6 +29,19 @@ class _Store implements IQuotaWarningFacade {
   Future<void> forget(String workspaceId) async => map.remove(workspaceId);
 }
 
+/// Its writes wait until released, like a slow keychain.
+class _SlowStore extends _Store {
+  final _gate = Completer<void>();
+
+  void release() => _gate.complete();
+
+  @override
+  Future<void> close(String workspaceId, String period) async {
+    await _gate.future;
+    await super.close(workspaceId, period);
+  }
+}
+
 const _pro = Plan(
   code: 'pro',
   name: 'Pro',
@@ -56,10 +69,12 @@ void main() {
       test(
         '${c['left']} / ${c['allowance']} → ${c['level']} (${c['why']})',
         () {
-          expect(
-            Quota.level(c['left'] as int, c['allowance'] as int).percent,
-            c['level'],
+          final allowance = Quota.allowance(
+            c['allowance'] as int,
+            subscribed: c['subscribed'] as bool? ?? true,
+            personal: c['personal'] as bool? ?? true,
           );
+          expect(Quota.level(c['left'] as int, allowance).percent, c['level']);
         },
       );
     }
@@ -80,7 +95,7 @@ void main() {
     test('nothing while most of the plan is left', () async {
       answer(_balance(30000));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.level, QuotaLevel.none);
       expect(cubit.state.banner, isFalse);
       await cubit.close();
@@ -89,7 +104,7 @@ void main() {
     test('80 %: marked, no banner', () async {
       answer(_balance(7200));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.level, QuotaLevel.low);
       expect(cubit.state.banner, isFalse);
       await cubit.close();
@@ -98,7 +113,7 @@ void main() {
     test('95 %: banner until closed, then not again this period', () async {
       answer(_balance(1200));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.level, QuotaLevel.critical);
       expect(cubit.state.banner, isTrue);
       expect(cubit.state.balance?.balanceSeconds, 1200);
@@ -109,7 +124,7 @@ void main() {
       await cubit.close();
 
       final again = QuotaWarningCubit(billing, store);
-      await again.load('w1');
+      await again.load('w1', personal: true);
       expect(again.state.banner, isFalse);
       await again.close();
     });
@@ -117,10 +132,10 @@ void main() {
     test('the next period warns again', () async {
       answer(_balance(1200));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       await cubit.dismiss();
       answer(_balance(1200, end: DateTime.utc(2027)));
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.banner, isTrue);
       await cubit.close();
     });
@@ -128,21 +143,55 @@ void main() {
     test('a top-up above 20 % forgets the closed warning', () async {
       answer(_balance(1200));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       await cubit.dismiss();
       answer(_balance(30000));
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(store.map, isEmpty);
       answer(_balance(1200));
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.banner, isTrue);
       await cubit.close();
     });
 
+    test('an unsubscribed team workspace is never warned', () async {
+      // The server answers «Bepul» for it, but free minutes go only to a
+      // personal workspace.
+      answer(
+        const Balance(
+          plan: Plan(code: 'free', name: 'Bepul', monthlySeconds: 1800),
+        ),
+      );
+      final cubit = QuotaWarningCubit(billing, store);
+      await cubit.load('w1', personal: false);
+      expect(cubit.state.level, QuotaLevel.none);
+      expect(cubit.state.banner, isFalse);
+      await cubit.close();
+    });
+
+    test(
+      'a refresh running while it is closed does not bring it back',
+      () async {
+        answer(_balance(1200));
+        final slowStore = _SlowStore();
+        final cubit = QuotaWarningCubit(billing, slowStore);
+        await cubit.load('w1', personal: true);
+        expect(cubit.state.banner, isTrue);
+
+        final refresh = cubit.load('w1', personal: true);
+        final closing = cubit.dismiss();
+        await refresh;
+        expect(cubit.state.banner, isFalse);
+        slowStore.release();
+        await closing;
+        await cubit.close();
+      },
+    );
+
     test('a plan without minutes never warns', () async {
       answer(_balance(0, plan: _pro.copyWith(monthlySeconds: 0)));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.level, QuotaLevel.none);
       await cubit.close();
     });
@@ -151,7 +200,7 @@ void main() {
       when(() => billing.balance('w1'))
           .thenAnswer((_) async => const Left(Failure.network()));
       final cubit = QuotaWarningCubit(billing, store);
-      await cubit.load('w1');
+      await cubit.load('w1', personal: true);
       expect(cubit.state.level, QuotaLevel.none);
       expect(cubit.state.banner, isFalse);
       await cubit.close();
@@ -166,8 +215,8 @@ void main() {
       when(() => billing.balance('w2'))
           .thenAnswer((_) async => Right(_balance(30000)));
       final cubit = QuotaWarningCubit(billing, store);
-      final first = cubit.load('w1');
-      await cubit.load('w2');
+      final first = cubit.load('w1', personal: true);
+      await cubit.load('w2', personal: true);
       slow.complete();
       await first;
       expect(cubit.state.workspaceId, 'w2');

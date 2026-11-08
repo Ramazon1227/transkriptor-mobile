@@ -256,6 +256,9 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get quotaOver => 'Daqiqa tugadi.';
+
+  @override
   String quotaRenews(String date) {
     return 'Yangilanish: $date.';
   }

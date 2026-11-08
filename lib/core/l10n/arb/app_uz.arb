@@ -100,6 +100,7 @@
   "@quotaWarnTitle": {
     "placeholders": { "minutes": { "type": "int" } }
   },
+  "quotaOver": "Daqiqa tugadi.",
   "quotaRenews": "Yangilanish: {date}.",
   "@quotaRenews": {
     "placeholders": { "date": { "type": "String" } }

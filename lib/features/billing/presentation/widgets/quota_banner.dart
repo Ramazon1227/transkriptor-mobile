@@ -49,9 +49,11 @@ class QuotaBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.quotaWarnTitle(
-                        Formatters.minutesLeft(balance.balanceSeconds),
-                      ),
+                      balance.balanceSeconds > 0
+                          ? l10n.quotaWarnTitle(
+                              Formatters.minutesLeft(balance.balanceSeconds),
+                            )
+                          : l10n.quotaOver,
                       style: AppText.bodyStrong.copyWith(
                         color: AppColors.cotton,
                       ),
@@ -83,7 +85,8 @@ class QuotaBanner extends StatelessWidget {
     final subscribed =
         b.status != SubscriptionStatus.none &&
         b.status != SubscriptionStatus.unknown;
-    if (subscribed && end != null) {
+    // A date already past (PAST_DUE) is not a renewal.
+    if (subscribed && end != null && end.isAfter(DateTime.now())) {
       final day = Formatters.date(end);
       return b.cancelAtPeriodEnd ? l10n.quotaEnds(day) : l10n.quotaRenews(day);
     }

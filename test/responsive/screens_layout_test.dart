@@ -900,7 +900,8 @@ void _makeMocks() {
   );
   when(() => balance.load(any())).thenAnswer((_) async {});
   when(() => quota.state).thenReturn(const QuotaWarningState());
-  when(() => quota.load(any())).thenAnswer((_) async {});
+  when(() => quota.load(any(), personal: any(named: 'personal')))
+      .thenAnswer((_) async {});
   when(() => plans.state)
       .thenReturn(const PlansState(status: PlansStatus.success, plans: _plans));
   when(() => plans.load()).thenAnswer((_) async {});

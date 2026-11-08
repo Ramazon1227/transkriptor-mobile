@@ -69,7 +69,9 @@ class HomePage extends StatelessWidget {
                   BlocProvider(
                     create: (_) {
                       final cubit = getIt<QuotaWarningCubit>();
-                      unawaited(cubit.load(workspaceId));
+                      unawaited(
+                        cubit.load(workspaceId, personal: _personal(context)),
+                      );
                       return cubit;
                     },
                   ),
@@ -84,6 +86,12 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// The current workspace is the person's own personal one (B-18: only it
+/// got the free minutes).
+bool _personal(BuildContext context) =>
+    context.read<AccountCubit>().state.account?.currentWorkspace?.isPersonal ??
+    false;
+
 class _HomeBody extends StatelessWidget {
   const _HomeBody();
 
@@ -91,7 +99,8 @@ class _HomeBody extends StatelessWidget {
     final library = context.read<LibraryBloc>()..add(const LibraryRefreshed());
     final quota = context.read<QuotaWarningCubit>();
     await Future.wait([
-      if (quota.state.workspaceId case final id?) quota.load(id),
+      if (quota.state.workspaceId case final id?)
+        quota.load(id, personal: _personal(context)),
       context.read<AccountCubit>().load(),
       context.read<CalendarCubit>().load(),
       context.read<RecoveryCubit>().load(),

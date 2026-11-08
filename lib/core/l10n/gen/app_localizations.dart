@@ -532,6 +532,12 @@ abstract class AppLocalizations {
   /// **'Daqiqa tugayapti: {minutes} daq qoldi.'**
   String quotaWarnTitle(int minutes);
 
+  /// No description provided for @quotaOver.
+  ///
+  /// In uz, this message translates to:
+  /// **'Daqiqa tugadi.'**
+  String get quotaOver;
+
   /// No description provided for @quotaRenews.
   ///
   /// In uz, this message translates to:

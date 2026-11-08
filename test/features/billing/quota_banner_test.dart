@@ -61,7 +61,7 @@ void main() {
     final billing = _Billing();
     when(() => billing.balance('w1')).thenAnswer((_) async => Right(b));
     final cubit = QuotaWarningCubit(billing, _Store());
-    await cubit.load('w1');
+    await cubit.load('w1', personal: true);
     await t.pumpWidget(
       MultiBlocProvider(
         providers: [
@@ -133,6 +133,27 @@ void main() {
     );
     expect(find.bySemanticsLabel(RegExp('foizi ishlatildi')), findsNothing);
     expect(find.byTooltip(l10n.quotaClose), findsNothing);
+    await done(t, cubit);
+  });
+  testWidgets('at zero: the minutes are over', (t) async {
+    final cubit = await pump(t, const Balance(plan: _pro));
+    expect(find.text(l10n.quotaOver), findsOneWidget);
+    expect(find.text(l10n.quotaWarnTitle(0)), findsNothing);
+    await done(t, cubit);
+  });
+
+  testWidgets('a renewal date in the past is not shown', (t) async {
+    final cubit = await pump(
+      t,
+      Balance(
+        balanceSeconds: 600,
+        plan: _pro,
+        status: SubscriptionStatus.pastDue,
+        periodEnd: DateTime(2020),
+      ),
+    );
+    expect(find.text(l10n.quotaWarnTitle(10)), findsOneWidget);
+    expect(find.textContaining('Yangilanish'), findsNothing);
     await done(t, cubit);
   });
 }

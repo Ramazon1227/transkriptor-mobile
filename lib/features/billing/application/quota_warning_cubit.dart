@@ -32,7 +32,13 @@ class QuotaWarningCubit extends Cubit<QuotaWarningState> {
   final IBillingFacade _billing;
   final IQuotaWarningFacade _closed;
 
-  Future<void> load(String workspaceId) async {
+  /// «workspace/period» closed in this cubit: a load already running when
+  /// it was closed may read the store before the write lands.
+  String? _closedHere;
+
+  /// [personal]: the person's own personal workspace — the only one that
+  /// got the free minutes.
+  Future<void> load(String workspaceId, {required bool personal}) async {
     if (state.workspaceId != workspaceId) {
       emit(QuotaWarningState(workspaceId: workspaceId));
     }
@@ -42,19 +48,29 @@ class QuotaWarningCubit extends Cubit<QuotaWarningState> {
     if (balance == null) return;
     final level = Quota.level(
       balance.balanceSeconds,
-      balance.plan?.monthlySeconds ?? 0,
+      Quota.allowance(
+        balance.plan?.monthlySeconds ?? 0,
+        subscribed: balance.status != SubscriptionStatus.none,
+        personal: personal,
+      ),
     );
     var closed = await _closed.closedPeriod(workspaceId);
-    if (level == QuotaLevel.none && closed != null) {
-      await _closed.forget(workspaceId);
-      closed = null;
+    if (level == QuotaLevel.none) {
+      _closedHere = null;
+      if (closed != null) {
+        await _closed.forget(workspaceId);
+        closed = null;
+      }
     }
     if (isClosed || state.workspaceId != workspaceId) return;
     emit(
       state.copyWith(
         balance: balance,
         level: level,
-        banner: level == QuotaLevel.critical && closed != Quota.period(balance),
+        banner:
+            level == QuotaLevel.critical &&
+            closed != Quota.period(balance) &&
+            _closedHere != '$workspaceId/${Quota.period(balance)}',
       ),
     );
   }
@@ -63,7 +79,9 @@ class QuotaWarningCubit extends Cubit<QuotaWarningState> {
     final workspaceId = state.workspaceId;
     final balance = state.balance;
     if (workspaceId == null || balance == null) return;
+    final period = Quota.period(balance);
+    _closedHere = '$workspaceId/$period';
     emit(state.copyWith(banner: false));
-    await _closed.close(workspaceId, Quota.period(balance));
+    await _closed.close(workspaceId, period);
   }
 }

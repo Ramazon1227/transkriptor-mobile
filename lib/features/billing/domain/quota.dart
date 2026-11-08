@@ -20,6 +20,16 @@ abstract final class Quota {
   /// the free plan the one-off 30 minutes). Minutes bought above the plan
   /// give no share, and a plan without minutes never warns. Integer
   /// arithmetic, so rounding cannot move a threshold.
+  /// The plan's minutes, the share's denominator. The server answers the
+  /// free plan for every workspace without a subscription, but the free
+  /// minutes go only to a personal one (migration 010): an unsubscribed
+  /// team workspace has no denominator.
+  static int allowance(
+    int monthly, {
+    required bool subscribed,
+    required bool personal,
+  }) => subscribed || personal ? monthly : 0;
+
   static QuotaLevel level(int left, int allowance) {
     if (allowance <= 0) return QuotaLevel.none;
     if (left * 20 <= allowance) return QuotaLevel.critical;
