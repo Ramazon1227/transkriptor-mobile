@@ -86,10 +86,15 @@ class HomePage extends StatelessWidget {
   }
 }
 
-/// The current workspace is the person's own personal one (B-18: only it
-/// got the free minutes).
+/// The current workspace is someone's personal one, so it got the free
+/// minutes (B-18) — a team member in the founder's workspace included.
 bool _personal(BuildContext context) =>
-    context.read<AccountCubit>().state.account?.currentWorkspace?.isPersonal ??
+    context
+        .read<AccountCubit>()
+        .state
+        .account
+        ?.currentWorkspace
+        ?.isSomeonesPersonal ??
     false;
 
 class _HomeBody extends StatelessWidget {

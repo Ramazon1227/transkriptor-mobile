@@ -1,5 +1,5 @@
 {
-  "_": "B-18: daqiqa ogohlantirishi darajasi. subscribed/personal yoʻq boʻlsa — true. Mobil nusxasi: tr-mobile/test/fixtures/quota_cases.json (nusxa — qoʻlda tahrirlanmaydi).",
+  "_": "B-18: daqiqa ogohlantirishi darajasi. subscribed / is_personal yoʻq boʻlsa — true. is_personal — maydonning oʻzi kimningdir shaxsiy maydoni (APIdagi is_personal, is_own_personal emas): bepul daqiqa maydonga beriladi. Mobil nusxasi: tr-mobile/test/fixtures/quota_cases.json (nusxa — qoʻlda tahrirlanmaydi).",
   "cases": [
     { "left": 3600, "allowance": 3600, "level": 0, "why": "toʻla" },
     { "left": 721, "allowance": 3600, "level": 0, "why": "20% dan bir soniya koʻp" },
@@ -12,8 +12,8 @@
     { "left": 0, "allowance": 0, "level": 0, "why": "tarifda daqiqa yoʻq — ulush hisoblanmaydi" },
     { "left": 300, "allowance": 1800, "level": 80, "why": "Bepul 30 daqiqadan 5 daqiqa qoldi" },
     { "left": 60, "allowance": 1800, "level": 95, "why": "Bepul 30 daqiqadan 1 daqiqa qoldi" },
-    { "left": 0, "allowance": 1800, "subscribed": false, "personal": false, "level": 0, "why": "obunasiz jamoa maydoni: server Bepul deydi, lekin bepul daqiqa faqat shaxsiy maydonga beriladi" },
-    { "left": 60, "allowance": 1800, "subscribed": false, "personal": true, "level": 95, "why": "obunasiz shaxsiy maydon: bepul daqiqa" },
-    { "left": 600, "allowance": 36000, "subscribed": true, "personal": false, "level": 95, "why": "obunali jamoa maydoni" }
+    { "left": 0, "allowance": 1800, "subscribed": false, "is_personal": false, "level": 0, "why": "obunasiz jamoa maydoni: server Bepul deydi, lekin bepul daqiqa faqat shaxsiy maydonga beriladi" },
+    { "left": 60, "allowance": 1800, "subscribed": false, "is_personal": true, "level": 95, "why": "obunasiz shaxsiy maydon (asoschining maydonidagi aʼzo uchun ham): bepul daqiqa" },
+    { "left": 600, "allowance": 36000, "subscribed": true, "is_personal": false, "level": 95, "why": "obunali jamoa maydoni" }
   ]
 }

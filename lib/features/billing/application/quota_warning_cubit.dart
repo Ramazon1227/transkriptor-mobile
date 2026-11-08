@@ -36,8 +36,8 @@ class QuotaWarningCubit extends Cubit<QuotaWarningState> {
   /// it was closed may read the store before the write lands.
   String? _closedHere;
 
-  /// [personal]: the person's own personal workspace — the only one that
-  /// got the free minutes.
+  /// [personal]: the workspace is someone's personal one (`is_personal`)
+  /// — the only kind that got the free minutes.
   Future<void> load(String workspaceId, {required bool personal}) async {
     if (state.workspaceId != workspaceId) {
       emit(QuotaWarningState(workspaceId: workspaceId));

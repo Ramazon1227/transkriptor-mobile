@@ -72,7 +72,7 @@ void main() {
           final allowance = Quota.allowance(
             c['allowance'] as int,
             subscribed: c['subscribed'] as bool? ?? true,
-            personal: c['personal'] as bool? ?? true,
+            personal: c['is_personal'] as bool? ?? true,
           );
           expect(Quota.level(c['left'] as int, allowance).percent, c['level']);
         },
