@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:transkriptor_uz/core/storage/token_storage.dart';
 import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_capture_channel.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart';
 
 import '../../../helpers/adts.dart';
+import '../../../helpers/tokens.dart';
 
 class _MockNative extends Mock implements NativeCaptureChannel;
 
@@ -14,11 +16,13 @@ void main() {
   late Directory dir;
   late _MockNative native;
   late RecordingsStore store;
+  late FakeTokenStorage tokens;
 
   setUp(() async {
     dir = await Directory.systemTemp.createTemp('recordings_test');
     native = _MockNative();
-    store = RecordingsStore.at(dir, native);
+    tokens = FakeTokenStorage('u1');
+    store = RecordingsStore.at(dir, native, tokens);
     when(() => native.durationOf(any()))
         .thenAnswer((_) async => const Duration(seconds: 42));
   });
@@ -143,5 +147,94 @@ void main() {
 
     await expectLater(store.finalize(aac), throwsException);
     expect(File(aac).existsSync(), isTrue);
+  });
+
+  group('one phone, several accounts (MB-11)', () {
+    Future<String> record(String user) async {
+      tokens.signIn(user);
+      final path = await store.newPath(RecordingKind.microphone);
+      File(path).writeAsBytesSync(adtsFrames(3));
+      store.release(path);
+      return path;
+    }
+
+    test('another account never sees it; the owner does again', () async {
+      final mine = await record('alice');
+
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty);
+      expect(File(mine).existsSync(), isTrue);
+
+      tokens.signIn('alice');
+      expect((await store.list()).single.path, mine);
+    });
+
+    test("a recording kept when the session ended stays the owner's", () async {
+      // R-4: the recorder stops and keeps the file; the owner label
+      // written at start goes with it to the .m4a.
+      tokens.signIn('alice');
+      final aac = await store.newPath(RecordingKind.screen);
+      File(aac).writeAsBytesSync(adtsFrames(3));
+      tokens.signIn(null);
+      final m4a = RecordingsStore.finishedPath(aac);
+      when(() => native.finalize(src: aac, dst: m4a)).thenAnswer((_) async {
+        File(m4a).writeAsBytesSync([1, 2, 3]);
+        return const Duration(seconds: 1);
+      });
+      await store.finalize(aac);
+      store.release(aac);
+
+      expect(await store.list(), isEmpty); // nobody signed in
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty);
+      tokens.signIn('alice');
+      expect((await store.list()).single.path, m4a);
+    });
+
+    test('a recording from before owners goes to the first account', () async {
+      put('mic_1.m4a', [1, 2, 3]);
+
+      tokens.signIn('alice');
+      expect(await store.list(), hasLength(1));
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty);
+    });
+
+    test("another account's leftovers are not cleaned up", () async {
+      put('mic_1.aac', const []);
+      put('mic_1.owner', 'bob'.codeUnits);
+
+      tokens.signIn('alice');
+      expect(await store.list(), isEmpty);
+      expect(File('${dir.path}/mic_1.aac').existsSync(), isTrue);
+    });
+
+    test('the label goes with the recording', () async {
+      final discarded = await record('alice');
+      final sent = await record('alice');
+
+      await store.delete(discarded);
+      expect(File(discarded.replaceAll('.aac', '.owner')).existsSync(), false);
+
+      File(sent).deleteSync(); // as the upload does
+      expect(await store.list(), isEmpty);
+      expect(dir.listSync(), isEmpty);
+    });
+
+    test('a label of a session still starting is kept', () async {
+      tokens.signIn('alice');
+      final path = await store.newPath(RecordingKind.microphone);
+      // No bytes yet: the file is opened just after.
+      expect(await store.list(), isEmpty);
+      expect(File(path.replaceAll('.aac', '.owner')).existsSync(), isTrue);
+    });
+  });
+
+  test('tokenSubject reads sub and refuses anything else', () {
+    expect(tokenSubject(tokenFor('u-1')), 'u-1');
+    expect(tokenSubject(null), isNull);
+    expect(tokenSubject('opaque'), isNull);
+    expect(tokenSubject('a.%%%.c'), isNull);
+    expect(tokenSubject('a.${'bm90IGpzb24'}.c'), isNull); // "not json"
   });
 }

@@ -16,6 +16,7 @@ import 'package:transkriptor_uz/features/recorder/infrastructure/store/recording
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 
 import '../../../helpers/adts.dart';
+import '../../../helpers/tokens.dart';
 
 class _MockRecorder extends Mock implements AudioRecorder;
 
@@ -38,7 +39,7 @@ void main() {
     dir = await Directory.systemTemp.createTemp('recorder_facade_test');
     recorder = _MockRecorder();
     native = _MockNative();
-    store = RecordingsStore.at(dir, native);
+    store = RecordingsStore.at(dir, native, FakeTokenStorage('u1'));
     platform = _Platform();
     when(() => platform.isIOS).thenReturn(false);
     facade = RecorderFacade(recorder, store, native, platform);
@@ -72,7 +73,12 @@ void main() {
 
   tearDown(() => dir.delete(recursive: true));
 
-  List<File> files() => dir.listSync().whereType<File>().toList();
+  // Recordings only; the owner labels have their own store tests.
+  List<File> files() => dir
+      .listSync()
+      .whereType<File>()
+      .where((f) => !f.path.endsWith('.owner'))
+      .toList();
 
   test('a refused microphone starts nothing', () async {
     when(() => recorder.hasPermission()).thenAnswer((_) async => false);
