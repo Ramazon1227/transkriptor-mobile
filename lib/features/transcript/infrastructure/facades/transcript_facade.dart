@@ -1,15 +1,17 @@
 import 'package:dartz/dartz.dart' show Either;
 import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
+import 'package:transkriptor_uz/core/events/library_changes.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 import 'package:transkriptor_uz/features/transcript/domain/i_transcript_facade.dart';
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart';
 
 @LazySingleton(as: ITranscriptFacade)
 class TranscriptFacade implements ITranscriptFacade {
-  TranscriptFacade(this._repository);
+  TranscriptFacade(this._repository, this._changes);
 
   final TranscriptRepository _repository;
+  final LibraryChanges _changes;
 
   @override
   Future<Either<Failure, Transcript>> getTranscript(String id) async {
@@ -106,6 +108,8 @@ class TranscriptFacade implements ITranscriptFacade {
       title: title,
       revision: revision,
     );
+    // The files list shows the transcript title, so it must reload.
+    if (result.isRight()) _changes.notify();
     return result.map((m) => m.toEntity());
   }
 

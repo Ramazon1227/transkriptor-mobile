@@ -627,9 +627,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i765.PushRepository>(),
       ),
     );
-    gh.lazySingleton<_i899.ITranscriptFacade>(
-      () => _i39.TranscriptFacade(gh<_i78.TranscriptRepository>()),
-    );
     gh.lazySingleton<_i1031.IRatingFacade>(
       () => _i556.RatingFacade(gh<_i282.RatingRepository>()),
     );
@@ -672,6 +669,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i147.NotesCubit>(
       () => _i147.NotesCubit(gh<_i439.INotesFacade>()),
+    );
+    gh.lazySingleton<_i899.ITranscriptFacade>(
+      () => _i39.TranscriptFacade(
+        gh<_i78.TranscriptRepository>(),
+        gh<_i252.LibraryChanges>(),
+      ),
     );
     gh.factory<_i698.CalendarCubit>(
       () => _i698.CalendarCubit(gh<_i763.ICalendarFacade>()),
