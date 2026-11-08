@@ -304,7 +304,9 @@ mixin _$Summary {
  Map<String, dynamic>? get body;/// [body] as read-only blocks.
  List<NoteBlock> get blocks; List<SummarySection> get sections;/// Built on the phone from the transcript's own sentences: no model
 /// wrote it.
- bool get sample; DateTime? get createdAt;
+ bool get sample; DateTime? get createdAt;/// Speakers were renamed after the summary was written (XU-15), and
+/// its text has not changed since: names in it may be old.
+ bool get speakersOutdated;
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -316,20 +318,20 @@ $SummaryCopyWith<Summary> get copyWith => _$SummaryCopyWithImpl<Summary>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Summary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Summary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.templateId, _this.templateId) || other.templateId == _this.templateId)&&(identical(other.templateName, _this.templateName) || other.templateName == _this.templateName)&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&const DeepCollectionEquality().equals(other.body, _this.body)&&const DeepCollectionEquality().equals(other.blocks, _this.blocks)&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&(identical(other.sample, _this.sample) || other.sample == _this.sample)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Summary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.templateId, _this.templateId) || other.templateId == _this.templateId)&&(identical(other.templateName, _this.templateName) || other.templateName == _this.templateName)&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&const DeepCollectionEquality().equals(other.body, _this.body)&&const DeepCollectionEquality().equals(other.blocks, _this.blocks)&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&(identical(other.sample, _this.sample) || other.sample == _this.sample)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.speakersOutdated, _this.speakersOutdated) || other.speakersOutdated == _this.speakersOutdated));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Summary;
-  return Object.hash(runtimeType,_this.id,_this.templateId,_this.templateName,_this.progress,_this.error,_this.revision,const DeepCollectionEquality().hash(_this.body),const DeepCollectionEquality().hash(_this.blocks),const DeepCollectionEquality().hash(_this.sections),_this.sample,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.templateId,_this.templateName,_this.progress,_this.error,_this.revision,const DeepCollectionEquality().hash(_this.body),const DeepCollectionEquality().hash(_this.blocks),const DeepCollectionEquality().hash(_this.sections),_this.sample,_this.createdAt,_this.speakersOutdated);
 }
 
 @override
 String toString() {
   final _this = this as Summary;
-  return 'Summary(id: ${_this.id}, templateId: ${_this.templateId}, templateName: ${_this.templateName}, progress: ${_this.progress}, error: ${_this.error}, revision: ${_this.revision}, body: ${_this.body}, blocks: ${_this.blocks}, sections: ${_this.sections}, sample: ${_this.sample}, createdAt: ${_this.createdAt})';
+  return 'Summary(id: ${_this.id}, templateId: ${_this.templateId}, templateName: ${_this.templateName}, progress: ${_this.progress}, error: ${_this.error}, revision: ${_this.revision}, body: ${_this.body}, blocks: ${_this.blocks}, sections: ${_this.sections}, sample: ${_this.sample}, createdAt: ${_this.createdAt}, speakersOutdated: ${_this.speakersOutdated})';
 }
 
 
@@ -340,7 +342,7 @@ abstract mixin class $SummaryCopyWith<$Res>  {
   factory $SummaryCopyWith(Summary value, $Res Function(Summary) _then) = _$SummaryCopyWithImpl;
 @useResult
 $Res call({
- String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt
+ String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt, bool speakersOutdated
 });
 
 
@@ -357,7 +359,7 @@ class _$SummaryCopyWithImpl<$Res>
 
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,Object? speakersOutdated = null,}) {
   return _then(Summary(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
@@ -370,7 +372,8 @@ as Map<String, dynamic>?,blocks: null == blocks ? _self.blocks : blocks // ignor
 as List<NoteBlock>,sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
 as List<SummarySection>,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,speakersOutdated: null == speakersOutdated ? _self.speakersOutdated : speakersOutdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -455,10 +458,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt,  bool speakersOutdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Summary() when $default != null:
-return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt,_that.speakersOutdated);case _:
   return orElse();
 
 }
@@ -476,10 +479,10 @@ return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt,  bool speakersOutdated)  $default,) {final _that = this;
 switch (_that) {
 case _Summary():
-return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt,_that.speakersOutdated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -496,10 +499,10 @@ return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? templateId,  String? templateName,  SummaryProgress progress,  String? error,  int revision,  Map<String, dynamic>? body,  List<NoteBlock> blocks,  List<SummarySection> sections,  bool sample,  DateTime? createdAt,  bool speakersOutdated)?  $default,) {final _that = this;
 switch (_that) {
 case _Summary() when $default != null:
-return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt);case _:
+return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_that.error,_that.revision,_that.body,_that.blocks,_that.sections,_that.sample,_that.createdAt,_that.speakersOutdated);case _:
   return null;
 
 }
@@ -511,7 +514,7 @@ return $default(_that.id,_that.templateId,_that.templateName,_that.progress,_tha
 
 
 class _Summary implements Summary {
-  const _Summary({this.id, this.templateId, this.templateName, this.progress = SummaryProgress.done, this.error, this.revision = 0,  Map<String, dynamic>? body,  List<NoteBlock> blocks = const <NoteBlock>[],  List<SummarySection> sections = const <SummarySection>[], this.sample = false, this.createdAt}): _body = body,_blocks = blocks,_sections = sections;
+  const _Summary({this.id, this.templateId, this.templateName, this.progress = SummaryProgress.done, this.error, this.revision = 0,  Map<String, dynamic>? body,  List<NoteBlock> blocks = const <NoteBlock>[],  List<SummarySection> sections = const <SummarySection>[], this.sample = false, this.createdAt, this.speakersOutdated = false}): _body = body,_blocks = blocks,_sections = sections;
   
 
 /// Null for the demo sample.
@@ -555,6 +558,9 @@ class _Summary implements Summary {
 /// wrote it.
 @override@JsonKey() final  bool sample;
 @override final  DateTime? createdAt;
+/// Speakers were renamed after the summary was written (XU-15), and
+/// its text has not changed since: names in it may be old.
+@override@JsonKey() final  bool speakersOutdated;
 
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
@@ -566,18 +572,18 @@ _$SummaryCopyWith<_Summary> get copyWith => __$SummaryCopyWithImpl<_Summary>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Summary&&(identical(other.id, id) || other.id == id)&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.templateName, templateName) || other.templateName == templateName)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.error, error) || other.error == error)&&(identical(other.revision, revision) || other.revision == revision)&&const DeepCollectionEquality().equals(other.body, _body)&&const DeepCollectionEquality().equals(other.blocks, _blocks)&&const DeepCollectionEquality().equals(other.sections, _sections)&&(identical(other.sample, sample) || other.sample == sample)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Summary&&(identical(other.id, id) || other.id == id)&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.templateName, templateName) || other.templateName == templateName)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.error, error) || other.error == error)&&(identical(other.revision, revision) || other.revision == revision)&&const DeepCollectionEquality().equals(other.body, _body)&&const DeepCollectionEquality().equals(other.blocks, _blocks)&&const DeepCollectionEquality().equals(other.sections, _sections)&&(identical(other.sample, sample) || other.sample == sample)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.speakersOutdated, speakersOutdated) || other.speakersOutdated == speakersOutdated));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,templateId,templateName,progress,error,revision,const DeepCollectionEquality().hash(_body),const DeepCollectionEquality().hash(_blocks),const DeepCollectionEquality().hash(_sections),sample,createdAt);
+    return Object.hash(runtimeType,id,templateId,templateName,progress,error,revision,const DeepCollectionEquality().hash(_body),const DeepCollectionEquality().hash(_blocks),const DeepCollectionEquality().hash(_sections),sample,createdAt,speakersOutdated);
 }
 
 @override
 String toString() {
-    return 'Summary(id: $id, templateId: $templateId, templateName: $templateName, progress: $progress, error: $error, revision: $revision, body: $body, blocks: $blocks, sections: $sections, sample: $sample, createdAt: $createdAt)';
+    return 'Summary(id: $id, templateId: $templateId, templateName: $templateName, progress: $progress, error: $error, revision: $revision, body: $body, blocks: $blocks, sections: $sections, sample: $sample, createdAt: $createdAt, speakersOutdated: $speakersOutdated)';
 }
 
 
@@ -588,7 +594,7 @@ abstract mixin class _$SummaryCopyWith<$Res> implements $SummaryCopyWith<$Res> {
   factory _$SummaryCopyWith(_Summary value, $Res Function(_Summary) _then) = __$SummaryCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt
+ String? id, String? templateId, String? templateName, SummaryProgress progress, String? error, int revision, Map<String, dynamic>? body, List<NoteBlock> blocks, List<SummarySection> sections, bool sample, DateTime? createdAt, bool speakersOutdated
 });
 
 
@@ -605,7 +611,7 @@ class __$SummaryCopyWithImpl<$Res>
 
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? templateId = freezed,Object? templateName = freezed,Object? progress = null,Object? error = freezed,Object? revision = null,Object? body = freezed,Object? blocks = null,Object? sections = null,Object? sample = null,Object? createdAt = freezed,Object? speakersOutdated = null,}) {
   return _then(_Summary(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,templateId: freezed == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
@@ -618,7 +624,8 @@ as Map<String, dynamic>?,blocks: null == blocks ? _self._blocks : blocks // igno
 as List<NoteBlock>,sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable
 as List<SummarySection>,sample: null == sample ? _self.sample : sample // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,speakersOutdated: null == speakersOutdated ? _self.speakersOutdated : speakersOutdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

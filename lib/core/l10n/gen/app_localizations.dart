@@ -3370,6 +3370,12 @@ abstract class AppLocalizations {
   /// **'Qayta yaratish'**
   String get summaryRegenerate;
 
+  /// No description provided for @summarySpeakersOutdated.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin. Yangilash uchun «Qayta yaratish»ni bosing.'**
+  String get summarySpeakersOutdated;
+
   /// No description provided for @summaryDelete.
   ///
   /// In uz, this message translates to:

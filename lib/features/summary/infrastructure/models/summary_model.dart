@@ -32,6 +32,9 @@ abstract class SummaryModel with _$SummaryModel {
     @JsonKey(name: 'error') @Default('') String error,
     @JsonKey(name: 'revision') @Default(0) int revision,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    // XU-4 / XU-15: set by the server on read; an older server omits both.
+    @JsonKey(name: 'outdated') @Default(false) bool outdated,
+    @JsonKey(name: 'speakers_outdated') @Default(false) bool speakersOutdated,
   }) = _SummaryModel;
 
   const SummaryModel._();
@@ -58,6 +61,8 @@ abstract class SummaryModel with _$SummaryModel {
       body: doc,
       blocks: NoteDocument.parse(doc),
       createdAt: updatedAt,
+      // A text change outranks a rename: the names mark is then not shown.
+      speakersOutdated: speakersOutdated && !outdated,
     );
   }
 }

@@ -136,6 +136,31 @@ void main() {
     expect(find.byKey(const Key('summary_result')), findsOneWidget);
     expect(find.text('Mazmuni'), findsOneWidget);
     expect(find.text('Smeta'), findsOneWidget);
+    expect(find.byKey(const Key('summary_speakers_outdated')), findsNothing);
+  });
+
+  // XU-15: xulosadan keyin ma'ruzachi nomlari o'zgargan.
+  testWidgets('renamed speakers: the summary says its names may be old', (
+    tester,
+  ) async {
+    when(() => facade.load(any())).thenAnswer(
+      (_) async => const Right((
+        summary: Summary(
+          id: 's1',
+          templateName: 'Asosiy xulosa',
+          body: {'type': 'doc'},
+          speakersOutdated: true,
+          blocks: [
+            NoteBlock(kind: NoteBlockKind.paragraph, text: 'Ali gapirdi'),
+          ],
+        ),
+        sample: false,
+      )),
+    );
+    await tester.pumpWidget(_host(SummaryTab(transcript: meetingTranscript())));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('summary_speakers_outdated')), findsOneWidget);
+    expect(find.textContaining('Maʼruzachi nomlari oʻzgargan'), findsOneWidget);
   });
 
   testWidgets('a FAILED server summary shows its own sentence', (tester) async {

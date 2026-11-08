@@ -256,6 +256,10 @@ class _SummaryCard extends StatelessWidget {
             Expanded(child: Text(heading, style: AppText.heading)),
           ],
         ),
+        if (summary.speakersOutdated) ...[
+          const SizedBox(height: 12),
+          const _SpeakersOutdated(),
+        ],
         if (fromServer)
           Padding(
             padding: const EdgeInsets.only(top: 8),
@@ -333,6 +337,36 @@ class _SummaryCard extends StatelessWidget {
       confirmLabel: l10n.summaryDelete,
     );
     if (ok) await cubit.delete();
+  }
+}
+
+/// XU-15: same look as the sentiment tab's outdated banner.
+class _SpeakersOutdated extends StatelessWidget {
+  const _SpeakersOutdated();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('summary_speakers_outdated'),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: const BoxDecoration(
+        color: AppColors.sf1,
+        border: Border(left: BorderSide(color: AppColors.warn, width: 3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.update_rounded, size: 18, color: AppColors.warn),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.summarySpeakersOutdated,
+              style: AppText.caption.copyWith(color: AppColors.cotton),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
