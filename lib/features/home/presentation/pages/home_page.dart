@@ -15,6 +15,8 @@ import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/balance_pill.dart';
 import 'package:transkriptor_uz/features/auth/presentation/widgets/workspace_gate.dart';
+import 'package:transkriptor_uz/features/billing/application/quota_warning_cubit.dart';
+import 'package:transkriptor_uz/features/billing/presentation/widgets/quota_banner.dart';
 import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart';
 import 'package:transkriptor_uz/features/calendar/presentation/widgets/calendar_section.dart';
 import 'package:transkriptor_uz/features/home/presentation/widgets/capture_actions.dart';
@@ -56,10 +58,22 @@ class HomePage extends StatelessWidget {
           maxWidth: ContentWidth.list,
           child: SafeArea(
             child: WorkspaceGate(
-              builder: (context, workspaceId) => BlocProvider(
+              builder: (context, workspaceId) => MultiBlocProvider(
                 key: ValueKey(workspaceId),
-                create: (_) =>
-                    getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        getIt<LibraryBloc>()..add(LibraryStarted(workspaceId)),
+                  ),
+                  // The minute warning (B-18) belongs to this workspace.
+                  BlocProvider(
+                    create: (_) {
+                      final cubit = getIt<QuotaWarningCubit>();
+                      unawaited(cubit.load(workspaceId));
+                      return cubit;
+                    },
+                  ),
+                ],
                 child: const _HomeBody(),
               ),
             ),
@@ -75,7 +89,9 @@ class _HomeBody extends StatelessWidget {
 
   Future<void> _refresh(BuildContext context) async {
     final library = context.read<LibraryBloc>()..add(const LibraryRefreshed());
+    final quota = context.read<QuotaWarningCubit>();
     await Future.wait([
+      if (quota.state.workspaceId case final id?) quota.load(id),
       context.read<AccountCubit>().load(),
       context.read<CalendarCubit>().load(),
       context.read<RecoveryCubit>().load(),
@@ -118,6 +134,7 @@ class _HomeBody extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Align(alignment: Alignment.centerLeft, child: BalancePill()),
+          const QuotaBanner(),
           RecoveryBanner(
             onRecovered: (file) async {
               final recovery = context.read<RecoveryCubit>();

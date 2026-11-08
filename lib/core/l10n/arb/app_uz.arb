@@ -96,6 +96,26 @@
     "placeholders": { "minutes": { "type": "int" } }
   },
 
+  "quotaWarnTitle": "Daqiqa tugayapti: {minutes} daq qoldi.",
+  "@quotaWarnTitle": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "quotaRenews": "Yangilanish: {date}.",
+  "@quotaRenews": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "quotaEnds": "Tarif {date} da tugaydi.",
+  "@quotaEnds": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "quotaFreeOnce": "Bepul daqiqa qayta berilmaydi.",
+  "quotaSeePlans": "Tariflarni koʻrish",
+  "quotaClose": "Ogohlantirishni yopish",
+  "quotaUsed": "Tarif daqiqasining {percent} foizi ishlatildi",
+  "@quotaUsed": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+
   "loginOr": "yoki",
   "loginGoogle": "Google bilan kirish",
   "loginGoogleUnverified": "Google bu pochtani tasdiqlamagan — email va parol bilan kiring.",

@@ -1,0 +1,16 @@
+{
+  "_": "B-18: daqiqa ogohlantirishi darajasi. Mobil nusxasi: tr-mobile/test/fixtures/quota_cases.json (nusxa — qoʻlda tahrirlanmaydi).",
+  "cases": [
+    { "left": 3600, "allowance": 3600, "level": 0, "why": "toʻla" },
+    { "left": 721, "allowance": 3600, "level": 0, "why": "20% dan bir soniya koʻp" },
+    { "left": 720, "allowance": 3600, "level": 80, "why": "aniq 80% ishlatilgan" },
+    { "left": 181, "allowance": 3600, "level": 80, "why": "5% dan bir soniya koʻp" },
+    { "left": 180, "allowance": 3600, "level": 95, "why": "aniq 95% ishlatilgan" },
+    { "left": 0, "allowance": 3600, "level": 95, "why": "tugagan" },
+    { "left": -30, "allowance": 3600, "level": 95, "why": "manfiy balans" },
+    { "left": 9000, "allowance": 3600, "level": 0, "why": "qoʻshimcha sotib olingan — tarifdan koʻp" },
+    { "left": 0, "allowance": 0, "level": 0, "why": "tarifda daqiqa yoʻq — ulush hisoblanmaydi" },
+    { "left": 300, "allowance": 1800, "level": 80, "why": "Bepul 30 daqiqadan 5 daqiqa qoldi" },
+    { "left": 60, "allowance": 1800, "level": 95, "why": "Bepul 30 daqiqadan 1 daqiqa qoldi" }
+  ]
+}

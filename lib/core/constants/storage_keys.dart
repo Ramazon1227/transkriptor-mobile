@@ -18,4 +18,8 @@ abstract final class StorageKeys {
   /// prefix of «already closed for this transcript» (followed by its id).
   static const String speakerIntroOff = 'speaker_intro_off';
   static const String speakerIntroSeen = 'speaker_intro_seen_';
+
+  /// The minute warning (B-18) closed for a period, prefix followed by the
+  /// workspace id; the value is the period key.
+  static const String quotaWarningClosed = 'quota_warning_closed_';
 }
