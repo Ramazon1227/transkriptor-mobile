@@ -473,4 +473,67 @@ void main() {
       expect(await store.countOwnedBy('alice'), 2);
     });
   });
+
+  group('.m4a.part: live while remuxing, a leftover once stale (MB-12)', () {
+    File stalePart(String name) => put(name, [1, 2, 3])
+      ..setLastModifiedSync(
+        DateTime.now().subtract(const Duration(minutes: 11)),
+      );
+
+    test("a stale part does not keep a deleted account's recording", () async {
+      when(() => native.activeScreenPath()).thenAnswer((_) async => null);
+      put('mic_1.aac', adtsFrames(3));
+      put('mic_1.owner', 'alice'.codeUnits);
+      stalePart('mic_1.m4a.part'); // the app was killed mid-remux
+
+      await store.deleteOwnedBy('alice');
+
+      expect(File('${dir.path}/mic_1.aac').existsSync(), isFalse);
+      expect(File('${dir.path}/mic_1.m4a.part').existsSync(), isFalse);
+    });
+
+    test('a stale part does not hide an unlabelled recording', () async {
+      put('mic_1.aac', adtsFrames(3));
+      stalePart('mic_1.m4a.part');
+      tokens.signIn('bob');
+
+      expect((await store.list()).single.path, '${dir.path}/mic_1.aac');
+      expect(File('${dir.path}/mic_1.m4a.part').existsSync(), isFalse);
+    });
+
+    test("the owner's own recording is not offered mid-remux", () async {
+      put('mic_1.aac', adtsFrames(3));
+      put('mic_1.owner', 'alice'.codeUnits);
+      put('mic_1.m4a.part', [1, 2, 3]); // recent: a remux is running
+      tokens.signIn('alice');
+
+      expect(await store.list(), isEmpty);
+      expect(File('${dir.path}/mic_1.aac').existsSync(), isTrue);
+    });
+
+    test('finalize holds the recording while it runs', () async {
+      final aac = put('mic_9.aac', adtsFrames(3)).path;
+      bool? heldDuring;
+      when(() => native.finalize(src: aac, dst: '${dir.path}/mic_9.m4a'))
+          .thenAnswer((_) async {
+            heldDuring = store.isActive(aac);
+            File('${dir.path}/mic_9.m4a').writeAsBytesSync([1, 2, 3]);
+            return const Duration(seconds: 1);
+          });
+
+      await store.finalize(aac);
+
+      expect(heldDuring, isTrue);
+      expect(store.isActive(aac), isFalse);
+    });
+
+    test('a kept label takes its stem: a new recording gets another', () async {
+      put('mic_1000.owner', 'alice'.codeUnits); // a deleted account's marker
+      final path = await store.newPath(
+        RecordingKind.microphone,
+        now: DateTime.fromMillisecondsSinceEpoch(1000),
+      );
+      expect(path, '${dir.path}/mic_1001.aac');
+    });
+  });
 }

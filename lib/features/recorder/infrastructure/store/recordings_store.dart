@@ -75,7 +75,8 @@ class RecordingsStore {
     final dir = await directory();
     final prefix = kind == RecordingKind.screen ? 'screen' : 'mic';
     var ms = (now ?? DateTime.now()).millisecondsSinceEpoch;
-    bool taken(int ms) => ['.aac', '.m4a', '.part.m4a'].any((e) {
+    // `.owner` too: a deleted account's kept label must not attach to it.
+    bool taken(int ms) => ['.aac', '.m4a', '.part.m4a', '.owner'].any((e) {
       final p = '${dir.path}/${prefix}_$ms$e';
       return _active.contains(p) || File(p).existsSync();
     });
@@ -164,9 +165,15 @@ class RecordingsStore {
   /// `.aac` is then kept.
   Future<({String path, Duration duration})> finalize(String aacPath) async {
     final dst = finishedPath(aacPath);
-    final duration = await _native.finalize(src: aacPath, dst: dst);
-    await _deleteQuietly(aacPath);
-    return (path: dst, duration: duration);
+    // Held while the remux runs, so [list] and the deletions leave it.
+    final added = _active.add(aacPath);
+    try {
+      final duration = await _native.finalize(src: aacPath, dst: dst);
+      await _deleteQuietly(aacPath);
+      return (path: dst, duration: duration);
+    } finally {
+      if (added) _active.remove(aacPath);
+    }
   }
 
   /// Every recording no live session holds, newest first. Empty files and
@@ -201,9 +208,9 @@ class RecordingsStore {
       final madeBy = await _readLabel(file.path);
       // Another account's recording: not shown and not touched.
       if (madeBy != null && madeBy != owner) continue;
-      // Mid-remux the .m4a is not there yet: whose it is is decided once
-      // it is, never by claiming it now.
-      if (madeBy == null && _remuxing(_ownerPath(file.path))) continue;
+      // Mid-remux (see [_remuxing]): not offered, and never claimed, until
+      // the .m4a is there; recovering it now would start a second remux.
+      if (_remuxing(_ownerPath(file.path))) continue;
       final interrupted = match.group(3) == 'aac';
       if (interrupted && names.contains(_basename(finishedPath(name)))) {
         await _deleteQuietly(file.path);
@@ -363,10 +370,26 @@ class RecordingsStore {
     }
   }
 
-  /// The Android remux writes `<stem>.m4a.part`, then renames it.
-  static bool _remuxing(String label) =>
-      File('${label.substring(0, label.length - '.owner'.length)}.m4a.part')
-          .existsSync();
+  /// The Android remux writes `<stem>.m4a.part`, then renames it. A part
+  /// older than [_remuxLimit] is what a process killed mid-remux left
+  /// behind: it is deleted and the recording is handled as usual. (A
+  /// remux in this engine is held by [finalize]; a native one by the
+  /// screen status.)
+  static bool _remuxing(String label) {
+    final part = File(
+      '${label.substring(0, label.length - '.owner'.length)}.m4a.part',
+    );
+    try {
+      final age = DateTime.now().difference(part.lastModifiedSync());
+      if (age < _remuxLimit) return true;
+      part.deleteSync();
+    } on FileSystemException {
+      // No part, or gone meanwhile: not remuxing.
+    }
+    return false;
+  }
+
+  static const Duration _remuxLimit = Duration(minutes: 10);
 
   /// Ids of deleted accounts, newest last, one per line; only ids.
   static const String _deletedName = 'deleted_accounts';
@@ -400,15 +423,16 @@ class RecordingsStore {
   /// Recordings of deleted accounts that were still being written then.
   /// Returns those accounts; empty when they cannot be read.
   Future<Set<String>> _purgeDeleted(Iterable<String> exclude) async {
+    var gone = const <String>{};
     try {
-      final gone = (await _readDeleted()).toSet();
+      gone = (await _readDeleted()).toSet();
       if (gone.isNotEmpty) {
         await _deleteStages(await _ownedBy(gone, exclude: exclude));
       }
-      return gone;
     } on Object {
-      return const {}; // Tried again on the next list.
+      // Tried again on the next list; the markers stay either way.
     }
+    return gone;
   }
 
   static Future<AdtsInfo> scan(File file) async {
