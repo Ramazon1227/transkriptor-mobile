@@ -74,6 +74,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get errorTooLarge => 'Fayl juda katta.';
 
   @override
+  String get errorNoteTooLarge =>
+      'Qayd juda katta (chegara — 2 MB). Matnni bir nechta qaydga boʻlib saqlang.';
+
+  @override
   String get errorPendingLimit =>
       'Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.';
 

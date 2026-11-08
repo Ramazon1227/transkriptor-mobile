@@ -56,6 +56,10 @@ sealed class Failure with _$Failure {
   /// stays a [ServerFailure].
   const factory Failure.soleOwner(List<String> workspaces) = SoleOwnerFailure;
 
+  /// 413 NOTE_TOO_LARGE (N-11): the note is over the server's size limit.
+  /// Older servers never send the code; their 413 stays a [ServerFailure].
+  const factory Failure.noteTooLarge() = NoteTooLargeFailure;
+
   /// The answer arrived but did not have the expected shape.
   const factory Failure.parsing() = ParsingFailure;
 
