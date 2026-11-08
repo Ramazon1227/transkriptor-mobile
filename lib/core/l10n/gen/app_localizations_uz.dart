@@ -1902,6 +1902,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get summaryRegenerate => 'Qayta yaratish';
 
   @override
+  String get summarySpeakersOutdated =>
+      'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin.';
+
+  @override
   String get summaryDelete => 'Oʻchirish';
 
   @override

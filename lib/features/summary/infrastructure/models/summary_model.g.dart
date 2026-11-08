@@ -25,6 +25,8 @@ _SummaryModel _$SummaryModelFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
+      outdated: json['outdated'] as bool? ?? false,
+      speakersOutdated: json['speakers_outdated'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SummaryModelToJson(_SummaryModel instance) =>
@@ -38,6 +40,8 @@ Map<String, dynamic> _$SummaryModelToJson(_SummaryModel instance) =>
       'error': instance.error,
       'revision': instance.revision,
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'outdated': instance.outdated,
+      'speakers_outdated': instance.speakersOutdated,
     };
 
 const _$SummaryStatusModelEnumMap = {

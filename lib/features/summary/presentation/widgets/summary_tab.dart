@@ -22,25 +22,68 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 /// one without it the summary is the demo sample and says so
 /// (`DemoBanner`). Lives in a tab view under the player: fills a bounded
 /// height, scrolls itself.
-class SummaryTab extends StatelessWidget {
-  const SummaryTab({required this.transcript, this.onSeek, super.key});
+class SummaryTab extends StatefulWidget {
+  const SummaryTab({
+    required this.transcript,
+    this.onSeek,
+    this.visits = 0,
+    super.key,
+  });
 
   final Transcript transcript;
 
   /// A server `[mm:ss]` in the summary moves the player there (XU-1).
   final ValueChanged<Duration>? onSeek;
 
+  /// Bumped by the editor each time the tab is shown again (it is kept
+  /// alive): the names mark is re-read then (XU-15).
+  final int visits;
+
+  @override
+  State<SummaryTab> createState() => _SummaryTabState();
+}
+
+class _SummaryTabState extends State<SummaryTab> {
+  late final SummaryCubit _cubit = getIt<SummaryCubit>();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_cubit.start(widget.transcript));
+  }
+
+  @override
+  void didUpdateWidget(SummaryTab old) {
+    super.didUpdateWidget(old);
+    if (old.visits != widget.visits ||
+        _speakers(old.transcript) != _speakers(widget.transcript)) {
+      unawaited(_cubit.refreshMarks());
+    }
+  }
+
+  @override
+  void dispose() {
+    unawaited(_cubit.close());
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) {
-        final cubit = getIt<SummaryCubit>();
-        unawaited(cubit.start(transcript));
-        return cubit;
-      },
-      child: _SummaryView(transcript: transcript, onSeek: onSeek),
+    return BlocProvider.value(
+      value: _cubit,
+      child: _SummaryView(transcript: widget.transcript, onSeek: widget.onSeek),
     );
   }
+}
+
+/// Who said what, as the server fingerprints it: each non-empty
+/// segment's speaker id and that speaker's label, in order.
+String _speakers(Transcript t) {
+  final labels = {for (final s in t.speakers) s.id: s.label};
+  return t.segments
+      .where((s) => s.text.trim().isNotEmpty)
+      .map((s) => '${s.speakerId ?? ''}\u0001${labels[s.speakerId] ?? ''}')
+      .join('\u0002');
 }
 
 class _SummaryView extends StatelessWidget {
@@ -271,6 +314,10 @@ class _SummaryCard extends StatelessWidget {
             Expanded(child: Text(heading, style: AppText.heading)),
           ],
         ),
+        if (summary.speakersOutdated) ...[
+          const SizedBox(height: 12),
+          const _SpeakersOutdated(),
+        ],
         if (fromServer)
           Padding(
             padding: const EdgeInsets.only(top: 8),
@@ -350,6 +397,36 @@ class _SummaryCard extends StatelessWidget {
       confirmLabel: l10n.summaryDelete,
     );
     if (ok) await cubit.delete();
+  }
+}
+
+/// XU-15: same look as the sentiment tab's outdated banner.
+class _SpeakersOutdated extends StatelessWidget {
+  const _SpeakersOutdated();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('summary_speakers_outdated'),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: const BoxDecoration(
+        color: AppColors.sf1,
+        border: Border(left: BorderSide(color: AppColors.warn, width: 3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.update_rounded, size: 18, color: AppColors.warn),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.summarySpeakersOutdated,
+              style: AppText.caption.copyWith(color: AppColors.cotton),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
