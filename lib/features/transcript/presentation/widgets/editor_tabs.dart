@@ -49,9 +49,19 @@ class _EditorTabsState extends State<EditorTabs>
   /// Segment id → label, for the Transkript tab's markers.
   Map<String, SentimentLabel> _labels = const {};
 
+  /// The tab last handled: the controller notifies twice for a tap.
+  int _shown = 0;
+
+  /// How many times the kept-alive summary tab was shown again (XU-15).
+  int _summaryVisits = 0;
+
   void _onTab() {
     if (!mounted) return;
     final i = _tabs.index;
+    if (i != _shown) {
+      _shown = i;
+      if (i == _summaryTab && _opened.contains(i)) _summaryVisits++;
+    }
     if (i == _sentimentTab && _sentiment == null) {
       final cubit = getIt<SentimentCubit>();
       _sentiment = cubit;
@@ -90,6 +100,7 @@ class _EditorTabsState extends State<EditorTabs>
       ),
       2 => SummaryTab(
         transcript: widget.transcript,
+        visits: _summaryVisits,
         onSeek: (at) => context.read<PlayerCubit>().seekTo(at, play: true),
       ),
       3 => LearnTab(transcript: widget.transcript),

@@ -54,8 +54,8 @@ abstract class Summary with _$Summary {
     @Default(false) bool sample,
     DateTime? createdAt,
 
-    /// Speakers were renamed after the summary was written (XU-15), and
-    /// its text has not changed since: names in it may be old.
+    /// Speakers were renamed (or segments moved between them) after the
+    /// summary was written (XU-15): names in it may be old.
     @Default(false) bool speakersOutdated,
   }) = _Summary;
 }

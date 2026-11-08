@@ -10,26 +10,21 @@ void main() {
     ...extra,
   };
 
-  // XU-15: ma'ruzachi nomlari o'zgargan; matn o'zgargan bo'lsa u ustun.
-  test(
-    'speakers_outdated is read; a text change or an old server means no mark',
-    () {
-      expect(
-        SummaryModel.fromJson(json({'speakers_outdated': true}))
-            .toEntity()
-            .speakersOutdated,
-        isTrue,
-      );
-      expect(
-        SummaryModel.fromJson(
-          json({'speakers_outdated': true, 'outdated': true}),
-        ).toEntity().speakersOutdated,
-        isFalse,
-      );
-      expect(
-        SummaryModel.fromJson(json()).toEntity().speakersOutdated,
-        isFalse,
-      );
-    },
-  );
+  // XU-15: ma'ruzachi nomlari o'zgargan. Mobilda matn belgisi yo'q, shuning
+  // uchun matn ham o'zgargan bo'lsa ham nomlar belgisi qoladi (review).
+  test('reads speakers_outdated, with or without a text change', () {
+    expect(
+      SummaryModel.fromJson(json({'speakers_outdated': true}))
+          .toEntity()
+          .speakersOutdated,
+      isTrue,
+    );
+    expect(
+      SummaryModel.fromJson(json({'speakers_outdated': true, 'outdated': true}))
+          .toEntity()
+          .speakersOutdated,
+      isTrue,
+    );
+    expect(SummaryModel.fromJson(json()).toEntity().speakersOutdated, isFalse);
+  });
 }

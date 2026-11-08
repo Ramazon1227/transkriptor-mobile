@@ -3373,7 +3373,7 @@ abstract class AppLocalizations {
   /// No description provided for @summarySpeakersOutdated.
   ///
   /// In uz, this message translates to:
-  /// **'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin. Yangilash uchun «Qayta yaratish»ni bosing.'**
+  /// **'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin.'**
   String get summarySpeakersOutdated;
 
   /// No description provided for @summaryDelete.

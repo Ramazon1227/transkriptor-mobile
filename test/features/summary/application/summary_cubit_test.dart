@@ -83,6 +83,25 @@ void main() {
     verifyNever(() => facade.generate(any(), template: any(named: 'template')));
   });
 
+  // XU-15 review: tab qayta ochilganda yoki nomlar o'zgarganda faqat
+  // belgilar yangilanadi — «yuklanmoqda» ko'rinmaydi, matn tegilmaydi.
+  test('refreshMarks updates only the names mark of a ready summary', () async {
+    when(() => facade.load(any()))
+        .thenAnswer((_) async => const Right((summary: _done, sample: false)));
+    refreshes([Right(_done.copyWith(speakersOutdated: true, revision: 9))]);
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.start(meetingTranscript());
+    expect(cubit.state.summary?.speakersOutdated, isFalse);
+    final statuses = <SummaryStatus>[];
+    final sub = cubit.stream.listen((s) => statuses.add(s.status));
+    await cubit.refreshMarks();
+    await sub.cancel();
+    expect(cubit.state.summary?.speakersOutdated, isTrue);
+    expect(cubit.state.summary?.revision, _done.revision);
+    expect(statuses, everyElement(SummaryStatus.success));
+  });
+
   test('loads templates and preselects the preferred one', () async {
     final cubit = build();
     addTearDown(cubit.close);

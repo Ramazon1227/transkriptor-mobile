@@ -1858,7 +1858,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get summarySpeakersOutdated =>
-      'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin. Yangilash uchun «Qayta yaratish»ni bosing.';
+      'Maʼruzachi nomlari oʻzgargan — xulosada eski ismlar qolgan boʻlishi mumkin.';
 
   @override
   String get summaryDelete => 'Oʻchirish';

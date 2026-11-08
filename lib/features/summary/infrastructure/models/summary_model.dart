@@ -61,8 +61,9 @@ abstract class SummaryModel with _$SummaryModel {
       body: doc,
       blocks: NoteDocument.parse(doc),
       createdAt: updatedAt,
-      // A text change outranks a rename: the names mark is then not shown.
-      speakersOutdated: speakersOutdated && !outdated,
+      // The app has no text-changed banner, so the names mark shows even
+      // when the text changed too.
+      speakersOutdated: speakersOutdated,
     );
   }
 }

@@ -211,6 +211,36 @@ class SummaryCubit extends Cubit<SummaryState> {
     );
   }
 
+  /// Re-reads a ready summary for its marks only (XU-15: the tab shown
+  /// again, or speakers renamed meanwhile). No loading state, no text or
+  /// revision change; anything else in flight wins.
+  Future<void> refreshMarks() async {
+    final transcript = _transcript;
+    final current = state.summary;
+    if (transcript == null ||
+        current == null ||
+        state.status != SummaryStatus.success) {
+      return;
+    }
+    final generation = _generation;
+    final result = await _facade.refresh(transcript.id);
+    if (isClosed || generation != _generation) return;
+    final fresh = result.fold((_) => null, (s) => s);
+    final now = state.summary;
+    if (fresh == null ||
+        now == null ||
+        fresh.id != now.id ||
+        fresh.progress != SummaryProgress.done ||
+        state.status != SummaryStatus.success) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        summary: now.copyWith(speakersOutdated: fresh.speakersOutdated),
+      ),
+    );
+  }
+
   /// Shows [summary] by its progress; a PENDING one is polled.
   void _apply(int generation, Summary? summary) {
     if (summary == null) {

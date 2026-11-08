@@ -163,6 +163,27 @@ void main() {
     expect(find.textContaining('Maʼruzachi nomlari oʻzgargan'), findsOneWidget);
   });
 
+  // XU-15 review: tab qayta ochilganda (visits) belgi yangilanadi.
+  testWidgets('a revisit refreshes the names mark', (tester) async {
+    const ready = Summary(
+      id: 's1',
+      templateName: 'Asosiy xulosa',
+      body: {'type': 'doc'},
+      blocks: [NoteBlock(kind: NoteBlockKind.paragraph, text: 'Ali gapirdi')],
+    );
+    when(() => facade.load(any()))
+        .thenAnswer((_) async => const Right((summary: ready, sample: false)));
+    when(() => facade.refresh(any()))
+        .thenAnswer((_) async => Right(ready.copyWith(speakersOutdated: true)));
+    final t = meetingTranscript();
+    await tester.pumpWidget(_host(SummaryTab(transcript: t)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('summary_speakers_outdated')), findsNothing);
+    await tester.pumpWidget(_host(SummaryTab(transcript: t, visits: 1)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('summary_speakers_outdated')), findsOneWidget);
+  });
+
   testWidgets('a FAILED server summary shows its own sentence', (tester) async {
     when(() => facade.load(any())).thenAnswer(
       (_) async => const Right((
