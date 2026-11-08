@@ -2367,6 +2367,14 @@ class AppLocalizationsUz extends AppLocalizations {
       'Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.';
 
   @override
+  String get sentimentOutdatedBodyViewer =>
+      'Natija eski matn boʻyicha. Yangilashni tahrirlash huquqi bor aʼzo qiladi.';
+
+  @override
+  String get sentimentViewerWhy =>
+      'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlaydi — sizda faqat oʻqish huquqi bor.';
+
+  @override
   String get sentimentOverall => 'Umumiy kayfiyat';
 
   @override

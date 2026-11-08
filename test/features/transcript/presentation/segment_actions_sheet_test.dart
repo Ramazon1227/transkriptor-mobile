@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
@@ -32,6 +33,7 @@ const _transcript = Transcript(
   ],
   segments: [_segment],
   revision: 2,
+  role: WorkspaceRole.member,
 );
 
 void main() {

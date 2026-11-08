@@ -37,7 +37,11 @@ class EditorActionsSheet extends StatelessWidget {
           final transcript = state.transcript;
           final hasSpeakers = transcript?.speakers.isNotEmpty ?? false;
           final hasText = transcript?.segments.isNotEmpty ?? false;
-          final canReplay = transcript?.mediaId.isNotEmpty ?? false;
+          // A VIEWER (E-11): no edit mode, rename, share or re-run — the
+          // server refuses them; reading, export, comments and rating stay.
+          final canWrite = transcript?.role.canWrite ?? false;
+          final canReplay =
+              canWrite && (transcript?.mediaId.isNotEmpty ?? false);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -65,22 +69,24 @@ class EditorActionsSheet extends StatelessWidget {
                       onTap: p.$1 ? () => pop(FileAction.speed) : null,
                     ),
                   ),
-                  ActionRow(
-                    key: const Key('file_edit'),
-                    icon: Icons.edit_outlined,
-                    label: l10n.editorEdit,
-                    onTap: () => cubit.setEditMode(value: !state.editMode),
-                    trailing: Switch(
-                      value: state.editMode,
-                      onChanged: (v) => cubit.setEditMode(value: v),
+                  if (canWrite) ...[
+                    ActionRow(
+                      key: const Key('file_edit'),
+                      icon: Icons.edit_outlined,
+                      label: l10n.editorEdit,
+                      onTap: () => cubit.setEditMode(value: !state.editMode),
+                      trailing: Switch(
+                        value: state.editMode,
+                        onChanged: (v) => cubit.setEditMode(value: v),
+                      ),
                     ),
-                  ),
-                  ActionRow(
-                    key: const Key('file_rename'),
-                    icon: Icons.title_rounded,
-                    label: l10n.editorRenameTitle,
-                    onTap: () => pop(FileAction.rename),
-                  ),
+                    ActionRow(
+                      key: const Key('file_rename'),
+                      icon: Icons.title_rounded,
+                      label: l10n.editorRenameTitle,
+                      onTap: () => pop(FileAction.rename),
+                    ),
+                  ],
                   if (transcript != null && SpeakerIntro.canReopen(transcript))
                     ActionRow(
                       key: const Key('file_speakers'),
@@ -100,12 +106,13 @@ class EditorActionsSheet extends StatelessWidget {
                       label: l10n.exportTitle,
                       onTap: () => pop(FileAction.export),
                     ),
-                  ActionRow(
-                    key: const Key('file_share'),
-                    icon: Icons.ios_share_rounded,
-                    label: l10n.shareTitle,
-                    onTap: () => pop(FileAction.share),
-                  ),
+                  if (canWrite)
+                    ActionRow(
+                      key: const Key('file_share'),
+                      icon: Icons.ios_share_rounded,
+                      label: l10n.shareTitle,
+                      onTap: () => pop(FileAction.share),
+                    ),
                   ActionRow(
                     key: const Key('file_comments'),
                     icon: Icons.chat_bubble_outline_rounded,

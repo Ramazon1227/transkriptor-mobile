@@ -1,3 +1,4 @@
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
 
 /// Sentences that read like a meeting: long enough for the demo summary
@@ -13,7 +14,13 @@ const List<String> meetingLines = [
   'Yigʻilish yakunida barcha qarorlar bayonnomaga kiritiladi, tamom.',
 ];
 
-Transcript meetingTranscript({String id = 't1', int segments = 8}) {
+/// A MEMBER's view unless [role] says otherwise (E-11: a VIEWER gets no
+/// write buttons).
+Transcript meetingTranscript({
+  String id = 't1',
+  int segments = 8,
+  WorkspaceRole role = WorkspaceRole.member,
+}) {
   final speakers = [
     const Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1),
     const Speaker(id: 's2', label: 'Maʼruzachi 2', ordinal: 2),
@@ -21,6 +28,7 @@ Transcript meetingTranscript({String id = 't1', int segments = 8}) {
   return Transcript(
     id: id,
     title: 'Yigʻilish 28-oktabr',
+    role: role,
     speakers: speakers,
     segments: [
       for (var i = 0; i < segments; i++)

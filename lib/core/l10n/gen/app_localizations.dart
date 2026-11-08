@@ -4282,6 +4282,18 @@ abstract class AppLocalizations {
   /// **'Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.'**
   String get sentimentOutdatedBody;
 
+  /// No description provided for @sentimentOutdatedBodyViewer.
+  ///
+  /// In uz, this message translates to:
+  /// **'Natija eski matn boʻyicha. Yangilashni tahrirlash huquqi bor aʼzo qiladi.'**
+  String get sentimentOutdatedBodyViewer;
+
+  /// No description provided for @sentimentViewerWhy.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlaydi — sizda faqat oʻqish huquqi bor.'**
+  String get sentimentViewerWhy;
+
   /// No description provided for @sentimentOverall.
   ///
   /// In uz, this message translates to:

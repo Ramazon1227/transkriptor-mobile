@@ -12,6 +12,10 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 
 import '../../../helpers/sentiment_fakes.dart';
 
+const _viewerWhy =
+    'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlaydi — '
+    'sizda faqat oʻqish huquqi bor.';
+
 void main() {
   late FakeSentimentFacade facade;
 
@@ -21,7 +25,10 @@ void main() {
   // tear-down runs outside the widget test's fake-async zone, and closing
   // a cubit whose stream still has the BlocBuilder listening waits on a
   // microtask that zone no longer runs — the whole file hung on it.
-  Future<SentimentCubit> pump(WidgetTester tester) async {
+  Future<SentimentCubit> pump(
+    WidgetTester tester, {
+    bool canWrite = true,
+  }) async {
     final cubit = SentimentCubit(
       facade,
       SentimentPollPolicy.custom(interval: const Duration(seconds: 3)),
@@ -33,8 +40,9 @@ void main() {
         home: Scaffold(
           body: BlocProvider.value(
             value: cubit,
-            child: const SentimentTab(
-              speakers: [Speaker(id: 's1', label: 'Dilnoza', ordinal: 1)],
+            child: SentimentTab(
+              speakers: const [Speaker(id: 's1', label: 'Dilnoza', ordinal: 1)],
+              canWrite: canWrite,
             ),
           ),
         ),
@@ -134,6 +142,50 @@ void main() {
     await tester.pump();
     expect(facade.analyzeCalls, 1);
     await dispose(tester, cubit);
+  });
+
+  group('a VIEWER (E-11)', () {
+    testWidgets('sees the explanation but no start button', (tester) async {
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_intro')), findsOneWidget);
+      expect(find.byKey(const Key('sentiment_start')), findsNothing);
+      expect(find.text(_viewerWhy), findsOneWidget);
+      await dispose(tester, cubit);
+    });
+
+    testWidgets('sees a finished analysis but no re-run', (tester) async {
+      facade.answer(Right(doneAnalysis.copyWith(outdated: true)));
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_overall')), findsOneWidget);
+      // The banner does not send a viewer to a button it has not got.
+      expect(find.textContaining('qayta tahlil qiling'), findsNothing);
+      expect(
+        find.text(
+          'Natija eski matn boʻyicha. Yangilashni tahrirlash huquqi '
+          'bor aʼzo qiladi.',
+        ),
+        findsOneWidget,
+      );
+      await tester.drag(
+        find.byKey(const Key('sentiment_list')),
+        const Offset(0, -2000),
+      );
+      await tester.pump();
+      expect(find.byKey(const Key('sentiment_rerun')), findsNothing);
+      await dispose(tester, cubit);
+    });
+
+    testWidgets('sees a failed analysis but no retry', (tester) async {
+      facade.answer(
+        const Right(SentimentAnalysis(status: SentimentStatus.failed)),
+      );
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_failed')), findsOneWidget);
+      expect(find.byKey(const Key('sentiment_retry')), findsNothing);
+      expect(find.textContaining('qayta urinib'), findsNothing);
+      expect(find.text(_viewerWhy), findsOneWidget);
+      await dispose(tester, cubit);
+    });
   });
 
   test('score format', () {

@@ -12,14 +12,15 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 /// machine's marker; the text is in the reading colour, never mint. The
 /// segment under the playhead gets a saffron left edge.
 ///
-/// The chip opens the speaker menu, the timecode seeks the player there.
+/// The chip opens the speaker menu (none for a VIEWER: [onSpeakerTap] is
+/// null and the chip is a plain label), the timecode seeks the player there.
 /// A double tap edits the text (only given in edit mode), a long press
 /// opens the segment's menu.
 class SegmentTile extends StatelessWidget {
   const SegmentTile({
     required this.segment,
-    required this.onSpeakerTap,
     required this.onLongPress,
+    this.onSpeakerTap,
     this.speaker,
     this.showSpeaker = true,
     this.active = false,
@@ -42,7 +43,7 @@ class SegmentTile extends StatelessWidget {
 
   /// Under the playhead.
   final bool active;
-  final VoidCallback onSpeakerTap;
+  final VoidCallback? onSpeakerTap;
   final VoidCallback onLongPress;
 
   /// Edit mode only.
@@ -166,7 +167,7 @@ class _SpeakerChip extends StatelessWidget {
   const _SpeakerChip({required this.speaker, required this.onTap});
 
   final Speaker speaker;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -199,11 +200,12 @@ class _SpeakerChip extends StatelessWidget {
                     .weighted(FontWeight.w500),
               ),
             ),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 18,
-              color: AppColors.mutedDark,
-            ),
+            if (onTap != null)
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 18,
+                color: AppColors.mutedDark,
+              ),
           ],
         ),
       ),
