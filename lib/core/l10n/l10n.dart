@@ -25,6 +25,7 @@ extension FailureMessage on Failure {
     SoleOwnerFailure(:final workspaces) => l10n.deleteSoleOwnerIn(
       workspaces.join(', '),
     ),
+    LastAdminFailure() => l10n.deleteLastAdmin,
     ParsingFailure() => l10n.errorParsing,
     PermissionDeniedFailure() => l10n.errorMicPermission,
     StorageFailure() => l10n.errorStorage,

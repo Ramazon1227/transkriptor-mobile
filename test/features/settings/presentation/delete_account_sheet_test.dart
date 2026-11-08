@@ -64,4 +64,12 @@ void main() {
       'Avval egalikni boshqa aʼzoga bering.',
     );
   });
+
+  testWidgets('LAST_ADMIN says why, not «sole owner» (AD-1)', (tester) async {
+    final error = await refusal(tester, const Failure.lastAdmin());
+    expect(
+      error,
+      'Siz yagona platforma adminisiz — avval boshqa hisobni admin qiling.',
+    );
+  });
 }

@@ -56,6 +56,10 @@ sealed class Failure with _$Failure {
   /// stays a [ServerFailure].
   const factory Failure.soleOwner(List<String> workspaces) = SoleOwnerFailure;
 
+  /// 409 LAST_ADMIN on account deletion (AD-1): the person is the only
+  /// platform admin. Older servers never send it.
+  const factory Failure.lastAdmin() = LastAdminFailure;
+
   /// The answer arrived but did not have the expected shape.
   const factory Failure.parsing() = ParsingFailure;
 
