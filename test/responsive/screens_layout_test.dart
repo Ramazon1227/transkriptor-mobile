@@ -317,6 +317,7 @@ final _transcript = Transcript(
   duration: const Duration(hours: 2, minutes: 59, seconds: 59),
   speakers: _speakers,
   revision: 3,
+  role: WorkspaceRole.member,
   segments: [
     for (var i = 0; i < 200; i++)
       Segment(
@@ -689,7 +690,7 @@ final Map<String, SentimentLabel> _sentimentLabels = {
 Widget _sentimentTab() => _tabHost(
   BlocProvider<SentimentCubit>.value(
     value: sentiment,
-    child: SentimentTab(speakers: _speakers),
+    child: SentimentTab(speakers: _speakers, canWrite: true),
   ),
 );
 

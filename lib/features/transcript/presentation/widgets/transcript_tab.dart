@@ -142,7 +142,8 @@ class _TranscriptTabState extends State<TranscriptTab> {
                                   .read<TranscriptCubit>()
                                   .filterSpeaker,
                             ),
-                          if (state.editMode) const _EditHint(),
+                          if (state.editMode && transcript.role.canWrite)
+                            const _EditHint(),
                         ],
                       ),
                     ),
@@ -198,6 +199,8 @@ class _Segments extends StatelessWidget {
     final transcript = state.transcript!;
     final speakers = {for (final s in transcript.speakers) s.id: s};
     final segments = state.visibleSegments;
+    // A VIEWER reads, plays and comments; the server refuses its edits.
+    final canWrite = transcript.role.canWrite;
     return BlocBuilder<PlayerCubit, PlayerState>(
       // Rebuilt when the highlighted segment or playability changes, not
       // on every position tick.
@@ -228,10 +231,11 @@ class _Segments extends StatelessWidget {
               showSpeaker: state.showSpeakers,
               active: segment.id == active,
               sentiment: sentiment[segment.id],
-              onSpeakerTap: () =>
-                  EditorActions.speakerMenu(context, segment.id),
+              onSpeakerTap: canWrite
+                  ? () => EditorActions.speakerMenu(context, segment.id)
+                  : null,
               onLongPress: () => EditorActions.segmentMenu(context, segment),
-              onDoubleTap: state.editMode
+              onDoubleTap: state.editMode && canWrite
                   ? () => EditorActions.editText(context, segment)
                   : null,
               onTimeTap: canPlay
@@ -309,13 +313,14 @@ class _Toolbar extends StatelessWidget {
                 color: tint(on: state.speakerFilter != null),
               ),
             ),
-          IconButton(
-            key: const Key('transcript_edit_mode'),
-            tooltip: l10n.editorEdit,
-            isSelected: state.editMode,
-            onPressed: () => cubit.setEditMode(value: !state.editMode),
-            icon: Icon(Icons.edit_outlined, color: tint(on: state.editMode)),
-          ),
+          if (transcript.role.canWrite)
+            IconButton(
+              key: const Key('transcript_edit_mode'),
+              tooltip: l10n.editorEdit,
+              isSelected: state.editMode,
+              onPressed: () => cubit.setEditMode(value: !state.editMode),
+              icon: Icon(Icons.edit_outlined, color: tint(on: state.editMode)),
+            ),
         ],
       ),
     );

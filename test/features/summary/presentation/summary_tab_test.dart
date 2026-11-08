@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/job/application/job_poll_policy.dart';
 import 'package:transkriptor_uz/features/notes/domain/note_document.dart';
 import 'package:transkriptor_uz/features/summary/application/summary_cubit.dart';
@@ -153,5 +154,62 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Model hozir javob bermadi.'), findsOneWidget);
     expect(find.byKey(const Key('summary_retry')), findsOneWidget);
+  });
+
+  group('a VIEWER (E-11)', () {
+    final viewer = meetingTranscript(role: WorkspaceRole.viewer);
+
+    testWidgets('no summary yet: no template chip, no create button', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(SummaryTab(transcript: viewer)));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('summary_empty')), findsOneWidget);
+      expect(find.byKey(const Key('summary_create')), findsNothing);
+      expect(find.byKey(const Key('summary_template_chip')), findsNothing);
+    });
+
+    testWidgets('a summary: copy and Notes, no rewrite or delete', (
+      tester,
+    ) async {
+      when(() => facade.load(any())).thenAnswer(
+        (_) async => const Right((
+          summary: Summary(
+            id: 's1',
+            templateName: 'Asosiy xulosa',
+            body: {'type': 'doc'},
+            blocks: [
+              NoteBlock(kind: NoteBlockKind.heading, text: 'Mazmuni', level: 2),
+            ],
+          ),
+          sample: false,
+        )),
+      );
+      await tester.pumpWidget(_host(SummaryTab(transcript: viewer)));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('summary_copy')), findsOneWidget);
+      expect(find.byKey(const Key('summary_save_note')), findsOneWidget);
+      expect(find.byKey(const Key('summary_regenerate')), findsNothing);
+      expect(find.byKey(const Key('summary_delete')), findsNothing);
+    });
+
+    testWidgets('a FAILED server summary: the sentence, no retry', (
+      tester,
+    ) async {
+      when(() => facade.load(any())).thenAnswer(
+        (_) async => const Right((
+          summary: Summary(
+            id: 's1',
+            progress: SummaryProgress.failed,
+            error: 'Model hozir javob bermadi.',
+          ),
+          sample: false,
+        )),
+      );
+      await tester.pumpWidget(_host(SummaryTab(transcript: viewer)));
+      await tester.pumpAndSettle();
+      expect(find.text('Model hozir javob bermadi.'), findsOneWidget);
+      expect(find.byKey(const Key('summary_retry')), findsNothing);
+    });
   });
 }

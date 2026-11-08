@@ -95,7 +95,10 @@ class _EditorTabsState extends State<EditorTabs>
       3 => LearnTab(transcript: widget.transcript),
       _ => BlocProvider<SentimentCubit>.value(
         value: _sentiment!,
-        child: SentimentTab(speakers: widget.transcript.speakers),
+        child: SentimentTab(
+          speakers: widget.transcript.speakers,
+          canWrite: widget.transcript.role.canWrite,
+        ),
       ),
     };
   }

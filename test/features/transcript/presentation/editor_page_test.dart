@@ -73,6 +73,7 @@ const _transcript = Transcript(
     ),
   ],
   revision: 2,
+  role: WorkspaceRole.member,
 );
 
 void main() {
@@ -573,6 +574,67 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('ulashish havolalari'), findsOneWidget);
+    });
+  });
+
+  group('a VIEWER (E-11)', () {
+    setUp(() {
+      when(() => facade.getTranscript('t1')).thenAnswer(
+        (_) async => Right(_transcript.copyWith(role: WorkspaceRole.viewer)),
+      );
+    });
+
+    testWidgets('the «…» sheet keeps reading actions only', (tester) async {
+      await pumpPage(tester);
+      await tester.tap(find.byKey(const Key('transcript_more')));
+      await tester.pumpAndSettle();
+      for (final key in [
+        'file_show_speakers',
+        'file_speed',
+        'file_export',
+        'file_comments',
+        'file_rating',
+      ]) {
+        expect(find.byKey(Key(key)), findsOneWidget, reason: key);
+      }
+      for (final key in [
+        'file_edit',
+        'file_rename',
+        'file_share',
+        'file_retranscribe',
+      ]) {
+        expect(find.byKey(Key(key)), findsNothing, reason: key);
+      }
+    });
+
+    testWidgets('no pencil, and the title and speaker chip open nothing', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      expect(find.byKey(const Key('transcript_edit_mode')), findsNothing);
+      await tester.tap(find.byKey(const Key('transcript_title')));
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+      await tester.tap(find.byKey(const Key('speaker_chip_s1')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('assign_new')), findsNothing);
+    });
+
+    testWidgets('a long press offers the comment only', (tester) async {
+      await pumpPage(tester);
+      await tester.longPress(find.text('birinchi gap'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('segment_comment')), findsOneWidget);
+      for (final key in [
+        'assign_s1',
+        'assign_new',
+        'rename_s1',
+        'segment_edit',
+        'merge_next',
+        'segment_delete',
+      ]) {
+        expect(find.byKey(Key(key)), findsNothing, reason: key);
+      }
     });
   });
 

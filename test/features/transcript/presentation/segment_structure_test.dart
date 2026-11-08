@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
+import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
 import 'package:transkriptor_uz/features/transcript/application/speaker_intro_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/application/transcript_cubit.dart';
 import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.dart';
@@ -36,6 +37,7 @@ const _transcript = Transcript(
   speakers: [Speaker(id: 's1', label: 'Maʼruzachi 1', ordinal: 1)],
   segments: [_a, _b],
   revision: 2,
+  role: WorkspaceRole.member,
 );
 
 void main() {
@@ -46,7 +48,11 @@ void main() {
     when(() => facade.getTranscript('t1'))
         .thenAnswer((_) async => const Right(_transcript));
     getIt.registerFactory(() => TranscriptCubit(facade));
-    getIt.registerFactory(() => SpeakerIntroCubit(FakeSpeakerIntroFacade()));
+    // A writer with default speaker names would be asked to name them (E-6);
+    // its own tests are in editor_page_test.
+    getIt.registerFactory(
+      () => SpeakerIntroCubit(FakeSpeakerIntroFacade()..off = true),
+    );
     registerEditorFakes();
   });
   tearDown(getIt.reset);

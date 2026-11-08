@@ -19,11 +19,19 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 /// markers). Lives in a tab view under the player: fills a bounded
 /// height, scrolls itself.
 class SentimentTab extends StatelessWidget {
-  const SentimentTab({this.speakers = const [], super.key});
+  const SentimentTab({
+    required this.canWrite,
+    this.speakers = const [],
+    super.key,
+  });
 
   /// The transcript's speakers, for their colour dots. The names come
   /// from the analysis (it follows renames).
   final List<Speaker> speakers;
+
+  /// False for a VIEWER: it sees the analysis but cannot start one (the
+  /// server answers 403), so no start, re-run or retry button.
+  final bool canWrite;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +77,12 @@ class SentimentTab extends StatelessWidget {
     final cubit = context.read<SentimentCubit>();
     final analysis = state.analysis;
     if (analysis == null) {
-      return [_Intro(starting: state.starting, onStart: cubit.analyze)];
+      return [
+        _Intro(
+          starting: state.starting,
+          onStart: canWrite ? cubit.analyze : null,
+        ),
+      ];
     }
     final rerun = _RerunButton(
       key: const Key('sentiment_rerun'),
@@ -92,14 +105,16 @@ class SentimentTab extends StatelessWidget {
                 analysis.error ?? l10n.sentimentFailedGeneric,
                 style: AppText.body.copyWith(color: AppColors.bad),
               ),
-              const SizedBox(height: 16),
-              _RerunButton(
-                key: const Key('sentiment_retry'),
-                label: l10n.retry,
-                starting: state.starting,
-                onPressed: state.canStart ? cubit.analyze : null,
-                filled: true,
-              ),
+              if (canWrite) ...[
+                const SizedBox(height: 16),
+                _RerunButton(
+                  key: const Key('sentiment_retry'),
+                  label: l10n.retry,
+                  starting: state.starting,
+                  onPressed: state.canStart ? cubit.analyze : null,
+                  filled: true,
+                ),
+              ],
             ],
           ),
         ];
@@ -129,8 +144,10 @@ class SentimentTab extends StatelessWidget {
               style: AppText.caption,
             ),
           ],
-          const SizedBox(height: 20),
-          Align(alignment: AlignmentDirectional.centerStart, child: rerun),
+          if (canWrite) ...[
+            const SizedBox(height: 20),
+            Align(alignment: AlignmentDirectional.centerStart, child: rerun),
+          ],
         ];
     }
   }
@@ -169,7 +186,9 @@ class _Intro extends StatelessWidget {
   const _Intro({required this.starting, required this.onStart});
 
   final bool starting;
-  final VoidCallback onStart;
+
+  /// Null for a VIEWER: the card explains, no button.
+  final VoidCallback? onStart;
 
   @override
   Widget build(BuildContext context) {
@@ -182,14 +201,16 @@ class _Intro extends StatelessWidget {
         Text(l10n.sentimentIntroTitle, style: AppText.heading),
         const SizedBox(height: 4),
         Text(l10n.sentimentIntroBody, style: AppText.caption),
-        const SizedBox(height: 16),
-        _RerunButton(
-          key: const Key('sentiment_start'),
-          label: l10n.sentimentAnalyze,
-          starting: starting,
-          onPressed: starting ? null : onStart,
-          filled: true,
-        ),
+        if (onStart != null) ...[
+          const SizedBox(height: 16),
+          _RerunButton(
+            key: const Key('sentiment_start'),
+            label: l10n.sentimentAnalyze,
+            starting: starting,
+            onPressed: starting ? null : onStart,
+            filled: true,
+          ),
+        ],
       ],
     );
   }

@@ -21,7 +21,10 @@ void main() {
   // tear-down runs outside the widget test's fake-async zone, and closing
   // a cubit whose stream still has the BlocBuilder listening waits on a
   // microtask that zone no longer runs — the whole file hung on it.
-  Future<SentimentCubit> pump(WidgetTester tester) async {
+  Future<SentimentCubit> pump(
+    WidgetTester tester, {
+    bool canWrite = true,
+  }) async {
     final cubit = SentimentCubit(
       facade,
       SentimentPollPolicy.custom(interval: const Duration(seconds: 3)),
@@ -33,8 +36,9 @@ void main() {
         home: Scaffold(
           body: BlocProvider.value(
             value: cubit,
-            child: const SentimentTab(
-              speakers: [Speaker(id: 's1', label: 'Dilnoza', ordinal: 1)],
+            child: SentimentTab(
+              speakers: const [Speaker(id: 's1', label: 'Dilnoza', ordinal: 1)],
+              canWrite: canWrite,
             ),
           ),
         ),
@@ -134,6 +138,38 @@ void main() {
     await tester.pump();
     expect(facade.analyzeCalls, 1);
     await dispose(tester, cubit);
+  });
+
+  group('a VIEWER (E-11)', () {
+    testWidgets('sees the explanation but no start button', (tester) async {
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_intro')), findsOneWidget);
+      expect(find.byKey(const Key('sentiment_start')), findsNothing);
+      await dispose(tester, cubit);
+    });
+
+    testWidgets('sees a finished analysis but no re-run', (tester) async {
+      facade.answer(const Right(doneAnalysis));
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_overall')), findsOneWidget);
+      await tester.drag(
+        find.byKey(const Key('sentiment_list')),
+        const Offset(0, -2000),
+      );
+      await tester.pump();
+      expect(find.byKey(const Key('sentiment_rerun')), findsNothing);
+      await dispose(tester, cubit);
+    });
+
+    testWidgets('sees a failed analysis but no retry', (tester) async {
+      facade.answer(
+        const Right(SentimentAnalysis(status: SentimentStatus.failed)),
+      );
+      final cubit = await pump(tester, canWrite: false);
+      expect(find.byKey(const Key('sentiment_failed')), findsOneWidget);
+      expect(find.byKey(const Key('sentiment_retry')), findsNothing);
+      await dispose(tester, cubit);
+    });
   });
 
   test('score format', () {

@@ -144,13 +144,17 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = context.select<TranscriptCubit, String?>(
-      (c) => c.state.transcript?.title,
+    final (title, canWrite) = context.select<TranscriptCubit, (String?, bool)>(
+      (c) => (
+        c.state.transcript?.title,
+        c.state.transcript?.role.canWrite ?? false,
+      ),
     );
     if (title == null) return const SizedBox.shrink();
     return InkWell(
       key: const Key('transcript_title'),
-      onTap: () => EditorActions.renameTitle(context),
+      // A VIEWER cannot rename (E-11).
+      onTap: canWrite ? () => EditorActions.renameTitle(context) : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Text(

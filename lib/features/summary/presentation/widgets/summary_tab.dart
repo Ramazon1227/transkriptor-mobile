@@ -87,8 +87,11 @@ class _SummaryView extends StatelessWidget {
                 text: l10n.summaryTooShort,
               )
             else ...[
-              _TemplateChip(state: state),
-              const SizedBox(height: 12),
+              // The template only matters to someone who can write one.
+              if (transcript.role.canWrite) ...[
+                _TemplateChip(state: state),
+                const SizedBox(height: 12),
+              ],
               _body(context, state),
             ],
           ],
@@ -100,11 +103,14 @@ class _SummaryView extends StatelessWidget {
   Widget _body(BuildContext context, SummaryState state) {
     final l10n = context.l10n;
     final cubit = context.read<SummaryCubit>();
+    // A VIEWER reads the summary; writing, rewriting and deleting it is
+    // refused by the server (E-11).
+    final canWrite = transcript.role.canWrite;
     switch (state.status) {
       case SummaryStatus.tooShort:
         return const SizedBox.shrink();
       case SummaryStatus.idle:
-        return _Empty(onCreate: cubit.generate);
+        return _Empty(onCreate: canWrite ? cubit.generate : null);
       case SummaryStatus.loading:
         return _Notice(
           key: const Key('summary_loading'),
@@ -128,12 +134,16 @@ class _SummaryView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(text, style: AppText.body.copyWith(color: AppColors.bad)),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              key: const Key('summary_retry'),
-              onPressed: cubit.retry,
-              child: Text(l10n.retry),
-            ),
+            // retry() writes again after a failed write; a VIEWER never
+            // writes, so a request failure is its load and may be retried.
+            if (canWrite || failure != null) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                key: const Key('summary_retry'),
+                onPressed: cubit.retry,
+                child: Text(l10n.retry),
+              ),
+            ],
           ],
         );
       case SummaryStatus.success:
@@ -193,7 +203,8 @@ class _TemplateChip extends StatelessWidget {
 class _Empty extends StatelessWidget {
   const _Empty({required this.onCreate});
 
-  final VoidCallback onCreate;
+  /// Null for a VIEWER: no button and no «choose a template» line.
+  final VoidCallback? onCreate;
 
   @override
   Widget build(BuildContext context) {
@@ -211,14 +222,16 @@ class _Empty extends StatelessWidget {
           const Icon(Icons.auto_awesome, color: AppColors.mint, size: 22),
           const SizedBox(height: 8),
           Text(l10n.summaryEmptyTitle, style: AppText.heading),
-          const SizedBox(height: 4),
-          Text(l10n.summaryEmptyBody, style: AppText.caption),
-          const SizedBox(height: 16),
-          FilledButton(
-            key: const Key('summary_create'),
-            onPressed: onCreate,
-            child: Text(l10n.summaryCreate),
-          ),
+          if (onCreate case final create?) ...[
+            const SizedBox(height: 4),
+            Text(l10n.summaryEmptyBody, style: AppText.caption),
+            const SizedBox(height: 16),
+            FilledButton(
+              key: const Key('summary_create'),
+              onPressed: create,
+              child: Text(l10n.summaryCreate),
+            ),
+          ],
         ],
       ),
     );
@@ -245,6 +258,7 @@ class _SummaryCard extends StatelessWidget {
     final heading = summary.templateName ?? l10n.summaryTemplateDefault;
     final sections = resolveSectionTitles(l10n, summary.sections);
     final fromServer = summary.body != null;
+    final canWrite = transcript.role.canWrite;
     return Column(
       key: const Key('summary_result'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -279,12 +293,13 @@ class _SummaryCard extends StatelessWidget {
               icon: const Icon(Icons.copy_rounded, size: 18),
               label: Text(l10n.summaryCopy),
             ),
-            OutlinedButton.icon(
-              key: const Key('summary_regenerate'),
-              onPressed: cubit.generate,
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: Text(l10n.summaryRegenerate),
-            ),
+            if (canWrite)
+              OutlinedButton.icon(
+                key: const Key('summary_regenerate'),
+                onPressed: cubit.generate,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: Text(l10n.summaryRegenerate),
+              ),
             OutlinedButton.icon(
               key: const Key('summary_save_note'),
               onPressed: saving
@@ -301,13 +316,14 @@ class _SummaryCard extends StatelessWidget {
                   : const Icon(Icons.note_add_outlined, size: 18),
               label: Text(l10n.summarySaveNote),
             ),
-            OutlinedButton.icon(
-              key: const Key('summary_delete'),
-              style: OutlinedButton.styleFrom(foregroundColor: AppColors.bad),
-              onPressed: () => _delete(context),
-              icon: const Icon(Icons.delete_outline_rounded, size: 18),
-              label: Text(l10n.summaryDelete),
-            ),
+            if (canWrite)
+              OutlinedButton.icon(
+                key: const Key('summary_delete'),
+                style: OutlinedButton.styleFrom(foregroundColor: AppColors.bad),
+                onPressed: () => _delete(context),
+                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                label: Text(l10n.summaryDelete),
+              ),
           ],
         ),
       ],
