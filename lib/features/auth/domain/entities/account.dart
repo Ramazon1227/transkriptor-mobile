@@ -50,6 +50,12 @@ abstract class Workspace with _$Workspace {
     /// for its members.
     @Default(false) bool isPersonal,
 
+    /// The workspace itself is someone's personal one — the server's raw
+    /// `is_personal`, true for the members of a team living in its
+    /// founder's personal workspace too. The free minutes were granted to
+    /// it (B-18 warns on them); for «is it mine» use [isPersonal].
+    @Default(false) bool isSomeonesPersonal,
+
     /// Minutes are the currency: what is left to transcribe, in seconds.
     @Default(0) int balanceSeconds,
     @Default(WorkspaceRole.unknown) WorkspaceRole role,

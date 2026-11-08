@@ -296,7 +296,11 @@ mixin _$Workspace {
 /// `is_own_personal`, or `is_personal` from an older server. The
 /// founder's personal workspace, where a team lives, is not personal
 /// for its members.
- bool get isPersonal;/// Minutes are the currency: what is left to transcribe, in seconds.
+ bool get isPersonal;/// The workspace itself is someone's personal one — the server's raw
+/// `is_personal`, true for the members of a team living in its
+/// founder's personal workspace too. The free minutes were granted to
+/// it (B-18 warns on them); for «is it mine» use [isPersonal].
+ bool get isSomeonesPersonal;/// Minutes are the currency: what is left to transcribe, in seconds.
  int get balanceSeconds; WorkspaceRole get role;/// The current plan's code (`free`, `pro`, `team`) and display name;
 /// empty when the server did not send one.
  String get planCode; String get planName;
@@ -311,20 +315,20 @@ $WorkspaceCopyWith<Workspace> get copyWith => _$WorkspaceCopyWithImpl<Workspace>
 @override
 bool operator ==(Object other) {
   final _this = this as Workspace;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Workspace&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.planCode, _this.planCode) || other.planCode == _this.planCode)&&(identical(other.planName, _this.planName) || other.planName == _this.planName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Workspace&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isPersonal, _this.isPersonal) || other.isPersonal == _this.isPersonal)&&(identical(other.isSomeonesPersonal, _this.isSomeonesPersonal) || other.isSomeonesPersonal == _this.isSomeonesPersonal)&&(identical(other.balanceSeconds, _this.balanceSeconds) || other.balanceSeconds == _this.balanceSeconds)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.planCode, _this.planCode) || other.planCode == _this.planCode)&&(identical(other.planName, _this.planName) || other.planName == _this.planName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Workspace;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.balanceSeconds,_this.role,_this.planCode,_this.planName);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.isPersonal,_this.isSomeonesPersonal,_this.balanceSeconds,_this.role,_this.planCode,_this.planName);
 }
 
 @override
 String toString() {
   final _this = this as Workspace;
-  return 'Workspace(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, planCode: ${_this.planCode}, planName: ${_this.planName})';
+  return 'Workspace(id: ${_this.id}, name: ${_this.name}, isPersonal: ${_this.isPersonal}, isSomeonesPersonal: ${_this.isSomeonesPersonal}, balanceSeconds: ${_this.balanceSeconds}, role: ${_this.role}, planCode: ${_this.planCode}, planName: ${_this.planName})';
 }
 
 
@@ -335,7 +339,7 @@ abstract mixin class $WorkspaceCopyWith<$Res>  {
   factory $WorkspaceCopyWith(Workspace value, $Res Function(Workspace) _then) = _$WorkspaceCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, bool isPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
+ String id, String name, bool isPersonal, bool isSomeonesPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
 });
 
 
@@ -352,11 +356,12 @@ class _$WorkspaceCopyWithImpl<$Res>
 
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? isSomeonesPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
   return _then(Workspace(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
+as bool,isSomeonesPersonal: null == isSomeonesPersonal ? _self.isSomeonesPersonal : isSomeonesPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as WorkspaceRole,planCode: null == planCode ? _self.planCode : planCode // ignore: cast_nullable_to_non_nullable
@@ -446,10 +451,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  bool isSomeonesPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Workspace() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isSomeonesPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   return orElse();
 
 }
@@ -467,10 +472,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool isPersonal,  bool isSomeonesPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)  $default,) {final _that = this;
 switch (_that) {
 case _Workspace():
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isSomeonesPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -487,10 +492,10 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool isPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool isPersonal,  bool isSomeonesPersonal,  int balanceSeconds,  WorkspaceRole role,  String planCode,  String planName)?  $default,) {final _that = this;
 switch (_that) {
 case _Workspace() when $default != null:
-return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
+return $default(_that.id,_that.name,_that.isPersonal,_that.isSomeonesPersonal,_that.balanceSeconds,_that.role,_that.planCode,_that.planName);case _:
   return null;
 
 }
@@ -502,7 +507,7 @@ return $default(_that.id,_that.name,_that.isPersonal,_that.balanceSeconds,_that.
 
 
 class _Workspace implements Workspace {
-  const _Workspace({required this.id, required this.name, this.isPersonal = false, this.balanceSeconds = 0, this.role = WorkspaceRole.unknown, this.planCode = '', this.planName = ''});
+  const _Workspace({required this.id, required this.name, this.isPersonal = false, this.isSomeonesPersonal = false, this.balanceSeconds = 0, this.role = WorkspaceRole.unknown, this.planCode = '', this.planName = ''});
   
 
 @override final  String id;
@@ -512,6 +517,11 @@ class _Workspace implements Workspace {
 /// founder's personal workspace, where a team lives, is not personal
 /// for its members.
 @override@JsonKey() final  bool isPersonal;
+/// The workspace itself is someone's personal one — the server's raw
+/// `is_personal`, true for the members of a team living in its
+/// founder's personal workspace too. The free minutes were granted to
+/// it (B-18 warns on them); for «is it mine» use [isPersonal].
+@override@JsonKey() final  bool isSomeonesPersonal;
 /// Minutes are the currency: what is left to transcribe, in seconds.
 @override@JsonKey() final  int balanceSeconds;
 @override@JsonKey() final  WorkspaceRole role;
@@ -530,18 +540,18 @@ _$WorkspaceCopyWith<_Workspace> get copyWith => __$WorkspaceCopyWithImpl<_Worksp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Workspace&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.planCode, planCode) || other.planCode == planCode)&&(identical(other.planName, planName) || other.planName == planName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Workspace&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.isSomeonesPersonal, isSomeonesPersonal) || other.isSomeonesPersonal == isSomeonesPersonal)&&(identical(other.balanceSeconds, balanceSeconds) || other.balanceSeconds == balanceSeconds)&&(identical(other.role, role) || other.role == role)&&(identical(other.planCode, planCode) || other.planCode == planCode)&&(identical(other.planName, planName) || other.planName == planName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,isPersonal,balanceSeconds,role,planCode,planName);
+    return Object.hash(runtimeType,id,name,isPersonal,isSomeonesPersonal,balanceSeconds,role,planCode,planName);
 }
 
 @override
 String toString() {
-    return 'Workspace(id: $id, name: $name, isPersonal: $isPersonal, balanceSeconds: $balanceSeconds, role: $role, planCode: $planCode, planName: $planName)';
+    return 'Workspace(id: $id, name: $name, isPersonal: $isPersonal, isSomeonesPersonal: $isSomeonesPersonal, balanceSeconds: $balanceSeconds, role: $role, planCode: $planCode, planName: $planName)';
 }
 
 
@@ -552,7 +562,7 @@ abstract mixin class _$WorkspaceCopyWith<$Res> implements $WorkspaceCopyWith<$Re
   factory _$WorkspaceCopyWith(_Workspace value, $Res Function(_Workspace) _then) = __$WorkspaceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, bool isPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
+ String id, String name, bool isPersonal, bool isSomeonesPersonal, int balanceSeconds, WorkspaceRole role, String planCode, String planName
 });
 
 
@@ -569,11 +579,12 @@ class __$WorkspaceCopyWithImpl<$Res>
 
 /// Create a copy of Workspace
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isPersonal = null,Object? isSomeonesPersonal = null,Object? balanceSeconds = null,Object? role = null,Object? planCode = null,Object? planName = null,}) {
   return _then(_Workspace(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,isPersonal: null == isPersonal ? _self.isPersonal : isPersonal // ignore: cast_nullable_to_non_nullable
+as bool,isSomeonesPersonal: null == isSomeonesPersonal ? _self.isSomeonesPersonal : isSomeonesPersonal // ignore: cast_nullable_to_non_nullable
 as bool,balanceSeconds: null == balanceSeconds ? _self.balanceSeconds : balanceSeconds // ignore: cast_nullable_to_non_nullable
 as int,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as WorkspaceRole,planCode: null == planCode ? _self.planCode : planCode // ignore: cast_nullable_to_non_nullable

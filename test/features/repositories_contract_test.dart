@@ -145,6 +145,12 @@ void main() {
       ).me()).getOrElse(() => throw StateError('left'));
       final account = me.toEntity();
       expect(account.workspaces.map((w) => w.isPersonal), [false, true, true]);
+      // B-18: the free minutes belong to the workspace — the raw flag.
+      expect(account.workspaces.map((w) => w.isSomeonesPersonal), [
+        true,
+        true,
+        true,
+      ]);
       expect(account.currentWorkspace?.id, 'mine');
     });
 

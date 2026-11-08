@@ -70,6 +70,7 @@ abstract class WorkspaceModel with _$WorkspaceModel {
     id: id,
     name: name,
     isPersonal: isOwnPersonal ?? isPersonal,
+    isSomeonesPersonal: isPersonal,
     balanceSeconds: balanceSeconds,
     role: role,
     planCode: plan?.code ?? '',
