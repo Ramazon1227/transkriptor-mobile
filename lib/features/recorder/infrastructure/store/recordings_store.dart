@@ -188,7 +188,13 @@ class RecordingsStore {
     // Nobody signed in (or unknown): nothing here is theirs.
     if (owner == null) return const [];
     final dir = await directory();
-    final skip = {..._active, ...exclude};
+    // Read live, never from a copy made before the listing: a session that
+    // starts meanwhile has its fresh, still empty file in the listing.
+    bool live(String path) => _active.contains(path) || exclude.contains(path);
+    Future<void> drop(String path) async {
+      if (!live(path)) await _deleteQuietly(path);
+    }
+
     final files = <File>[];
     await for (final entity in dir.list(followLinks: false)) {
       if (entity is File) files.add(entity);
@@ -200,11 +206,11 @@ class RecordingsStore {
       final name = _basename(file.path);
       if (_partial.hasMatch(name)) {
         // iOS, killed mid-recording: an .m4a without its index.
-        if (!skip.contains(file.path)) await _deleteQuietly(file.path);
+        await drop(file.path);
         continue;
       }
       final match = _name.firstMatch(name);
-      if (match == null || skip.contains(file.path)) continue;
+      if (match == null || live(file.path)) continue;
       final madeBy = await _readLabel(file.path);
       // Another account's recording: not shown and not touched.
       if (madeBy != null && madeBy != owner) continue;
@@ -213,7 +219,7 @@ class RecordingsStore {
       if (_remuxing(_ownerPath(file.path))) continue;
       final interrupted = match.group(3) == 'aac';
       if (interrupted && names.contains(_basename(finishedPath(name)))) {
-        await _deleteQuietly(file.path);
+        await drop(file.path);
         continue;
       }
       final int size;
@@ -223,14 +229,14 @@ class RecordingsStore {
         continue;
       }
       if (size == 0) {
-        await _deleteQuietly(file.path);
+        await drop(file.path);
         continue;
       }
       Duration? duration;
       if (interrupted) {
         final info = await scan(file);
         if (info.frames == 0) {
-          await _deleteQuietly(file.path);
+          await drop(file.path);
           continue;
         }
         duration = info.duration;
