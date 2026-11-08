@@ -475,10 +475,10 @@ void main() {
   });
 
   group('.m4a.part: live while remuxing, a leftover once stale (MB-12)', () {
-    File stalePart(String name) => put(name, [1, 2, 3])
-      ..setLastModifiedSync(
-        DateTime.now().subtract(const Duration(minutes: 11)),
-      );
+    File stalePart(String name) => put(
+      name,
+      [1, 2, 3],
+    )..setLastModifiedSync(DateTime.now().subtract(const Duration(minutes: 2)));
 
     test("a stale part does not keep a deleted account's recording", () async {
       when(() => native.activeScreenPath()).thenAnswer((_) async => null);
@@ -489,6 +489,21 @@ void main() {
       await store.deleteOwnedBy('alice');
 
       expect(File('${dir.path}/mic_1.aac').existsSync(), isFalse);
+      expect(File('${dir.path}/mic_1.m4a.part').existsSync(), isFalse);
+    });
+
+    test('a part dated in the future is a leftover too', () async {
+      // The clock moved back after a kill; a live remux keeps its part's
+      // time current.
+      put('mic_1.aac', adtsFrames(3));
+      put('mic_1.m4a.part', [
+        1,
+        2,
+        3,
+      ]).setLastModifiedSync(DateTime.now().add(const Duration(days: 30)));
+      tokens.signIn('bob');
+
+      expect((await store.list()).single.path, '${dir.path}/mic_1.aac');
       expect(File('${dir.path}/mic_1.m4a.part').existsSync(), isFalse);
     });
 
