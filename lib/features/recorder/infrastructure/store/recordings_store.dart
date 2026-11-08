@@ -381,7 +381,9 @@ class RecordingsStore {
     );
     try {
       final age = DateTime.now().difference(part.lastModifiedSync());
-      if (age < _remuxLimit) return true;
+      // A running remux rewrites the part every few ms, so its time tracks
+      // the clock; one dated ahead is from before the clock moved back.
+      if (!age.isNegative && age < _remuxLimit) return true;
       part.deleteSync();
     } on FileSystemException {
       // No part, or gone meanwhile: not remuxing.
@@ -389,7 +391,7 @@ class RecordingsStore {
     return false;
   }
 
-  static const Duration _remuxLimit = Duration(minutes: 10);
+  static const Duration _remuxLimit = Duration(seconds: 60);
 
   /// Ids of deleted accounts, newest last, one per line; only ids.
   static const String _deletedName = 'deleted_accounts';
