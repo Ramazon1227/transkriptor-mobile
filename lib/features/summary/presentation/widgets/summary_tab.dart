@@ -134,13 +134,14 @@ class _SummaryView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(text, style: AppText.body.copyWith(color: AppColors.bad)),
-            // retry() writes again after a failed write; a VIEWER never
-            // writes, so a request failure is its load and may be retried.
+            // retry() may write again; a VIEWER only reads again, and only
+            // after a failed request — a summary the server failed to write
+            // would read back the same.
             if (canWrite || failure != null) ...[
               const SizedBox(height: 8),
               OutlinedButton(
                 key: const Key('summary_retry'),
-                onPressed: cubit.retry,
+                onPressed: canWrite ? cubit.retry : cubit.reload,
                 child: Text(l10n.retry),
               ),
             ],

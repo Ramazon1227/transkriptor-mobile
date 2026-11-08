@@ -135,6 +135,14 @@ class SummaryCubit extends Cubit<SummaryState> {
     return generate();
   }
 
+  /// Reads the stored summary again and never writes one: a VIEWER's
+  /// retry (E-11) — the server would refuse generation with 403.
+  Future<void> reload() {
+    final transcript = _transcript;
+    if (transcript == null) return Future.value();
+    return _load(transcript.id);
+  }
+
   Future<void> _load(String transcriptId) async {
     _timer?.cancel();
     final generation = ++_generation;

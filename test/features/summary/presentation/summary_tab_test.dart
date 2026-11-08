@@ -1,8 +1,9 @@
-import 'package:dartz/dartz.dart' show Right, unit;
+import 'package:dartz/dartz.dart' show Left, Right, unit;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
+import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/l10n/gen/app_localizations.dart';
 import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/features/auth/domain/entities/account.dart';
@@ -191,6 +192,34 @@ void main() {
       expect(find.byKey(const Key('summary_save_note')), findsOneWidget);
       expect(find.byKey(const Key('summary_regenerate')), findsNothing);
       expect(find.byKey(const Key('summary_delete')), findsNothing);
+    });
+
+    testWidgets('a failed poll re-reads on retry, never writes', (
+      tester,
+    ) async {
+      // A MEMBER's summary is still being written; the viewer's poll gets
+      // a 403 (not transient). «Qayta urinish» must read, not POST.
+      when(() => facade.load(any())).thenAnswer(
+        (_) async => const Right((
+          summary: Summary(id: 's1', progress: SummaryProgress.pending),
+          sample: false,
+        )),
+      );
+      when(() => facade.refresh(any()))
+          .thenAnswer((_) async => const Left(Failure.server(statusCode: 403)));
+      await tester.pumpWidget(_host(SummaryTab(transcript: viewer)));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(minutes: 5));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('summary_failure')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('summary_retry')));
+      await tester.pumpAndSettle();
+      verify(() => facade.load(any())).called(2);
+      verifyNever(
+        () => facade.generate(any(), template: any(named: 'template')),
+      );
+      // Unmount: the reloaded PENDING summary schedules another poll.
+      await tester.pumpWidget(const SizedBox.shrink());
     });
 
     testWidgets('a FAILED server summary: the sentence, no retry', (
