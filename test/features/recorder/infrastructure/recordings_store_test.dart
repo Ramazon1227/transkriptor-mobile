@@ -551,4 +551,51 @@ void main() {
       expect(path, '${dir.path}/mic_1001.aac');
     });
   });
+
+  test('a session started while list() reads the folder survives it', () async {
+    final hooked = _ListHookDir(dir);
+    final hookedStore = RecordingsStore.at(hooked, native, tokens);
+    String? started;
+    // Runs once list() asks for the folder's files: a recording starts
+    // and its file is created, still empty.
+    hooked.onList = () async {
+      started = await hookedStore.newPath(RecordingKind.microphone);
+      File(started!).createSync();
+    };
+
+    expect(await hookedStore.list(), isEmpty);
+    expect(File(started!).existsSync(), isTrue);
+  });
+}
+
+/// The store's folder, with a hook that runs when it is listed.
+class _ListHookDir implements Directory {
+  _ListHookDir(this._inner);
+
+  final Directory _inner;
+  Future<void> Function()? onList;
+
+  @override
+  String get path => _inner.path;
+
+  @override
+  Future<Directory> create({bool recursive = false}) async {
+    await _inner.create(recursive: recursive);
+    return this;
+  }
+
+  @override
+  Stream<FileSystemEntity> list({
+    bool recursive = false,
+    bool followLinks = true,
+  }) async* {
+    final hook = onList;
+    onList = null;
+    if (hook != null) await hook();
+    yield* _inner.list(recursive: recursive, followLinks: followLinks);
+  }
+
+  // Nothing else is used by the store.
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
