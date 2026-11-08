@@ -321,6 +321,8 @@ void main() {
 
       final left = dir.listSync().map((f) => f.path.split('/').last).toSet();
       expect(left, {
+        'mic_1.owner', // labels of a deleted account stay
+        'mic_2.owner',
         'mic_3.m4a',
         'mic_3.owner',
         'mic_4.m4a',
@@ -348,7 +350,8 @@ void main() {
       when(() => native.activeScreenPath())
           .thenAnswer((_) async => '${dir.path}/screen_6.aac');
 
-      expect(await store.countOwnedBy('alice'), 2);
+      // mic_1, mic_2 and screen_6, which goes once it is finished.
+      expect(await store.countOwnedBy('alice'), 3);
       expect(await store.countOwnedBy('bob'), 1);
       expect(File('${dir.path}/mic_1.m4a').existsSync(), isTrue);
     });
@@ -361,7 +364,7 @@ void main() {
       when(() => native.activeScreenPath())
           .thenThrow(PlatformException(code: 'ERROR'));
 
-      expect(await store.countOwnedBy('alice'), 1);
+      expect(await store.countOwnedBy('alice'), 2); // the screen one later
       await store.deleteOwnedBy('alice');
 
       expect(File('${dir.path}/screen_1.aac').existsSync(), isTrue);
@@ -383,7 +386,11 @@ void main() {
         tokens.signIn('bob');
         expect(await store.list(), isEmpty);
         expect(File(live).existsSync(), isFalse);
-        expect(File(live.replaceAll('.aac', '.owner')).existsSync(), isFalse);
+        // The label stays: it keeps a late .m4a from being claimed.
+        expect(
+          File(live.replaceAll('.aac', '.owner')).readAsStringSync(),
+          'alice',
+        );
       },
     );
 
@@ -402,6 +409,68 @@ void main() {
 
       expect(File('${dir.path}/mic_1.m4a').existsSync(), isTrue);
       expect(File('${dir.path}/mic_2.m4a').existsSync(), isFalse);
+    });
+  });
+
+  group('deleted account vs a remux in flight (MB-12)', () {
+    // Stop and the screen `ended` handler release the path before
+    // finalize; the remux writes `<stem>.m4a.part`, then renames it.
+    Future<String> recordAndDelete() async {
+      when(() => native.activeScreenPath()).thenAnswer((_) async => null);
+      tokens.signIn('alice');
+      final aac = await store.newPath(RecordingKind.microphone);
+      File(aac).writeAsBytesSync(adtsFrames(3));
+      await store.deleteOwnedBy('alice'); // still being written: skipped
+      store.release(aac);
+      return aac;
+    }
+
+    test("the reviewer's sequence: never offered to another account", () async {
+      final aac = await recordAndDelete();
+      final m4a = RecordingsStore.finishedPath(aac);
+      File('$m4a.part').writeAsBytesSync([1, 2, 3]);
+
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty);
+      File('$m4a.part').renameSync(m4a);
+      expect(await store.list(), isEmpty);
+      expect(await store.list(), isEmpty);
+      expect(File(m4a).existsSync(), isFalse);
+    });
+
+    test('a remux that finishes after the purge is not claimed', () async {
+      final aac = await recordAndDelete();
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty); // purges the .aac
+      expect(File(aac).existsSync(), isFalse);
+      // The remux had the .aac open and still writes its .m4a.
+      File(RecordingsStore.finishedPath(aac)).writeAsBytesSync([1, 2, 3]);
+
+      expect(await store.list(), isEmpty);
+      expect(await store.list(), isEmpty);
+    });
+
+    test(
+      'an unlabelled recording mid-remux is neither offered nor claimed',
+      () async {
+        put('mic_1.aac', adtsFrames(3));
+        put('mic_1.m4a.part', [1, 2, 3]);
+        tokens.signIn('bob');
+
+        expect(await store.list(), isEmpty);
+        expect(File('${dir.path}/mic_1.owner').existsSync(), isFalse);
+      },
+    );
+
+    test('the warning counts a recording still being written', () async {
+      when(() => native.activeScreenPath()).thenAnswer((_) async => null);
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', 'alice'.codeUnits);
+      tokens.signIn('alice');
+      final live = await store.newPath(RecordingKind.microphone);
+      File(live).writeAsBytesSync(adtsFrames(3));
+
+      expect(await store.countOwnedBy('alice'), 2);
     });
   });
 }

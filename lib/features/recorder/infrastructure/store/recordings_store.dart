@@ -176,7 +176,7 @@ class RecordingsStore {
   Future<List<RecoverableRecording>> list({
     Iterable<String> exclude = const [],
   }) async {
-    await _purgeDeleted(exclude);
+    final gone = await _purgeDeleted(exclude);
     final owner = await _owner();
     // Nobody signed in (or unknown): nothing here is theirs.
     if (owner == null) return const [];
@@ -201,6 +201,9 @@ class RecordingsStore {
       final madeBy = await _readLabel(file.path);
       // Another account's recording: not shown and not touched.
       if (madeBy != null && madeBy != owner) continue;
+      // Mid-remux the .m4a is not there yet: whose it is is decided once
+      // it is, never by claiming it now.
+      if (madeBy == null && _remuxing(_ownerPath(file.path))) continue;
       final interrupted = match.group(3) == 'aac';
       if (interrupted && names.contains(_basename(finishedPath(name)))) {
         await _deleteQuietly(file.path);
@@ -249,7 +252,7 @@ class RecordingsStore {
         ),
       );
     }
-    await _dropStrayOwners(files, exclude);
+    await _dropStrayOwners(files, exclude, gone);
     found.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return found;
   }
@@ -265,10 +268,13 @@ class RecordingsStore {
   }
 
   /// Labels whose recording is gone (sent, discarded, held nothing), and
-  /// temp labels a killed app left behind.
+  /// temp labels a killed app left behind. A label naming a deleted
+  /// account ([gone]) stays: a remux still running can bring its .m4a
+  /// back, and the label keeps that file from being claimed.
   Future<void> _dropStrayOwners(
     List<File> files,
     Iterable<String> exclude,
+    Set<String> gone,
   ) async {
     for (final file in files) {
       final name = _basename(file.path);
@@ -279,7 +285,12 @@ class RecordingsStore {
           : file.path;
       // [_held] reads the live set: a session may have started meanwhile.
       if (_held(label, exclude)) continue;
-      if (temp || !_stageLeft(label)) await _deleteQuietly(file.path);
+      if (temp) {
+        await _deleteQuietly(file.path);
+      } else if (!_stageLeft(label) &&
+          !gone.contains(await _readLabel(label))) {
+        await _deleteQuietly(file.path);
+      }
     }
   }
 
@@ -287,34 +298,41 @@ class RecordingsStore {
   /// too. A recording still being written (this engine's, or a native
   /// screen session), another account's and an unlabelled one are left.
   /// The account is remembered, so a recording that was still being written
-  /// goes on a later [list]. A file that cannot be deleted is skipped.
+  /// goes on a later [list]; its labels stay, so a file a remux brings back
+  /// is never claimed by another account. A file that cannot be deleted is
+  /// skipped.
   Future<void> deleteOwnedBy(String owner) async {
     try {
       await _rememberDeleted(owner);
     } on Object {
       // Only the later clean-up is lost; what can go now still goes.
     }
-    await _deleteLabels(await _ownedBy({owner}));
+    await _deleteStages(await _ownedBy({owner}));
   }
 
-  /// How many recordings [deleteOwnedBy] would take now, for the warning.
+  /// For the warning: every recording of [owner] that deleting the account
+  /// takes, now or (still being written) on a later [list].
   Future<int> countOwnedBy(String owner) async =>
-      (await _ownedBy({owner})).where(_stageLeft).length;
+      (await _ownedBy({owner}, live: true)).where(_stageLeft).length;
 
-  /// Labels naming one of [owners] whose recording nothing is writing.
+  /// Labels naming one of [owners]; with [live] false only those whose
+  /// recording nothing is writing or remuxing.
   Future<List<String>> _ownedBy(
     Set<String> owners, {
     Iterable<String> exclude = const [],
+    bool live = false,
   }) async {
     String? screen;
     var screenUnknown = false;
-    try {
-      screen = await _native.activeScreenPath();
-    } on Object {
-      // No answer: a screen session may be running, so every screen
-      // recording counts as live. iOS has no channel and no screen
-      // recordings, so this costs it nothing.
-      screenUnknown = true;
+    if (!live) {
+      try {
+        screen = await _native.activeScreenPath();
+      } on Object {
+        // No answer: a screen session may be running, so every screen
+        // recording counts as live. iOS has no channel and no screen
+        // recordings, so this costs it nothing.
+        screenUnknown = true;
+      }
     }
     final dir = await directory();
     final labels = <String>[];
@@ -325,23 +343,30 @@ class RecordingsStore {
     }
     final owned = <String>[];
     for (final label in labels) {
-      if (screenUnknown && _basename(label).startsWith('screen_')) continue;
-      if (_held(label, [...exclude, ?screen])) continue;
+      if (!live) {
+        if (screenUnknown && _basename(label).startsWith('screen_')) continue;
+        if (_held(label, [...exclude, ?screen]) || _remuxing(label)) continue;
+      }
       final madeBy = await _readLabel(label);
       if (madeBy != null && owners.contains(madeBy)) owned.add(label);
     }
     return owned;
   }
 
-  static Future<void> _deleteLabels(List<String> labels) async {
+  /// Deletes the recordings, not their labels (see [deleteOwnedBy]).
+  static Future<void> _deleteStages(List<String> labels) async {
     for (final label in labels) {
       final stem = label.substring(0, label.length - '.owner'.length);
       for (final ext in ['.aac', '.m4a', '.part.m4a']) {
         await _deleteQuietly('$stem$ext');
       }
-      await _deleteQuietly(label);
     }
   }
+
+  /// The Android remux writes `<stem>.m4a.part`, then renames it.
+  static bool _remuxing(String label) =>
+      File('${label.substring(0, label.length - '.owner'.length)}.m4a.part')
+          .existsSync();
 
   /// Ids of deleted accounts, newest last, one per line; only ids.
   static const String _deletedName = 'deleted_accounts';
@@ -373,13 +398,16 @@ class RecordingsStore {
   }
 
   /// Recordings of deleted accounts that were still being written then.
-  Future<void> _purgeDeleted(Iterable<String> exclude) async {
+  /// Returns those accounts; empty when they cannot be read.
+  Future<Set<String>> _purgeDeleted(Iterable<String> exclude) async {
     try {
-      final gone = await _readDeleted();
-      if (gone.isEmpty) return;
-      await _deleteLabels(await _ownedBy(gone.toSet(), exclude: exclude));
+      final gone = (await _readDeleted()).toSet();
+      if (gone.isNotEmpty) {
+        await _deleteStages(await _ownedBy(gone, exclude: exclude));
+      }
+      return gone;
     } on Object {
-      // Tried again on the next list.
+      return const {}; // Tried again on the next list.
     }
   }
 
