@@ -18,7 +18,11 @@ Future<void> showDeleteAccountSheet(BuildContext context, AppUser user) {
   return showAppSheet<void>(
     context,
     builder: (_) => BlocProvider(
-      create: (_) => getIt<DeleteAccountCubit>(),
+      create: (_) {
+        final cubit = getIt<DeleteAccountCubit>();
+        unawaited(cubit.loadUnsent());
+        return cubit;
+      },
       child: DeleteAccountSheet(user: user),
     ),
   );
@@ -106,6 +110,13 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(l10n.deleteBody, style: AppText.body),
+              if (state.unsentRecordings > 0) ...[
+                const SizedBox(height: 12),
+                Text(
+                  l10n.deleteUnsentRecordings(state.unsentRecordings),
+                  style: AppText.body,
+                ),
+              ],
               const SizedBox(height: 16),
               TextField(
                 controller: _field,

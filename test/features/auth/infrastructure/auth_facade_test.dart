@@ -282,6 +282,26 @@ void main() {
       },
     );
 
+    test('the account is read before the request (MB-12)', () async {
+      // A 401 with a failed refresh meanwhile clears the tokens.
+      when(() => repository.deleteAccount(password: 'p')).thenAnswer((_) async {
+        when(() => storage.readAccessToken()).thenAnswer((_) async => null);
+        return const Right(unit);
+      });
+
+      await facade.deleteAccount(password: 'p');
+
+      verify(() => recordings.deleteOwnedBy('u1')).called(1);
+    });
+
+    test("unsentRecordings counts the signed-in account's", () async {
+      when(() => recordings.countOwnedBy('u1')).thenAnswer((_) async => 3);
+      expect(await facade.unsentRecordings(), const Right<Failure, int>(3));
+
+      when(() => storage.readAccessToken()).thenAnswer((_) async => null);
+      expect(await facade.unsentRecordings(), const Right<Failure, int>(0));
+    });
+
     test('recordings that cannot be deleted do not stop it', () async {
       when(() => repository.deleteAccount(password: 'p'))
           .thenAnswer((_) async => const Right(unit));

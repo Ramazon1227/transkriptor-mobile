@@ -53,4 +53,8 @@ abstract interface class IAuthFacade {
     String? password,
     String? email,
   });
+
+  /// How many unsent recordings of the signed-in account this phone holds;
+  /// [deleteAccount] deletes them too (MB-12). Nobody signed in is 0.
+  Future<Either<Failure, int>> unsentRecordings();
 }

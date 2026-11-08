@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/storage/token_storage.dart';
@@ -327,7 +328,80 @@ void main() {
         'screen_5.owner',
         live.split('/').last,
         live.split('/').last.replaceAll('.aac', '.owner'),
+        'deleted_accounts',
       });
     },
   );
+
+  group('account deletion, review (MB-12)', () {
+    test('the warning counts what deleting would take', () async {
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', 'alice'.codeUnits);
+      put('mic_2.aac', adtsFrames(3));
+      put('mic_2.owner', 'alice'.codeUnits);
+      put('mic_3.m4a', [1, 2, 3]);
+      put('mic_3.owner', 'bob'.codeUnits);
+      put('mic_4.m4a', [1, 2, 3]); // unlabelled
+      put('mic_5.owner', 'alice'.codeUnits); // label of a sent recording
+      put('screen_6.aac', adtsFrames(3)); // still running natively
+      put('screen_6.owner', 'alice'.codeUnits);
+      when(() => native.activeScreenPath())
+          .thenAnswer((_) async => '${dir.path}/screen_6.aac');
+
+      expect(await store.countOwnedBy('alice'), 2);
+      expect(await store.countOwnedBy('bob'), 1);
+      expect(File('${dir.path}/mic_1.m4a').existsSync(), isTrue);
+    });
+
+    test('a native channel that fails keeps every screen recording', () async {
+      put('screen_1.aac', adtsFrames(3));
+      put('screen_1.owner', 'alice'.codeUnits);
+      put('mic_2.m4a', [1, 2, 3]);
+      put('mic_2.owner', 'alice'.codeUnits);
+      when(() => native.activeScreenPath())
+          .thenThrow(PlatformException(code: 'ERROR'));
+
+      expect(await store.countOwnedBy('alice'), 1);
+      await store.deleteOwnedBy('alice');
+
+      expect(File('${dir.path}/screen_1.aac').existsSync(), isTrue);
+      expect(File('${dir.path}/mic_2.m4a').existsSync(), isFalse);
+    });
+
+    test(
+      'a recording finished after its account was deleted goes later',
+      () async {
+        when(() => native.activeScreenPath()).thenAnswer((_) async => null);
+        tokens.signIn('alice');
+        final live = await store.newPath(RecordingKind.microphone);
+        File(live).writeAsBytesSync(adtsFrames(3));
+
+        await store.deleteOwnedBy('alice'); // still being written: skipped
+        expect(File(live).existsSync(), isTrue);
+        store.release(live); // the session ends under alice's label
+
+        tokens.signIn('bob');
+        expect(await store.list(), isEmpty);
+        expect(File(live).existsSync(), isFalse);
+        expect(File(live.replaceAll('.aac', '.owner')).existsSync(), isFalse);
+      },
+    );
+
+    test('deleted accounts are remembered, the last ten only', () async {
+      when(() => native.activeScreenPath()).thenAnswer((_) async => null);
+      for (var i = 0; i < 12; i++) {
+        await store.deleteOwnedBy('a$i');
+      }
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', 'a1'.codeUnits); // forgotten: kept
+      put('mic_2.m4a', [1, 2, 3]);
+      put('mic_2.owner', 'a2'.codeUnits); // remembered: purged
+
+      tokens.signIn('bob');
+      await store.list();
+
+      expect(File('${dir.path}/mic_1.m4a').existsSync(), isTrue);
+      expect(File('${dir.path}/mic_2.m4a').existsSync(), isFalse);
+    });
+  });
 }

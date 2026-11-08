@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$DeleteAccountState {
 
  DeleteAccountStatus get status;/// The confirmation field was left empty; nothing was sent.
- bool get confirmationMissing; Failure? get failure;
+ bool get confirmationMissing; Failure? get failure;/// Unsent recordings on this phone that go with the account (MB-12).
+ int get unsentRecordings;
 /// Create a copy of DeleteAccountState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $DeleteAccountStateCopyWith<DeleteAccountState> get copyWith => _$DeleteAccountS
 @override
 bool operator ==(Object other) {
   final _this = this as DeleteAccountState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteAccountState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.confirmationMissing, _this.confirmationMissing) || other.confirmationMissing == _this.confirmationMissing)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteAccountState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.confirmationMissing, _this.confirmationMissing) || other.confirmationMissing == _this.confirmationMissing)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.unsentRecordings, _this.unsentRecordings) || other.unsentRecordings == _this.unsentRecordings));
 }
 
 
 @override
 int get hashCode {
   final _this = this as DeleteAccountState;
-  return Object.hash(runtimeType,_this.status,_this.confirmationMissing,_this.failure);
+  return Object.hash(runtimeType,_this.status,_this.confirmationMissing,_this.failure,_this.unsentRecordings);
 }
 
 @override
 String toString() {
   final _this = this as DeleteAccountState;
-  return 'DeleteAccountState(status: ${_this.status}, confirmationMissing: ${_this.confirmationMissing}, failure: ${_this.failure})';
+  return 'DeleteAccountState(status: ${_this.status}, confirmationMissing: ${_this.confirmationMissing}, failure: ${_this.failure}, unsentRecordings: ${_this.unsentRecordings})';
 }
 
 
@@ -52,7 +53,7 @@ abstract mixin class $DeleteAccountStateCopyWith<$Res>  {
   factory $DeleteAccountStateCopyWith(DeleteAccountState value, $Res Function(DeleteAccountState) _then) = _$DeleteAccountStateCopyWithImpl;
 @useResult
 $Res call({
- DeleteAccountStatus status, bool confirmationMissing, Failure? failure
+ DeleteAccountStatus status, bool confirmationMissing, Failure? failure, int unsentRecordings
 });
 
 
@@ -69,12 +70,13 @@ class _$DeleteAccountStateCopyWithImpl<$Res>
 
 /// Create a copy of DeleteAccountState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? confirmationMissing = null,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? confirmationMissing = null,Object? failure = freezed,Object? unsentRecordings = null,}) {
   return _then(DeleteAccountState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeleteAccountStatus,confirmationMissing: null == confirmationMissing ? _self.confirmationMissing : confirmationMissing // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,unsentRecordings: null == unsentRecordings ? _self.unsentRecordings : unsentRecordings // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of DeleteAccountState
@@ -171,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure,  int unsentRecordings)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeleteAccountState() when $default != null:
-return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
+return $default(_that.status,_that.confirmationMissing,_that.failure,_that.unsentRecordings);case _:
   return orElse();
 
 }
@@ -192,10 +194,10 @@ return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure,  int unsentRecordings)  $default,) {final _that = this;
 switch (_that) {
 case _DeleteAccountState():
-return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
+return $default(_that.status,_that.confirmationMissing,_that.failure,_that.unsentRecordings);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +214,10 @@ return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DeleteAccountStatus status,  bool confirmationMissing,  Failure? failure,  int unsentRecordings)?  $default,) {final _that = this;
 switch (_that) {
 case _DeleteAccountState() when $default != null:
-return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
+return $default(_that.status,_that.confirmationMissing,_that.failure,_that.unsentRecordings);case _:
   return null;
 
 }
@@ -227,13 +229,15 @@ return $default(_that.status,_that.confirmationMissing,_that.failure);case _:
 
 
 class _DeleteAccountState implements DeleteAccountState {
-  const _DeleteAccountState({this.status = DeleteAccountStatus.initial, this.confirmationMissing = false, this.failure});
+  const _DeleteAccountState({this.status = DeleteAccountStatus.initial, this.confirmationMissing = false, this.failure, this.unsentRecordings = 0});
   
 
 @override@JsonKey() final  DeleteAccountStatus status;
 /// The confirmation field was left empty; nothing was sent.
 @override@JsonKey() final  bool confirmationMissing;
 @override final  Failure? failure;
+/// Unsent recordings on this phone that go with the account (MB-12).
+@override@JsonKey() final  int unsentRecordings;
 
 /// Create a copy of DeleteAccountState
 /// with the given fields replaced by the non-null parameter values.
@@ -245,18 +249,18 @@ _$DeleteAccountStateCopyWith<_DeleteAccountState> get copyWith => __$DeleteAccou
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteAccountState&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmationMissing, confirmationMissing) || other.confirmationMissing == confirmationMissing)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteAccountState&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmationMissing, confirmationMissing) || other.confirmationMissing == confirmationMissing)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.unsentRecordings, unsentRecordings) || other.unsentRecordings == unsentRecordings));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,confirmationMissing,failure);
+    return Object.hash(runtimeType,status,confirmationMissing,failure,unsentRecordings);
 }
 
 @override
 String toString() {
-    return 'DeleteAccountState(status: $status, confirmationMissing: $confirmationMissing, failure: $failure)';
+    return 'DeleteAccountState(status: $status, confirmationMissing: $confirmationMissing, failure: $failure, unsentRecordings: $unsentRecordings)';
 }
 
 
@@ -267,7 +271,7 @@ abstract mixin class _$DeleteAccountStateCopyWith<$Res> implements $DeleteAccoun
   factory _$DeleteAccountStateCopyWith(_DeleteAccountState value, $Res Function(_DeleteAccountState) _then) = __$DeleteAccountStateCopyWithImpl;
 @override @useResult
 $Res call({
- DeleteAccountStatus status, bool confirmationMissing, Failure? failure
+ DeleteAccountStatus status, bool confirmationMissing, Failure? failure, int unsentRecordings
 });
 
 
@@ -284,12 +288,13 @@ class __$DeleteAccountStateCopyWithImpl<$Res>
 
 /// Create a copy of DeleteAccountState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? confirmationMissing = null,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? confirmationMissing = null,Object? failure = freezed,Object? unsentRecordings = null,}) {
   return _then(_DeleteAccountState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeleteAccountStatus,confirmationMissing: null == confirmationMissing ? _self.confirmationMissing : confirmationMissing // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,unsentRecordings: null == unsentRecordings ? _self.unsentRecordings : unsentRecordings // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

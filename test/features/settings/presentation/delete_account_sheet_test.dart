@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart' show Left;
+import 'package:dartz/dartz.dart' show Left, Right;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -71,5 +71,42 @@ void main() {
       error,
       'Siz yagona platforma adminisiz — avval boshqa hisobni admin qiling.',
     );
+  });
+
+  Future<void> openWith(WidgetTester tester, int unsent) async {
+    final facade = _MockAuthFacade();
+    when(facade.unsentRecordings).thenAnswer((_) async => Right(unsent));
+    final cubit = DeleteAccountCubit(facade);
+    await cubit.loadUnsent();
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: const DeleteAccountSheet(user: user),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('warns how many unsent recordings go too (MB-12)', (
+    tester,
+  ) async {
+    await openWith(tester, 3);
+    expect(
+      find.text('Telefondagi 3 ta yuborilmagan yozuv ham oʻchadi.'),
+      findsOneWidget,
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('no unsent recordings, no warning', (tester) async {
+    await openWith(tester, 0);
+    expect(find.textContaining('yuborilmagan yozuv'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }

@@ -16,6 +16,9 @@ abstract class DeleteAccountState with _$DeleteAccountState {
     /// The confirmation field was left empty; nothing was sent.
     @Default(false) bool confirmationMissing,
     Failure? failure,
+
+    /// Unsent recordings on this phone that go with the account (MB-12).
+    @Default(0) int unsentRecordings,
   }) = _DeleteAccountState;
 }
 
@@ -27,6 +30,16 @@ class DeleteAccountCubit extends Cubit<DeleteAccountState> {
 
   final IAuthFacade _facade;
 
+  /// For the warning above the confirmation. Unreadable: no warning.
+  Future<void> loadUnsent() async {
+    final result = await _facade.unsentRecordings();
+    if (isClosed) return;
+    result.fold(
+      (_) {},
+      (count) => emit(state.copyWith(unsentRecordings: count)),
+    );
+  }
+
   /// [confirmation] is the password when [hasPassword], else the
   /// account's own email. A second call while one runs is ignored.
   Future<void> submit({
@@ -36,10 +49,20 @@ class DeleteAccountCubit extends Cubit<DeleteAccountState> {
     if (state.status == DeleteAccountStatus.loading) return;
     final value = hasPassword ? confirmation : confirmation.trim();
     if (value.isEmpty) {
-      emit(const DeleteAccountState(confirmationMissing: true));
+      emit(
+        DeleteAccountState(
+          confirmationMissing: true,
+          unsentRecordings: state.unsentRecordings,
+        ),
+      );
       return;
     }
-    emit(const DeleteAccountState(status: DeleteAccountStatus.loading));
+    emit(
+      DeleteAccountState(
+        status: DeleteAccountStatus.loading,
+        unsentRecordings: state.unsentRecordings,
+      ),
+    );
     final result = await _facade.deleteAccount(
       password: hasPassword ? value : null,
       email: hasPassword ? null : value,
@@ -50,12 +73,17 @@ class DeleteAccountCubit extends Cubit<DeleteAccountState> {
         DeleteAccountState(
           status: DeleteAccountStatus.failure,
           failure: failure,
+          unsentRecordings: state.unsentRecordings,
         ),
       ),
       // The server drops this phone's push token with the account
       // (`DeleteAccount` clears `device_token`), so push needs no call.
-      (_) =>
-          emit(const DeleteAccountState(status: DeleteAccountStatus.success)),
+      (_) => emit(
+        DeleteAccountState(
+          status: DeleteAccountStatus.success,
+          unsentRecordings: state.unsentRecordings,
+        ),
+      ),
     );
   }
 }
