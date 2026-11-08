@@ -503,14 +503,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i118.ILibraryFacade>(
       () => _i985.LibraryFacade(gh<_i203.LibraryRepository>()),
     );
-    gh.lazySingleton<_i865.IAuthFacade>(
-      () => _i1041.AuthFacade(
-        gh<_i838.AuthRepository>(),
-        gh<_i933.TokenStorage>(),
-        gh<_i754.SessionManager>(),
-        gh<_i605.GoogleIdTokenSource>(),
-      ),
-    );
     gh.factory<_i421.SpeakerIntroCubit>(
       () => _i421.SpeakerIntroCubit(gh<_i1034.ISpeakerIntroFacade>()),
     );
@@ -595,6 +587,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i543.IAiChatFacade>(
       () => _i598.AiChatFacade(gh<_i104.AiChatRepository>()),
+    );
+    gh.lazySingleton<_i865.IAuthFacade>(
+      () => _i1041.AuthFacade(
+        gh<_i838.AuthRepository>(),
+        gh<_i933.TokenStorage>(),
+        gh<_i754.SessionManager>(),
+        gh<_i605.GoogleIdTokenSource>(),
+        gh<_i1005.RecordingsStore>(),
+      ),
     );
     gh.factory<_i339.DictationCubit>(
       () => _i339.DictationCubit(gh<_i704.IDictationFacade>()),

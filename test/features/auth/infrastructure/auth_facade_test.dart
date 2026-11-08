@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart' show Left, Right, unit;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,6 +11,9 @@ import 'package:transkriptor_uz/features/auth/infrastructure/facades/auth_facade
 import 'package:transkriptor_uz/features/auth/infrastructure/models/me_model.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/services/google_id_token_source.dart';
+import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart';
+
+import '../../../helpers/tokens.dart';
 
 class _MockRepository extends Mock implements AuthRepository;
 
@@ -16,11 +21,14 @@ class _MockStorage extends Mock implements TokenStorage;
 
 class _MockGoogle extends Mock implements GoogleIdTokenSource;
 
+class _MockRecordings extends Mock implements RecordingsStore;
+
 void main() {
   late _MockRepository repository;
   late _MockStorage storage;
   late SessionManager session;
   late _MockGoogle google;
+  late _MockRecordings recordings;
   late AuthFacade facade;
 
   const me = MeModel(
@@ -37,7 +45,8 @@ void main() {
     google = _MockGoogle();
     when(() => google.signOut()).thenAnswer((_) async {});
     when(() => google.isAvailable).thenReturn(true);
-    facade = AuthFacade(repository, storage, session, google);
+    recordings = _MockRecordings();
+    facade = AuthFacade(repository, storage, session, google, recordings);
     when(
       () => storage.save(
         accessToken: any(named: 'accessToken'),
@@ -251,7 +260,40 @@ void main() {
   });
 
   group('deleteAccount', () {
-    setUp(() => session.markAuthenticated());
+    setUp(() {
+      session.markAuthenticated();
+      when(() => storage.readAccessToken())
+          .thenAnswer((_) async => tokenFor('u1'));
+      when(() => recordings.deleteOwnedBy(any())).thenAnswer((_) async {});
+    });
+
+    test(
+      "success deletes the account's recordings, then the tokens (MB-12)",
+      () async {
+        when(() => repository.deleteAccount(password: 'p'))
+            .thenAnswer((_) async => const Right(unit));
+
+        await facade.deleteAccount(password: 'p');
+
+        verifyInOrder([
+          () => recordings.deleteOwnedBy('u1'),
+          () => storage.clear(),
+        ]);
+      },
+    );
+
+    test('recordings that cannot be deleted do not stop it', () async {
+      when(() => repository.deleteAccount(password: 'p'))
+          .thenAnswer((_) async => const Right(unit));
+      when(() => recordings.deleteOwnedBy(any()))
+          .thenThrow(const FileSystemException('busy'));
+
+      final result = await facade.deleteAccount(password: 'p');
+
+      expect(result.isRight(), isTrue);
+      expect(session.isExpired, isTrue);
+      verify(() => storage.clear()).called(1);
+    });
 
     test('success forgets the tokens and ends the session', () async {
       when(() => repository.deleteAccount(password: 'p'))
@@ -277,6 +319,7 @@ void main() {
       );
       expect(session.isExpired, isFalse);
       verifyNever(() => storage.clear());
+      verifyNever(() => recordings.deleteOwnedBy(any()));
     });
   });
 }

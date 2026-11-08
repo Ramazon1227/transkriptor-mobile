@@ -296,4 +296,38 @@ void main() {
     expect(tokenSubject('a.%%%.c'), isNull);
     expect(tokenSubject('a.${'bm90IGpzb24'}.c'), isNull); // "not json"
   });
+
+  test(
+    'deleting an account takes only its finished recordings (MB-12)',
+    () async {
+      put('mic_1.aac', adtsFrames(3));
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', 'alice'.codeUnits);
+      put('mic_2.part.m4a', [1, 2, 3]);
+      put('mic_2.owner', 'alice\n'.codeUnits);
+      put('mic_3.m4a', [1, 2, 3]);
+      put('mic_3.owner', 'bob'.codeUnits);
+      put('mic_4.m4a', [1, 2, 3]); // from before labels
+      put('screen_5.aac', adtsFrames(3)); // a native session still running
+      put('screen_5.owner', 'alice'.codeUnits);
+      when(() => native.activeScreenPath())
+          .thenAnswer((_) async => '${dir.path}/screen_5.aac');
+      tokens.signIn('alice');
+      final live = await store.newPath(RecordingKind.microphone);
+      File(live).writeAsBytesSync(adtsFrames(3));
+
+      await store.deleteOwnedBy('alice');
+
+      final left = dir.listSync().map((f) => f.path.split('/').last).toSet();
+      expect(left, {
+        'mic_3.m4a',
+        'mic_3.owner',
+        'mic_4.m4a',
+        'screen_5.aac',
+        'screen_5.owner',
+        live.split('/').last,
+        live.split('/').last.replaceAll('.aac', '.owner'),
+      });
+    },
+  );
 }

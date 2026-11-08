@@ -282,6 +282,35 @@ class RecordingsStore {
     }
   }
 
+  /// MB-12: the account [owner] was deleted, so its unsent recordings go
+  /// too. A recording still being written (this engine's, or a native
+  /// screen session), another account's and an unlabelled one are left.
+  /// A file that cannot be deleted is skipped.
+  Future<void> deleteOwnedBy(String owner) async {
+    String? screen;
+    try {
+      screen = await _native.activeScreenPath();
+    } on Object {
+      screen = null; // iOS has no channel; nothing native is running.
+    }
+    final dir = await directory();
+    final labels = <String>[];
+    await for (final entity in dir.list(followLinks: false)) {
+      if (entity is File && entity.path.endsWith('.owner')) {
+        labels.add(entity.path);
+      }
+    }
+    for (final label in labels) {
+      if (_held(label, [?screen])) continue;
+      if (await _readLabel(label) != owner) continue;
+      final stem = label.substring(0, label.length - '.owner'.length);
+      for (final ext in ['.aac', '.m4a', '.part.m4a']) {
+        await _deleteQuietly('$stem$ext');
+      }
+      await _deleteQuietly(label);
+    }
+  }
+
   static Future<AdtsInfo> scan(File file) async {
     final scanner = AdtsScanner();
     await file.openRead().forEach(scanner.add);
