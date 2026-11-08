@@ -26,6 +26,7 @@ extension FailureMessage on Failure {
       workspaces.join(', '),
     ),
     LastAdminFailure() => l10n.deleteLastAdmin,
+    NoteTooLargeFailure() => l10n.errorNoteTooLarge,
     ParsingFailure() => l10n.errorParsing,
     PermissionDeniedFailure() => l10n.errorMicPermission,
     StorageFailure() => l10n.errorStorage,

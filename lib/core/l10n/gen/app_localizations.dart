@@ -214,6 +214,12 @@ abstract class AppLocalizations {
   /// **'Fayl juda katta.'**
   String get errorTooLarge;
 
+  /// No description provided for @errorNoteTooLarge.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayd juda katta (chegara — 2 MB). Matnni bir nechta qaydga boʻlib saqlang.'**
+  String get errorNoteTooLarge;
+
   /// No description provided for @errorPendingLimit.
   ///
   /// In uz, this message translates to:

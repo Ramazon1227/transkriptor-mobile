@@ -3,12 +3,15 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/features/auth/infrastructure/repositories/auth_repository.dart';
+import 'package:transkriptor_uz/features/capture/infrastructure/repositories/note_repository.dart'
+    as dictation;
 import 'package:transkriptor_uz/features/job/domain/entities/job.dart';
 import 'package:transkriptor_uz/features/job/domain/entities/job_service.dart';
 import 'package:transkriptor_uz/features/job/infrastructure/repositories/job_repository.dart';
 import 'package:transkriptor_uz/features/library/infrastructure/repositories/library_repository.dart';
 import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart';
 import 'package:transkriptor_uz/features/share/infrastructure/repositories/share_repository.dart';
+import 'package:transkriptor_uz/features/summary/infrastructure/repositories/note_repository.dart';
 import 'package:transkriptor_uz/features/transcript/infrastructure/repositories/transcript_repository.dart';
 import 'package:transkriptor_uz/features/upload/infrastructure/repositories/upload_repository.dart';
 
@@ -1109,6 +1112,65 @@ void main() {
       final result = await ShareRepository(fakeDio(http)).revokeLink('l1');
       expect(result.isRight(), isTrue);
       expect(http.sent.single.options.method, 'DELETE');
+    });
+  });
+
+  group('POST /notes refusals (N-11)', () {
+    const text =
+        'Qayd juda katta (chegara — 2 MB). Matnni bir nechta qaydga boʻlib '
+        'saqlang.';
+    // The body tr-backend sends (handler.noteTooLarge, NoteTooLargeData).
+    final tooLarge = (
+      413,
+      {
+        'status': 'TOO_LARGE',
+        'description': text,
+        'data': {
+          'error': text,
+          'code': 'NOTE_TOO_LARGE',
+          'max_bytes': 2097152,
+          'fields': {'body': text},
+        },
+      },
+    );
+
+    test('a too-big summary note is NOTE_TOO_LARGE', () async {
+      final http = FakeHttpAdapter({'POST /api/v1/notes': tooLarge});
+      final result = await NoteRepository(fakeDio(http))
+          .create(title: 'X', body: const {'type': 'doc'});
+      expect(
+        result.fold<Failure?>((f) => f, (_) => null),
+        const Failure.noteTooLarge(),
+      );
+    });
+
+    test('a too-big dictation note is NOTE_TOO_LARGE', () async {
+      final http = FakeHttpAdapter({'POST /api/v1/notes': tooLarge});
+      final result = await dictation.NoteRepository(fakeDio(http))
+          .create(workspaceId: 'w1', title: 'X', paragraphs: const ['a']);
+      expect(
+        result.fold<Failure?>((f) => f, (_) => null),
+        const Failure.noteTooLarge(),
+      );
+    });
+
+    test('a 413 without the code stays a plain 413', () async {
+      final http = FakeHttpAdapter({
+        'POST /api/v1/notes': (
+          413,
+          {
+            'status': 'TOO_LARGE',
+            'description': 'katta',
+            'data': <String, Object>{},
+          },
+        ),
+      });
+      final result = await NoteRepository(fakeDio(http))
+          .create(title: 'X', body: const {'type': 'doc'});
+      expect(
+        result.fold<Failure?>((f) => f, (_) => null),
+        const Failure.server(statusCode: 413, message: 'katta'),
+      );
     });
   });
 }

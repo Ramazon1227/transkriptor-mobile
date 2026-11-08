@@ -56,7 +56,7 @@ extension FailurePatterns on Failure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( PendingLimitFailure value)?  pendingLimit,TResult Function( JobActiveFailure value)?  jobActive,TResult Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult Function( SoleOwnerFailure value)?  soleOwner,TResult Function( LastAdminFailure value)?  lastAdmin,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NetworkFailure value)?  network,TResult Function( TimeoutFailure value)?  timeout,TResult Function( UnauthorizedFailure value)?  unauthorized,TResult Function( ServerFailure value)?  server,TResult Function( PendingLimitFailure value)?  pendingLimit,TResult Function( JobActiveFailure value)?  jobActive,TResult Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult Function( SoleOwnerFailure value)?  soleOwner,TResult Function( LastAdminFailure value)?  lastAdmin,TResult Function( NoteTooLargeFailure value)?  noteTooLarge,TResult Function( ParsingFailure value)?  parsing,TResult Function( CancelledFailure value)?  cancelled,TResult Function( PermissionDeniedFailure value)?  permissionDenied,TResult Function( StorageFailure value)?  storage,TResult Function( CaptureFailure value)?  capture,TResult Function( UnknownFailure value)?  unknown,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
@@ -68,7 +68,8 @@ return pendingLimit(_that);case JobActiveFailure() when jobActive != null:
 return jobActive(_that);case IdempotencyMismatchFailure() when idempotencyMismatch != null:
 return idempotencyMismatch(_that);case SoleOwnerFailure() when soleOwner != null:
 return soleOwner(_that);case LastAdminFailure() when lastAdmin != null:
-return lastAdmin(_that);case ParsingFailure() when parsing != null:
+return lastAdmin(_that);case NoteTooLargeFailure() when noteTooLarge != null:
+return noteTooLarge(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -92,7 +93,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( PendingLimitFailure value)  pendingLimit,required TResult Function( JobActiveFailure value)  jobActive,required TResult Function( IdempotencyMismatchFailure value)  idempotencyMismatch,required TResult Function( SoleOwnerFailure value)  soleOwner,required TResult Function( LastAdminFailure value)  lastAdmin,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NetworkFailure value)  network,required TResult Function( TimeoutFailure value)  timeout,required TResult Function( UnauthorizedFailure value)  unauthorized,required TResult Function( ServerFailure value)  server,required TResult Function( PendingLimitFailure value)  pendingLimit,required TResult Function( JobActiveFailure value)  jobActive,required TResult Function( IdempotencyMismatchFailure value)  idempotencyMismatch,required TResult Function( SoleOwnerFailure value)  soleOwner,required TResult Function( LastAdminFailure value)  lastAdmin,required TResult Function( NoteTooLargeFailure value)  noteTooLarge,required TResult Function( ParsingFailure value)  parsing,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( PermissionDeniedFailure value)  permissionDenied,required TResult Function( StorageFailure value)  storage,required TResult Function( CaptureFailure value)  capture,required TResult Function( UnknownFailure value)  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure():
@@ -104,7 +105,8 @@ return pendingLimit(_that);case JobActiveFailure():
 return jobActive(_that);case IdempotencyMismatchFailure():
 return idempotencyMismatch(_that);case SoleOwnerFailure():
 return soleOwner(_that);case LastAdminFailure():
-return lastAdmin(_that);case ParsingFailure():
+return lastAdmin(_that);case NoteTooLargeFailure():
+return noteTooLarge(_that);case ParsingFailure():
 return parsing(_that);case CancelledFailure():
 return cancelled(_that);case PermissionDeniedFailure():
 return permissionDenied(_that);case StorageFailure():
@@ -124,7 +126,7 @@ return unknown(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( PendingLimitFailure value)?  pendingLimit,TResult? Function( JobActiveFailure value)?  jobActive,TResult? Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult? Function( SoleOwnerFailure value)?  soleOwner,TResult? Function( LastAdminFailure value)?  lastAdmin,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NetworkFailure value)?  network,TResult? Function( TimeoutFailure value)?  timeout,TResult? Function( UnauthorizedFailure value)?  unauthorized,TResult? Function( ServerFailure value)?  server,TResult? Function( PendingLimitFailure value)?  pendingLimit,TResult? Function( JobActiveFailure value)?  jobActive,TResult? Function( IdempotencyMismatchFailure value)?  idempotencyMismatch,TResult? Function( SoleOwnerFailure value)?  soleOwner,TResult? Function( LastAdminFailure value)?  lastAdmin,TResult? Function( NoteTooLargeFailure value)?  noteTooLarge,TResult? Function( ParsingFailure value)?  parsing,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( PermissionDeniedFailure value)?  permissionDenied,TResult? Function( StorageFailure value)?  storage,TResult? Function( CaptureFailure value)?  capture,TResult? Function( UnknownFailure value)?  unknown,}){
 final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
@@ -136,7 +138,8 @@ return pendingLimit(_that);case JobActiveFailure() when jobActive != null:
 return jobActive(_that);case IdempotencyMismatchFailure() when idempotencyMismatch != null:
 return idempotencyMismatch(_that);case SoleOwnerFailure() when soleOwner != null:
 return soleOwner(_that);case LastAdminFailure() when lastAdmin != null:
-return lastAdmin(_that);case ParsingFailure() when parsing != null:
+return lastAdmin(_that);case NoteTooLargeFailure() when noteTooLarge != null:
+return noteTooLarge(_that);case ParsingFailure() when parsing != null:
 return parsing(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied(_that);case StorageFailure() when storage != null:
@@ -159,7 +162,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function( List<HeldFile> held)?  pendingLimit,TResult Function()?  jobActive,TResult Function()?  idempotencyMismatch,TResult Function( List<String> workspaces)?  soleOwner,TResult Function()?  lastAdmin,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  timeout,TResult Function()?  unauthorized,TResult Function( int? statusCode,  String? message)?  server,TResult Function( List<HeldFile> held)?  pendingLimit,TResult Function()?  jobActive,TResult Function()?  idempotencyMismatch,TResult Function( List<String> workspaces)?  soleOwner,TResult Function()?  lastAdmin,TResult Function()?  noteTooLarge,TResult Function()?  parsing,TResult Function()?  cancelled,TResult Function()?  permissionDenied,TResult Function()?  storage,TResult Function( CaptureError reason)?  capture,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
@@ -170,7 +173,8 @@ return pendingLimit(_that.held);case JobActiveFailure() when jobActive != null:
 return jobActive();case IdempotencyMismatchFailure() when idempotencyMismatch != null:
 return idempotencyMismatch();case SoleOwnerFailure() when soleOwner != null:
 return soleOwner(_that.workspaces);case LastAdminFailure() when lastAdmin != null:
-return lastAdmin();case ParsingFailure() when parsing != null:
+return lastAdmin();case NoteTooLargeFailure() when noteTooLarge != null:
+return noteTooLarge();case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -194,7 +198,7 @@ return unknown();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( List<HeldFile> held)  pendingLimit,required TResult Function()  jobActive,required TResult Function()  idempotencyMismatch,required TResult Function( List<String> workspaces)  soleOwner,required TResult Function()  lastAdmin,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  timeout,required TResult Function()  unauthorized,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( List<HeldFile> held)  pendingLimit,required TResult Function()  jobActive,required TResult Function()  idempotencyMismatch,required TResult Function( List<String> workspaces)  soleOwner,required TResult Function()  lastAdmin,required TResult Function()  noteTooLarge,required TResult Function()  parsing,required TResult Function()  cancelled,required TResult Function()  permissionDenied,required TResult Function()  storage,required TResult Function( CaptureError reason)  capture,required TResult Function()  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure():
 return network();case TimeoutFailure():
@@ -205,7 +209,8 @@ return pendingLimit(_that.held);case JobActiveFailure():
 return jobActive();case IdempotencyMismatchFailure():
 return idempotencyMismatch();case SoleOwnerFailure():
 return soleOwner(_that.workspaces);case LastAdminFailure():
-return lastAdmin();case ParsingFailure():
+return lastAdmin();case NoteTooLargeFailure():
+return noteTooLarge();case ParsingFailure():
 return parsing();case CancelledFailure():
 return cancelled();case PermissionDeniedFailure():
 return permissionDenied();case StorageFailure():
@@ -225,7 +230,7 @@ return unknown();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( List<HeldFile> held)?  pendingLimit,TResult? Function()?  jobActive,TResult? Function()?  idempotencyMismatch,TResult? Function( List<String> workspaces)?  soleOwner,TResult? Function()?  lastAdmin,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  timeout,TResult? Function()?  unauthorized,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( List<HeldFile> held)?  pendingLimit,TResult? Function()?  jobActive,TResult? Function()?  idempotencyMismatch,TResult? Function( List<String> workspaces)?  soleOwner,TResult? Function()?  lastAdmin,TResult? Function()?  noteTooLarge,TResult? Function()?  parsing,TResult? Function()?  cancelled,TResult? Function()?  permissionDenied,TResult? Function()?  storage,TResult? Function( CaptureError reason)?  capture,TResult? Function()?  unknown,}) {final _that = this;
 switch (_that) {
 case NetworkFailure() when network != null:
 return network();case TimeoutFailure() when timeout != null:
@@ -236,7 +241,8 @@ return pendingLimit(_that.held);case JobActiveFailure() when jobActive != null:
 return jobActive();case IdempotencyMismatchFailure() when idempotencyMismatch != null:
 return idempotencyMismatch();case SoleOwnerFailure() when soleOwner != null:
 return soleOwner(_that.workspaces);case LastAdminFailure() when lastAdmin != null:
-return lastAdmin();case ParsingFailure() when parsing != null:
+return lastAdmin();case NoteTooLargeFailure() when noteTooLarge != null:
+return noteTooLarge();case ParsingFailure() when parsing != null:
 return parsing();case CancelledFailure() when cancelled != null:
 return cancelled();case PermissionDeniedFailure() when permissionDenied != null:
 return permissionDenied();case StorageFailure() when storage != null:
@@ -652,6 +658,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
     return 'Failure.lastAdmin()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class NoteTooLargeFailure implements Failure {
+  const NoteTooLargeFailure();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is NoteTooLargeFailure);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+    return 'Failure.noteTooLarge()';
 }
 
 

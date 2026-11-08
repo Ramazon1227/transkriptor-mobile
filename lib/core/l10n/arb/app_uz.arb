@@ -20,6 +20,7 @@
   "errorCaptureFailed": "Ekran ovozini yozib boʻlmadi. Baʼzi ilovalar (koʻpincha qoʻngʻiroq ilovalari) oʻz ovozini yozishga ruxsat bermaydi.",
   "errorNoBalance": "Balansda daqiqa qolmagan.",
   "errorTooLarge": "Fayl juda katta.",
+  "errorNoteTooLarge": "Qayd juda katta (chegara — 2 MB). Matnni bir nechta qaydga boʻlib saqlang.",
   "errorPendingLimit": "Transkripsiya qilinmagan fayllar uchun joy toʻlgan. Joy egallaganlarini oʻchiring yoki transkripsiya qiling.",
   "errorIdempotencyMismatch": "Bu soʻrov avval boshqa sozlamalar bilan yuborilgan edi. Qaytadan urinib koʻring.",
   "heldFilesShow": "Joy egallagan fayllar",
