@@ -87,9 +87,7 @@ class RecordingsStore {
     _active.add(path);
     try {
       final owner = await _owner();
-      if (owner != null) {
-        await File(_ownerPath(path)).writeAsString(owner, flush: true);
-      }
+      if (owner != null) await _writeLabel(path, owner);
     } on Object {
       _active.remove(path);
       rethrow;
@@ -97,9 +95,38 @@ class RecordingsStore {
     return path;
   }
 
-  /// The signed-in account, from the token it signed in with.
-  Future<String?> _owner() async =>
-      tokenSubject(await _tokens.readAccessToken());
+  /// The signed-in account, from the token it signed in with. Null when
+  /// nobody is, or when the token store cannot be read (Keystore after a
+  /// backup restore, a locked iOS keychain): recording must still work.
+  Future<String?> _owner() async {
+    try {
+      return tokenSubject(await _tokens.readAccessToken());
+    } on Object {
+      return null;
+    }
+  }
+
+  /// Written to a temp file and renamed, so a killed app never leaves a
+  /// half label that would hide the recording from its owner.
+  static Future<void> _writeLabel(String path, String owner) async {
+    final label = _ownerPath(path);
+    final tmp = File('$label.tmp');
+    await tmp.writeAsString(owner, flush: true);
+    await tmp.rename(label);
+  }
+
+  /// The account a label names; null when there is none, or it is blank or
+  /// unreadable (then it is treated as from before labels).
+  static Future<String?> _readLabel(String path) async {
+    try {
+      final owner = (await File(_ownerPath(path)).readAsString()).trim();
+      return owner.isEmpty ? null : owner;
+    } on FileSystemException {
+      return null;
+    } on FormatException {
+      return null;
+    }
+  }
 
   /// `<dir>/mic_1.aac`, `.m4a` or `.part.m4a` → `<dir>/mic_1.owner`: one
   /// label for every stage of a recording.
@@ -150,7 +177,7 @@ class RecordingsStore {
     Iterable<String> exclude = const [],
   }) async {
     final owner = await _owner();
-    // Nobody signed in: nothing here is theirs.
+    // Nobody signed in (or unknown): nothing here is theirs.
     if (owner == null) return const [];
     final dir = await directory();
     final skip = {..._active, ...exclude};
@@ -170,12 +197,7 @@ class RecordingsStore {
       }
       final match = _name.firstMatch(name);
       if (match == null || skip.contains(file.path)) continue;
-      String? madeBy;
-      try {
-        madeBy = await File(_ownerPath(file.path)).readAsString();
-      } on FileSystemException {
-        // No label: from before owners were written.
-      }
+      final madeBy = await _readLabel(file.path);
       // Another account's recording: not shown and not touched.
       if (madeBy != null && madeBy != owner) continue;
       final interrupted = match.group(3) == 'aac';
@@ -235,24 +257,28 @@ class RecordingsStore {
   /// label cannot be written it is offered unlabelled, as it was before.
   static Future<void> _claim(String path, String owner) async {
     try {
-      await File(_ownerPath(path)).writeAsString(owner, flush: true);
+      await _writeLabel(path, owner);
     } on FileSystemException {
       // Asked again on the next list.
     }
   }
 
-  /// Labels whose recording is gone (sent, discarded, held nothing).
+  /// Labels whose recording is gone (sent, discarded, held nothing), and
+  /// temp labels a killed app left behind.
   Future<void> _dropStrayOwners(
     List<File> files,
     Iterable<String> exclude,
   ) async {
     for (final file in files) {
       final name = _basename(file.path);
-      if (!name.endsWith('.owner')) continue;
+      final temp = name.endsWith('.owner.tmp');
+      if (!temp && !name.endsWith('.owner')) continue;
+      final label = temp
+          ? file.path.substring(0, file.path.length - '.tmp'.length)
+          : file.path;
       // [_held] reads the live set: a session may have started meanwhile.
-      if (!_held(file.path, exclude) && !_stageLeft(file.path)) {
-        await _deleteQuietly(file.path);
-      }
+      if (_held(label, exclude)) continue;
+      if (temp || !_stageLeft(label)) await _deleteQuietly(file.path);
     }
   }
 

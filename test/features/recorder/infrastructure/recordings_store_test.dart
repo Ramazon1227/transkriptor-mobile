@@ -221,6 +221,65 @@ void main() {
       expect(dir.listSync(), isEmpty);
     });
 
+    test('a blank or broken label counts as no label', () async {
+      // An app killed mid-write leaves an empty label behind.
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', const []);
+      put('mic_2.m4a', [1, 2, 3]);
+      put('mic_2.owner', '  \n'.codeUnits);
+      put('mic_3.m4a', [1, 2, 3]);
+      put('mic_3.owner', const [0xff, 0xfe, 0xc3]); // not UTF-8
+
+      tokens.signIn('alice');
+      expect(await store.list(), hasLength(3));
+      tokens.signIn('bob');
+      expect(await store.list(), isEmpty); // claimed by alice
+    });
+
+    test('a label with a trailing newline still names its owner', () async {
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_1.owner', 'alice\n'.codeUnits);
+
+      tokens.signIn('alice');
+      expect(await store.list(), hasLength(1));
+    });
+
+    test('labels are written whole: no temp file is left over', () async {
+      put('mic_1.m4a', [1, 2, 3]);
+      put('mic_9.owner.tmp', 'ali'.codeUnits); // a write cut short
+      tokens.signIn('alice');
+      final path = await store.newPath(RecordingKind.microphone);
+      expect(await store.list(), hasLength(1));
+
+      final names = dir.listSync().map((f) => f.path.split('/').last);
+      expect(names.where((n) => n.endsWith('.tmp')), isEmpty);
+      expect(
+        File(path.replaceAll('.aac', '.owner')).readAsStringSync(),
+        'alice',
+      );
+      expect(File('${dir.path}/mic_1.owner').readAsStringSync(), 'alice');
+    });
+
+    test(
+      'unreadable token storage: records unlabelled, offers nothing',
+      () async {
+        tokens.broken = true;
+
+        final path = await store.newPath(RecordingKind.microphone);
+        expect(store.isActive(path), isTrue);
+        expect(File(path.replaceAll('.aac', '.owner')).existsSync(), isFalse);
+        File(path).writeAsBytesSync(adtsFrames(3));
+        store.release(path);
+        expect(await store.list(), isEmpty);
+        expect(File(path).existsSync(), isTrue);
+
+        tokens
+          ..broken = false
+          ..signIn('alice');
+        expect((await store.list()).single.path, path);
+      },
+    );
+
     test('a label of a session still starting is kept', () async {
       tokens.signIn('alice');
       final path = await store.newPath(RecordingKind.microphone);
