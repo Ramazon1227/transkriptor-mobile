@@ -251,6 +251,38 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String quotaWarnTitle(int minutes) {
+    return 'Daqiqa tugayapti: $minutes daq qoldi.';
+  }
+
+  @override
+  String get quotaOver => 'Daqiqa tugadi.';
+
+  @override
+  String quotaRenews(String date) {
+    return 'Yangilanish: $date.';
+  }
+
+  @override
+  String quotaEnds(String date) {
+    return 'Tarif $date da tugaydi.';
+  }
+
+  @override
+  String get quotaFreeOnce => 'Bepul daqiqa qayta berilmaydi.';
+
+  @override
+  String get quotaSeePlans => 'Tariflarni koʻrish';
+
+  @override
+  String get quotaClose => 'Ogohlantirishni yopish';
+
+  @override
+  String quotaUsed(int percent) {
+    return 'Tarif daqiqasining $percent foizi ishlatildi';
+  }
+
+  @override
   String get loginOr => 'yoki';
 
   @override

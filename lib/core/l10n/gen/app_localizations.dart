@@ -526,6 +526,54 @@ abstract class AppLocalizations {
   /// **'{minutes} daq'**
   String minutesShort(int minutes);
 
+  /// No description provided for @quotaWarnTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Daqiqa tugayapti: {minutes} daq qoldi.'**
+  String quotaWarnTitle(int minutes);
+
+  /// No description provided for @quotaOver.
+  ///
+  /// In uz, this message translates to:
+  /// **'Daqiqa tugadi.'**
+  String get quotaOver;
+
+  /// No description provided for @quotaRenews.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangilanish: {date}.'**
+  String quotaRenews(String date);
+
+  /// No description provided for @quotaEnds.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tarif {date} da tugaydi.'**
+  String quotaEnds(String date);
+
+  /// No description provided for @quotaFreeOnce.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bepul daqiqa qayta berilmaydi.'**
+  String get quotaFreeOnce;
+
+  /// No description provided for @quotaSeePlans.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tariflarni koʻrish'**
+  String get quotaSeePlans;
+
+  /// No description provided for @quotaClose.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ogohlantirishni yopish'**
+  String get quotaClose;
+
+  /// No description provided for @quotaUsed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tarif daqiqasining {percent} foizi ishlatildi'**
+  String quotaUsed(int percent);
+
   /// No description provided for @loginOr.
   ///
   /// In uz, this message translates to:

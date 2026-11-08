@@ -7,8 +7,12 @@ import 'package:transkriptor_uz/core/theme/app_colors.dart';
 import 'package:transkriptor_uz/core/theme/app_text.dart';
 import 'package:transkriptor_uz/core/utils/formatters.dart';
 import 'package:transkriptor_uz/features/auth/application/account_cubit.dart';
+import 'package:transkriptor_uz/features/billing/application/quota_warning_cubit.dart';
+import 'package:transkriptor_uz/features/billing/domain/quota.dart';
 
-/// Minutes are the currency, so the balance is always in view.
+/// Minutes are the currency, so the balance is always in view. From 80 %
+/// of the plan's minutes used it carries a coral mark (B-18); the page
+/// above provides the [QuotaWarningCubit].
 class BalancePill extends StatelessWidget {
   const BalancePill({super.key});
 
@@ -18,7 +22,11 @@ class BalancePill extends StatelessWidget {
     final seconds = context.select<AccountCubit, int?>(
       (c) => c.state.account?.currentWorkspace?.balanceSeconds,
     );
+    final level = context.select<QuotaWarningCubit, QuotaLevel>(
+      (c) => c.state.level,
+    );
     if (seconds == null) return const SizedBox.shrink();
+    final low = level != QuotaLevel.none;
     return Material(
       color: AppColors.sf1,
       borderRadius: BorderRadius.circular(7),
@@ -37,12 +45,21 @@ class BalancePill extends StatelessWidget {
                 Text(
                   l10n.minutesShort(Formatters.minutesLeft(seconds)),
                   style: AppText.mono.copyWith(
-                    color: AppColors.cotton,
+                    color: low ? AppColors.warn : AppColors.cotton,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     fontVariations: const [FontVariation('wght', 500)],
                   ),
                 ),
+                if (low) ...[
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 16,
+                    color: AppColors.warn,
+                    semanticLabel: l10n.quotaUsed(level.percent),
+                  ),
+                ],
               ],
             ),
           ),

@@ -61,12 +61,20 @@ import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart'
     as _i207;
 import 'package:transkriptor_uz/features/billing/application/plans_cubit.dart'
     as _i992;
+import 'package:transkriptor_uz/features/billing/application/quota_warning_cubit.dart'
+    as _i288;
 import 'package:transkriptor_uz/features/billing/domain/i_billing_facade.dart'
     as _i171;
+import 'package:transkriptor_uz/features/billing/domain/i_quota_warning_facade.dart'
+    as _i453;
 import 'package:transkriptor_uz/features/billing/infrastructure/facades/billing_facade.dart'
     as _i375;
+import 'package:transkriptor_uz/features/billing/infrastructure/facades/quota_warning_facade.dart'
+    as _i518;
 import 'package:transkriptor_uz/features/billing/infrastructure/repositories/billing_repository.dart'
     as _i354;
+import 'package:transkriptor_uz/features/billing/infrastructure/storage/quota_warning_storage.dart'
+    as _i192;
 import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart'
     as _i698;
 import 'package:transkriptor_uz/features/calendar/domain/i_calendar_facade.dart'
@@ -370,6 +378,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i522.ILearnFacade>(
       () => _i773.LearnFacade(gh<_i79.DemoLearnRepository>()),
     );
+    gh.lazySingleton<_i192.QuotaWarningStorage>(
+      () => _i192.QuotaWarningStorage(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i324.PlayerSpeedStorage>(
       () => _i324.PlayerSpeedStorage(gh<_i558.FlutterSecureStorage>()),
     );
@@ -433,6 +444,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1034.ISpeakerIntroFacade>(
       () => _i200.SpeakerIntroFacade(gh<_i459.SpeakerIntroStorage>()),
+    );
+    gh.lazySingleton<_i453.IQuotaWarningFacade>(
+      () => _i518.QuotaWarningFacade(gh<_i192.QuotaWarningStorage>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.dio(gh<_i60.TokenInterceptor>()),
@@ -676,6 +690,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i698.CalendarCubit>(
       () => _i698.CalendarCubit(gh<_i763.ICalendarFacade>()),
+    );
+    gh.factory<_i288.QuotaWarningCubit>(
+      () => _i288.QuotaWarningCubit(
+        gh<_i171.IBillingFacade>(),
+        gh<_i453.IQuotaWarningFacade>(),
+      ),
     );
     gh.factory<_i900.FileActionsCubit>(
       () => _i900.FileActionsCubit(

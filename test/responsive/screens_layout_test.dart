@@ -50,6 +50,7 @@ import 'package:transkriptor_uz/features/auth/presentation/pages/register_page.d
 import 'package:transkriptor_uz/features/auth/presentation/widgets/profile_name_sheet.dart';
 import 'package:transkriptor_uz/features/billing/application/balance_cubit.dart';
 import 'package:transkriptor_uz/features/billing/application/plans_cubit.dart';
+import 'package:transkriptor_uz/features/billing/application/quota_warning_cubit.dart';
 import 'package:transkriptor_uz/features/billing/domain/entities/billing.dart';
 import 'package:transkriptor_uz/features/billing/presentation/pages/plans_page.dart';
 import 'package:transkriptor_uz/features/calendar/application/calendar_cubit.dart';
@@ -176,6 +177,8 @@ class _Player extends MockCubit<PlayerState> implements PlayerCubit;
 class _Calendar extends MockCubit<CalendarState> implements CalendarCubit;
 
 class _Balance extends MockCubit<BalanceState> implements BalanceCubit;
+
+class _Quota extends MockCubit<QuotaWarningState> implements QuotaWarningCubit;
 
 class _Plans extends MockCubit<PlansState> implements PlansCubit;
 
@@ -725,6 +728,7 @@ late _Transcript transcript;
 late _Player player;
 late _Calendar calendar;
 late _Balance balance;
+late _Quota quota;
 late _Plans plans;
 late _Push push;
 late _Links links;
@@ -762,6 +766,7 @@ void _makeMocks() {
   player = _Player();
   calendar = _Calendar();
   balance = _Balance();
+  quota = _Quota();
   plans = _Plans();
   push = _Push();
   links = _Links();
@@ -895,6 +900,9 @@ void _makeMocks() {
     ),
   );
   when(() => balance.load(any())).thenAnswer((_) async {});
+  when(() => quota.state).thenReturn(const QuotaWarningState());
+  when(() => quota.load(any(), personal: any(named: 'personal')))
+      .thenAnswer((_) async {});
   when(() => plans.state)
       .thenReturn(const PlansState(status: PlansStatus.success, plans: _plans));
   when(() => plans.load()).thenAnswer((_) async {});
@@ -934,6 +942,7 @@ void _makeMocks() {
     )
     ..registerFactory<CalendarCubit>(() => calendar)
     ..registerFactory<BalanceCubit>(() => balance)
+    ..registerFactory<QuotaWarningCubit>(() => quota)
     ..registerFactory<PlansCubit>(() => plans)
     ..registerFactory<WorkspaceListCubit>(() => workspaceList)
     ..registerFactory<DeleteAccountCubit>(() => deleteAccount)
