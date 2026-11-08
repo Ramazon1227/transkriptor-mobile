@@ -304,8 +304,8 @@ mixin _$Summary {
  Map<String, dynamic>? get body;/// [body] as read-only blocks.
  List<NoteBlock> get blocks; List<SummarySection> get sections;/// Built on the phone from the transcript's own sentences: no model
 /// wrote it.
- bool get sample; DateTime? get createdAt;/// Speakers were renamed after the summary was written (XU-15), and
-/// its text has not changed since: names in it may be old.
+ bool get sample; DateTime? get createdAt;/// Speakers were renamed (or segments moved between them) after the
+/// summary was written (XU-15): names in it may be old.
  bool get speakersOutdated;
 /// Create a copy of Summary
 /// with the given fields replaced by the non-null parameter values.
@@ -558,8 +558,8 @@ class _Summary implements Summary {
 /// wrote it.
 @override@JsonKey() final  bool sample;
 @override final  DateTime? createdAt;
-/// Speakers were renamed after the summary was written (XU-15), and
-/// its text has not changed since: names in it may be old.
+/// Speakers were renamed (or segments moved between them) after the
+/// summary was written (XU-15): names in it may be old.
 @override@JsonKey() final  bool speakersOutdated;
 
 /// Create a copy of Summary
