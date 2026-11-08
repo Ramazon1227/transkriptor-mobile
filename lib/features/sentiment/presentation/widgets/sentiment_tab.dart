@@ -101,10 +101,12 @@ class SentimentTab extends StatelessWidget {
             children: [
               Text(l10n.sentimentFailedTitle, style: AppText.heading),
               const SizedBox(height: 4),
-              Text(
-                analysis.error ?? l10n.sentimentFailedGeneric,
-                style: AppText.body.copyWith(color: AppColors.bad),
-              ),
+              // The generic line says «try again»: not for a VIEWER.
+              if (analysis.error ??
+                      (canWrite ? l10n.sentimentFailedGeneric : null)
+                  case final error?)
+                Text(error, style: AppText.body.copyWith(color: AppColors.bad)),
+              if (!canWrite) ...[const SizedBox(height: 8), const _ViewerWhy()],
               if (canWrite) ...[
                 const SizedBox(height: 16),
                 _RerunButton(
@@ -121,7 +123,7 @@ class SentimentTab extends StatelessWidget {
       case SentimentStatus.done:
         return [
           if (analysis.outdated) ...[
-            const _OutdatedBanner(),
+            _OutdatedBanner(canWrite: canWrite),
             const SizedBox(height: 12),
           ],
           if (analysis.note.isNotEmpty) ...[
@@ -201,7 +203,10 @@ class _Intro extends StatelessWidget {
         Text(l10n.sentimentIntroTitle, style: AppText.heading),
         const SizedBox(height: 4),
         Text(l10n.sentimentIntroBody, style: AppText.caption),
-        if (onStart != null) ...[
+        if (onStart == null) ...[
+          const SizedBox(height: 16),
+          const _ViewerWhy(),
+        ] else ...[
           const SizedBox(height: 16),
           _RerunButton(
             key: const Key('sentiment_start'),
@@ -276,7 +281,9 @@ class _Pending extends StatelessWidget {
 }
 
 class _OutdatedBanner extends StatelessWidget {
-  const _OutdatedBanner();
+  const _OutdatedBanner({required this.canWrite});
+
+  final bool canWrite;
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +309,12 @@ class _OutdatedBanner extends StatelessWidget {
                   style: AppText.caption.copyWith(color: AppColors.cotton),
                 ),
                 const SizedBox(height: 2),
-                Text(l10n.sentimentOutdatedBody, style: AppText.caption),
+                Text(
+                  canWrite
+                      ? l10n.sentimentOutdatedBody
+                      : l10n.sentimentOutdatedBodyViewer,
+                  style: AppText.caption,
+                ),
               ],
             ),
           ),
@@ -310,6 +322,18 @@ class _OutdatedBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Where a VIEWER's start / re-run button would be: who may start it.
+class _ViewerWhy extends StatelessWidget {
+  const _ViewerWhy();
+
+  @override
+  Widget build(BuildContext context) => Text(
+    context.l10n.sentimentViewerWhy,
+    key: const Key('sentiment_viewer_why'),
+    style: AppText.caption,
+  );
 }
 
 /// The model's 1–2 sentences. Machine text gets the mint marker icon;

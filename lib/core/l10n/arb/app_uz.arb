@@ -904,6 +904,8 @@
   "sentimentFailedGeneric": "Tahlil tugamadi — qayta urinib koʻring.",
   "sentimentOutdated": "Matn tahlildan keyin oʻzgargan",
   "sentimentOutdatedBody": "Natija eski matn boʻyicha. Yangilash uchun qayta tahlil qiling.",
+  "sentimentOutdatedBodyViewer": "Natija eski matn boʻyicha. Yangilashni tahrirlash huquqi bor aʼzo qiladi.",
+  "sentimentViewerWhy": "Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlaydi — sizda faqat oʻqish huquqi bor.",
   "sentimentOverall": "Umumiy kayfiyat",
   "sentimentShareHint": "Gapirish vaqtidan ulush",
   "sentimentPositive": "Ijobiy",

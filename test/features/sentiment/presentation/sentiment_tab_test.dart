@@ -12,6 +12,10 @@ import 'package:transkriptor_uz/features/transcript/domain/entities/transcript.d
 
 import '../../../helpers/sentiment_fakes.dart';
 
+const _viewerWhy =
+    'Tahlilni faqat tahrirlash huquqi bor aʼzolar boshlaydi — '
+    'sizda faqat oʻqish huquqi bor.';
+
 void main() {
   late FakeSentimentFacade facade;
 
@@ -145,13 +149,23 @@ void main() {
       final cubit = await pump(tester, canWrite: false);
       expect(find.byKey(const Key('sentiment_intro')), findsOneWidget);
       expect(find.byKey(const Key('sentiment_start')), findsNothing);
+      expect(find.text(_viewerWhy), findsOneWidget);
       await dispose(tester, cubit);
     });
 
     testWidgets('sees a finished analysis but no re-run', (tester) async {
-      facade.answer(const Right(doneAnalysis));
+      facade.answer(Right(doneAnalysis.copyWith(outdated: true)));
       final cubit = await pump(tester, canWrite: false);
       expect(find.byKey(const Key('sentiment_overall')), findsOneWidget);
+      // The banner does not send a viewer to a button it has not got.
+      expect(find.textContaining('qayta tahlil qiling'), findsNothing);
+      expect(
+        find.text(
+          'Natija eski matn boʻyicha. Yangilashni tahrirlash huquqi '
+          'bor aʼzo qiladi.',
+        ),
+        findsOneWidget,
+      );
       await tester.drag(
         find.byKey(const Key('sentiment_list')),
         const Offset(0, -2000),
@@ -168,6 +182,8 @@ void main() {
       final cubit = await pump(tester, canWrite: false);
       expect(find.byKey(const Key('sentiment_failed')), findsOneWidget);
       expect(find.byKey(const Key('sentiment_retry')), findsNothing);
+      expect(find.textContaining('qayta urinib'), findsNothing);
+      expect(find.text(_viewerWhy), findsOneWidget);
       await dispose(tester, cubit);
     });
   });
