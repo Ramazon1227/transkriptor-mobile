@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Right, unit;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
@@ -445,11 +446,30 @@ void main() {
     expect(find.text('Muddat qachon?'), findsOneWidget);
     expect(find.text('Eski savol?'), findsNothing);
 
+    // Something half-typed stays in the box when a follow-up is tapped.
+    await tester.enterText(find.byType(TextField), 'Oʻzim yozayotgan savol');
     await tester.tap(find.text("Kim mas'ul?"));
     await tester.pump();
     await tester.pump();
     verify(() => facade.ask('t1', "Kim mas'ul?")).called(1);
     expect(find.byKey(const Key('ai_chat_follow_ups')), findsNothing);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller?.text,
+      'Oʻzim yozayotgan savol',
+    );
+    // The earlier answers stay; the new question and its pending answer
+    // are added below them.
+    final cubit = BlocProvider.of<AiChatCubit>(
+      tester.element(find.byKey(const Key('ai_chat_list'))),
+    );
+    expect(cubit.state.items.map((m) => m.id), [
+      'q1',
+      'a0',
+      'q2',
+      'a1',
+      'q3',
+      'a3',
+    ]);
     await tester.pumpWidget(const SizedBox());
   });
 

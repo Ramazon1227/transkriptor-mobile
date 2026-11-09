@@ -91,6 +91,13 @@ class _AiChatViewState extends State<_AiChatView> {
     }
   }
 
+  /// A follow-up button (CH-12) sends its own text; whatever is being
+  /// typed in the box stays there.
+  void _sendFollowUp(String text) {
+    final cubit = context.read<AiChatCubit>();
+    if (!cubit.state.busy) unawaited(cubit.send(text));
+  }
+
   Future<void> _clear() async {
     final l10n = context.l10n;
     final cubit = context.read<AiChatCubit>();
@@ -193,7 +200,7 @@ class _AiChatViewState extends State<_AiChatView> {
                     padding: const EdgeInsets.only(top: 8),
                     child: _SuggestionButton(
                       label: q,
-                      onTap: state.busy ? null : () => _send(q),
+                      onTap: state.busy ? null : () => _sendFollowUp(q),
                     ),
                   ),
               ],
