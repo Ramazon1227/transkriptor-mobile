@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Right, unit;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transkriptor_uz/core/di/injection.dart';
@@ -393,6 +394,84 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets('next questions sit under the last answer; tapping asks', (
+    tester,
+  ) async {
+    when(() => facade.history('t1')).thenAnswer(
+      (_) async => Right(
+        chat([
+          question,
+          const AiMessage(
+            id: 'a0',
+            role: AiRole.assistant,
+            status: AiMessageStatus.done,
+            content: 'Eski javob',
+            followUps: ['Eski savol?'],
+          ),
+          question.copyWith(id: 'q2'),
+          const AiMessage(
+            id: 'a1',
+            role: AiRole.assistant,
+            status: AiMessageStatus.done,
+            content: 'Javob',
+            followUps: ["Kim mas'ul?", 'Muddat qachon?'],
+          ),
+        ]),
+      ),
+    );
+    when(() => facade.ask('t1', any())).thenAnswer(
+      (inv) async => Right(
+        AiExchange(
+          question: AiMessage(
+            id: 'q3',
+            role: AiRole.user,
+            status: AiMessageStatus.done,
+            content: inv.positionalArguments[1] as String,
+          ),
+          answer: const AiMessage(
+            id: 'a3',
+            role: AiRole.assistant,
+            status: AiMessageStatus.pending,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('ai_chat_follow_ups')), findsOneWidget);
+    expect(find.text('Muddat qachon?'), findsOneWidget);
+    expect(find.text('Eski savol?'), findsNothing);
+
+    // Something half-typed stays in the box when a follow-up is tapped.
+    await tester.enterText(find.byType(TextField), 'Oʻzim yozayotgan savol');
+    await tester.tap(find.text("Kim mas'ul?"));
+    await tester.pump();
+    await tester.pump();
+    verify(() => facade.ask('t1', "Kim mas'ul?")).called(1);
+    expect(find.byKey(const Key('ai_chat_follow_ups')), findsNothing);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller?.text,
+      'Oʻzim yozayotgan savol',
+    );
+    // The earlier answers stay; the new question and its pending answer
+    // are added below them.
+    final cubit = BlocProvider.of<AiChatCubit>(
+      tester.element(find.byKey(const Key('ai_chat_list'))),
+    );
+    expect(cubit.state.items.map((m) => m.id), [
+      'q1',
+      'a0',
+      'q2',
+      'a1',
+      'q3',
+      'a3',
+    ]);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets('an answer the server did not flag shows no warning', (
     tester,

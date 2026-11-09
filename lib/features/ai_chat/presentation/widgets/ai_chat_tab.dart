@@ -13,6 +13,7 @@ import 'package:transkriptor_uz/core/widgets/app_loading_view.dart';
 import 'package:transkriptor_uz/core/widgets/confirm_sheet.dart';
 import 'package:transkriptor_uz/features/ai_chat/application/ai_chat_cubit.dart';
 import 'package:transkriptor_uz/features/ai_chat/domain/chat_hints.dart';
+import 'package:transkriptor_uz/features/ai_chat/domain/entities/ai_message.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/chat_hint_text.dart';
 import 'package:transkriptor_uz/features/ai_chat/presentation/widgets/message_bubble.dart';
 
@@ -90,6 +91,13 @@ class _AiChatViewState extends State<_AiChatView> {
     }
   }
 
+  /// A follow-up button (CH-12) sends its own text; whatever is being
+  /// typed in the box stays there.
+  void _sendFollowUp(String text) {
+    final cubit = context.read<AiChatCubit>();
+    if (!cubit.state.busy) unawaited(cubit.send(text));
+  }
+
   Future<void> _clear() async {
     final l10n = context.l10n;
     final cubit = context.read<AiChatCubit>();
@@ -164,7 +172,7 @@ class _AiChatViewState extends State<_AiChatView> {
               );
             }
             final m = items[i];
-            return MessageBubble(
+            final bubble = MessageBubble(
               key: ValueKey(m.id),
               message: m,
               onSeek: widget.onSeek,
@@ -175,6 +183,27 @@ class _AiChatViewState extends State<_AiChatView> {
                       !state.busy
                   ? () => cubit.retry(m.id)
                   : null,
+            );
+            // The model's next questions, only under the last answer (CH-12).
+            if (i != 0 ||
+                m.status != AiMessageStatus.done ||
+                m.followUps.isEmpty) {
+              return bubble;
+            }
+            return Column(
+              key: const Key('ai_chat_follow_ups'),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                bubble,
+                for (final q in m.followUps)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: _SuggestionButton(
+                      label: q,
+                      onTap: state.busy ? null : () => _sendFollowUp(q),
+                    ),
+                  ),
+              ],
             );
           },
         );

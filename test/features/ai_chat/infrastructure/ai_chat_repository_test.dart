@@ -90,6 +90,41 @@ void main() {
     expect(chat.items.map((m) => m.outdated), [true, false]);
   });
 
+  test(
+    'follow_ups: strings only, at most three; missing or odd → none',
+    () async {
+      final f = facade({
+        'GET $path': (
+          200,
+          ok({
+            'items': [
+              {
+                'id': 'a1',
+                'role': 'ASSISTANT',
+                'status': 'DONE',
+                'follow_ups': [' Kim? ', '', 7, 'Qachon?', 'Nega?', 'Yana?'],
+              },
+              {'id': 'a2', 'role': 'ASSISTANT', 'status': 'DONE'},
+              {
+                'id': 'a3',
+                'role': 'ASSISTANT',
+                'status': 'DONE',
+                'follow_ups': 'Kim?',
+              },
+            ],
+          }),
+        ),
+      });
+      final chat = (await f.history('t1'))
+          .getOrElse(() => throw StateError(''));
+      expect(chat.items.map((m) => m.followUps), [
+        ['Kim?', 'Qachon?', 'Nega?'],
+        <String>[],
+        <String>[],
+      ]);
+    },
+  );
+
   test('ask posts {content} and reads question + answer', () async {
     final adapter = FakeHttpAdapter({
       'POST $path': (

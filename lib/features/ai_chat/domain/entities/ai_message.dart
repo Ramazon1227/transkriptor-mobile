@@ -27,6 +27,11 @@ abstract class AiMessage with _$AiMessage {
     /// The transcript text was edited after this answer (CH-7). An older
     /// server and a pending answer leave it false.
     @Default(false) bool outdated,
+
+    /// Up to three next questions the model suggested at the end of this
+    /// answer (CH-12), shown as buttons under the last answer. An older
+    /// server sends none.
+    @Default(<String>[]) List<String> followUps,
   }) = _AiMessage;
 
   const AiMessage._();
