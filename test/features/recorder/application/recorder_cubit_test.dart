@@ -14,6 +14,7 @@ class _MockRecorderFacade extends Mock implements IRecorderFacade;
 void main() {
   late _MockRecorderFacade facade;
   late StreamController<double> levels;
+  late StreamController<RecorderInterruption> interruptions;
 
   setUpAll(() => registerFallbackValue(Duration.zero));
 
@@ -21,6 +22,8 @@ void main() {
     facade = _MockRecorderFacade();
     levels = StreamController<double>.broadcast();
     when(() => facade.levels()).thenAnswer((_) => levels.stream);
+    interruptions = StreamController<RecorderInterruption>.broadcast();
+    when(() => facade.interruptions()).thenAnswer((_) => interruptions.stream);
     when(() => facade.start()).thenAnswer((_) async => const Right(unit));
     when(() => facade.pause()).thenAnswer((_) async => const Right(unit));
     when(() => facade.resume()).thenAnswer((_) async => const Right(unit));
@@ -33,7 +36,10 @@ void main() {
     );
   });
 
-  tearDown(() => levels.close());
+  tearDown(() async {
+    await levels.close();
+    await interruptions.close();
+  });
 
   group('RecorderCubit', () {
     blocTest<RecorderCubit, RecorderState>(
@@ -117,6 +123,52 @@ void main() {
       await cubit.close();
       await stopping;
       verify(() => facade.stop(duration: any(named: 'duration'))).called(1);
+    });
+
+    test(
+      'a call pauses the recording visibly; resume clears it (MB-10)',
+      () async {
+        final cubit = RecorderCubit(facade);
+        await cubit.start();
+        interruptions.add(RecorderInterruption.paused);
+        await Future<void>.delayed(Duration.zero);
+        expect(cubit.state.status, RecorderStatus.paused);
+        expect(cubit.state.interrupted, isTrue);
+        // The clock stopped with the microphone.
+        final at = cubit.state.elapsed;
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        expect(cubit.state.elapsed, at);
+
+        await cubit.togglePause();
+        expect(cubit.state.status, RecorderStatus.recording);
+        expect(cubit.state.interrupted, isFalse);
+        verify(() => facade.resume()).called(1);
+        verifyNever(() => facade.pause());
+        await cubit.close();
+      },
+    );
+
+    test('an interruption while paused by the user changes nothing', () async {
+      final cubit = RecorderCubit(facade);
+      await cubit.start();
+      await cubit.togglePause();
+      interruptions.add(RecorderInterruption.paused);
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.status, RecorderStatus.paused);
+      expect(cubit.state.interrupted, isFalse);
+      await cubit.close();
+    });
+
+    test('a capture the phone ended is saved, not left hanging', () async {
+      final cubit = RecorderCubit(facade);
+      await cubit.start();
+      interruptions.add(RecorderInterruption.stopped);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.status, RecorderStatus.done);
+      verify(() => facade.stop(duration: any(named: 'duration'))).called(1);
+      verifyNever(() => facade.discard());
+      await cubit.close();
     });
 
     test('discard resets to idle', () async {

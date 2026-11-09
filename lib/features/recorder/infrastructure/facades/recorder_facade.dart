@@ -35,6 +35,11 @@ const _config = RecordConfig(
   autoGain: true,
   echoCancel: true,
   noiseSuppress: true,
+  // MB-10: `audioInterruption` stays at its default, `pause`: a call or
+  // another app taking the microphone pauses the recorder natively (Android
+  // audio focus, iOS session interruption); the facade reports it and only
+  // the user resumes. `pauseResume` would turn the microphone back on by
+  // itself after the call, unannounced. A test pins it.
 );
 
 /// iOS writes through `AVAudioRecorder`, which takes the AAC settings
@@ -66,6 +71,23 @@ class RecorderFacade implements IRecorderFacade {
   StreamSubscription<Uint8List>? _chunks;
   Completer<void>? _streamDone;
 
+  final StreamController<RecorderInterruption> _interruptions =
+      StreamController<RecorderInterruption>.broadcast();
+
+  /// The native recorder's states, for the ones nobody asked for; one
+  /// subscription per recording.
+  StreamSubscription<RecordState>? _states;
+
+  /// Set before our own pause and cleared by resume, so the native pause it
+  /// causes is not taken for an interruption.
+  bool _userPaused = false;
+
+  /// Set by stop and discard: the native stop that follows is ours.
+  bool _ending = false;
+
+  /// The notification says the recording stopped; resume puts it back.
+  bool _interrupted = false;
+
   @override
   Future<Either<Failure, Unit>> start() async {
     try {
@@ -76,6 +98,14 @@ class RecorderFacade implements IRecorderFacade {
       return const Left(Failure.permissionDenied());
     }
     if (_path != null) return const Right(unit);
+    _userPaused = false;
+    _ending = false;
+    _interrupted = false;
+    await _states?.cancel();
+    _states = _recorder.onStateChanged().listen(
+      _onState,
+      onError: (Object _) {},
+    );
     if (_ios) return await _startIos();
     try {
       await _native.requestNotifications();
@@ -127,15 +157,57 @@ class RecorderFacade implements IRecorderFacade {
   }
 
   @override
-  Future<Either<Failure, Unit>> pause() => _guard(_recorder.pause);
+  Future<Either<Failure, Unit>> pause() async {
+    _userPaused = true;
+    final result = await _guard(_recorder.pause);
+    if (result.isLeft()) _userPaused = false;
+    return result;
+  }
 
   @override
-  Future<Either<Failure, Unit>> resume() => _guard(_recorder.resume);
+  Future<Either<Failure, Unit>> resume() async {
+    final result = await _guard(_recorder.resume);
+    if (result.isRight()) {
+      _userPaused = false;
+      if (_interrupted) {
+        _interrupted = false;
+        await _markInterrupted(false);
+      }
+    }
+    return result;
+  }
+
+  @override
+  Stream<RecorderInterruption> interruptions() => _interruptions.stream;
+
+  void _onState(RecordState state) {
+    if (_path == null || _ending) return;
+    switch (state) {
+      case RecordState.pause when !_userPaused && !_interrupted:
+        _interrupted = true;
+        unawaited(_markInterrupted(true));
+        _interruptions.add(RecorderInterruption.paused);
+      case RecordState.stop:
+        _interruptions.add(RecorderInterruption.stopped);
+      case RecordState.pause || RecordState.record:
+        break;
+    }
+  }
+
+  Future<void> _markInterrupted(bool interrupted) async {
+    if (_ios) return;
+    try {
+      await _native.setMicInterrupted(interrupted: interrupted);
+    } on Object {
+      // Only the notification text; the screen says it as well.
+    }
+  }
 
   @override
   Future<Either<Failure, Recording>> stop({required Duration duration}) async {
     final path = _path;
     if (path == null) return const Left(Failure.storage());
+    _ending = true;
     if (_ios) return await _stopIos(path, duration);
     try {
       await _recorder.stop();
@@ -194,6 +266,7 @@ class RecorderFacade implements IRecorderFacade {
 
   @override
   Future<void> discard() async {
+    _ending = true;
     try {
       await _recorder.cancel();
     } on Object {
@@ -208,6 +281,8 @@ class RecorderFacade implements IRecorderFacade {
     _path = null;
     await _chunks?.cancel();
     _chunks = null;
+    await _states?.cancel();
+    _states = null;
     _streamDone = null;
     try {
       await _file?.close();

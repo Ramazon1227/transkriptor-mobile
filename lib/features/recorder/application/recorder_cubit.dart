@@ -32,6 +32,9 @@ abstract class RecorderState with _$RecorderState {
     @Default(<double>[]) List<double> levels,
     Recording? recording,
     Failure? failure,
+
+    /// Paused by a call or another app, not by the user (MB-10).
+    @Default(false) bool interrupted,
   }) = _RecorderState;
 }
 
@@ -45,6 +48,7 @@ class RecorderCubit extends Cubit<RecorderState> {
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _ticker;
   StreamSubscription<double>? _levels;
+  StreamSubscription<RecorderInterruption>? _interruptions;
 
   bool get _active =>
       state.status == RecorderStatus.recording ||
@@ -72,6 +76,7 @@ class RecorderCubit extends Cubit<RecorderState> {
           if (!isClosed) emit(state.copyWith(elapsed: _stopwatch.elapsed));
         });
         _levels = _facade.levels().listen(_onLevel);
+        _interruptions = _facade.interruptions().listen(_onInterruption);
         emit(state.copyWith(status: RecorderStatus.recording));
       },
     );
@@ -84,6 +89,25 @@ class RecorderCubit extends Cubit<RecorderState> {
         ? next.length - recorderMeterLength
         : 0;
     emit(state.copyWith(levels: next.sublist(start)));
+  }
+
+  void _onInterruption(RecorderInterruption kind) {
+    if (isClosed) return;
+    switch (kind) {
+      case RecorderInterruption.paused:
+        if (state.status != RecorderStatus.recording) return;
+        _stopwatch.stop();
+        emit(
+          state.copyWith(
+            status: RecorderStatus.paused,
+            elapsed: _stopwatch.elapsed,
+            interrupted: true,
+          ),
+        );
+      case RecorderInterruption.stopped:
+        // Nothing more will be recorded: keep what the file holds.
+        unawaited(stop());
+    }
   }
 
   Future<void> togglePause() async {
@@ -105,7 +129,13 @@ class RecorderCubit extends Cubit<RecorderState> {
       if (isClosed) return;
       result.fold((f) => emit(state.copyWith(failure: f)), (_) {
         _stopwatch.start();
-        emit(state.copyWith(status: RecorderStatus.recording, failure: null));
+        emit(
+          state.copyWith(
+            status: RecorderStatus.recording,
+            failure: null,
+            interrupted: false,
+          ),
+        );
       });
     }
   }
@@ -149,6 +179,8 @@ class RecorderCubit extends Cubit<RecorderState> {
     _ticker = null;
     await _levels?.cancel();
     _levels = null;
+    await _interruptions?.cancel();
+    _interruptions = null;
   }
 
   @override

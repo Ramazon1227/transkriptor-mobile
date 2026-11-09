@@ -36,6 +36,11 @@ class NativeCaptureChannel {
   Future<void> stopMicService() =>
       _channel.invokeMethod<void>('mic.stopService');
 
+  /// Switches the microphone notification between «recording» and «stopped
+  /// by a call or another app — tap to continue». No-op without the service.
+  Future<void> setMicInterrupted({required bool interrupted}) => _channel
+      .invokeMethod<void>('mic.interrupted', {'interrupted': interrupted});
+
   /// Android 13+ notification permission; true below 13 or when granted.
   /// A refusal only hides the notification, the recording still runs.
   Future<bool> requestNotifications() async =>

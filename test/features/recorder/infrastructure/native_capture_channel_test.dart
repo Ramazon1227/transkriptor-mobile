@@ -30,6 +30,12 @@ void main() {
     expect(calls.map((c) => c.method), ['mic.startService', 'mic.stopService']);
   });
 
+  test('switches the microphone notification on an interruption', () async {
+    await NativeCaptureChannel().setMicInterrupted(interrupted: true);
+    expect(calls.single.method, 'mic.interrupted');
+    expect(calls.single.arguments, {'interrupted': true});
+  });
+
   test('notification permission answer', () async {
     answer = (_) => true;
     expect(await NativeCaptureChannel().requestNotifications(), isTrue);

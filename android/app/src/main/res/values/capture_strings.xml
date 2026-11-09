@@ -4,6 +4,8 @@
 <resources>
     <string name="capture_channel_name">Yozib olish</string>
     <string name="capture_mic_title">Yozib olinmoqda…</string>
+    <string name="capture_mic_interrupted_title">Yozuv toʻxtadi: qoʻngʻiroq yoki boshqa ilova</string>
+    <string name="capture_mic_interrupted_text">Yozilgani saqlangan. Davom ettirish uchun bosing.</string>
     <string name="capture_screen_title">Ekran ovozi yozib olinmoqda…</string>
     <string name="capture_stop">Toʻxtatish</string>
 </resources>

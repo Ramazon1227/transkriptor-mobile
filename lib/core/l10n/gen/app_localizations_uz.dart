@@ -1354,6 +1354,16 @@ class AppLocalizationsUz extends AppLocalizations {
       'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.';
 
   @override
+  String get recorderInterruptedTitle => 'Yozuv toʻxtadi';
+
+  @override
+  String get recorderInterruptedBody =>
+      'Qoʻngʻiroq yoki boshqa ilova mikrofonni oldi. Shu paytgacha yozilgani saqlangan, davom ettirsangiz shu yozuvga qoʻshiladi.';
+
+  @override
+  String get recorderInterruptedResume => 'Davom ettirish';
+
+  @override
   String get recorderMicDeniedTitle => 'Mikrofonga ruxsat yoʻq';
 
   @override

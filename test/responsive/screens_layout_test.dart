@@ -1554,6 +1554,17 @@ final _scenarios = <_Scenario>[
     ),
   ),
   _Scenario(
+    'recorder(interrupted)',
+    RecorderPage.new,
+    arrange: () => when(() => recorder.state).thenReturn(
+      const RecorderState(
+        status: RecorderStatus.paused,
+        elapsed: Duration(hours: 10, seconds: 1),
+        interrupted: true,
+      ),
+    ),
+  ),
+  _Scenario(
     'recorder(paused)',
     RecorderPage.new,
     arrange: () => when(() => recorder.state).thenReturn(

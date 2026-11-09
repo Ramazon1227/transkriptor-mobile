@@ -2476,6 +2476,24 @@ abstract class AppLocalizations {
   /// **'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.'**
   String get recorderScreenOff;
 
+  /// No description provided for @recorderInterruptedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuv toʻxtadi'**
+  String get recorderInterruptedTitle;
+
+  /// No description provided for @recorderInterruptedBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻngʻiroq yoki boshqa ilova mikrofonni oldi. Shu paytgacha yozilgani saqlangan, davom ettirsangiz shu yozuvga qoʻshiladi.'**
+  String get recorderInterruptedBody;
+
+  /// No description provided for @recorderInterruptedResume.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom ettirish'**
+  String get recorderInterruptedResume;
+
   /// No description provided for @recorderMicDeniedTitle.
   ///
   /// In uz, this message translates to:
