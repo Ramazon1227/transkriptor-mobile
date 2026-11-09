@@ -394,6 +394,65 @@ void main() {
     },
   );
 
+  testWidgets('next questions sit under the last answer; tapping asks', (
+    tester,
+  ) async {
+    when(() => facade.history('t1')).thenAnswer(
+      (_) async => Right(
+        chat([
+          question,
+          const AiMessage(
+            id: 'a0',
+            role: AiRole.assistant,
+            status: AiMessageStatus.done,
+            content: 'Eski javob',
+            followUps: ['Eski savol?'],
+          ),
+          question.copyWith(id: 'q2'),
+          const AiMessage(
+            id: 'a1',
+            role: AiRole.assistant,
+            status: AiMessageStatus.done,
+            content: 'Javob',
+            followUps: ["Kim mas'ul?", 'Muddat qachon?'],
+          ),
+        ]),
+      ),
+    );
+    when(() => facade.ask('t1', any())).thenAnswer(
+      (inv) async => Right(
+        AiExchange(
+          question: AiMessage(
+            id: 'q3',
+            role: AiRole.user,
+            status: AiMessageStatus.done,
+            content: inv.positionalArguments[1] as String,
+          ),
+          answer: const AiMessage(
+            id: 'a3',
+            role: AiRole.assistant,
+            status: AiMessageStatus.pending,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(
+      _host(const AiChatTab(transcriptId: 't1', hints: ChatHints.none)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('ai_chat_follow_ups')), findsOneWidget);
+    expect(find.text('Muddat qachon?'), findsOneWidget);
+    expect(find.text('Eski savol?'), findsNothing);
+
+    await tester.tap(find.text("Kim mas'ul?"));
+    await tester.pump();
+    await tester.pump();
+    verify(() => facade.ask('t1', "Kim mas'ul?")).called(1);
+    expect(find.byKey(const Key('ai_chat_follow_ups')), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('an answer the server did not flag shows no warning', (
     tester,
   ) async {

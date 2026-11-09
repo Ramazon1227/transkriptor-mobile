@@ -37,6 +37,9 @@ abstract class AiMessageModel with _$AiMessageModel {
     @JsonKey(name: 'error') String? error,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'outdated') @Default(false) bool outdated,
+    @JsonKey(name: 'follow_ups', fromJson: _readFollowUps)
+    @Default(<String>[])
+    List<String> followUps,
   }) = _AiMessageModel;
 
   const AiMessageModel._();
@@ -61,5 +64,14 @@ abstract class AiMessageModel with _$AiMessageModel {
     error: (error?.isEmpty ?? true) ? null : error,
     createdAt: createdAt,
     outdated: outdated,
+    followUps: followUps,
   );
 }
+
+/// Tolerant: anything but non-empty strings is dropped, at most three.
+List<String> _readFollowUps(Object? json) => json is List
+    ? [
+        for (final q in json)
+          if (q is String && q.trim().isNotEmpty) q.trim(),
+      ].take(3).toList()
+    : const <String>[];
