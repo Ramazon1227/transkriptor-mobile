@@ -177,6 +177,19 @@ void main() {
     },
   );
 
+  test('after the end, a start nobody asked for is stopped again', () async {
+    await engine.open(watch);
+    await engine.play();
+    values.add(YoutubePlayerValue(playerState: PlayerState.ended));
+    await pumpEventQueue();
+
+    // The cubit sends no pause after the end; a seek must not resume it.
+    await engine.seekTo(const Duration(seconds: 5));
+    values.add(YoutubePlayerValue(playerState: PlayerState.playing));
+    await pumpEventQueue();
+    verify(() => c.pauseVideo()).called(1);
+  });
+
   test('a position from before the seek does not jump back', () async {
     await engine.open(watch);
     await engine.seekTo(const Duration(seconds: 40));

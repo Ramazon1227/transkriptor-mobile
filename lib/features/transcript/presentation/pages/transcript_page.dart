@@ -181,6 +181,9 @@ class _EditorState extends State<_Editor> {
   /// The tabs keep their state when the layout turns with the phone.
   final GlobalKey _tabsKey = GlobalKey();
 
+  /// Same for the player: a rebuilt YouTube player loads empty (E-24).
+  final GlobalKey _playerKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     final transcript = context.select<TranscriptCubit, Transcript?>(
@@ -197,7 +200,9 @@ class _EditorState extends State<_Editor> {
             children: [
               SizedBox(
                 width: box.maxWidth * .42,
-                child: const SingleChildScrollView(child: PlayerPanel()),
+                child: SingleChildScrollView(
+                  child: PlayerPanel(key: _playerKey),
+                ),
               ),
               Expanded(child: tabs),
             ],
@@ -206,7 +211,7 @@ class _EditorState extends State<_Editor> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const PlayerPanel(),
+            PlayerPanel(key: _playerKey),
             Expanded(child: tabs),
           ],
         );

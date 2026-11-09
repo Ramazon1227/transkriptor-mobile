@@ -425,6 +425,26 @@ void main() {
       expect(engine.calls, before);
     });
 
+    testWidgets('turning the phone keeps the video surface (E-24)', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      engines.made.single.push(
+        const PlaybackSnapshot(duration: Duration(minutes: 1), hasVideo: true),
+      );
+      await tester.pumpAndSettle();
+      final before = tester.element(find.byKey(const Key('fake_surface')));
+
+      // Landscape and short: the player moves beside the tabs.
+      tester.view.physicalSize = const Size(1200, 560);
+      await tester.pumpAndSettle();
+      // A rebuilt surface would reload the YouTube player empty.
+      expect(
+        tester.element(find.byKey(const Key('fake_surface'))),
+        same(before),
+      );
+    });
+
     testWidgets('YouTube plays in the app: transport and seekable times', (
       tester,
     ) async {

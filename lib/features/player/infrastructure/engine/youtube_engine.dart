@@ -85,6 +85,8 @@ class YoutubeEngine implements PlaybackEngine {
     if (v.playerState == PlayerState.playing && !_playWanted) {
       _send((c) => c.pauseVideo());
     }
+    // The cubit skips pause() after the end, so the wish is cleared here.
+    if (v.playerState == PlayerState.ended) _playWanted = false;
     final d = v.metaData.duration;
     _push(
       playing: v.playerState == PlayerState.playing,
