@@ -262,7 +262,9 @@ class PlayerCubit extends Cubit<PlayerState> {
   /// YouTube refused (embedding forbidden, removed) or did not load: a fresh
   /// link would not help, so the card with «open in YouTube» takes over.
   Future<void> _embedFailed(EmbedFailure why) async {
-    final generation = _generation;
+    // Bumped: a _start still running for this engine must not show «ready»
+    // over the card.
+    final generation = ++_generation;
     _wantsPlay = false;
     await _release();
     if (isClosed || generation != _generation) return;
@@ -330,9 +332,12 @@ class PlayerCubit extends Cubit<PlayerState> {
       _clipEnd = null;
       emit(state.copyWith(clipStart: null));
     }
+    final wanted = _wantsPlay;
     _wantsPlay = false;
     final engine = _engine;
-    if (engine == null || !state.playing) return;
+    // [wanted]: a play just sent may not have reported back yet (YouTube
+    // answers through a WebView); the pause must still reach it.
+    if (engine == null || !(state.playing || wanted)) return;
     await engine.pause();
   }
 

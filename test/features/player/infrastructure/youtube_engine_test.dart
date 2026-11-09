@@ -144,6 +144,8 @@ void main() {
 
   test('seek, speed and volume reach the IFrame API in its units', () async {
     await engine.open(watch);
+    values.add(YoutubePlayerValue(playerState: PlayerState.paused));
+    await pumpEventQueue();
     await engine.seekTo(const Duration(milliseconds: 7250));
     await engine.setSpeed(1.5);
     await engine.setVolume(0.42);
@@ -156,6 +158,52 @@ void main() {
     // A paused player reports no time; the seek is kept.
     expect(seen.last.position, const Duration(milliseconds: 7250));
   });
+
+  test(
+    'a «playing» nobody asked for (a seek on the cued video) is stopped',
+    () async {
+      await engine.open(watch);
+      await engine.seekTo(const Duration(seconds: 30));
+      values.add(YoutubePlayerValue(playerState: PlayerState.playing));
+      await pumpEventQueue();
+      verify(() => c.pauseVideo()).called(1);
+
+      // A tap on a timecode: seek, then play — that one keeps playing.
+      await engine.seekTo(const Duration(seconds: 40));
+      await engine.play();
+      values.add(YoutubePlayerValue(playerState: PlayerState.playing));
+      await pumpEventQueue();
+      verifyNever(() => c.pauseVideo());
+    },
+  );
+
+  test('a position from before the seek does not jump back', () async {
+    await engine.open(watch);
+    await engine.seekTo(const Duration(seconds: 40));
+    times.add(const YoutubeVideoState(position: Duration(seconds: 3)));
+    await pumpEventQueue();
+    expect(seen.last.position, const Duration(seconds: 40));
+    times.add(const YoutubeVideoState(position: Duration(seconds: 40)));
+    await pumpEventQueue();
+    expect(seen.last.position, const Duration(seconds: 40));
+  });
+
+  test(
+    'a refused speed is only lost; a player that went away is final',
+    () async {
+      when(() => c.setPlaybackRate(any())).thenThrow(Exception('js'));
+      await engine.open(watch);
+      await engine.setSpeed(0.25);
+      await pumpEventQueue();
+      expect(seen.where((s) => s.error != null), isEmpty);
+
+      when(() => c.playVideo())
+          .thenAnswer((_) async => throw TimeoutException('not ready'));
+      await engine.play();
+      await pumpEventQueue();
+      expect(seen.last.embedFailure, EmbedFailure.other);
+    },
+  );
 
   test('dispose does not wait for the player to stop', () async {
     when(() => c.close()).thenAnswer((_) => Completer<void>().future);

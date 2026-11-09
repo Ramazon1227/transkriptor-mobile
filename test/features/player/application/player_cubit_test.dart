@@ -142,6 +142,15 @@ void main() {
       );
     });
 
+    test('a pause right behind play reaches the player', () async {
+      await cubit.open('m1');
+      final playing = cubit.play();
+      // The «playing» report has not come back yet.
+      await cubit.pause();
+      await playing;
+      expect(engine().calls, containsAllInOrder(['play', 'pause']));
+    });
+
     test('an audio file still gets the plain engine', () async {
       facade.answer = const Right(_audio);
       await cubit.open('m1');

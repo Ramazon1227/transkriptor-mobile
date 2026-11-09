@@ -22,6 +22,9 @@ class YoutubeEngine implements PlaybackEngine {
           // Our transport drives it, as on the web (controls=0): one set of
           // controls, not two.
           showControls: false,
+          // Taps on the video do nothing, so the transport is the only way
+          // to start it — and a «playing» nobody asked for is a side effect.
+          pointerEvents: PointerEvents.none,
           strictRelatedVideos: true,
         ),
       );
@@ -35,6 +38,13 @@ class YoutubeEngine implements PlaybackEngine {
   PlaybackSnapshot _last = const PlaybackSnapshot(hasVideo: true);
   bool _failed = false;
 
+  /// play() was asked for since the last pause().
+  bool _playWanted = false;
+
+  /// When the last seek was sent: positions reported just after it may
+  /// still be from before it.
+  final Stopwatch _sinceSeek = Stopwatch();
+
   @override
   Stream<PlaybackSnapshot> get snapshots => _snapshots.stream;
 
@@ -45,10 +55,10 @@ class YoutubeEngine implements PlaybackEngine {
     final c = _newController();
     _controller = c;
     _values = c.stream.listen(_onValue);
-    _times = c.videoStateStream.listen((v) => _push(position: v.position));
+    _times = c.videoStateStream.listen(_onTime);
     // A picture: the cubit shows [surface], which loads the player.
     _push();
-    _send((c) async {
+    _send(fatal: true, (c) async {
       await c.cueVideoById(videoId: id);
       // Known once cued for most videos; otherwise on the first play.
       final seconds = await c.duration;
@@ -58,8 +68,23 @@ class YoutubeEngine implements PlaybackEngine {
     });
   }
 
+  void _onTime(YoutubeVideoState v) {
+    final stale =
+        _sinceSeek.isRunning &&
+        _sinceSeek.elapsed < const Duration(milliseconds: 700) &&
+        (v.position - _last.position).abs() > const Duration(seconds: 1);
+    // An old position would jump the timecode back and could stop a
+    // speaker sample at once.
+    if (!stale) _push(position: v.position);
+  }
+
   void _onValue(YoutubePlayerValue v) {
     if (v.hasError) return _fail(failureOf(v.error));
+    // The IFrame API starts a cued video on a seek (a resume, a timecode
+    // tap without play): nobody asked, so it is stopped again.
+    if (v.playerState == PlayerState.playing && !_playWanted) {
+      _send((c) => c.pauseVideo());
+    }
     final d = v.metaData.duration;
     _push(
       playing: v.playerState == PlayerState.playing,
@@ -116,26 +141,44 @@ class YoutubeEngine implements PlaybackEngine {
   }
 
   /// Fire and forget, see the class comment. The controller's own timeout
-  /// (the player never became ready) lands here too.
-  void _send(Future<void> Function(YoutubePlayerController c) command) {
+  /// (the player never became ready) is final; any other failed command
+  /// only is lost, unless [fatal] (loading the video itself).
+  void _send(
+    Future<void> Function(YoutubePlayerController c) command, {
+    bool fatal = false,
+  }) {
     final c = _controller;
     if (c == null) return;
     unawaited(
-      command(c).then((_) {}, onError: (Object _) => _fail(EmbedFailure.other)),
+      Future.sync(() => command(c)).then(
+        (_) {},
+        onError: (Object e) {
+          if (fatal || e is TimeoutException) _fail(EmbedFailure.other);
+        },
+      ),
     );
   }
 
   @override
-  Future<void> play() async => _send((c) => c.playVideo());
+  Future<void> play() async {
+    _playWanted = true;
+    _send((c) => c.playVideo());
+  }
 
   @override
-  Future<void> pause() async => _send((c) => c.pauseVideo());
+  Future<void> pause() async {
+    _playWanted = false;
+    _send((c) => c.pauseVideo());
+  }
 
   @override
   Future<void> seekTo(Duration position) async {
     // Kept now: a paused player reports no time, and the next state change
     // must not carry the old position back.
     _push(position: position);
+    _sinceSeek
+      ..reset()
+      ..start();
     _send(
       (c) => c.seekTo(
         seconds: position.inMilliseconds / 1000,
@@ -176,7 +219,9 @@ class YoutubeEngine implements PlaybackEngine {
     await _times?.cancel();
     await _snapshots.close();
     // Not awaited: close() stops the video first, which waits up to 30 s
-    // for a player that never became ready.
+    // for a player that never became ready — or forever if its surface was
+    // never on screen (shortcut: that controller is then only freed with
+    // the engine; fine for one per opened file, revisit if it shows up).
     unawaited(c?.close().then((_) {}, onError: (Object _) {}));
   }
 }
