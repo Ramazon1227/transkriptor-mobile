@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$RecorderState {
 
  RecorderStatus get status; Duration get elapsed;/// Most recent last, each 0–1.
- List<double> get levels; Recording? get recording; Failure? get failure;
+ List<double> get levels; Recording? get recording; Failure? get failure;/// Paused by a call or another app, not by the user (MB-10).
+ bool get interrupted;
 /// Create a copy of RecorderState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $RecorderStateCopyWith<RecorderState> get copyWith => _$RecorderStateCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as RecorderState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecorderState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.elapsed, _this.elapsed) || other.elapsed == _this.elapsed)&&const DeepCollectionEquality().equals(other.levels, _this.levels)&&(identical(other.recording, _this.recording) || other.recording == _this.recording)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecorderState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.elapsed, _this.elapsed) || other.elapsed == _this.elapsed)&&const DeepCollectionEquality().equals(other.levels, _this.levels)&&(identical(other.recording, _this.recording) || other.recording == _this.recording)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.interrupted, _this.interrupted) || other.interrupted == _this.interrupted));
 }
 
 
 @override
 int get hashCode {
   final _this = this as RecorderState;
-  return Object.hash(runtimeType,_this.status,_this.elapsed,const DeepCollectionEquality().hash(_this.levels),_this.recording,_this.failure);
+  return Object.hash(runtimeType,_this.status,_this.elapsed,const DeepCollectionEquality().hash(_this.levels),_this.recording,_this.failure,_this.interrupted);
 }
 
 @override
 String toString() {
   final _this = this as RecorderState;
-  return 'RecorderState(status: ${_this.status}, elapsed: ${_this.elapsed}, levels: ${_this.levels}, recording: ${_this.recording}, failure: ${_this.failure})';
+  return 'RecorderState(status: ${_this.status}, elapsed: ${_this.elapsed}, levels: ${_this.levels}, recording: ${_this.recording}, failure: ${_this.failure}, interrupted: ${_this.interrupted})';
 }
 
 
@@ -52,7 +53,7 @@ abstract mixin class $RecorderStateCopyWith<$Res>  {
   factory $RecorderStateCopyWith(RecorderState value, $Res Function(RecorderState) _then) = _$RecorderStateCopyWithImpl;
 @useResult
 $Res call({
- RecorderStatus status, Duration elapsed, List<double> levels, Recording? recording, Failure? failure
+ RecorderStatus status, Duration elapsed, List<double> levels, Recording? recording, Failure? failure, bool interrupted
 });
 
 
@@ -69,14 +70,15 @@ class _$RecorderStateCopyWithImpl<$Res>
 
 /// Create a copy of RecorderState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? elapsed = null,Object? levels = null,Object? recording = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? elapsed = null,Object? levels = null,Object? recording = freezed,Object? failure = freezed,Object? interrupted = null,}) {
   return _then(RecorderState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RecorderStatus,elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
 as Duration,levels: null == levels ? _self.levels : levels // ignore: cast_nullable_to_non_nullable
 as List<double>,recording: freezed == recording ? _self.recording : recording // ignore: cast_nullable_to_non_nullable
 as Recording?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,interrupted: null == interrupted ? _self.interrupted : interrupted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of RecorderState
@@ -185,10 +187,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure,  bool interrupted)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecorderState() when $default != null:
-return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure);case _:
+return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure,_that.interrupted);case _:
   return orElse();
 
 }
@@ -206,10 +208,10 @@ return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.fa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure,  bool interrupted)  $default,) {final _that = this;
 switch (_that) {
 case _RecorderState():
-return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure);case _:
+return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure,_that.interrupted);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -226,10 +228,10 @@ return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.fa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RecorderStatus status,  Duration elapsed,  List<double> levels,  Recording? recording,  Failure? failure,  bool interrupted)?  $default,) {final _that = this;
 switch (_that) {
 case _RecorderState() when $default != null:
-return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure);case _:
+return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.failure,_that.interrupted);case _:
   return null;
 
 }
@@ -241,7 +243,7 @@ return $default(_that.status,_that.elapsed,_that.levels,_that.recording,_that.fa
 
 
 class _RecorderState implements RecorderState {
-  const _RecorderState({this.status = RecorderStatus.idle, this.elapsed = Duration.zero,  List<double> levels = const <double>[], this.recording, this.failure}): _levels = levels;
+  const _RecorderState({this.status = RecorderStatus.idle, this.elapsed = Duration.zero,  List<double> levels = const <double>[], this.recording, this.failure, this.interrupted = false}): _levels = levels;
   
 
 @override@JsonKey() final  RecorderStatus status;
@@ -257,6 +259,8 @@ class _RecorderState implements RecorderState {
 
 @override final  Recording? recording;
 @override final  Failure? failure;
+/// Paused by a call or another app, not by the user (MB-10).
+@override@JsonKey() final  bool interrupted;
 
 /// Create a copy of RecorderState
 /// with the given fields replaced by the non-null parameter values.
@@ -268,18 +272,18 @@ _$RecorderStateCopyWith<_RecorderState> get copyWith => __$RecorderStateCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecorderState&&(identical(other.status, status) || other.status == status)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&const DeepCollectionEquality().equals(other.levels, _levels)&&(identical(other.recording, recording) || other.recording == recording)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecorderState&&(identical(other.status, status) || other.status == status)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&const DeepCollectionEquality().equals(other.levels, _levels)&&(identical(other.recording, recording) || other.recording == recording)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.interrupted, interrupted) || other.interrupted == interrupted));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,elapsed,const DeepCollectionEquality().hash(_levels),recording,failure);
+    return Object.hash(runtimeType,status,elapsed,const DeepCollectionEquality().hash(_levels),recording,failure,interrupted);
 }
 
 @override
 String toString() {
-    return 'RecorderState(status: $status, elapsed: $elapsed, levels: $levels, recording: $recording, failure: $failure)';
+    return 'RecorderState(status: $status, elapsed: $elapsed, levels: $levels, recording: $recording, failure: $failure, interrupted: $interrupted)';
 }
 
 
@@ -290,7 +294,7 @@ abstract mixin class _$RecorderStateCopyWith<$Res> implements $RecorderStateCopy
   factory _$RecorderStateCopyWith(_RecorderState value, $Res Function(_RecorderState) _then) = __$RecorderStateCopyWithImpl;
 @override @useResult
 $Res call({
- RecorderStatus status, Duration elapsed, List<double> levels, Recording? recording, Failure? failure
+ RecorderStatus status, Duration elapsed, List<double> levels, Recording? recording, Failure? failure, bool interrupted
 });
 
 
@@ -307,14 +311,15 @@ class __$RecorderStateCopyWithImpl<$Res>
 
 /// Create a copy of RecorderState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? elapsed = null,Object? levels = null,Object? recording = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? elapsed = null,Object? levels = null,Object? recording = freezed,Object? failure = freezed,Object? interrupted = null,}) {
   return _then(_RecorderState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RecorderStatus,elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
 as Duration,levels: null == levels ? _self._levels : levels // ignore: cast_nullable_to_non_nullable
 as List<double>,recording: freezed == recording ? _self.recording : recording // ignore: cast_nullable_to_non_nullable
 as Recording?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,interrupted: null == interrupted ? _self.interrupted : interrupted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

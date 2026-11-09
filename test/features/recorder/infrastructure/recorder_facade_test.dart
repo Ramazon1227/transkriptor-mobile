@@ -10,6 +10,7 @@ import 'package:record/record.dart';
 import 'package:transkriptor_uz/core/error/failure.dart';
 import 'package:transkriptor_uz/core/utils/device_platform.dart';
 import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
+import 'package:transkriptor_uz/features/recorder/domain/i_recorder_facade.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/facades/recorder_facade.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/native/native_capture_channel.dart';
 import 'package:transkriptor_uz/features/recorder/infrastructure/store/recordings_store.dart';
@@ -32,6 +33,7 @@ void main() {
   late RecorderFacade facade;
   late StreamController<Uint8List> chunks;
   late _Platform platform;
+  late StreamController<RecordState> states;
 
   setUpAll(() => registerFallbackValue(const RecordConfig()));
 
@@ -45,6 +47,12 @@ void main() {
     facade = RecorderFacade(recorder, store, native, platform);
     chunks = StreamController<Uint8List>();
 
+    states = StreamController<RecordState>.broadcast();
+    when(() => recorder.onStateChanged()).thenAnswer((_) => states.stream);
+    when(() => recorder.pause()).thenAnswer((_) async {});
+    when(() => recorder.resume()).thenAnswer((_) async {});
+    when(() => native.setMicInterrupted(interrupted: any(named: 'interrupted')))
+        .thenAnswer((_) async {});
     when(() => recorder.hasPermission()).thenAnswer((_) async => true);
     when(() => recorder.startStream(any()))
         .thenAnswer((_) async => chunks.stream);
@@ -71,7 +79,10 @@ void main() {
     });
   });
 
-  tearDown(() => dir.delete(recursive: true));
+  tearDown(() async {
+    await states.close();
+    await dir.delete(recursive: true);
+  });
 
   // Recordings only; the owner labels have their own store tests.
   List<File> files() => dir
@@ -100,6 +111,112 @@ void main() {
     expect(config.noiseSuppress, isTrue);
     expect(config.autoGain, isTrue);
     verify(() => native.startMicService()).called(1);
+  });
+
+  group('interruptions (MB-10)', () {
+    late List<RecorderInterruption> seen;
+    late StreamSubscription<RecorderInterruption> sub;
+
+    setUp(() {
+      seen = [];
+      sub = facade.interruptions().listen(seen.add);
+    });
+    tearDown(() => sub.cancel());
+
+    Future<void> nativeState(RecordState s) async {
+      states.add(s);
+      await Future<void>.delayed(Duration.zero);
+    }
+
+    test(
+      'the recorder is told to pause on a call, not resume by itself',
+      () async {
+        await facade.start();
+        final config =
+            verify(() => recorder.startStream(captureAny())).captured.single
+                as RecordConfig;
+        expect(config.audioInterruption, AudioInterruptionMode.pause);
+      },
+    );
+
+    test('a pause nobody asked for is reported once and shown in the '
+        'notification; resume takes it back', () async {
+      await facade.start();
+      await nativeState(RecordState.record);
+      await nativeState(RecordState.pause);
+      await nativeState(RecordState.pause);
+      expect(seen, [RecorderInterruption.paused]);
+      verify(() => native.setMicInterrupted(interrupted: true)).called(1);
+
+      expect((await facade.resume()).isRight(), isTrue);
+      verify(() => native.setMicInterrupted(interrupted: false)).called(1);
+      // A second call later is reported again.
+      await nativeState(RecordState.record);
+      await nativeState(RecordState.pause);
+      expect(seen, [RecorderInterruption.paused, RecorderInterruption.paused]);
+    });
+
+    test('a failed resume keeps the «stopped» notification', () async {
+      await facade.start();
+      await nativeState(RecordState.pause);
+      when(() => recorder.resume()).thenThrow(Exception('busy'));
+      expect((await facade.resume()).isLeft(), isTrue);
+      verifyNever(() => native.setMicInterrupted(interrupted: false));
+      // Still interrupted: a repeat pause event is not a second report.
+      await nativeState(RecordState.pause);
+      expect(seen, [RecorderInterruption.paused]);
+    });
+
+    test('a new call during the resume is reported', () async {
+      await facade.start();
+      await nativeState(RecordState.pause);
+      when(() => recorder.resume()).thenAnswer((_) async {
+        states
+          ..add(RecordState.record)
+          ..add(RecordState.pause);
+        await Future<void>.delayed(Duration.zero);
+      });
+      await facade.resume();
+      expect(seen, [RecorderInterruption.paused, RecorderInterruption.paused]);
+      // The notification keeps saying «stopped».
+      verifyNever(() => native.setMicInterrupted(interrupted: false));
+    });
+
+    test("the user's own pause is not an interruption", () async {
+      await facade.start();
+      await facade.pause();
+      await nativeState(RecordState.pause);
+      await facade.resume();
+      await nativeState(RecordState.record);
+      expect(seen, isEmpty);
+      verifyNever(
+        () => native.setMicInterrupted(interrupted: any(named: 'interrupted')),
+      );
+    });
+
+    test('the native recorder ending by itself is reported; our stop is '
+        'not', () async {
+      await facade.start();
+      await nativeState(RecordState.stop);
+      expect(seen, [RecorderInterruption.stopped]);
+
+      when(() => recorder.stop()).thenAnswer((_) async {
+        states.add(RecordState.stop);
+        await chunks.close();
+        return null;
+      });
+      await facade.stop(duration: const Duration(seconds: 1));
+      await Future<void>.delayed(Duration.zero);
+      expect(seen, [RecorderInterruption.stopped]);
+    });
+
+    test('nothing is reported without a recording', () async {
+      await nativeState(RecordState.pause);
+      await facade.start();
+      await facade.discard();
+      await nativeState(RecordState.stop);
+      expect(seen, isEmpty);
+    });
   });
 
   test('chunks reach the file as they arrive', () async {

@@ -1,5 +1,18 @@
 import 'package:flutter/widgets.dart';
 
+/// Why an embedded player (YouTube) gave up. A fresh link would not help,
+/// so the player shows the «open in YouTube» card instead of retrying.
+enum EmbedFailure {
+  /// The owner does not allow playing it on other sites (101, 150, 152).
+  blocked,
+
+  /// Removed or private (100, 105).
+  notFound,
+
+  /// Anything else: the player did not load, a bad id, an HTML5 error.
+  other,
+}
+
 /// What the engine reports after every change; the player cubit turns it
 /// into state.
 @immutable
@@ -13,6 +26,7 @@ class PlaybackSnapshot {
     this.hasVideo = false,
     this.aspectRatio = 16 / 9,
     this.error,
+    this.embedFailure,
   });
 
   final Duration position;
@@ -28,6 +42,9 @@ class PlaybackSnapshot {
 
   /// Playback broke (network, an expired link, a codec).
   final String? error;
+
+  /// Set with [error] by an embedded player whose failure is final.
+  final EmbedFailure? embedFailure;
 }
 
 /// The platform player behind an interface, so the cubit can be tested
@@ -55,5 +72,7 @@ abstract interface class PlaybackEngine {
 }
 
 abstract interface class PlaybackEngineFactory {
-  PlaybackEngine create();
+  /// [youtube]: the source is a YouTube video, played in an embedded
+  /// IFrame player; its `open` takes the watch URL.
+  PlaybackEngine create({bool youtube = false});
 }

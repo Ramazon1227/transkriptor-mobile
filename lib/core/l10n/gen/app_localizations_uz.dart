@@ -1354,6 +1354,16 @@ class AppLocalizationsUz extends AppLocalizations {
       'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.';
 
   @override
+  String get recorderInterruptedTitle => 'Yozuv toʻxtadi';
+
+  @override
+  String get recorderInterruptedBody =>
+      'Qoʻngʻiroq yoki boshqa ilova mikrofonni oldi. Shu paytgacha yozilgani saqlangan, davom ettirsangiz shu yozuvga qoʻshiladi.';
+
+  @override
+  String get recorderInterruptedResume => 'Davom ettirish';
+
+  @override
   String get recorderMicDeniedTitle => 'Mikrofonga ruxsat yoʻq';
 
   @override
@@ -2268,7 +2278,15 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get playerYoutubeBody =>
-      'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.';
+      'YouTube videosi ochilmadi. Matn bilan shu yerda ishlashingiz mumkin.';
+
+  @override
+  String get playerYoutubeBlocked =>
+      'Video egasi uni boshqa saytlarda koʻrsatishni taqiqlagan — YouTubeʼda oching.';
+
+  @override
+  String get playerYoutubeNotFound =>
+      'Video YouTubeʼda topilmadi: oʻchirilgan yoki yopiq.';
 
   @override
   String get playerYoutubeOpen => 'YouTubeʼda ochish';

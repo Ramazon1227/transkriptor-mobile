@@ -73,6 +73,10 @@ class CaptureChannel(
                 MicRecordingService.stop(activity)
                 result.success(null)
             }
+            "mic.interrupted" -> {
+                MicRecordingService.setInterrupted(activity, call.argument<Boolean>("interrupted") == true)
+                result.success(null)
+            }
             "notifications.request" -> requestNotifications(result)
             "screen.isSupported" -> result.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             "screen.start" -> startScreen(call, result)

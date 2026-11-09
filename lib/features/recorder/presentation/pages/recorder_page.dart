@@ -182,6 +182,9 @@ class _RecorderView extends StatelessWidget {
                               ),
                               if (state.status == RecorderStatus.failure)
                                 _FailurePanel(failure: state.failure!),
+                              if (state.status == RecorderStatus.paused &&
+                                  state.interrupted)
+                                const _InterruptedPanel(),
                               const Spacer(),
                               const SizedBox(height: 24),
                               _Controls(state: state),
@@ -311,6 +314,59 @@ class _FailurePanel extends StatelessWidget {
                   child: Text(l10n.retry),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A call or another app paused the recording (MB-10): what was recorded
+/// is kept, and continuing appends to the same file.
+class _InterruptedPanel extends StatelessWidget {
+  const _InterruptedPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Container(
+        key: const Key('recorder_interrupted'),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.sf1,
+          borderRadius: BorderRadius.circular(AppRadii.card),
+          border: const Border(
+            left: BorderSide(color: AppColors.warn, width: 3),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.phone_in_talk_rounded, color: AppColors.warn),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.recorderInterruptedTitle,
+                    style: AppText.bodyStrong,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.recorderInterruptedBody, style: AppText.caption),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton(
+                key: const Key('recorder_interrupted_resume'),
+                onPressed: () => context.read<RecorderCubit>().togglePause(),
+                child: Text(l10n.recorderInterruptedResume),
+              ),
             ),
           ],
         ),

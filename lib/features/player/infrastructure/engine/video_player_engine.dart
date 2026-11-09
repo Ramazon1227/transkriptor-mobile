@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:injectable/injectable.dart';
 import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
 import 'package:video_player/video_player.dart';
 
@@ -78,10 +77,4 @@ class VideoPlayerEngine implements PlaybackEngine {
     await _snapshots.close();
     await c?.dispose();
   }
-}
-
-@LazySingleton(as: PlaybackEngineFactory)
-class VideoPlayerEngineFactory implements PlaybackEngineFactory {
-  @override
-  PlaybackEngine create() => VideoPlayerEngine();
 }

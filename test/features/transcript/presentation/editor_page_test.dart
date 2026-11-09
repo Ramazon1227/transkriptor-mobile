@@ -305,12 +305,30 @@ void main() {
       expect(engine.calls.last, 'seek:0');
     });
 
-    testWidgets('YouTube: names yes, «Eshitish» no', (tester) async {
+    testWidgets('YouTube plays in the app, so «Eshitish» works (E-24)', (
+      tester,
+    ) async {
       player.answer = const Right(
         PlayableMedia(url: 'https://youtu.be/x', youtubeId: 'x'),
       );
       await pumpPage(tester);
       expect(find.text('Maʼruzachilarni tanishtiring'), findsOneWidget);
+      expect(find.byKey(const Key('speaker_intro_play_s1')), findsOneWidget);
+      expect(find.byKey(const Key('speaker_intro_name_s1')), findsOneWidget);
+      expect(engines.youtube, [true]);
+    });
+
+    testWidgets('YouTube the owner does not allow here: names, no «Eshitish»', (
+      tester,
+    ) async {
+      player.answer = const Right(
+        PlayableMedia(url: 'https://youtu.be/x', youtubeId: 'x'),
+      );
+      await pumpPage(tester);
+      engines.made.single.push(
+        const PlaybackSnapshot(error: 'yt', embedFailure: EmbedFailure.blocked),
+      );
+      await tester.pumpAndSettle();
       expect(find.byKey(const Key('speaker_intro_play_s1')), findsNothing);
       expect(find.byKey(const Key('speaker_intro_name_s1')), findsOneWidget);
     });
@@ -407,23 +425,77 @@ void main() {
       expect(engine.calls, before);
     });
 
-    testWidgets('YouTube: a link card, the transcript still works', (
+    testWidgets('turning the phone keeps the video surface (E-24)', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      engines.made.single.push(
+        const PlaybackSnapshot(duration: Duration(minutes: 1), hasVideo: true),
+      );
+      await tester.pumpAndSettle();
+      final before = tester.element(find.byKey(const Key('fake_surface')));
+
+      // Landscape and short: the player moves beside the tabs.
+      tester.view.physicalSize = const Size(1200, 560);
+      await tester.pumpAndSettle();
+      // A rebuilt surface would reload the YouTube player empty.
+      expect(
+        tester.element(find.byKey(const Key('fake_surface'))),
+        same(before),
+      );
+    });
+
+    testWidgets('YouTube plays in the app: transport and seekable times', (
       tester,
     ) async {
       player.answer = const Right(
         PlayableMedia(url: 'https://www.youtube.com/watch?v=x', youtubeId: 'x'),
       );
       await pumpPage(tester);
-      expect(find.byKey(const Key('player_youtube_open')), findsOneWidget);
-      expect(find.byKey(const Key('player_play')), findsNothing);
-      expect(find.text('birinchi gap'), findsOneWidget);
-      // Nothing to seek: the timecodes are plain text.
-      expect(find.byKey(const Key('seek_g1')), findsNothing);
-
-      await tester.tap(find.byKey(const Key('player_youtube_open')));
+      expect(find.byKey(const Key('player_youtube_open')), findsNothing);
+      expect(find.byKey(const Key('player_play')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('seek_g2')));
       await tester.pumpAndSettle();
-      expect(player.opened, ['https://www.youtube.com/watch?v=x']);
+      expect(
+        engines.made.single.calls,
+        containsAllInOrder(['seek:10000', 'play']),
+      );
     });
+
+    testWidgets(
+      'YouTube refused here: a link card, the transcript still works',
+      (tester) async {
+        player.answer = const Right(
+          PlayableMedia(
+            url: 'https://www.youtube.com/watch?v=x',
+            youtubeId: 'x',
+          ),
+        );
+        await pumpPage(tester);
+        engines.made.single.push(
+          const PlaybackSnapshot(
+            error: 'yt',
+            embedFailure: EmbedFailure.blocked,
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('player_youtube_open')), findsOneWidget);
+        expect(
+          find.text(AppLocalizationsUz().playerYoutubeBlocked),
+          findsOneWidget,
+        );
+        // Final: no retry offered.
+        expect(find.byKey(const Key('player_youtube_retry')), findsNothing);
+        expect(find.byKey(const Key('player_play')), findsNothing);
+        expect(find.text('birinchi gap'), findsOneWidget);
+        // Nothing to seek: the timecodes are plain text.
+        expect(find.byKey(const Key('seek_g1')), findsNothing);
+
+        await tester.tap(find.byKey(const Key('player_youtube_open')));
+        await tester.pumpAndSettle();
+        expect(player.opened, ['https://www.youtube.com/watch?v=x']);
+      },
+    );
 
     testWidgets('YouTube: nothing opens the link, so it is copied', (
       tester,
@@ -453,6 +525,11 @@ void main() {
         )
         ..openSucceeds = false;
       await pumpPage(tester);
+      engines.made.single.push(
+        const PlaybackSnapshot(error: 'yt', embedFailure: EmbedFailure.other),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('player_youtube_retry')), findsOneWidget);
       await tester.tap(find.byKey(const Key('player_youtube_open')));
       await tester.pumpAndSettle();
       expect(copied, ['https://www.youtube.com/watch?v=x']);

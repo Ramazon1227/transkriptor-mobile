@@ -196,8 +196,8 @@ import 'package:transkriptor_uz/features/player/domain/i_player_facade.dart'
     as _i36;
 import 'package:transkriptor_uz/features/player/domain/playback_engine.dart'
     as _i257;
-import 'package:transkriptor_uz/features/player/infrastructure/engine/video_player_engine.dart'
-    as _i451;
+import 'package:transkriptor_uz/features/player/infrastructure/engine/playback_engine_factory.dart'
+    as _i217;
 import 'package:transkriptor_uz/features/player/infrastructure/facades/player_facade.dart'
     as _i368;
 import 'package:transkriptor_uz/features/player/infrastructure/repositories/player_repository.dart'
@@ -215,7 +215,7 @@ import 'package:transkriptor_uz/features/push/infrastructure/messaging/messaging
 import 'package:transkriptor_uz/features/push/infrastructure/repositories/push_repository.dart'
     as _i765;
 import 'package:transkriptor_uz/features/rating/application/rating_cubit.dart'
-    as _i452;
+    as _i451;
 import 'package:transkriptor_uz/features/rating/domain/i_rating_facade.dart'
     as _i1031;
 import 'package:transkriptor_uz/features/rating/infrastructure/facades/rating_facade.dart'
@@ -375,6 +375,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => networkModule.retryDio(),
       instanceName: 'retryDio',
     );
+    gh.lazySingleton<_i257.PlaybackEngineFactory>(
+      () => _i217.PlatformEngineFactory(),
+    );
     gh.lazySingleton<_i522.ILearnFacade>(
       () => _i773.LearnFacade(gh<_i79.DemoLearnRepository>()),
     );
@@ -397,9 +400,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => networkModule.uploadDio(),
       instanceName: 'uploadDio',
-    );
-    gh.lazySingleton<_i257.PlaybackEngineFactory>(
-      () => _i451.VideoPlayerEngineFactory(),
     );
     gh.lazySingleton<_i605.GoogleIdTokenSource>(
       () => _i605.GoogleIdTokenSource(
@@ -734,8 +734,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i720.WorkspaceListCubit>(
       () => _i720.WorkspaceListCubit(gh<_i537.IWorkspaceFacade>()),
     );
-    gh.factory<_i452.RatingCubit>(
-      () => _i452.RatingCubit(gh<_i1031.IRatingFacade>()),
+    gh.factory<_i451.RatingCubit>(
+      () => _i451.RatingCubit(gh<_i1031.IRatingFacade>()),
     );
     gh.factory<_i424.RetranscribeCubit>(
       () => _i424.RetranscribeCubit(gh<_i727.IJobFacade>()),

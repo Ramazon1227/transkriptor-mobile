@@ -1,5 +1,6 @@
 package uz.transkriptor.transkriptor_uz.capture
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -34,6 +35,7 @@ class MicRecordingService : Service() {
             } else {
                 startForeground(CaptureNotifications.MIC_ID, notification)
             }
+            running = true
         } catch (e: Exception) {
             // Android 12+/14 refuse it from the background or without
             // RECORD_AUDIO. Recording still works while the app is in front.
@@ -44,6 +46,11 @@ class MicRecordingService : Service() {
         return START_NOT_STICKY
     }
 
+    override fun onDestroy() {
+        running = false
+        super.onDestroy()
+    }
+
     override fun onTaskRemoved(rootIntent: Intent?) {
         // Swiping the app away destroys the Flutter engine and with it the
         // recorder; an ongoing notification over nothing would be a lie.
@@ -51,6 +58,29 @@ class MicRecordingService : Service() {
     }
 
     companion object {
+        // Only a running service's notification may be replaced; a stale
+        // «stopped» notification over no recording would be a lie.
+        @Volatile private var running = false
+
+        /**
+         * MB-10: a call or another app took the microphone and the `record`
+         * plugin paused. Same notification id, so it replaces the ongoing one.
+         */
+        fun setInterrupted(context: Context, interrupted: Boolean) {
+            if (!running) return
+            val notification = if (interrupted) {
+                CaptureNotifications.build(
+                    context,
+                    context.getString(R.string.capture_mic_interrupted_title),
+                    text = context.getString(R.string.capture_mic_interrupted_text),
+                )
+            } else {
+                CaptureNotifications.build(context, context.getString(R.string.capture_mic_title))
+            }
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(CaptureNotifications.MIC_ID, notification)
+        }
+
         fun start(context: Context) {
             val intent = Intent(context, MicRecordingService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -61,6 +91,9 @@ class MicRecordingService : Service() {
         }
 
         fun stop(context: Context) {
+            // Now, not in onDestroy: a late setInterrupted must not post an
+            // ongoing notification no service owns any more.
+            running = false
             context.stopService(Intent(context, MicRecordingService::class.java))
         }
     }

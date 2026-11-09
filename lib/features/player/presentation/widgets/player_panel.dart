@@ -11,11 +11,13 @@ import 'package:transkriptor_uz/core/theme/app_theme.dart';
 import 'package:transkriptor_uz/core/widgets/copy_link_fallback.dart';
 import 'package:transkriptor_uz/core/widgets/source_icon.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
+import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
 import 'package:transkriptor_uz/features/player/presentation/widgets/player_transport.dart';
 
-/// The top of the editor: the video surface (video files only), then one
-/// transport for audio and video alike. YouTube media get a link card,
-/// a file without audio a muted line; the transcript works either way.
+/// The top of the editor: the video surface (video files and YouTube), then
+/// one transport for all of them. A YouTube video that cannot play here
+/// gets a link card, a file without audio a muted line; the transcript
+/// works either way.
 class PlayerPanel extends StatelessWidget {
   const PlayerPanel({super.key});
 
@@ -46,13 +48,21 @@ class PlayerPanel extends StatelessWidget {
             text: l10n.playerFailed,
             onRetry: context.read<PlayerCubit>().retry,
           ),
-          PlayerStatus.youtube => _YoutubeCard(url: state.source?.url ?? ''),
+          PlayerStatus.youtube => _YoutubeCard(
+            url: state.source?.url ?? '',
+            failure: state.embedFailure,
+          ),
           PlayerStatus.ready => Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (state.hasVideo && !state.videoFolded)
-                _VideoSurface(aspectRatio: state.aspectRatio),
+              // Folded = hidden, not removed: a YouTube player taken out of
+              // the tree would reload and start over when unfolded.
+              if (state.hasVideo)
+                Offstage(
+                  offstage: state.videoFolded,
+                  child: _VideoSurface(aspectRatio: state.aspectRatio),
+                ),
               const PlayerTransport(),
             ],
           ),
@@ -125,16 +135,19 @@ class _MutedLine extends StatelessWidget {
   }
 }
 
-/// No in-app playback for YouTube: the link opens in the YouTube app (or
-/// the browser), or goes to the clipboard.
+/// The YouTube video cannot play here ([failure] says why, as the web's
+/// `errorText` does): the link opens in the YouTube app (or the browser),
+/// or goes to the clipboard. A player that did not load can be retried.
 class _YoutubeCard extends StatelessWidget {
-  const _YoutubeCard({required this.url});
+  const _YoutubeCard({required this.url, this.failure});
 
   final String url;
+  final EmbedFailure? failure;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final canRetry = failure == null || failure == EmbedFailure.other;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Container(
@@ -151,26 +164,42 @@ class _YoutubeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.playerYoutubeBody, style: AppText.caption),
+                  Text(switch (failure) {
+                    EmbedFailure.blocked => l10n.playerYoutubeBlocked,
+                    EmbedFailure.notFound => l10n.playerYoutubeNotFound,
+                    EmbedFailure.other || null => l10n.playerYoutubeBody,
+                  }, style: AppText.caption),
                   const SizedBox(height: 6),
-                  TextButton.icon(
-                    key: const Key('player_youtube_open'),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      alignment: Alignment.centerLeft,
-                    ),
-                    onPressed: url.isEmpty
-                        ? null
-                        : () async {
-                            final opened = await context
-                                .read<PlayerCubit>()
-                                .openLink();
-                            if (!opened && context.mounted) {
-                              await copyLinkInstead(context, url);
-                            }
-                          },
-                    icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                    label: Text(l10n.playerYoutubeOpen),
+                  Wrap(
+                    spacing: 16,
+                    children: [
+                      TextButton.icon(
+                        key: const Key('player_youtube_open'),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          alignment: Alignment.centerLeft,
+                        ),
+                        onPressed: url.isEmpty
+                            ? null
+                            : () async {
+                                final opened = await context
+                                    .read<PlayerCubit>()
+                                    .openLink();
+                                if (!opened && context.mounted) {
+                                  await copyLinkInstead(context, url);
+                                }
+                              },
+                        icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                        label: Text(l10n.playerYoutubeOpen),
+                      ),
+                      if (canRetry)
+                        TextButton(
+                          key: const Key('player_youtube_retry'),
+                          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                          onPressed: context.read<PlayerCubit>().retry,
+                          child: Text(l10n.retry),
+                        ),
+                    ],
                   ),
                 ],
               ),

@@ -4,6 +4,17 @@ import 'package:transkriptor_uz/features/recorder/domain/entities/recording.dart
 import 'package:transkriptor_uz/features/recorder/domain/entities/recoverable_recording.dart';
 import 'package:transkriptor_uz/features/upload/domain/entities/pending_file.dart';
 
+/// What the recorder did without being asked.
+enum RecorderInterruption {
+  /// A call or another app took the microphone: the recorder paused, what
+  /// was recorded is kept, and [IRecorderFacade.resume] appends to the
+  /// same file.
+  paused,
+
+  /// The capture itself ended (the phone stopped the microphone).
+  stopped,
+}
+
 abstract interface class IRecorderFacade {
   /// Asks for the microphone when needed, then starts writing a new file.
   /// A refusal is `Failure.permissionDenied()`. Recording goes on with the
@@ -21,6 +32,10 @@ abstract interface class IRecorderFacade {
 
   /// Stops without keeping anything.
   Future<void> discard();
+
+  /// Pauses and stops the user did not ask for (MB-10). On Android the
+  /// ongoing notification says it too.
+  Stream<RecorderInterruption> interruptions();
 
   /// Input level, 0 (silence) to 1 (loud), for the level meter.
   Stream<double> levels();

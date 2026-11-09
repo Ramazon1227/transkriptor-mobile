@@ -97,6 +97,7 @@ import 'package:transkriptor_uz/features/notes/presentation/pages/note_page.dart
 import 'package:transkriptor_uz/features/notes/presentation/widgets/notes_list.dart';
 import 'package:transkriptor_uz/features/player/application/player_cubit.dart';
 import 'package:transkriptor_uz/features/player/domain/entities/playable_media.dart';
+import 'package:transkriptor_uz/features/player/domain/playback_engine.dart';
 import 'package:transkriptor_uz/features/push/application/push_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recorder_cubit.dart';
 import 'package:transkriptor_uz/features/recorder/application/recovery_cubit.dart';
@@ -1554,6 +1555,17 @@ final _scenarios = <_Scenario>[
     ),
   ),
   _Scenario(
+    'recorder(interrupted)',
+    RecorderPage.new,
+    arrange: () => when(() => recorder.state).thenReturn(
+      const RecorderState(
+        status: RecorderStatus.paused,
+        elapsed: Duration(hours: 10, seconds: 1),
+        interrupted: true,
+      ),
+    ),
+  ),
+  _Scenario(
     'recorder(paused)',
     RecorderPage.new,
     arrange: () => when(() => recorder.state).thenReturn(
@@ -1603,15 +1615,36 @@ final _scenarios = <_Scenario>[
       when(() => transcript.state).thenReturn(_loaded());
       when(() => player.state).thenReturn(
         const PlayerState(
-          status: PlayerStatus.youtube,
+          status: PlayerStatus.ready,
           source: PlayableMedia(
             url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
             youtubeId: 'jNQXAC9IVRw',
           ),
+          position: Duration(minutes: 1),
+          duration: Duration(minutes: 19),
+          hasVideo: true,
         ),
       );
     },
   ),
+  for (final why in [EmbedFailure.blocked, EmbedFailure.other])
+    _Scenario(
+      'editor(youtube ${why.name})',
+      _editor,
+      arrange: () {
+        when(() => transcript.state).thenReturn(_loaded());
+        when(() => player.state).thenReturn(
+          PlayerState(
+            status: PlayerStatus.youtube,
+            source: const PlayableMedia(
+              url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+              youtubeId: 'jNQXAC9IVRw',
+            ),
+            embedFailure: why,
+          ),
+        );
+      },
+    ),
   _Scenario(
     'editor(audio gone)',
     _editor,

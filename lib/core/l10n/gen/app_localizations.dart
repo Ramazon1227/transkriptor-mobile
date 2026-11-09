@@ -2476,6 +2476,24 @@ abstract class AppLocalizations {
   /// **'Ekran oʻchsa yoki boshqa ilovaga oʻtsangiz ham yozish davom etadi.'**
   String get recorderScreenOff;
 
+  /// No description provided for @recorderInterruptedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuv toʻxtadi'**
+  String get recorderInterruptedTitle;
+
+  /// No description provided for @recorderInterruptedBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qoʻngʻiroq yoki boshqa ilova mikrofonni oldi. Shu paytgacha yozilgani saqlangan, davom ettirsangiz shu yozuvga qoʻshiladi.'**
+  String get recorderInterruptedBody;
+
+  /// No description provided for @recorderInterruptedResume.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom ettirish'**
+  String get recorderInterruptedResume;
+
   /// No description provided for @recorderMicDeniedTitle.
   ///
   /// In uz, this message translates to:
@@ -4093,8 +4111,20 @@ abstract class AppLocalizations {
   /// No description provided for @playerYoutubeBody.
   ///
   /// In uz, this message translates to:
-  /// **'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.'**
+  /// **'YouTube videosi ochilmadi. Matn bilan shu yerda ishlashingiz mumkin.'**
   String get playerYoutubeBody;
+
+  /// No description provided for @playerYoutubeBlocked.
+  ///
+  /// In uz, this message translates to:
+  /// **'Video egasi uni boshqa saytlarda koʻrsatishni taqiqlagan — YouTubeʼda oching.'**
+  String get playerYoutubeBlocked;
+
+  /// No description provided for @playerYoutubeNotFound.
+  ///
+  /// In uz, this message translates to:
+  /// **'Video YouTubeʼda topilmadi: oʻchirilgan yoki yopiq.'**
+  String get playerYoutubeNotFound;
 
   /// No description provided for @playerYoutubeOpen.
   ///

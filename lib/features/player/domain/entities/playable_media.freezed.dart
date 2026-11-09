@@ -17,8 +17,8 @@ mixin _$PlayableMedia {
 
 /// A signed read link for an upload, the canonical download link for
 /// a Drive/Dropbox file, the watch URL for YouTube.
- String get url; String get mime;/// Set for YouTube media only: no bytes on our side, and no package
-/// here plays YouTube, so there is no in-app playback.
+ String get url; String get mime;/// Set for YouTube media only: no bytes on our side; the YouTube
+/// IFrame player plays it (E-24).
  String? get youtubeId;
 /// Create a copy of PlayableMedia
 /// with the given fields replaced by the non-null parameter values.
@@ -225,8 +225,8 @@ class _PlayableMedia extends PlayableMedia {
 /// a Drive/Dropbox file, the watch URL for YouTube.
 @override final  String url;
 @override@JsonKey() final  String mime;
-/// Set for YouTube media only: no bytes on our side, and no package
-/// here plays YouTube, so there is no in-app playback.
+/// Set for YouTube media only: no bytes on our side; the YouTube
+/// IFrame player plays it (E-24).
 @override final  String? youtubeId;
 
 /// Create a copy of PlayableMedia

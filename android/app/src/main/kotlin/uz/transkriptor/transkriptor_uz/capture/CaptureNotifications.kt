@@ -40,7 +40,13 @@ object CaptureNotifications {
         )
     }
 
-    fun build(context: Context, title: String, stop: PendingIntent? = null): Notification {
+    /** [text] and no chronometer: the recording is paused, not running. */
+    fun build(
+        context: Context,
+        title: String,
+        stop: PendingIntent? = null,
+        text: String? = null,
+    ): Notification {
         ensureChannel(context)
         @Suppress("DEPRECATION")
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -54,13 +60,14 @@ object CaptureNotifications {
             .setContentIntent(openApp(context))
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setShowWhen(true)
-            .setUsesChronometer(true)
+            .setShowWhen(text == null)
+            .setUsesChronometer(text == null)
             .setCategory(Notification.CATEGORY_SERVICE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Shown at once, not after the 10 s grace Android 12+ allows.
             builder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
         }
+        if (text != null) builder.setContentText(text)
         if (stop != null) {
             @Suppress("DEPRECATION")
             builder.addAction(
