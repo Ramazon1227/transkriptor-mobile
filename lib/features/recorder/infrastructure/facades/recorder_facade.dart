@@ -166,13 +166,18 @@ class RecorderFacade implements IRecorderFacade {
 
   @override
   Future<Either<Failure, Unit>> resume() async {
+    // Cleared first: a new call during the native resume is a new
+    // interruption, and its pause event arrives before the reply.
+    final wasUserPaused = _userPaused;
+    final wasInterrupted = _interrupted;
+    _userPaused = false;
+    _interrupted = false;
     final result = await _guard(_recorder.resume);
-    if (result.isRight()) {
-      _userPaused = false;
-      if (_interrupted) {
-        _interrupted = false;
-        await _markInterrupted(false);
-      }
+    if (result.isLeft()) {
+      _userPaused = wasUserPaused;
+      _interrupted = wasInterrupted;
+    } else if (wasInterrupted && !_interrupted) {
+      await _markInterrupted(false);
     }
     return result;
   }

@@ -148,6 +148,50 @@ void main() {
       },
     );
 
+    test('a call during the start is not missed', () async {
+      when(() => facade.start()).thenAnswer((_) async {
+        interruptions.add(RecorderInterruption.paused);
+        await Future<void>.delayed(Duration.zero);
+        return const Right(unit);
+      });
+      final cubit = RecorderCubit(facade);
+      await cubit.start();
+      expect(cubit.state.status, RecorderStatus.paused);
+      expect(cubit.state.interrupted, isTrue);
+      await cubit.close();
+    });
+
+    test(
+      'a new call while resuming leaves it paused, not «recording»',
+      () async {
+        final cubit = RecorderCubit(facade);
+        await cubit.start();
+        interruptions.add(RecorderInterruption.paused);
+        await Future<void>.delayed(Duration.zero);
+        when(() => facade.resume()).thenAnswer((_) async {
+          interruptions.add(RecorderInterruption.paused);
+          await Future<void>.delayed(Duration.zero);
+          return const Right(unit);
+        });
+        await cubit.togglePause();
+        expect(cubit.state.status, RecorderStatus.paused);
+        expect(cubit.state.interrupted, isTrue);
+        await cubit.close();
+      },
+    );
+
+    test('the capture ending while interrupted still keeps the file', () async {
+      final cubit = RecorderCubit(facade);
+      await cubit.start();
+      interruptions
+        ..add(RecorderInterruption.paused)
+        ..add(RecorderInterruption.stopped);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.status, RecorderStatus.done);
+      await cubit.close();
+    });
+
     test('an interruption while paused by the user changes nothing', () async {
       final cubit = RecorderCubit(facade);
       await cubit.start();

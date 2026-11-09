@@ -156,6 +156,32 @@ void main() {
       expect(seen, [RecorderInterruption.paused, RecorderInterruption.paused]);
     });
 
+    test('a failed resume keeps the «stopped» notification', () async {
+      await facade.start();
+      await nativeState(RecordState.pause);
+      when(() => recorder.resume()).thenThrow(Exception('busy'));
+      expect((await facade.resume()).isLeft(), isTrue);
+      verifyNever(() => native.setMicInterrupted(interrupted: false));
+      // Still interrupted: a repeat pause event is not a second report.
+      await nativeState(RecordState.pause);
+      expect(seen, [RecorderInterruption.paused]);
+    });
+
+    test('a new call during the resume is reported', () async {
+      await facade.start();
+      await nativeState(RecordState.pause);
+      when(() => recorder.resume()).thenAnswer((_) async {
+        states
+          ..add(RecordState.record)
+          ..add(RecordState.pause);
+        await Future<void>.delayed(Duration.zero);
+      });
+      await facade.resume();
+      expect(seen, [RecorderInterruption.paused, RecorderInterruption.paused]);
+      // The notification keeps saying «stopped».
+      verifyNever(() => native.setMicInterrupted(interrupted: false));
+    });
+
     test("the user's own pause is not an interruption", () async {
       await facade.start();
       await facade.pause();

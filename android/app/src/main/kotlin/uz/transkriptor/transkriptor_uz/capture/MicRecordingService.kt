@@ -91,6 +91,9 @@ class MicRecordingService : Service() {
         }
 
         fun stop(context: Context) {
+            // Now, not in onDestroy: a late setInterrupted must not post an
+            // ongoing notification no service owns any more.
+            running = false
             context.stopService(Intent(context, MicRecordingService::class.java))
         }
     }

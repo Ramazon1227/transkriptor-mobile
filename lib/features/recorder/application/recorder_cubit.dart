@@ -50,6 +50,11 @@ class RecorderCubit extends Cubit<RecorderState> {
   StreamSubscription<double>? _levels;
   StreamSubscription<RecorderInterruption>? _interruptions;
 
+  /// An interruption that arrived while starting or resuming; applied once
+  /// that is over.
+  RecorderInterruption? _early;
+  bool _resuming = false;
+
   bool get _active =>
       state.status == RecorderStatus.recording ||
       state.status == RecorderStatus.paused;
@@ -57,7 +62,15 @@ class RecorderCubit extends Cubit<RecorderState> {
   Future<void> start() async {
     if (state.status == RecorderStatus.starting || _active) return;
     emit(const RecorderState(status: RecorderStatus.starting));
+    // Before start: a call during the start must not be missed.
+    _early = null;
+    await _interruptions?.cancel();
+    _interruptions = _facade.interruptions().listen(_onInterruption);
     final result = await _facade.start();
+    if (result.isLeft()) {
+      await _interruptions?.cancel();
+      _interruptions = null;
+    }
     if (isClosed) {
       // The screen went away while the permission dialog was up; the
       // recorder started anyway, so turn it off.
@@ -76,8 +89,8 @@ class RecorderCubit extends Cubit<RecorderState> {
           if (!isClosed) emit(state.copyWith(elapsed: _stopwatch.elapsed));
         });
         _levels = _facade.levels().listen(_onLevel);
-        _interruptions = _facade.interruptions().listen(_onInterruption);
         emit(state.copyWith(status: RecorderStatus.recording));
+        _applyEarly();
       },
     );
   }
@@ -93,6 +106,10 @@ class RecorderCubit extends Cubit<RecorderState> {
 
   void _onInterruption(RecorderInterruption kind) {
     if (isClosed) return;
+    if (state.status == RecorderStatus.starting || _resuming) {
+      if (_early != RecorderInterruption.stopped) _early = kind;
+      return;
+    }
     switch (kind) {
       case RecorderInterruption.paused:
         if (state.status != RecorderStatus.recording) return;
@@ -125,7 +142,10 @@ class RecorderCubit extends Cubit<RecorderState> {
         );
       });
     } else if (state.status == RecorderStatus.paused) {
+      _early = null;
+      _resuming = true;
       final result = await _facade.resume();
+      _resuming = false;
       if (isClosed) return;
       result.fold((f) => emit(state.copyWith(failure: f)), (_) {
         _stopwatch.start();
@@ -137,7 +157,14 @@ class RecorderCubit extends Cubit<RecorderState> {
           ),
         );
       });
+      _applyEarly();
     }
+  }
+
+  void _applyEarly() {
+    final early = _early;
+    _early = null;
+    if (early != null) _onInterruption(early);
   }
 
   Future<void> stop() async {
