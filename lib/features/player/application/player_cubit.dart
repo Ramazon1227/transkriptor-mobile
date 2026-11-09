@@ -18,7 +18,8 @@ enum PlayerStatus {
   /// The engine has the file; the transport works.
   ready,
 
-  /// YouTube media: no bytes on our side, a link card instead.
+  /// YouTube media the embedded player could not play (the owner forbids
+  /// embedding, removed, did not load): a link card instead.
   youtube,
 
   /// No file to play — removed by retention (410), not uploaded (422),
@@ -56,6 +57,9 @@ abstract class PlayerState with _$PlayerState {
     /// Where the sample playing now starts; null when none is.
     Duration? clipStart,
     Failure? failure,
+
+    /// Why the YouTube card shows ([PlayerStatus.youtube]).
+    EmbedFailure? embedFailure,
   }) = _PlayerState;
 
   const PlayerState._();
@@ -147,6 +151,7 @@ class PlayerCubit extends Cubit<PlayerState> {
       state.copyWith(
         status: PlayerStatus.loading,
         failure: null,
+        embedFailure: null,
         playing: false,
         position: resumeAt,
       ),
@@ -162,13 +167,7 @@ class PlayerCubit extends Cubit<PlayerState> {
           failure: failure,
         ),
       ),
-      (source) async {
-        if (source.isYoutube) {
-          emit(state.copyWith(status: PlayerStatus.youtube, source: source));
-          return;
-        }
-        await _start(generation, source, resumeAt, play: play);
-      },
+      (source) => _start(generation, source, resumeAt, play: play),
     );
   }
 
@@ -181,7 +180,7 @@ class PlayerCubit extends Cubit<PlayerState> {
     await _restoreSpeed();
     await _restoreVolume();
     if (isClosed || generation != _generation) return;
-    final engine = _engines.create();
+    final engine = _engines.create(youtube: source.isYoutube);
     _engine = engine;
     _engineSpeed = 1;
     _sub = engine.snapshots.listen(_onSnapshot);
@@ -201,10 +200,16 @@ class PlayerCubit extends Cubit<PlayerState> {
       if (isClosed || generation != _generation) return;
       await _release();
       emit(
-        state.copyWith(
-          status: PlayerStatus.failure,
-          failure: const Failure.unknown(),
-        ),
+        source.isYoutube
+            ? state.copyWith(
+                status: PlayerStatus.youtube,
+                source: source,
+                embedFailure: EmbedFailure.other,
+              )
+            : state.copyWith(
+                status: PlayerStatus.failure,
+                failure: const Failure.unknown(),
+              ),
       );
       return;
     }
@@ -216,6 +221,11 @@ class PlayerCubit extends Cubit<PlayerState> {
 
   void _onSnapshot(PlaybackSnapshot s) {
     if (isClosed) return;
+    final embed = s.embedFailure;
+    if (embed != null) {
+      unawaited(_embedFailed(embed));
+      return;
+    }
     if (s.error != null) {
       if (!_reconnected) {
         unawaited(_reconnect());
@@ -245,6 +255,23 @@ class PlayerCubit extends Cubit<PlayerState> {
         buffering: s.buffering,
         hasVideo: s.hasVideo,
         aspectRatio: s.aspectRatio > 0 ? s.aspectRatio : 16 / 9,
+      ),
+    );
+  }
+
+  /// YouTube refused (embedding forbidden, removed) or did not load: a fresh
+  /// link would not help, so the card with «open in YouTube» takes over.
+  Future<void> _embedFailed(EmbedFailure why) async {
+    final generation = _generation;
+    _wantsPlay = false;
+    await _release();
+    if (isClosed || generation != _generation) return;
+    emit(
+      state.copyWith(
+        status: PlayerStatus.youtube,
+        embedFailure: why,
+        playing: false,
+        buffering: false,
       ),
     );
   }
@@ -434,7 +461,9 @@ class PlayerCubit extends Cubit<PlayerState> {
     final engine = _engine;
     _sub = null;
     _engine = null;
-    await sub?.cancel();
+    // Not awaited: a broadcast subscription's cancel takes effect at once,
+    // and its future (a root-zone one) never completes under fake async.
+    unawaited(sub?.cancel());
     await engine?.dispose();
   }
 

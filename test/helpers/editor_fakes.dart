@@ -153,11 +153,15 @@ class FakeEngine implements PlaybackEngine {
 
 class FakeEngineFactory implements PlaybackEngineFactory {
   final List<FakeEngine> made = [];
+
+  /// The `youtube` flag of every engine made, in order.
+  final List<bool> youtube = [];
   bool failOpen = false;
   Set<double> refusedSpeeds = const {};
 
   @override
-  PlaybackEngine create() {
+  PlaybackEngine create({bool youtube = false}) {
+    this.youtube.add(youtube);
     final e = FakeEngine()
       ..failOpen = failOpen
       ..refusedSpeeds = refusedSpeeds;

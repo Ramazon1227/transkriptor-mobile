@@ -121,19 +121,65 @@ void main() {
     expect(cubit.state.aspectRatio, 4 / 3);
   });
 
-  test('YouTube media: a link card, no engine', () async {
-    facade.answer = const Right(
-      PlayableMedia(url: 'https://www.youtube.com/watch?v=x', youtubeId: 'x'),
+  group('YouTube media (E-24)', () {
+    const yt = PlayableMedia(
+      url: 'https://www.youtube.com/watch?v=x',
+      youtubeId: 'x',
     );
-    await cubit.open('m1');
-    expect(cubit.state.status, PlayerStatus.youtube);
-    expect(engines.made, isEmpty);
+    setUp(() => facade.answer = const Right(yt));
 
-    expect(await cubit.openLink(), isTrue);
-    expect(facade.opened, ['https://www.youtube.com/watch?v=x']);
+    test('plays in the app through the YouTube engine', () async {
+      await cubit.open('m1');
+      expect(cubit.state.status, PlayerStatus.ready);
+      expect(engines.youtube, [true]);
+      expect(engine().opened, Uri.parse(yt.url));
 
-    facade.openSucceeds = false;
-    expect(await cubit.openLink(), isFalse);
+      await cubit.seekTo(const Duration(seconds: 7), play: true);
+      await cubit.setSpeed(1.5);
+      expect(
+        engine().calls,
+        containsAllInOrder(['seek:7000', 'play', 'speed:1.5']),
+      );
+    });
+
+    test('an audio file still gets the plain engine', () async {
+      facade.answer = const Right(_audio);
+      await cubit.open('m1');
+      expect(engines.youtube, [false]);
+    });
+
+    for (final why in EmbedFailure.values) {
+      test('$why: the link card, no reconnect', () async {
+        await cubit.open('m1');
+        engine().push(PlaybackSnapshot(error: 'yt', embedFailure: why));
+        await pumpEventQueue();
+        expect(cubit.state.status, PlayerStatus.youtube);
+        expect(cubit.state.embedFailure, why);
+        expect(engines.made, hasLength(1));
+        expect(engine().disposed, isTrue);
+
+        expect(await cubit.openLink(), isTrue);
+        expect(facade.opened, [yt.url]);
+        facade.openSucceeds = false;
+        expect(await cubit.openLink(), isFalse);
+      });
+    }
+
+    test(
+      'a player that did not open shows the card; retry tries again',
+      () async {
+        engines.failOpen = true;
+        await cubit.open('m1');
+        expect(cubit.state.status, PlayerStatus.youtube);
+        expect(cubit.state.embedFailure, EmbedFailure.other);
+        expect(cubit.state.source, yt);
+
+        engines.failOpen = false;
+        await cubit.retry();
+        expect(cubit.state.status, PlayerStatus.ready);
+        expect(cubit.state.embedFailure, isNull);
+      },
+    );
   });
 
   for (final code in [404, 410, 422]) {

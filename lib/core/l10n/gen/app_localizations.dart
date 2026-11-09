@@ -4111,8 +4111,20 @@ abstract class AppLocalizations {
   /// No description provided for @playerYoutubeBody.
   ///
   /// In uz, this message translates to:
-  /// **'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.'**
+  /// **'YouTube videosi ochilmadi. Matn bilan shu yerda ishlashingiz mumkin.'**
   String get playerYoutubeBody;
+
+  /// No description provided for @playerYoutubeBlocked.
+  ///
+  /// In uz, this message translates to:
+  /// **'Video egasi uni boshqa saytlarda koʻrsatishni taqiqlagan — YouTubeʼda oching.'**
+  String get playerYoutubeBlocked;
+
+  /// No description provided for @playerYoutubeNotFound.
+  ///
+  /// In uz, this message translates to:
+  /// **'Video YouTubeʼda topilmadi: oʻchirilgan yoki yopiq.'**
+  String get playerYoutubeNotFound;
 
   /// No description provided for @playerYoutubeOpen.
   ///

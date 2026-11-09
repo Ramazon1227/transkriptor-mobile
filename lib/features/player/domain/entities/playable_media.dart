@@ -11,8 +11,8 @@ abstract class PlayableMedia with _$PlayableMedia {
     required String url,
     @Default('') String mime,
 
-    /// Set for YouTube media only: no bytes on our side, and no package
-    /// here plays YouTube, so there is no in-app playback.
+    /// Set for YouTube media only: no bytes on our side; the YouTube
+    /// IFrame player plays it (E-24).
     String? youtubeId,
   }) = _PlayableMedia;
 

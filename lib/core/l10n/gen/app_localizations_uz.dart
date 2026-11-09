@@ -2278,7 +2278,15 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get playerYoutubeBody =>
-      'YouTube videosi ilova ichida ijro etilmaydi. Matn bilan shu yerda ishlashingiz mumkin.';
+      'YouTube videosi ochilmadi. Matn bilan shu yerda ishlashingiz mumkin.';
+
+  @override
+  String get playerYoutubeBlocked =>
+      'Video egasi uni boshqa saytlarda koʻrsatishni taqiqlagan — YouTubeʼda oching.';
+
+  @override
+  String get playerYoutubeNotFound =>
+      'Video YouTubeʼda topilmadi: oʻchirilgan yoki yopiq.';
 
   @override
   String get playerYoutubeOpen => 'YouTubeʼda ochish';

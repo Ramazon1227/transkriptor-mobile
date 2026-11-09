@@ -18,7 +18,8 @@ mixin _$PlayerState {
  PlayerStatus get status; PlayableMedia? get source; Duration get position; Duration get duration; bool get playing; bool get buffering; bool get hasVideo; double get aspectRatio; double get speed;/// 0..1 of the phone's volume; [muted] silences without forgetting it.
  double get volume; bool get muted;/// The video surface is folded away. Playback does not notice.
  bool get videoFolded;/// Where the sample playing now starts; null when none is.
- Duration? get clipStart; Failure? get failure;
+ Duration? get clipStart; Failure? get failure;/// Why the YouTube card shows ([PlayerStatus.youtube]).
+ EmbedFailure? get embedFailure;
 /// Create a copy of PlayerState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $PlayerStateCopyWith<PlayerState> get copyWith => _$PlayerStateCopyWithImpl<Play
 @override
 bool operator ==(Object other) {
   final _this = this as PlayerState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlayerState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&(identical(other.playing, _this.playing) || other.playing == _this.playing)&&(identical(other.buffering, _this.buffering) || other.buffering == _this.buffering)&&(identical(other.hasVideo, _this.hasVideo) || other.hasVideo == _this.hasVideo)&&(identical(other.aspectRatio, _this.aspectRatio) || other.aspectRatio == _this.aspectRatio)&&(identical(other.speed, _this.speed) || other.speed == _this.speed)&&(identical(other.volume, _this.volume) || other.volume == _this.volume)&&(identical(other.muted, _this.muted) || other.muted == _this.muted)&&(identical(other.videoFolded, _this.videoFolded) || other.videoFolded == _this.videoFolded)&&(identical(other.clipStart, _this.clipStart) || other.clipStart == _this.clipStart)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlayerState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&(identical(other.playing, _this.playing) || other.playing == _this.playing)&&(identical(other.buffering, _this.buffering) || other.buffering == _this.buffering)&&(identical(other.hasVideo, _this.hasVideo) || other.hasVideo == _this.hasVideo)&&(identical(other.aspectRatio, _this.aspectRatio) || other.aspectRatio == _this.aspectRatio)&&(identical(other.speed, _this.speed) || other.speed == _this.speed)&&(identical(other.volume, _this.volume) || other.volume == _this.volume)&&(identical(other.muted, _this.muted) || other.muted == _this.muted)&&(identical(other.videoFolded, _this.videoFolded) || other.videoFolded == _this.videoFolded)&&(identical(other.clipStart, _this.clipStart) || other.clipStart == _this.clipStart)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.embedFailure, _this.embedFailure) || other.embedFailure == _this.embedFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PlayerState;
-  return Object.hash(runtimeType,_this.status,_this.source,_this.position,_this.duration,_this.playing,_this.buffering,_this.hasVideo,_this.aspectRatio,_this.speed,_this.volume,_this.muted,_this.videoFolded,_this.clipStart,_this.failure);
+  return Object.hash(runtimeType,_this.status,_this.source,_this.position,_this.duration,_this.playing,_this.buffering,_this.hasVideo,_this.aspectRatio,_this.speed,_this.volume,_this.muted,_this.videoFolded,_this.clipStart,_this.failure,_this.embedFailure);
 }
 
 @override
 String toString() {
   final _this = this as PlayerState;
-  return 'PlayerState(status: ${_this.status}, source: ${_this.source}, position: ${_this.position}, duration: ${_this.duration}, playing: ${_this.playing}, buffering: ${_this.buffering}, hasVideo: ${_this.hasVideo}, aspectRatio: ${_this.aspectRatio}, speed: ${_this.speed}, volume: ${_this.volume}, muted: ${_this.muted}, videoFolded: ${_this.videoFolded}, clipStart: ${_this.clipStart}, failure: ${_this.failure})';
+  return 'PlayerState(status: ${_this.status}, source: ${_this.source}, position: ${_this.position}, duration: ${_this.duration}, playing: ${_this.playing}, buffering: ${_this.buffering}, hasVideo: ${_this.hasVideo}, aspectRatio: ${_this.aspectRatio}, speed: ${_this.speed}, volume: ${_this.volume}, muted: ${_this.muted}, videoFolded: ${_this.videoFolded}, clipStart: ${_this.clipStart}, failure: ${_this.failure}, embedFailure: ${_this.embedFailure})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $PlayerStateCopyWith<$Res>  {
   factory $PlayerStateCopyWith(PlayerState value, $Res Function(PlayerState) _then) = _$PlayerStateCopyWithImpl;
 @useResult
 $Res call({
- PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, double volume, bool muted, bool videoFolded, Duration? clipStart, Failure? failure
+ PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, double volume, bool muted, bool videoFolded, Duration? clipStart, Failure? failure, EmbedFailure? embedFailure
 });
 
 
@@ -71,7 +72,7 @@ class _$PlayerStateCopyWithImpl<$Res>
 
 /// Create a copy of PlayerState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? source = freezed,Object? position = null,Object? duration = null,Object? playing = null,Object? buffering = null,Object? hasVideo = null,Object? aspectRatio = null,Object? speed = null,Object? volume = null,Object? muted = null,Object? videoFolded = null,Object? clipStart = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? source = freezed,Object? position = null,Object? duration = null,Object? playing = null,Object? buffering = null,Object? hasVideo = null,Object? aspectRatio = null,Object? speed = null,Object? volume = null,Object? muted = null,Object? videoFolded = null,Object? clipStart = freezed,Object? failure = freezed,Object? embedFailure = freezed,}) {
   return _then(PlayerState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PlayerStatus,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
@@ -87,7 +88,8 @@ as double,muted: null == muted ? _self.muted : muted // ignore: cast_nullable_to
 as bool,videoFolded: null == videoFolded ? _self.videoFolded : videoFolded // ignore: cast_nullable_to_non_nullable
 as bool,clipStart: freezed == clipStart ? _self.clipStart : clipStart // ignore: cast_nullable_to_non_nullable
 as Duration?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,embedFailure: freezed == embedFailure ? _self.embedFailure : embedFailure // ignore: cast_nullable_to_non_nullable
+as EmbedFailure?,
   ));
 }
 /// Create a copy of PlayerState
@@ -196,10 +198,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure,  EmbedFailure? embedFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PlayerState() when $default != null:
-return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure);case _:
+return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure,_that.embedFailure);case _:
   return orElse();
 
 }
@@ -217,10 +219,10 @@ return $default(_that.status,_that.source,_that.position,_that.duration,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure,  EmbedFailure? embedFailure)  $default,) {final _that = this;
 switch (_that) {
 case _PlayerState():
-return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure);case _:
+return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure,_that.embedFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -237,10 +239,10 @@ return $default(_that.status,_that.source,_that.position,_that.duration,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PlayerStatus status,  PlayableMedia? source,  Duration position,  Duration duration,  bool playing,  bool buffering,  bool hasVideo,  double aspectRatio,  double speed,  double volume,  bool muted,  bool videoFolded,  Duration? clipStart,  Failure? failure,  EmbedFailure? embedFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _PlayerState() when $default != null:
-return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure);case _:
+return $default(_that.status,_that.source,_that.position,_that.duration,_that.playing,_that.buffering,_that.hasVideo,_that.aspectRatio,_that.speed,_that.volume,_that.muted,_that.videoFolded,_that.clipStart,_that.failure,_that.embedFailure);case _:
   return null;
 
 }
@@ -252,7 +254,7 @@ return $default(_that.status,_that.source,_that.position,_that.duration,_that.pl
 
 
 class _PlayerState extends PlayerState {
-  const _PlayerState({this.status = PlayerStatus.initial, this.source, this.position = Duration.zero, this.duration = Duration.zero, this.playing = false, this.buffering = false, this.hasVideo = false, this.aspectRatio = 16 / 9, this.speed = 1.0, this.volume = 1.0, this.muted = false, this.videoFolded = false, this.clipStart, this.failure}): super._();
+  const _PlayerState({this.status = PlayerStatus.initial, this.source, this.position = Duration.zero, this.duration = Duration.zero, this.playing = false, this.buffering = false, this.hasVideo = false, this.aspectRatio = 16 / 9, this.speed = 1.0, this.volume = 1.0, this.muted = false, this.videoFolded = false, this.clipStart, this.failure, this.embedFailure}): super._();
   
 
 @override@JsonKey() final  PlayerStatus status;
@@ -272,6 +274,8 @@ class _PlayerState extends PlayerState {
 /// Where the sample playing now starts; null when none is.
 @override final  Duration? clipStart;
 @override final  Failure? failure;
+/// Why the YouTube card shows ([PlayerStatus.youtube]).
+@override final  EmbedFailure? embedFailure;
 
 /// Create a copy of PlayerState
 /// with the given fields replaced by the non-null parameter values.
@@ -283,18 +287,18 @@ _$PlayerStateCopyWith<_PlayerState> get copyWith => __$PlayerStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PlayerState&&(identical(other.status, status) || other.status == status)&&(identical(other.source, source) || other.source == source)&&(identical(other.position, position) || other.position == position)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.buffering, buffering) || other.buffering == buffering)&&(identical(other.hasVideo, hasVideo) || other.hasVideo == hasVideo)&&(identical(other.aspectRatio, aspectRatio) || other.aspectRatio == aspectRatio)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.muted, muted) || other.muted == muted)&&(identical(other.videoFolded, videoFolded) || other.videoFolded == videoFolded)&&(identical(other.clipStart, clipStart) || other.clipStart == clipStart)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PlayerState&&(identical(other.status, status) || other.status == status)&&(identical(other.source, source) || other.source == source)&&(identical(other.position, position) || other.position == position)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.buffering, buffering) || other.buffering == buffering)&&(identical(other.hasVideo, hasVideo) || other.hasVideo == hasVideo)&&(identical(other.aspectRatio, aspectRatio) || other.aspectRatio == aspectRatio)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.muted, muted) || other.muted == muted)&&(identical(other.videoFolded, videoFolded) || other.videoFolded == videoFolded)&&(identical(other.clipStart, clipStart) || other.clipStart == clipStart)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.embedFailure, embedFailure) || other.embedFailure == embedFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,source,position,duration,playing,buffering,hasVideo,aspectRatio,speed,volume,muted,videoFolded,clipStart,failure);
+    return Object.hash(runtimeType,status,source,position,duration,playing,buffering,hasVideo,aspectRatio,speed,volume,muted,videoFolded,clipStart,failure,embedFailure);
 }
 
 @override
 String toString() {
-    return 'PlayerState(status: $status, source: $source, position: $position, duration: $duration, playing: $playing, buffering: $buffering, hasVideo: $hasVideo, aspectRatio: $aspectRatio, speed: $speed, volume: $volume, muted: $muted, videoFolded: $videoFolded, clipStart: $clipStart, failure: $failure)';
+    return 'PlayerState(status: $status, source: $source, position: $position, duration: $duration, playing: $playing, buffering: $buffering, hasVideo: $hasVideo, aspectRatio: $aspectRatio, speed: $speed, volume: $volume, muted: $muted, videoFolded: $videoFolded, clipStart: $clipStart, failure: $failure, embedFailure: $embedFailure)';
 }
 
 
@@ -305,7 +309,7 @@ abstract mixin class _$PlayerStateCopyWith<$Res> implements $PlayerStateCopyWith
   factory _$PlayerStateCopyWith(_PlayerState value, $Res Function(_PlayerState) _then) = __$PlayerStateCopyWithImpl;
 @override @useResult
 $Res call({
- PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, double volume, bool muted, bool videoFolded, Duration? clipStart, Failure? failure
+ PlayerStatus status, PlayableMedia? source, Duration position, Duration duration, bool playing, bool buffering, bool hasVideo, double aspectRatio, double speed, double volume, bool muted, bool videoFolded, Duration? clipStart, Failure? failure, EmbedFailure? embedFailure
 });
 
 
@@ -322,7 +326,7 @@ class __$PlayerStateCopyWithImpl<$Res>
 
 /// Create a copy of PlayerState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? source = freezed,Object? position = null,Object? duration = null,Object? playing = null,Object? buffering = null,Object? hasVideo = null,Object? aspectRatio = null,Object? speed = null,Object? volume = null,Object? muted = null,Object? videoFolded = null,Object? clipStart = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? source = freezed,Object? position = null,Object? duration = null,Object? playing = null,Object? buffering = null,Object? hasVideo = null,Object? aspectRatio = null,Object? speed = null,Object? volume = null,Object? muted = null,Object? videoFolded = null,Object? clipStart = freezed,Object? failure = freezed,Object? embedFailure = freezed,}) {
   return _then(_PlayerState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PlayerStatus,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
@@ -338,7 +342,8 @@ as double,muted: null == muted ? _self.muted : muted // ignore: cast_nullable_to
 as bool,videoFolded: null == videoFolded ? _self.videoFolded : videoFolded // ignore: cast_nullable_to_non_nullable
 as bool,clipStart: freezed == clipStart ? _self.clipStart : clipStart // ignore: cast_nullable_to_non_nullable
 as Duration?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as Failure?,
+as Failure?,embedFailure: freezed == embedFailure ? _self.embedFailure : embedFailure // ignore: cast_nullable_to_non_nullable
+as EmbedFailure?,
   ));
 }
 
